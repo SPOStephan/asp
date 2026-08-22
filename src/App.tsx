@@ -26,10 +26,10 @@ function HomePage() {
       <Welcome />
       <Discover />
       <Wellness />
+      <Highlights />
       <Culinary />
       <Generations />
       <Awards />
-      <Highlights />
       <Facts />
       <FAQ />
       <Newsletter />
