@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight } from 'lucide-react';
 import { Reveal } from './Reveal';
 import { useSection } from '../context/HotelContext';
 
@@ -10,7 +9,8 @@ interface OfferLink {
 
 interface OfferItem {
   title: string;
-  text: string;
+  subtitle?: string;
+  text?: string;
   details?: string[];
   links?: OfferLink[];
   image_primary: string;
@@ -24,12 +24,12 @@ const FALLBACK = {
   title_script: 'Nordsee-Ferien',
   items: [
     {
-      title: 'Angebot eins',
-      text: 'Platzhaltertext für das erste Angebot. Hier beschreiben wir später das Arrangement, die Leistungen und für wen es gedacht ist.',
-      details: ['Platzhalter: Zeitraum und Konditionen folgen.', 'Platzhalter: weitere Details folgen.'],
+      title: 'Wellnessurlaub',
+      subtitle: 'Auszeit am Meer',
+      details: ['3 Nächte', 'ab 655 Euro pro Person'],
       links: [
         { label: 'Mehr erfahren', href: '#buchung' },
-        { label: 'Jetzt anfragen', href: '#buchung' },
+        { label: 'Jetzt buchen', href: '#buchung' },
       ],
       image_primary: '/teaser-suite.webp',
       image_primary_alt: 'Suite im ambassador hotel & spa',
@@ -37,12 +37,12 @@ const FALLBACK = {
       image_secondary_alt: 'Kulinarik im Hotel',
     },
     {
-      title: 'Angebot zwei',
-      text: 'Platzhaltertext für das zweite Angebot. Inhalt, Laufzeit und Buchungsweg setzen wir als Nächstes gemeinsam ein.',
-      details: ['Platzhalter: Leistungen folgen.', 'Platzhalter: Hinweise folgen.'],
+      title: 'Feiertage',
+      subtitle: 'Weihnachten mit Meerblick',
+      details: ['3 Nächte', 'ab 655 Euro pro Person'],
       links: [
         { label: 'Mehr erfahren', href: '#buchung' },
-        { label: 'Jetzt anfragen', href: '#buchung' },
+        { label: 'Jetzt buchen', href: '#buchung' },
       ],
       image_primary: '/collage-pool.webp',
       image_primary_alt: 'Poolbereich im ambassador hotel & spa',
@@ -115,8 +115,11 @@ export function Offers() {
             >
               <OfferVisual item={item} from={imagesLeft ? 'left' : 'right'} />
               <Reveal className="offers__copy" delay={80}>
-                <h3 className="offers__title">{item.title}</h3>
-                <p className="offers__text">{item.text}</p>
+                <p className="offers__title">{item.title}</p>
+                {item.subtitle ? (
+                  <h3 className="offers__subtitle heading-font">{item.subtitle}</h3>
+                ) : null}
+                {item.text ? <p className="offers__text">{item.text}</p> : null}
                 {item.details?.length ? (
                   <div className="offers__details">
                     {item.details.map((detail) => (
@@ -127,10 +130,8 @@ export function Offers() {
                 {item.links?.length ? (
                   <div className="offers__links">
                     {item.links.map((link) => (
-                      <a key={link.label} className="offers__link" href={link.href}>
-                        <span className="offers__link-dot" aria-hidden="true" />
-                        <span>{link.label}</span>
-                        <ArrowUpRight size={16} strokeWidth={1.5} aria-hidden="true" />
+                      <a key={link.label} className="offers__link link-underline" href={link.href}>
+                        {link.label}
                       </a>
                     ))}
                   </div>
