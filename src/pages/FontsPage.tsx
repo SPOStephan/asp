@@ -3,22 +3,33 @@ import './FontsPage.css';
 
 const FONT_STYLESHEET =
   'https://fonts.googleapis.com/css2' +
-  '?family=Birthstone' +
+  '?family=Allison' +
+  '&family=Birthstone' +
   '&family=Bodoni+Moda:opsz,wght@6..96,600;6..96,700' +
+  '&family=Caramel' +
   '&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700' +
   '&family=DM+Serif+Display' +
   '&family=Ephesis' +
+  '&family=Explora' +
   '&family=Fraunces:opsz,wght@9..144,600;9..144,700' +
   '&family=Imperial+Script' +
+  '&family=Inspiration' +
   '&family=Instrument+Serif' +
+  '&family=Island+Moments' +
   '&family=Kaushan+Script' +
+  '&family=Licorice' +
   '&family=Mea+Culpa' +
   '&family=Mr+Dafoe' +
+  '&family=Ms+Madi' +
   '&family=Newsreader:opsz,wght@6..72,600;6..72,700' +
+  '&family=Oooh+Baby' +
   '&family=Playfair+Display:wght@600;700' +
+  '&family=Qwigley' +
+  '&family=Send+Flowers' +
   '&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700' +
   '&family=Style+Script' +
   '&family=The+Nautigal' +
+  '&family=Whisper' +
   '&display=swap';
 
 interface Typeface {
@@ -28,6 +39,7 @@ interface Typeface {
   weight?: number;
   note: string;
   current?: boolean;
+  nearRef?: boolean;
 }
 
 const HEADINGS: Typeface[] = [
@@ -109,7 +121,84 @@ const SCRIPTS: Typeface[] = [
     id: 'dafoe',
     name: 'Mr Dafoe',
     stack: '"Mr Dafoe", cursive',
-    note: 'Dynamischer Pinsel, viel Bewegung',
+    note: 'Dein Favorit — dynamischer Pinsel, kräftiger',
+  },
+  {
+    id: 'oooh-baby',
+    name: 'Oooh Baby',
+    stack: '"Oooh Baby", cursive',
+    note: 'Leichte moderne Handschrift, offene Bögen',
+    nearRef: true,
+  },
+  {
+    id: 'ms-madi',
+    name: 'Ms Madi',
+    stack: '"Ms Madi", cursive',
+    note: 'Monoline, klein und natürlich — sehr nah am Beispiel',
+    nearRef: true,
+  },
+  {
+    id: 'caramel',
+    name: 'Caramel',
+    stack: '"Caramel", cursive',
+    note: 'Organische Handlettering-Schrift, lockere Caps',
+    nearRef: true,
+  },
+  {
+    id: 'inspiration',
+    name: 'Inspiration',
+    stack: '"Inspiration", cursive',
+    note: 'Fein, fließend, eher Marker als Pinsel',
+    nearRef: true,
+  },
+  {
+    id: 'licorice',
+    name: 'Licorice',
+    stack: '"Licorice", cursive',
+    note: 'Zart, unregelmäßig, echte Handschrift',
+    nearRef: true,
+  },
+  {
+    id: 'send-flowers',
+    name: 'Send Flowers',
+    stack: '"Send Flowers", cursive',
+    note: 'Luftig, lange Verbindungen, moderne Kalligrafie',
+    nearRef: true,
+  },
+  {
+    id: 'qwigley',
+    name: 'Qwigley',
+    stack: '"Qwigley", cursive',
+    note: 'Sehr leicht, offene Schlaufen, viel Luft',
+    nearRef: true,
+  },
+  {
+    id: 'explora',
+    name: 'Explora',
+    stack: '"Explora", cursive',
+    note: 'Delikate Kalligrafie, feiner Strich',
+    nearRef: true,
+  },
+  {
+    id: 'whisper',
+    name: 'Whisper',
+    stack: '"Whisper", cursive',
+    note: 'Hauchdünn und bewegt, fast gezeichnet',
+    nearRef: true,
+  },
+  {
+    id: 'island-moments',
+    name: 'Island Moments',
+    stack: '"Island Moments", cursive',
+    note: 'Weich, küstenhaft, moderne Schreibschrift',
+    nearRef: true,
+  },
+  {
+    id: 'allison',
+    name: 'Allison',
+    stack: '"Allison", cursive',
+    note: 'Tinten-Handschrift, etwas unregelmäßiger',
+    nearRef: true,
   },
   {
     id: 'style-script',
@@ -156,14 +245,14 @@ const SCRIPTS: Typeface[] = [
 ];
 
 const PAIRINGS = [
-  { heading: 'cormorant', script: 'allura', label: 'Aktuell', note: 'Cormorant Garamond + Allura' },
+  { heading: 'cormorant', script: 'allura', label: 'Aktuell live', note: 'Cormorant Garamond + Allura' },
+  { heading: 'newsreader', script: 'dafoe', label: 'Dein Favorit', note: 'Newsreader + Mr Dafoe' },
+  { heading: 'newsreader', script: 'oooh-baby', label: 'Newsreader, leichter', note: 'Newsreader + Oooh Baby' },
+  { heading: 'newsreader', script: 'ms-madi', label: 'Newsreader, handschriftlich', note: 'Newsreader + Ms Madi' },
+  { heading: 'newsreader', script: 'caramel', label: 'Newsreader, organisch', note: 'Newsreader + Caramel' },
+  { heading: 'newsreader', script: 'inspiration', label: 'Newsreader, fein', note: 'Newsreader + Inspiration' },
   { heading: 'fraunces', script: 'dafoe', label: 'Kraftvoll & bewegt', note: 'Fraunces + Mr Dafoe' },
   { heading: 'dm-serif', script: 'style-script', label: 'Grafisch & modern', note: 'DM Serif Display + Style Script' },
-  { heading: 'playfair', script: 'ephesis', label: 'Editorial & fließend', note: 'Playfair Display + Ephesis' },
-  { heading: 'newsreader', script: 'nautigal', label: 'Ruhig & küstenhaft', note: 'Newsreader + The Nautigal' },
-  { heading: 'source-serif', script: 'birthstone', label: 'Klar & luftig', note: 'Source Serif 4 + Birthstone' },
-  { heading: 'bodoni', script: 'imperial', label: 'Fashion & Drama', note: 'Bodoni Moda + Imperial Script' },
-  { heading: 'fraunces', script: 'kaushan', label: 'Fett & dynamisch', note: 'Fraunces + Kaushan Script' },
 ];
 
 const SAMPLES = [
@@ -267,14 +356,33 @@ export function FontsPage() {
             </div>
             <div>
               <p className="font-lab__picker-label">Geschwungene Schrift</p>
+              <p className="font-lab__picker-sub">
+                Näher am Beispiel: leichte, moderne Handschrift — nicht so kräftig und formal wie Mr Dafoe
+              </p>
               <div className="font-lab__chips">
-                {SCRIPTS.map((font) => (
+                {SCRIPTS.filter((font) => font.nearRef).map((font) => (
                   <button
                     key={font.id}
                     type="button"
-                    className={`font-lab__chip${scriptId === font.id ? ' is-active' : ''}`}
+                    className={`font-lab__chip font-lab__chip--script${scriptId === font.id ? ' is-active' : ''}`}
                     onClick={() => setScriptId(font.id)}
                   >
+                    <em className="font-lab__chip-preview" style={{ fontFamily: font.stack }}>Meer</em>
+                    <span>{font.name}</span>
+                    <small>{font.note}</small>
+                  </button>
+                ))}
+              </div>
+              <p className="font-lab__picker-sub">Bereits im Labor</p>
+              <div className="font-lab__chips">
+                {SCRIPTS.filter((font) => !font.nearRef).map((font) => (
+                  <button
+                    key={font.id}
+                    type="button"
+                    className={`font-lab__chip font-lab__chip--script${scriptId === font.id ? ' is-active' : ''}`}
+                    onClick={() => setScriptId(font.id)}
+                  >
+                    <em className="font-lab__chip-preview" style={{ fontFamily: font.stack }}>Meer</em>
                     <span>{font.name}</span>
                     <small>{font.note}</small>
                   </button>
@@ -288,6 +396,11 @@ export function FontsPage() {
           </p>
 
           <div className="font-lab__preview">
+            <div className="font-lab__ref">
+              <p className="font-lab__ref-note">Wie im Beispiel: zuerst die Schreibschrift, darunter die Headline</p>
+              <p className="font-lab__ref-script">Wellnessurlaub</p>
+              <p className="font-lab__ref-serif">Auszeit am Meer</p>
+            </div>
             {SAMPLES.map((sample) => (
               <h2 key={sample.key} className="font-lab__sample">
                 {splitRoman(sample.roman, sample.breakAfter).map((line, index, lines) => (
@@ -307,8 +420,8 @@ export function FontsPage() {
         <div className="container">
           <h2 className="font-lab__section-title">Kuratierte Paare zum Anklicken</h2>
           <p className="font-lab__section-copy">
-            Die Alternativen gehen in die Richtung: Headline fetter und etwas moderner,
-            Schreibschrift dynamischer. Ein Klick setzt das Paar oben ins Labor.
+            Oben der aktuelle Favorit Newsreader + Mr Dafoe, dazu leichtere Handschriften
+            näher am Beispielbild. Ein Klick setzt das Paar ins Labor.
           </p>
           <div className="font-lab__pair-grid">
             {PAIRINGS.map((pair) => {
