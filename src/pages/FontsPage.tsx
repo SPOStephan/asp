@@ -3,8 +3,12 @@ import './FontsPage.css';
 
 const FONT_STYLESHEET =
   'https://fonts.googleapis.com/css2' +
-  '?family=Allison' +
+  '?family=Alex+Brush' +
+  '&family=Allison' +
   '&family=Birthstone' +
+  '&family=Caveat:wght@400;500' +
+  '&family=Corinthia' +
+  '&family=Dancing+Script:wght@400;500' +
   '&family=Bodoni+Moda:opsz,wght@6..96,600;6..96,700' +
   '&family=Caramel' +
   '&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700' +
@@ -12,24 +16,33 @@ const FONT_STYLESHEET =
   '&family=Ephesis' +
   '&family=Explora' +
   '&family=Fraunces:opsz,wght@9..144,600;9..144,700' +
+  '&family=Great+Vibes' +
+  '&family=Gwendolyn' +
   '&family=Imperial+Script' +
   '&family=Inspiration' +
   '&family=Instrument+Serif' +
   '&family=Island+Moments' +
+  '&family=Italianno' +
   '&family=Kaushan+Script' +
+  '&family=Lovers+Quarrel' +
   '&family=Licorice' +
   '&family=Mea+Culpa' +
+  '&family=MonteCarlo' +
   '&family=Mr+Dafoe' +
+  '&family=Mrs+Saint+Delafield' +
   '&family=Ms+Madi' +
   '&family=Newsreader:opsz,wght@6..72,600;6..72,700' +
   '&family=Oooh+Baby' +
+  '&family=Pinyon+Script' +
   '&family=Playfair+Display:wght@600;700' +
   '&family=Qwigley' +
+  '&family=Sacramento' +
   '&family=Send+Flowers' +
   '&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700' +
   '&family=Style+Script' +
   '&family=The+Nautigal' +
   '&family=Whisper' +
+  '&family=WindSong' +
   '&display=swap';
 
 interface Typeface {
@@ -40,6 +53,7 @@ interface Typeface {
   note: string;
   current?: boolean;
   nearRef?: boolean;
+  lighter?: boolean;
 }
 
 const HEADINGS: Typeface[] = [
@@ -121,7 +135,98 @@ const SCRIPTS: Typeface[] = [
     id: 'dafoe',
     name: 'Mr Dafoe',
     stack: '"Mr Dafoe", cursive',
-    note: 'Dein Favorit — dynamischer Pinsel, kräftiger',
+    note: 'Favorit im Labor — nur ein Schnitt, im Einsatz eher fett',
+  },
+  {
+    id: 'alex-brush',
+    name: 'Alex Brush',
+    stack: '"Alex Brush", cursive',
+    note: 'Nächster Verwandter von Mr Dafoe, feinerer Strich',
+    lighter: true,
+  },
+  {
+    id: 'great-vibes',
+    name: 'Great Vibes',
+    stack: '"Great Vibes", cursive',
+    note: 'Leichter und gleichmäßiger als Dafoe',
+    lighter: true,
+  },
+  {
+    id: 'pinyon',
+    name: 'Pinyon Script',
+    stack: '"Pinyon Script", cursive',
+    note: 'Elegant, schmaler, eher Schreibfeder',
+    lighter: true,
+  },
+  {
+    id: 'sacramento',
+    name: 'Sacramento',
+    stack: '"Sacramento", cursive',
+    note: 'Monoline, sehr dünn, handschriftlich',
+    lighter: true,
+  },
+  {
+    id: 'italianno',
+    name: 'Italianno',
+    stack: '"Italianno", cursive',
+    note: 'Fein und fließend',
+    lighter: true,
+  },
+  {
+    id: 'corinthia',
+    name: 'Corinthia',
+    stack: '"Corinthia", cursive',
+    note: 'Zarte Kalligrafie',
+    lighter: true,
+  },
+  {
+    id: 'windsong',
+    name: 'WindSong',
+    stack: '"WindSong", cursive',
+    note: 'Luftige Handschrift',
+    lighter: true,
+  },
+  {
+    id: 'montecarlo',
+    name: 'MonteCarlo',
+    stack: '"MonteCarlo", cursive',
+    note: 'Leicht, etwas verspielter',
+    lighter: true,
+  },
+  {
+    id: 'gwendolyn',
+    name: 'Gwendolyn',
+    stack: '"Gwendolyn", cursive',
+    note: 'Dünne Schreibschrift',
+    lighter: true,
+  },
+  {
+    id: 'delafield',
+    name: 'Mrs Saint Delafield',
+    stack: '"Mrs Saint Delafield", cursive',
+    note: 'Sehr fein, signaturhaft',
+    lighter: true,
+  },
+  {
+    id: 'lovers',
+    name: 'Lovers Quarrel',
+    stack: '"Lovers Quarrel", cursive',
+    note: 'Leicht und unregelmäßig',
+    lighter: true,
+  },
+  {
+    id: 'dancing',
+    name: 'Dancing Script',
+    stack: '"Dancing Script", cursive',
+    note: 'Eher Handschrift als Pinsel',
+    lighter: true,
+  },
+  {
+    id: 'caveat',
+    name: 'Caveat',
+    stack: '"Caveat", cursive',
+    note: 'Natürliche Notiz-Handschrift',
+    lighter: true,
   },
   {
     id: 'oooh-baby',
@@ -246,13 +351,13 @@ const SCRIPTS: Typeface[] = [
 
 const PAIRINGS = [
   { heading: 'cormorant', script: 'allura', label: 'Aktuell live', note: 'Cormorant Garamond + Allura' },
-  { heading: 'newsreader', script: 'dafoe', label: 'Dein Favorit', note: 'Newsreader + Mr Dafoe' },
-  { heading: 'newsreader', script: 'oooh-baby', label: 'Newsreader, leichter', note: 'Newsreader + Oooh Baby' },
-  { heading: 'newsreader', script: 'ms-madi', label: 'Newsreader, handschriftlich', note: 'Newsreader + Ms Madi' },
-  { heading: 'newsreader', script: 'caramel', label: 'Newsreader, organisch', note: 'Newsreader + Caramel' },
-  { heading: 'newsreader', script: 'inspiration', label: 'Newsreader, fein', note: 'Newsreader + Inspiration' },
-  { heading: 'fraunces', script: 'dafoe', label: 'Kraftvoll & bewegt', note: 'Fraunces + Mr Dafoe' },
-  { heading: 'dm-serif', script: 'style-script', label: 'Grafisch & modern', note: 'DM Serif Display + Style Script' },
+  { heading: 'newsreader', script: 'dafoe', label: 'Newsreader + Mr Dafoe', note: 'Gefällt im Labor, im Einsatz zu fett' },
+  { heading: 'newsreader', script: 'alex-brush', label: 'Newsreader + Alex Brush', note: 'Derselbe Duktus, feinerer Strich' },
+  { heading: 'newsreader', script: 'great-vibes', label: 'Newsreader + Great Vibes', note: 'Leichter und gleichmäßiger' },
+  { heading: 'newsreader', script: 'sacramento', label: 'Newsreader + Sacramento', note: 'Sehr dünn, handschriftlich' },
+  { heading: 'newsreader', script: 'oooh-baby', label: 'Newsreader + Oooh Baby', note: 'Leichte moderne Handschrift' },
+  { heading: 'newsreader', script: 'ms-madi', label: 'Newsreader + Ms Madi', note: 'Monoline, nah am Beispielbild' },
+  { heading: 'newsreader', script: 'inspiration', label: 'Newsreader + Inspiration', note: 'Fein, eher Marker' },
 ];
 
 const SAMPLES = [
@@ -357,7 +462,24 @@ export function FontsPage() {
             <div>
               <p className="font-lab__picker-label">Geschwungene Schrift</p>
               <p className="font-lab__picker-sub">
-                Näher am Beispiel: leichte, moderne Handschrift — nicht so kräftig und formal wie Mr Dafoe
+                Leichter als Mr Dafoe — Alex Brush zuerst, dann weitere schmale Handschriften
+              </p>
+              <div className="font-lab__chips">
+                {SCRIPTS.filter((font) => font.lighter).map((font) => (
+                  <button
+                    key={font.id}
+                    type="button"
+                    className={`font-lab__chip font-lab__chip--script${scriptId === font.id ? ' is-active' : ''}`}
+                    onClick={() => setScriptId(font.id)}
+                  >
+                    <em className="font-lab__chip-preview" style={{ fontFamily: font.stack }}>Meer</em>
+                    <span>{font.name}</span>
+                    <small>{font.note}</small>
+                  </button>
+                ))}
+              </div>
+              <p className="font-lab__picker-sub">
+                Näher am Beispielbild: leichte, moderne Handschrift
               </p>
               <div className="font-lab__chips">
                 {SCRIPTS.filter((font) => font.nearRef).map((font) => (
@@ -373,9 +495,9 @@ export function FontsPage() {
                   </button>
                 ))}
               </div>
-              <p className="font-lab__picker-sub">Bereits im Labor</p>
+              <p className="font-lab__picker-sub">Weitere, inkl. Mr Dafoe und Allura</p>
               <div className="font-lab__chips">
-                {SCRIPTS.filter((font) => !font.nearRef).map((font) => (
+                {SCRIPTS.filter((font) => !font.nearRef && !font.lighter).map((font) => (
                   <button
                     key={font.id}
                     type="button"
@@ -420,8 +542,8 @@ export function FontsPage() {
         <div className="container">
           <h2 className="font-lab__section-title">Kuratierte Paare zum Anklicken</h2>
           <p className="font-lab__section-copy">
-            Oben der aktuelle Favorit Newsreader + Mr Dafoe, dazu leichtere Handschriften
-            näher am Beispielbild. Ein Klick setzt das Paar ins Labor.
+            Newsreader bleibt die Headline. Mr Dafoe hat nur einen Schnitt — deshalb
+            hier Alex Brush und weitere leichtere Handschriften. Ein Klick setzt das Paar ins Labor.
           </p>
           <div className="font-lab__pair-grid">
             {PAIRINGS.map((pair) => {
