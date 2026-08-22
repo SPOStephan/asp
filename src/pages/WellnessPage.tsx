@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useSection } from '../context/HotelContext';
 
+const WELLNESS_HERO_IMAGE = '/hotel-nordsee-wellness02.webp';
+
 export function WellnessPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const [imageBottom, setImageBottom] = useState(0);
@@ -49,7 +51,14 @@ export function WellnessPage() {
   return (
     <div className="wellness-page" style={cssVars}>
       <div className="wellness-page__hero" ref={heroRef}>
-        <img src={data.hero_image} alt={data.hero_image_alt || ''} />
+        <img
+          src={WELLNESS_HERO_IMAGE}
+          alt={data.hero_image_alt || ''}
+          width={1080}
+          height={692}
+          fetchPriority="high"
+          decoding="async"
+        />
         <div className="wellness-page__overlay" />
       </div>
 
