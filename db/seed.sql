@@ -71,6 +71,21 @@ BEGIN
       jsonb_build_object('image', '/yoga-outdoor.webp', 'eyebrow', 'Balance', 'title', 'Yoga & Retreats', 'href', '#wellness')
     )
   )),
+  (h_id, 'direct_booking', jsonb_build_object(
+    'eyebrow', 'Ihr Vorteil',
+    'title', 'Direktbuchung',
+    'subtitle', 'Buchen Sie direkt bei uns — und sichern Sie sich diese Extra-Leistungen.',
+    'cta_text', 'Jetzt direkt buchen',
+    'cta_href', '#buchung',
+    'items', jsonb_build_array(
+      jsonb_build_object('icon', 'BadgePercent', 'title', 'Bestpreisgarantie'),
+      jsonb_build_object('icon', 'Car', 'title', 'Parkrabatt 10 € pro Nacht', 'text', 'nach Verfügbarkeit'),
+      jsonb_build_object('icon', 'BedDouble', 'title', 'Alle Zimmerkategorien'),
+      jsonb_build_object('icon', 'BadgeCheck', 'title', 'Sofortige Buchungsbestätigung'),
+      jsonb_build_object('icon', 'Wifi', 'title', 'Kostenfreies WLAN'),
+      jsonb_build_object('icon', 'Star', 'title', 'Stammgastpass-Vorteil')
+    )
+  )),
   (h_id, 'wellness', jsonb_build_object(
     'eyebrow', 'Zeit für',
     'title', 'Wellness',

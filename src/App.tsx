@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Welcome } from './components/Welcome';
 import { Discover } from './components/Discover';
+import { DirectBooking } from './components/DirectBooking';
 import { Wellness } from './components/Wellness';
 import { Culinary } from './components/Culinary';
 import { Generations } from './components/Generations';
@@ -25,6 +26,7 @@ function HomePage() {
       <Hero />
       <Welcome />
       <Discover />
+      <DirectBooking />
       <Wellness />
       <Highlights />
       <Culinary />
