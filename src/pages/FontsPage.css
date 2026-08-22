@@ -1,0 +1,258 @@
+.font-lab {
+  background: var(--neutral-50);
+  color: var(--neutral-700);
+}
+
+.font-lab__hero {
+  background: var(--primary-500);
+  color: var(--neutral-0);
+  padding: 168px 0 72px;
+}
+
+.font-lab__kicker {
+  margin: 0 0 18px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-300);
+}
+
+.font-lab__hero h1 {
+  margin: 0 0 22px;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 1;
+  color: var(--neutral-0);
+}
+
+.font-lab__lead {
+  max-width: 720px;
+  margin: 0 0 36px;
+  font-size: 1.08rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.font-lab__lead strong,
+.font-lab__lead em {
+  color: var(--neutral-0);
+  font-style: normal;
+}
+
+.font-lab__facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin: 0;
+}
+
+.font-lab__facts dt {
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-300);
+}
+
+.font-lab__facts dd {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.font-lab__studio {
+  padding: 72px 0 32px;
+  scroll-margin-top: 120px;
+}
+
+.font-lab__picker {
+  display: grid;
+  gap: 36px;
+  margin-bottom: 36px;
+}
+
+.font-lab__picker-label {
+  margin: 0 0 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary-500);
+}
+
+.font-lab__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.font-lab__chip {
+  max-width: 280px;
+  padding: 12px 14px;
+  text-align: left;
+  border: 1px solid var(--neutral-200);
+  background: var(--neutral-0);
+  color: var(--neutral-800);
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+}
+
+.font-lab__chip span {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.font-lab__chip small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--neutral-500);
+}
+
+.font-lab__chip:hover,
+.font-lab__chip.is-active {
+  border-color: var(--accent-400);
+  transform: translateY(-1px);
+}
+
+.font-lab__chip.is-active {
+  background: var(--accent-50);
+}
+
+.font-lab__now {
+  margin: 0 0 28px;
+  font-size: 0.95rem;
+  color: var(--neutral-500);
+}
+
+.font-lab__now strong {
+  color: var(--neutral-900);
+  font-weight: 600;
+}
+
+.font-lab__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 56px 48px;
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-200);
+}
+
+.font-lab__sample {
+  margin: 0;
+  font-family: var(--lab-heading);
+  font-weight: var(--lab-heading-weight);
+  font-optical-sizing: auto;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 1.12;
+  color: var(--neutral-900);
+}
+
+.font-lab__script {
+  font-family: var(--lab-script);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.45em;
+  line-height: 0.82;
+  color: var(--accent-300);
+  display: inline-block;
+  margin-left: 0.06em;
+}
+
+.font-lab__pairs {
+  padding: 32px 0 80px;
+}
+
+.font-lab__section-title {
+  margin: 0 0 12px;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  color: var(--neutral-900);
+}
+
+.font-lab__section-copy {
+  max-width: 640px;
+  margin: 0 0 32px;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+
+.font-lab__pair-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.font-lab__pair {
+  padding: 28px 28px 24px;
+  text-align: left;
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-200);
+  transition: border-color var(--transition), transform var(--transition), background var(--transition);
+}
+
+.font-lab__pair:hover,
+.font-lab__pair.is-active {
+  border-color: var(--accent-400);
+  transform: translateY(-2px);
+}
+
+.font-lab__pair.is-active {
+  background: var(--accent-50);
+}
+
+.font-lab__pair-label {
+  margin: 0 0 16px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-500);
+}
+
+.font-lab__pair-sample {
+  margin: 0 0 18px;
+  font-family: var(--lab-heading);
+  font-weight: var(--lab-heading-weight);
+  font-optical-sizing: auto;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.15;
+  color: var(--neutral-900);
+}
+
+.font-lab__pair-sample span {
+  font-family: var(--lab-script);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.4em;
+  color: var(--accent-300);
+}
+
+.font-lab__pair-meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--neutral-500);
+}
+
+@media (max-width: 900px) {
+  .font-lab__facts,
+  .font-lab__pair-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .font-lab__preview {
+    padding: 36px 22px;
+  }
+
+  .font-lab__chip {
+    max-width: none;
+  }
+}
