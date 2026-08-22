@@ -4,6 +4,7 @@ import { Hero } from './components/Hero';
 import { Welcome } from './components/Welcome';
 import { Discover } from './components/Discover';
 import { DirectBooking } from './components/DirectBooking';
+import { Offers } from './components/Offers';
 import { Wellness } from './components/Wellness';
 import { Culinary } from './components/Culinary';
 import { Generations } from './components/Generations';
@@ -27,6 +28,7 @@ function HomePage() {
       <Welcome />
       <Discover />
       <DirectBooking />
+      <Offers />
       <Wellness />
       <Highlights />
       <Culinary />
