@@ -42,7 +42,7 @@ const PREVIEW_SCRIPTS = [
   { id: 'oooh-baby', name: 'Oooh Baby', stack: '"Oooh Baby", cursive', note: 'Leichte moderne Handschrift' },
   { id: 'ms-madi', name: 'Ms Madi', stack: '"Ms Madi", cursive', note: 'Monoline, nah am Beispielbild' },
   { id: 'inspiration', name: 'Inspiration', stack: '"Inspiration", cursive', note: 'Fein, eher Marker' },
-  { id: 'allura', name: 'Allura', stack: '"Allura", cursive', note: 'Aktuell live' },
+  { id: 'allura', name: 'Allura', stack: '"Allura", cursive', note: 'Vorher live' },
 ];
 
 export function TypePreviewHomeNote() {

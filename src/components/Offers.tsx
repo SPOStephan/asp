@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight } from 'lucide-react';
 import { Reveal } from './Reveal';
+import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
 
 const OFFER_TEXT =
@@ -159,12 +159,9 @@ export function Offers() {
                 {item.links?.length ? (
                   <div className="offers__links">
                     {item.links.map((link) => (
-                      <a key={link.label} className="offers__link" href={link.href}>
-                        <span className="offers__link-label">{link.label}</span>
-                        <span className="offers__link-arrow" aria-hidden="true">
-                          <ArrowUpRight size={14} strokeWidth={1.6} />
-                        </span>
-                      </a>
+                      <TextCta key={link.label} href={link.href}>
+                        {link.label}
+                      </TextCta>
                     ))}
                   </div>
                 ) : null}

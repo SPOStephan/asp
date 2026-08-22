@@ -8,6 +8,7 @@ import {
   Wifi,
   type LucideIcon,
 } from 'lucide-react';
+import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -55,9 +56,9 @@ export function DirectBooking() {
             <h2 className="direct-booking__title heading-font">{data.title}</h2>
             {data.subtitle ? <p className="direct-booking__subtitle">{data.subtitle}</p> : null}
             {data.cta_text ? (
-              <a className="direct-booking__link link-underline" href={data.cta_href || '#buchung'}>
+              <TextCta className="direct-booking__link" href={data.cta_href || '#buchung'}>
                 {data.cta_text}
-              </a>
+              </TextCta>
             ) : null}
           </div>
         </Reveal>

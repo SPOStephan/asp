@@ -350,9 +350,9 @@ const SCRIPTS: Typeface[] = [
 ];
 
 const PAIRINGS = [
-  { heading: 'cormorant', script: 'allura', label: 'Aktuell live', note: 'Cormorant Garamond + Allura' },
-  { heading: 'newsreader', script: 'dafoe', label: 'Newsreader + Mr Dafoe', note: 'Gefällt im Labor, im Einsatz zu fett' },
-  { heading: 'newsreader', script: 'alex-brush', label: 'Newsreader + Alex Brush', note: 'Derselbe Duktus, feinerer Strich' },
+  { heading: 'newsreader', script: 'alex-brush', label: 'Aktuell live', note: 'Newsreader Medium + Alex Brush' },
+  { heading: 'newsreader', script: 'dafoe', label: 'Newsreader + Mr Dafoe', note: 'Im Einsatz zu fett' },
+  { heading: 'cormorant', script: 'allura', label: 'Vorher live', note: 'Cormorant Garamond + Allura' },
   { heading: 'newsreader', script: 'great-vibes', label: 'Newsreader + Great Vibes', note: 'Leichter und gleichmäßiger' },
   { heading: 'newsreader', script: 'sacramento', label: 'Newsreader + Sacramento', note: 'Sehr dünn, handschriftlich' },
   { heading: 'newsreader', script: 'oooh-baby', label: 'Newsreader + Oooh Baby', note: 'Leichte moderne Handschrift' },
@@ -418,19 +418,18 @@ export function FontsPage() {
           <p className="font-lab__kicker">Nur zum Anschauen · keine globale Änderung</p>
           <h1>Schriftlabor</h1>
           <p className="font-lab__lead">
-            Die Website lädt aktuell drei <strong>Google Fonts</strong>: die Headline-Serif
-            {' '}<em>Cormorant Garamond</em>, die Schreibschrift <em>Allura</em> und als Brotschrift
-            {' '}<em>Inter</em>. Hier vergleichen wir nur die Headline-Kombination aus römischer
-            und geschwungener Schrift — Inter bleibt unangetastet.
+            Live stehen jetzt <strong>Newsreader Medium</strong> und <strong>Alex Brush</strong>,
+            dazu <em>Inter</em> als Brotschrift. Hier bleiben die Alternativen zum Vergleich —
+            Inter bleibt unangetastet.
           </p>
           <dl className="font-lab__facts">
             <div>
-              <dt>Cormorant Garamond</dt>
-              <dd>Christian Thalmann, 2015. Elegante Garamond-Interpretation, eher leicht und literarisch.</dd>
+              <dt>Newsreader</dt>
+              <dd>Production Type, 2020. Zeitgenössische Leseserif. Live in Medium (500).</dd>
             </div>
             <div>
-              <dt>Allura</dt>
-              <dd>Rob Leuschke, 2011. Formelle Kupferstich-Schreibschrift, gleichmäßig und eher ruhig.</dd>
+              <dt>Alex Brush</dt>
+              <dd>TypeSETit / Rob Leuschke. Pinsel-Schreibschrift, feiner als Mr Dafoe.</dd>
             </div>
             <div>
               <dt>Inter</dt>

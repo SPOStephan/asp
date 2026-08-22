@@ -1,4 +1,5 @@
 import { Reveal } from './Reveal';
+import { TextCta } from './TextCta';
 import { useHotelContent } from '../context/HotelContext';
 
 export function FAQ() {
@@ -52,9 +53,9 @@ export function FAQ() {
         </Reveal>
         <Reveal delay={200}>
           <div className="faq__more">
-            <a href="/faqs" className="faq__more-link link-underline">
+            <TextCta href="/faqs" className="faq__more-link">
               Alle Fragen ansehen
-            </a>
+            </TextCta>
           </div>
         </Reveal>
       </div>
