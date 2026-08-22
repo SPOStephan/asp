@@ -3,6 +3,7 @@
   "buildCommand": "npm run build",
   "framework": "vite",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/wellness", "destination": "/index.html" },
+    { "source": "/faqs", "destination": "/index.html" }
   ]
 }
