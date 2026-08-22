@@ -50,39 +50,34 @@ export function DirectBooking() {
     <section className="direct-booking" id="direktbuchung" aria-label="Vorteile der Direktbuchung">
       <div className="direct-booking__inner">
         <Reveal>
-          <div className="direct-booking__head">
+          <div className="direct-booking__intro">
             <p className="eyebrow">{data.eyebrow}</p>
             <h2 className="direct-booking__title heading-font">{data.title}</h2>
             {data.subtitle ? <p className="direct-booking__subtitle">{data.subtitle}</p> : null}
+            {data.cta_text ? (
+              <a className="direct-booking__link link-underline" href={data.cta_href || '#buchung'}>
+                {data.cta_text}
+              </a>
+            ) : null}
           </div>
         </Reveal>
 
-        <div className="direct-booking__grid">
-          {items.map((item, i) => {
-            const Icon = iconMap[item.icon] ?? Star;
-            return (
-              <Reveal key={item.title} delay={i * 70}>
-                <article className="direct-booking__item">
-                  <div className="direct-booking__icon" aria-hidden="true">
-                    <Icon size={26} strokeWidth={1.4} />
+        <Reveal delay={80}>
+          <ul className="direct-booking__list">
+            {items.map((item) => {
+              const Icon = iconMap[item.icon] ?? Star;
+              return (
+                <li key={item.title} className="direct-booking__item">
+                  <Icon className="direct-booking__icon" size={22} strokeWidth={1.25} aria-hidden="true" />
+                  <div>
+                    <p className="direct-booking__item-title">{item.title}</p>
+                    {item.text ? <p className="direct-booking__item-text">{item.text}</p> : null}
                   </div>
-                  <h3 className="direct-booking__item-title">{item.title}</h3>
-                  {item.text ? <p className="direct-booking__item-text">{item.text}</p> : null}
-                </article>
-              </Reveal>
-            );
-          })}
-        </div>
-
-        {data.cta_text ? (
-          <Reveal delay={200}>
-            <div className="direct-booking__cta">
-              <a className="btn-primary" href={data.cta_href || '#buchung'}>
-                {data.cta_text}
-              </a>
-            </div>
-          </Reveal>
-        ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </Reveal>
       </div>
     </section>
   );
