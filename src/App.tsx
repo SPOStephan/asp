@@ -16,6 +16,7 @@ import { Footer } from './components/Footer';
 import { FixedAvailabilityBar } from './components/FixedAvailabilityBar';
 import { WellnessPage } from './pages/WellnessPage';
 import { FAQPage } from './pages/FAQPage';
+import { FontsPage } from './pages/FontsPage';
 import { FAQ } from './components/FAQ';
 import { useHotelContent } from './context/HotelContext';
 import { LoadingScreen, ErrorScreen } from './components/Loading';
@@ -44,6 +45,7 @@ function HomePage() {
 function App() {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isFontLab = location.pathname === '/schriften';
   const { loading, error } = useHotelContent();
 
   useEffect(() => {
@@ -61,9 +63,10 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/wellness" element={<WellnessPage />} />
         <Route path="/faqs" element={<FAQPage />} />
+        <Route path="/schriften" element={<FontsPage />} />
       </Routes>
       <Footer />
-      {!isHome && <FixedAvailabilityBar />}
+      {!isHome && !isFontLab && <FixedAvailabilityBar />}
     </>
   );
 }
