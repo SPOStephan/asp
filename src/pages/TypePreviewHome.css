@@ -1,0 +1,35 @@
+.type-preview {
+  --font-heading: "Newsreader", Georgia, serif;
+  --font-script: "Mr Dafoe", cursive;
+}
+
+.type-preview .heading-font,
+.type-preview .hero__title,
+.type-preview .welcome__caption-text,
+.type-preview .generations__caption,
+.type-preview .discover__tile-title,
+.type-preview .direct-booking__item-title,
+.type-preview .faq__item summary,
+.type-preview .footer__col h2,
+.type-preview .footer__col h4 {
+  font-optical-sizing: auto;
+}
+
+.type-preview__note {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 80;
+  padding: 10px 14px;
+  background: var(--primary-500);
+  color: var(--neutral-0);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-md);
+}
+
+.type-preview__note a {
+  color: var(--accent-300);
+}

@@ -17,6 +17,7 @@ import { FixedAvailabilityBar } from './components/FixedAvailabilityBar';
 import { WellnessPage } from './pages/WellnessPage';
 import { FAQPage } from './pages/FAQPage';
 import { FontsPage } from './pages/FontsPage';
+import { TypePreviewHomeNote } from './pages/TypePreviewHome';
 import { FAQ } from './components/FAQ';
 import { useHotelContent } from './context/HotelContext';
 import { LoadingScreen, ErrorScreen } from './components/Loading';
@@ -44,7 +45,8 @@ function HomePage() {
 
 function App() {
   const location = useLocation();
-  const isHome = location.pathname === '/';
+  const isTypePreview = location.pathname === '/vorschau';
+  const isHome = location.pathname === '/' || isTypePreview;
   const isFontLab = location.pathname === '/schriften';
   const { loading, error } = useHotelContent();
 
@@ -57,17 +59,19 @@ function App() {
   if (error) return <ErrorScreen message={error} />;
 
   return (
-    <>
+    <div className={isTypePreview ? 'type-preview' : undefined}>
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/vorschau" element={<HomePage />} />
         <Route path="/wellness" element={<WellnessPage />} />
         <Route path="/faqs" element={<FAQPage />} />
         <Route path="/schriften" element={<FontsPage />} />
       </Routes>
       <Footer />
+      {isTypePreview && <TypePreviewHomeNote />}
       {!isHome && !isFontLab && <FixedAvailabilityBar />}
-    </>
+    </div>
   );
 }
 
