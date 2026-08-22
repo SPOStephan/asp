@@ -5,6 +5,7 @@
   "rewrites": [
     { "source": "/wellness", "destination": "/index.html" },
     { "source": "/faqs", "destination": "/index.html" },
-    { "source": "/schriften", "destination": "/index.html" }
+    { "source": "/schriften", "destination": "/index.html" },
+    { "source": "/vorschau", "destination": "/index.html" }
   ]
 }
