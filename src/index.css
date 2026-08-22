@@ -618,77 +618,81 @@ body.has-fixed-bar { padding-bottom: 86px; }
 }
 /* ==================== DIRECT BOOKING ==================== */
 .direct-booking {
-  background:
-    linear-gradient(180deg, rgba(247, 243, 236, 0.55) 0%, #f7f3ec 18%, #eee7d9 100%);
-  padding: 88px 0 96px;
+  background: var(--accent-50);
+  padding: 112px 0;
 }
 .direct-booking__inner {
   width: 90%;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  gap: 8vw;
+  align-items: start;
 }
-.direct-booking__head { text-align: center; margin-bottom: 48px; }
-.direct-booking__head .eyebrow { color: var(--accent-500); margin-bottom: 12px; }
+.direct-booking__intro { max-width: 420px; padding-top: 8px; }
+.direct-booking__intro .eyebrow { color: var(--accent-500); margin-bottom: 14px; }
 .direct-booking__title {
-  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  font-size: clamp(2.6rem, 5vw, 4.4rem);
   font-weight: 300;
   margin: 0;
-  line-height: 1.1;
-  color: var(--primary-500);
+  line-height: 1.05;
+  color: var(--neutral-900);
 }
 .direct-booking__subtitle {
-  margin: 16px auto 0;
-  max-width: 520px;
+  margin: 20px 0 0;
   font-size: 1.05rem;
+  line-height: 1.7;
   color: var(--neutral-600);
 }
-.direct-booking__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3vw 2.5vw;
+.direct-booking__link {
+  display: inline-block;
+  margin-top: 32px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-500);
 }
-.direct-booking__grid > .reveal { min-width: 0; height: 100%; }
+.direct-booking__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 .direct-booking__item {
-  height: 100%;
-  text-align: center;
-  padding: 28px 20px 32px;
-  background: rgba(255, 255, 255, 0.42);
-  border: 1px solid rgba(189, 164, 119, 0.28);
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 18px;
+  align-items: start;
+  padding: 20px 0;
+  border-top: 1px solid rgba(19, 59, 92, 0.08);
+}
+.direct-booking__item:last-child {
+  border-bottom: 1px solid rgba(19, 59, 92, 0.08);
 }
 .direct-booking__icon {
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 18px;
-  border: 1px solid var(--accent-400);
-  border-radius: 50%;
-  color: var(--accent-500);
-  background: rgba(255, 255, 255, 0.55);
+  display: block;
+  margin-top: 3px;
+  color: var(--accent-400);
 }
 .direct-booking__item-title {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   font-weight: 400;
   line-height: 1.25;
-  color: var(--primary-500);
+  color: var(--neutral-900);
 }
 .direct-booking__item-text {
-  margin: 8px 0 0;
-  font-size: 0.88rem;
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
   color: var(--neutral-500);
 }
-.direct-booking__cta { display: flex; justify-content: center; margin-top: 48px; }
 
-@media (min-width: 1200px) {
-  .direct-booking__grid { grid-template-columns: repeat(6, 1fr); gap: 1.6vw; }
-  .direct-booking__item { padding: 24px 12px 28px; }
-  .direct-booking__item-title { font-size: 1.15rem; }
-}
-@media (max-width: 700px) {
-  .direct-booking { padding: 64px 0 72px; }
-  .direct-booking__grid { grid-template-columns: repeat(2, 1fr); gap: 3vw; }
-  .direct-booking__item-title { font-size: 1.15rem; }
+@media (max-width: 800px) {
+  .direct-booking { padding: 80px 0; }
+  .direct-booking__inner { grid-template-columns: 1fr; gap: 40px; }
+  .direct-booking__intro { max-width: none; }
 }
 
 @media (max-width: 600px) {
