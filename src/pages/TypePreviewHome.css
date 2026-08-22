@@ -5,14 +5,38 @@
 
 .type-preview .heading-font,
 .type-preview .hero__title,
+.type-preview .welcome__title,
 .type-preview .welcome__caption-text,
+.type-preview .welcome__highlight h3,
+.type-preview .wellness-scene__title,
+.type-preview .wellness-scene__copy h3,
+.type-preview .culinary__title,
+.type-preview .culinary__img-label h4,
+.type-preview .generations__title,
 .type-preview .generations__caption,
+.type-preview .awards__title,
+.type-preview .highlights__title,
+.type-preview .hcard__title,
+.type-preview .discover__title,
 .type-preview .discover__tile-title,
+.type-preview .direct-booking__title,
 .type-preview .direct-booking__item-title,
+.type-preview .offers__headline,
+.type-preview .offers__subtitle,
+.type-preview .facts__title,
+.type-preview .faq__title,
 .type-preview .faq__item summary,
+.type-preview .newsletter__title,
 .type-preview .footer__col h2,
 .type-preview .footer__col h4 {
+  font-weight: 700;
   font-optical-sizing: auto;
+}
+
+.type-preview .welcome__script,
+.type-preview .discover__script,
+.type-preview .offers__script {
+  font-weight: 400;
 }
 
 .type-preview__panel {
