@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { Reveal } from './Reveal';
 import { useSection } from '../context/HotelContext';
+
+const OFFER_TEXT =
+  'Genießen Sie zwei Übernachtungen an der Nordsee mit 50 € Wellnessguthaben und mehr …';
 
 interface OfferLink {
   label: string;
@@ -20,12 +24,14 @@ interface OfferItem {
 }
 
 const FALLBACK = {
-  title_before: 'Unsere besten Angebote für Ihre',
+  title_line1: 'Unsere besten Angebote',
+  title_line2: 'für Ihre',
   title_script: 'Nordsee-Ferien',
   items: [
     {
       title: 'Wellnessurlaub',
       subtitle: 'Auszeit am Meer',
+      text: OFFER_TEXT,
       details: ['3 Nächte', 'ab 655 Euro pro Person'],
       links: [
         { label: 'Mehr erfahren', href: '#buchung' },
@@ -39,6 +45,7 @@ const FALLBACK = {
     {
       title: 'Feiertage',
       subtitle: 'Weihnachten mit Meerblick',
+      text: OFFER_TEXT,
       details: ['3 Nächte', 'ab 655 Euro pro Person'],
       links: [
         { label: 'Mehr erfahren', href: '#buchung' },
@@ -51,6 +58,22 @@ const FALLBACK = {
     },
   ] satisfies OfferItem[],
 };
+
+function offerHeadline(data: {
+  title_line1?: string;
+  title_line2?: string;
+  title_before?: string;
+  title_script?: string;
+}) {
+  const line1 = data.title_line1 ?? 'Unsere besten Angebote';
+  const leftover = (data.title_before ?? '').replace(/^Unsere besten Angebote\s*/i, '').trim();
+  const line2 = data.title_line2 ?? leftover ?? 'für Ihre';
+  return {
+    line1,
+    line2: line2 || 'für Ihre',
+    script: data.title_script ?? FALLBACK.title_script,
+  };
+}
 
 function OfferVisual({
   item,
@@ -94,14 +117,20 @@ function OfferVisual({
 export function Offers() {
   const cms = useSection('offers');
   const data = cms ?? FALLBACK;
-  const items: OfferItem[] = data.items ?? FALLBACK.items;
+  const items: OfferItem[] = (data.items ?? FALLBACK.items).map((item, index) => ({
+    ...item,
+    text: item.text ?? FALLBACK.items[index]?.text ?? OFFER_TEXT,
+  }));
+  const headline = offerHeadline(data);
 
   return (
     <section className="offers" id="angebote" aria-label="Aktuelle Angebote">
       <Reveal>
         <h2 className="offers__headline heading-font">
-          {data.title_before}{' '}
-          <span className="offers__script">{data.title_script}</span>
+          {headline.line1}
+          <br />
+          {headline.line2}{' '}
+          <span className="offers__script">{headline.script}</span>
         </h2>
       </Reveal>
 
@@ -130,8 +159,11 @@ export function Offers() {
                 {item.links?.length ? (
                   <div className="offers__links">
                     {item.links.map((link) => (
-                      <a key={link.label} className="offers__link link-underline" href={link.href}>
-                        {link.label}
+                      <a key={link.label} className="offers__link" href={link.href}>
+                        <span className="offers__link-label">{link.label}</span>
+                        <span className="offers__link-arrow" aria-hidden="true">
+                          <ArrowUpRight size={14} strokeWidth={1.6} />
+                        </span>
                       </a>
                     ))}
                   </div>

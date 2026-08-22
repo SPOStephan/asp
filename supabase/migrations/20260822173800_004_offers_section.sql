@@ -7,12 +7,14 @@ SELECT
   h.id,
   'offers',
   jsonb_build_object(
-    'title_before', 'Unsere besten Angebote für Ihre',
+    'title_line1', 'Unsere besten Angebote',
+    'title_line2', 'für Ihre',
     'title_script', 'Nordsee-Ferien',
     'items', jsonb_build_array(
       jsonb_build_object(
         'title', 'Wellnessurlaub',
         'subtitle', 'Auszeit am Meer',
+        'text', 'Genießen Sie zwei Übernachtungen an der Nordsee mit 50 € Wellnessguthaben und mehr …',
         'details', jsonb_build_array('3 Nächte', 'ab 655 Euro pro Person'),
         'links', jsonb_build_array(
           jsonb_build_object('label', 'Mehr erfahren', 'href', '#buchung'),
@@ -26,6 +28,7 @@ SELECT
       jsonb_build_object(
         'title', 'Feiertage',
         'subtitle', 'Weihnachten mit Meerblick',
+        'text', 'Genießen Sie zwei Übernachtungen an der Nordsee mit 50 € Wellnessguthaben und mehr …',
         'details', jsonb_build_array('3 Nächte', 'ab 655 Euro pro Person'),
         'links', jsonb_build_array(
           jsonb_build_object('label', 'Mehr erfahren', 'href', '#buchung'),
