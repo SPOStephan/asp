@@ -45,7 +45,7 @@ BEGIN
     'title_word_script', 'Familie',
     'subtitle', 'ambassador hotel & spa · Ihr 5-Sterne-Hotel an der Nordsee',
     'text_paragraph1', 'Umgeben von der Weite der Nordseeküste ist das ambassador hotel & spa der perfekte Ort für kostbare Auszeiten. Erleben Sie pure Entspannung im Spa-Bereich, genießen Sie kulinarische Höhepunkte und lassen Sie sich von der herzlichen Gastfreundschaft unserer Familie begeistern.',
-    'text_paragraph2', 'Ihr Hotel in Sankt Peter-Ording für unvergessliche Urlaubsmomente.'
+    'text_paragraph2', 'Ihr Hotel in Sankt Peter-Ording für unvergessliche Urlaubsmomente am Meer.'
   ))
   ON CONFLICT (hotel_id, section_key) DO UPDATE SET data = EXCLUDED.data;
 
