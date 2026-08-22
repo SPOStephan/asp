@@ -238,7 +238,7 @@ BEGIN
     'eyebrow', 'Wellnesserlebnis',
     'title', 'Ihr 5 Sterne Wellnesshotel an der Nordsee',
     'subtitle', 'Wellnessurlaub im großzügigen Spa-Bereich',
-    'hero_image', '/hotel-nordsee-wellness02_(1).jpg',
+    'hero_image', '/hotel-nordsee-wellness02.jpg',
     'hero_image_alt', 'Wellnessbereich des ambassador hotel & spa',
     'content_eyebrow', 'Spa & Wellness',
     'content_title', 'Ein Kraftort aus Wasser, Dampf & Wärme',
@@ -271,7 +271,7 @@ BEGIN
     (h_id, 'spa_wellness', '/spa-wellness.webp', 'Spa-Bereich mit Blick auf die Nordsee'),
     (h_id, 'culinary_dining', '/culinary-dining.webp', 'Fine Dining Restaurant'),
     (h_id, 'suite_room', '/suite-room.webp', 'Suite mit Meerblick'),
-    (h_id, 'wellness_page_hero', '/hotel-nordsee-wellness02_(1).jpg', 'Wellnessbereich des ambassador hotel & spa')
+    (h_id, 'wellness_page_hero', '/hotel-nordsee-wellness02.jpg', 'Wellnessbereich des ambassador hotel & spa')
   ON CONFLICT (hotel_id, image_key) DO UPDATE SET url = EXCLUDED.url, alt_text = EXCLUDED.alt_text;
 
   -- ========== FAQs ==========
