@@ -37,26 +37,26 @@ export function Discover() {
             <p className="discover__subtitle">{data.subtitle}</p>
           </div>
         </Reveal>
+      </div>
 
-        <div className="discover__grid">
-          {tiles.map((tile, i) => (
-            <Reveal key={tile.title} delay={i * 70}>
-              <a className="discover__tile" href={tile.href}>
-                <div className="discover__tile-image">
-                  <img src={tile.image} alt={tile.title} loading="lazy" />
-                </div>
-                <div className="discover__tile-overlay" />
-                <div className="discover__tile-content">
-                  <p className="discover__tile-eyebrow">{tile.eyebrow}</p>
-                  <h3 className="discover__tile-title">{tile.title}</h3>
-                </div>
-                <div className="discover__tile-arrow" aria-hidden="true">
-                  <ArrowUpRight size={22} strokeWidth={1.5} />
-                </div>
-              </a>
-            </Reveal>
-          ))}
-        </div>
+      <div className="discover__grid">
+        {tiles.map((tile, i) => (
+          <Reveal key={tile.title} delay={i * 70}>
+            <a className="discover__tile" href={tile.href}>
+              <div className="discover__tile-image">
+                <img src={tile.image} alt={tile.title} loading="lazy" />
+              </div>
+              <div className="discover__tile-overlay" />
+              <div className="discover__tile-content">
+                <p className="discover__tile-eyebrow">{tile.eyebrow}</p>
+                <h3 className="discover__tile-title">{tile.title}</h3>
+              </div>
+              <div className="discover__tile-arrow" aria-hidden="true">
+                <ArrowUpRight size={22} strokeWidth={1.5} />
+              </div>
+            </a>
+          </Reveal>
+        ))}
       </div>
     </section>
   );

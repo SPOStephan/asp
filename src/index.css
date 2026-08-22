@@ -546,11 +546,15 @@ body.has-fixed-bar { padding-bottom: 86px; }
 .discover__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  width: 90%;
+  margin: 0 auto;
+  gap: 3vw;
 }
+.discover__grid > .reveal { min-width: 0; }
 .discover__tile {
   position: relative;
   display: block;
+  width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 2px;
@@ -607,7 +611,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
 }
 
 @media (max-width: 900px) {
-  .discover__grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .discover__grid { grid-template-columns: repeat(3, 1fr); gap: 2.5vw; }
   .discover__tile-content { padding: 20px 18px; }
   .discover__tile-title { font-size: 1.2rem; }
   .discover__tile-arrow { width: 36px; height: 36px; top: 16px; right: 16px; }
@@ -616,7 +620,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
   .discover { padding: 0 0 80px; }
   .discover__feature-pair { gap: 8px; height: 230px; margin-bottom: 72px; }
   .discover__head { margin-bottom: 40px; }
-  .discover__grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .discover__grid { grid-template-columns: repeat(2, 1fr); gap: 2vw; }
   .discover__tile-title { font-size: 1rem; }
   .discover__tile-eyebrow { font-size: 0.6rem; letter-spacing: 0.15em; }
   .discover__tile-content { padding: 14px 12px; }
