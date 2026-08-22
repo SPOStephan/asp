@@ -31,9 +31,9 @@
   --neutral-800: #244a68;
   --neutral-900: #133b5c;
 
-  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-heading: 'Newsreader', Georgia, serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-script: 'Allura', cursive;
+  --font-script: 'Alex Brush', cursive;
 
   --shadow-sm: 0 2px 12px rgba(26, 25, 22, 0.06);
   --shadow-md: 0 8px 40px rgba(26, 25, 22, 0.12);
@@ -60,7 +60,7 @@ img { display: block; max-width: 100%; }
 ::-webkit-scrollbar-track { background: var(--neutral-100); }
 ::-webkit-scrollbar-thumb { background: var(--neutral-400); border-radius: 4px; }
 
-.heading-font { font-family: var(--font-heading); font-weight: 400; line-height: 1.15; color: var(--neutral-900); }
+.heading-font { font-family: var(--font-heading); font-weight: 500; line-height: 1.15; color: var(--neutral-900); font-optical-sizing: auto; }
 .eyebrow { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--primary-500); }
 .container { max-width: 1400px; margin: 0 auto; padding: 0 48px; }
 @media (max-width: 768px) { .container { padding: 0 24px; } }
@@ -79,6 +79,54 @@ img { display: block; max-width: 100%; }
   background: currentColor; transition: width 0.4s ease;
 }
 .link-underline:hover::after { width: 100%; }
+
+.text-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-400);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.text-cta__label { position: relative; }
+.text-cta__label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.4s ease;
+}
+.text-cta:hover .text-cta__label::after { width: 100%; }
+.text-cta__arrow {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--accent-300);
+  border-radius: 50%;
+  color: var(--accent-400);
+  flex-shrink: 0;
+  transition:
+    background 0.45s ease,
+    border-color 0.45s ease,
+    color 0.45s ease,
+    transform 0.45s ease;
+}
+.text-cta:hover .text-cta__arrow {
+  background: var(--accent-400);
+  border-color: var(--accent-400);
+  color: var(--neutral-0);
+  transform: translate(3px, -3px);
+}
 
 .reveal { opacity: 0; transform: translateY(50px); transition: opacity 0.9s ease, transform 0.9s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
@@ -476,8 +524,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
 .hcard__text { display: flex; flex-direction: column; justify-content: center; padding: 64px; }
 .hcard__title { font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 400; margin-bottom: 20px; line-height: 1.15; }
 .hcard__desc { font-size: 1.1rem; line-height: 1.8; color: var(--neutral-500); margin-bottom: 28px; max-width: 420px; }
-.hcard__link { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-400); font-weight: 500; align-self: flex-start; }
-.hcard__link:hover { color: var(--accent-500); }
+.hcard__link { align-self: flex-start; }
 .hcard__image { overflow: hidden; }
 .hcard__image img { width: 100%; height: 100%; object-fit: cover; transition: transform 6s ease; }
 .hcard:hover .hcard__image img { transform: scale(1.05); }
@@ -645,13 +692,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
   color: var(--neutral-600);
 }
 .direct-booking__link {
-  display: inline-block;
   margin-top: 32px;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent-500);
 }
 .direct-booking__list {
   list-style: none;
@@ -820,51 +861,6 @@ body.has-fixed-bar { padding-bottom: 86px; }
   color: var(--neutral-600);
 }
 .offers__links { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin-top: 32px; }
-.offers__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent-400);
-}
-.offers__link-label {
-  position: relative;
-}
-.offers__link-label::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0;
-  height: 1px;
-  background: currentColor;
-  transition: width 0.4s ease;
-}
-.offers__link:hover .offers__link-label::after { width: 100%; }
-.offers__link-arrow {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--accent-300);
-  border-radius: 50%;
-  color: var(--accent-400);
-  flex-shrink: 0;
-  transition:
-    background 0.45s ease,
-    border-color 0.45s ease,
-    color 0.45s ease,
-    transform 0.45s ease;
-}
-.offers__link:hover .offers__link-arrow {
-  background: var(--accent-400);
-  border-color: var(--accent-400);
-  color: var(--neutral-0);
-  transform: translate(3px, -3px);
-}
 
 @media (max-width: 900px) {
   .offers { padding: 88px 0 64px; }
@@ -1134,4 +1130,47 @@ body.has-fixed-bar { padding-bottom: 86px; }
   .wellness-page__subtitle { letter-spacing: 0.12em; }
   .wellness-page__flow-headline { padding-top: 80px; }
   .wellness-page__content { padding: 80px 0; }
+}
+
+/* ==================== HEADLINE WEIGHT ==================== */
+.heading-font,
+.hero__title,
+.welcome__title,
+.welcome__caption-text,
+.welcome__highlight h3,
+.wellness-scene__title,
+.wellness-scene__copy h3,
+.culinary__title,
+.culinary__img-label h4,
+.generations__title,
+.generations__caption,
+.awards__title,
+.highlights__title,
+.hcard__title,
+.discover__title,
+.discover__tile-title,
+.direct-booking__title,
+.direct-booking__item-title,
+.offers__headline,
+.offers__subtitle,
+.facts__title,
+.faq__title,
+.faq__item summary,
+.newsletter__title,
+.faq-page__title,
+.faq-page__cat-title,
+.faq-page__cta-text,
+.wellness-page__title,
+.teaser__title,
+.footer__col h2,
+.footer__col h4 {
+  font-weight: 500;
+  font-optical-sizing: auto;
+}
+
+.welcome__script,
+.discover__script,
+.offers__script,
+.wellness-page__eyebrow {
+  font-weight: 400;
 }

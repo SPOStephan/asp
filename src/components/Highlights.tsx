@@ -1,4 +1,5 @@
 import { Reveal } from './Reveal';
+import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
 
 interface HighlightItem {
@@ -36,7 +37,7 @@ export function Highlights() {
               <div className="hcard__text">
                 <h3 className="hcard__title heading-font">{h.title}</h3>
                 <p className="hcard__desc">{h.text}</p>
-                <button className="hcard__link link-underline">{h.link}</button>
+                <TextCta className="hcard__link">{h.link}</TextCta>
               </div>
               <div className="hcard__image">
                 <img src={h.image} alt={h.title} />
