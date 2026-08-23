@@ -393,6 +393,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
   background: rgba(255, 255, 255, 0.06);
 }
 .availability-bar__chat {
+  --chat-fill: var(--accent-400);
   display: none;
   place-items: center;
   flex-shrink: 0;
@@ -408,25 +409,36 @@ body.has-fixed-bar { padding-bottom: 86px; }
 }
 .availability-bar.is-stuck .availability-bar__chat { display: grid; }
 .availability-bar__chat:hover {
+  --chat-fill: var(--accent-300);
   background: var(--accent-300);
   transform: translateY(-3px);
 }
-.availability-bar__chat-lines {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  width: 34px;
+.availability-bar__chat-icon {
+  width: 54px;
+  height: 54px;
+  overflow: visible;
 }
-.availability-bar__chat-lines span {
-  display: block;
-  height: 2.5px;
-  border-radius: 99px;
-  background: currentColor;
+.availability-bar__chat-bubble,
+.availability-bar__chat-text {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
 }
-.availability-bar__chat-lines span:nth-child(1) { width: 100%; }
-.availability-bar__chat-lines span:nth-child(2) { width: 78%; }
-.availability-bar__chat-lines span:nth-child(3) { width: 52%; }
+.availability-bar__chat-text { stroke-linecap: round; }
+.availability-bar__chat-bubble--front { fill: var(--chat-fill); }
+.availability-bar__chat-mark { fill: currentColor; }
+.availability-bar__sparkle {
+  fill: currentColor;
+  transform-origin: center;
+  animation: chatSparkle 2.4s ease-in-out infinite;
+}
+.availability-bar__sparkle--sm { animation-delay: 0.7s; animation-duration: 2.8s; }
+
+@keyframes chatSparkle {
+  0%, 100% { opacity: 0.55; transform: scale(0.86); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
 
 @media (max-width: 1100px) {
   .availability-bar__form { gap: 12px; }
