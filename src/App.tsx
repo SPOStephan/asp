@@ -17,6 +17,7 @@ import { FixedAvailabilityBar } from './components/FixedAvailabilityBar';
 import { WellnessPage } from './pages/WellnessPage';
 import { FAQPage } from './pages/FAQPage';
 import { OffersPage } from './pages/OffersPage';
+import { OfferDetailPage } from './pages/OfferDetailPage';
 import { FontsPage } from './pages/FontsPage';
 import { TypePreviewHomeNote } from './pages/TypePreviewHome';
 import { FAQ } from './components/FAQ';
@@ -67,6 +68,7 @@ function App() {
         <Route path="/vorschau" element={<HomePage />} />
         <Route path="/wellness" element={<WellnessPage />} />
         <Route path="/angebote" element={<OffersPage />} />
+        <Route path="/angebote/:offerId" element={<OfferDetailPage />} />
         <Route path="/faqs" element={<FAQPage />} />
         <Route path="/schriften" element={<FontsPage />} />
       </Routes>
