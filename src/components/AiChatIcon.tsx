@@ -2,7 +2,7 @@ export function AiChatIcon() {
   return (
     <svg
       className="availability-bar__chat-icon"
-      viewBox="0 0 64 64"
+      viewBox="4 2 56 43"
       fill="none"
       aria-hidden="true"
     >

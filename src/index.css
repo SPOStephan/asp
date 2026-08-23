@@ -414,8 +414,8 @@ body.has-fixed-bar { padding-bottom: 86px; }
   transform: translateY(-3px);
 }
 .availability-bar__chat-icon {
-  width: 54px;
-  height: 54px;
+  width: 78px;
+  height: 60px;
   overflow: visible;
 }
 .availability-bar__chat-bubble,
