@@ -5,7 +5,7 @@ export function AiChatIcon() {
     <ChatCircleTextIcon
       className="availability-bar__chat-icon"
       size={53}
-      weight="light"
+      weight="thin"
       aria-hidden
     />
   );
