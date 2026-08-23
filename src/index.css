@@ -1167,6 +1167,136 @@ body.has-fixed-bar { padding-bottom: 86px; }
   .offers__row--reverse .offers__photo--secondary { width: 52%; bottom: 0; }
 }
 
+/* ==================== OFFERS PAGE ==================== */
+.offers-page { background: var(--neutral-0); }
+.offers-page__hero {
+  padding: 160px 5vw 56px;
+  text-align: center;
+  background: var(--neutral-50);
+}
+.offers-page__title {
+  margin: 14px 0 0;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+.offers-page__script {
+  font-family: var(--font-script);
+  font-style: normal;
+  color: var(--accent-300);
+  font-size: 1.45em;
+  font-weight: 400;
+  display: inline-block;
+  line-height: 0.82;
+  vertical-align: baseline;
+}
+.offers-page__intro {
+  max-width: 34em;
+  margin: 24px auto 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+.offers-page__pair {
+  width: 90%;
+  margin: 0 auto;
+  padding: 56px 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5vw;
+  align-items: start;
+}
+.offers-page__story { scroll-margin-top: 108px; }
+.offers-page__photo {
+  margin: 0 0 32px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: var(--neutral-100);
+}
+.offers-page__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.offers-page__kicker {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--neutral-800);
+}
+.offers-page__name {
+  margin: 0 0 16px;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--neutral-900);
+}
+.offers-page__text {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--neutral-600);
+}
+.offers-page__includes {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+}
+.offers-page__includes li {
+  padding: 14px 0;
+  border-top: 1px solid var(--neutral-200);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--neutral-700);
+}
+.offers-page__includes li:last-child { border-bottom: 1px solid var(--neutral-200); }
+.offers-page__meta { margin-top: 28px; }
+.offers-page__meta p {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--neutral-600);
+}
+.offers-page__links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 32px;
+}
+.offers-page__note {
+  width: 90%;
+  margin: 48px auto 120px;
+  padding-top: 64px;
+  border-top: 1px solid var(--neutral-200);
+  text-align: center;
+}
+.offers-page__note-title {
+  margin: 0 0 12px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 500;
+}
+.offers-page__note-text {
+  max-width: 28em;
+  margin: 0 auto 28px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+
+@media (max-width: 900px) {
+  .offers-page__hero { padding: 120px 0 32px; }
+  .offers-page__pair {
+    grid-template-columns: 1fr;
+    gap: 72px;
+    padding-top: 40px;
+  }
+  .offers-page__photo { aspect-ratio: 5 / 4; }
+  .offers-page__note { margin-bottom: 88px; padding-top: 48px; }
+}
+
 /* ==================== FACTS ==================== */
 .facts { padding: 120px 0; background: var(--neutral-50); }
 .facts__head { text-align: center; margin-bottom: 56px; }
@@ -1461,6 +1591,9 @@ body.has-fixed-bar { padding-bottom: 86px; }
 .faq-page__title,
 .faq-page__cat-title,
 .faq-page__cta-text,
+.offers-page__title,
+.offers-page__name,
+.offers-page__note-title,
 .wellness-page__title,
 .teaser__title,
 .footer__col h2,
@@ -1472,6 +1605,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
 .welcome__script,
 .discover__script,
 .offers__script,
+.offers-page__script,
 .awards__script,
 .navbar__group-title,
 .wellness-page__eyebrow {
