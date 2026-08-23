@@ -313,6 +313,8 @@ BEGIN
           'Late Check-out nach Verfügbarkeit verlängert den letzten Vormittag. Kein Hetzen, kein früher Koffer. Nur noch einmal der Blick aufs Wasser.'
         ),
         'details', jsonb_build_array('3 Nächte', 'ab 655 Euro pro Person'),
+        'travel_period_label', 'Reisezeitraum',
+        'travel_period', 'September bis Dezember',
         'includes', jsonb_build_array(
           'Übernachtung mit Frühstück',
           '50 € Wellnessguthaben',
@@ -335,6 +337,8 @@ BEGIN
           'Zur Anreise liegt eine kleine Aufmerksamkeit bereit. Der Spa steht offen — für ein Bad zwischen den Festtagen oder einfach für Wärme, wenn der Wind von See kommt.'
         ),
         'details', jsonb_build_array('3 Nächte', 'ab 655 Euro pro Person'),
+        'travel_period_label', 'Reisezeitraum',
+        'travel_period', 'November bis Januar',
         'includes', jsonb_build_array(
           'Übernachtung mit Frühstück',
           'Festtagsmenüs an den Feiertagen',
