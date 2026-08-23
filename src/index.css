@@ -176,9 +176,47 @@ img { display: block; max-width: 100%; }
 .navbar--scrolled .navbar__link:hover,
 .navbar--menu-open .navbar__link:hover { color: var(--accent-300); }
 
-.navbar__lang { color: var(--neutral-0); font-size: 0.95rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.5s ease; }
-.navbar--scrolled .navbar__lang,
-.navbar--menu-open .navbar__lang { color: var(--accent-400); }
+.navbar__lang { position: relative; }
+.navbar__lang-toggle {
+  color: var(--neutral-0);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.5s ease;
+}
+.navbar__lang-toggle:hover { color: var(--accent-300); }
+.navbar--scrolled .navbar__lang-toggle,
+.navbar--menu-open .navbar__lang-toggle { color: var(--accent-400); }
+.navbar--scrolled .navbar__lang-toggle:hover,
+.navbar--menu-open .navbar__lang-toggle:hover { color: var(--accent-300); }
+.navbar__lang-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 76px;
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+  background: var(--neutral-50);
+  box-shadow: var(--shadow-md);
+  animation: navPanelIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.navbar__lang-option {
+  display: block;
+  width: 100%;
+  padding: 8px 18px;
+  text-align: left;
+  color: var(--primary-500);
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color var(--transition), background var(--transition);
+}
+.navbar__lang-option:hover,
+.navbar__lang-option.is-active { color: var(--accent-400); }
+.navbar__actions { display: flex; align-items: center; gap: 12px; }
 .navbar__cta { font-size: 0.85rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 10px 22px; color: var(--neutral-0); border: 1px solid rgba(255,255,255,0.6); transition: all 0.3s ease; }
 .navbar__cta:hover { background: var(--neutral-0); color: var(--primary-500); border-color: var(--neutral-0); }
 .navbar--scrolled .navbar__cta,
@@ -266,8 +304,7 @@ body.nav-menu-open { overflow: hidden; }
   .navbar__links { display: none; }
 }
 @media (max-width: 1000px) {
-  .navbar__right { display: none; }
-  .navbar--menu-open .navbar__right { display: flex; }
+  .navbar__actions { display: none; }
   .navbar__panel { height: 100vh; min-height: 100%; }
   .navbar__panel-inner {
     padding: 110px 0 48px;
