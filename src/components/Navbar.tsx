@@ -37,8 +37,8 @@ const FALLBACK_GROUPS: MenuGroup[] = [
     title: 'Angebote',
     links: [
       { label: 'Aktuelle Angebote', href: '/angebote' },
-      { label: 'Wellnessurlaub', href: '/angebote#wellnessurlaub' },
-      { label: 'Feiertage', href: '/angebote#feiertage' },
+      { label: 'Wellnessurlaub', href: '/angebote/wellnessurlaub' },
+      { label: 'Feiertage', href: '/angebote/feiertage' },
     ],
   },
   {

@@ -1167,32 +1167,40 @@ body.has-fixed-bar { padding-bottom: 86px; }
   .offers__row--reverse .offers__photo--secondary { width: 52%; bottom: 0; }
 }
 
+/* ==================== INCLUDE LIST ==================== */
+.include-list {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+}
+.include-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--neutral-200);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--neutral-700);
+}
+.include-list li:last-child { border-bottom: 1px solid var(--neutral-200); }
+.include-list__check {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--accent-400);
+}
+
 /* ==================== OFFERS PAGE ==================== */
-.offers-page { background: var(--neutral-0); }
-.offers-page__hero {
-  padding: 160px 5vw 56px;
-  text-align: center;
+.offers-page {
+  position: relative;
+  z-index: 1;
   background: var(--neutral-50);
 }
-.offers-page__title {
-  margin: 14px 0 0;
-  font-size: clamp(2.4rem, 5vw, 4rem);
-  font-weight: 500;
-  line-height: 1.15;
-}
-.offers-page__script {
-  font-family: var(--font-script);
-  font-style: normal;
-  color: var(--accent-300);
-  font-size: 1.45em;
-  font-weight: 400;
-  display: inline-block;
-  line-height: 0.82;
-  vertical-align: baseline;
-}
 .offers-page__intro {
+  width: 90%;
   max-width: 34em;
-  margin: 24px auto 0;
+  margin: 0 auto;
+  text-align: center;
   font-size: 1.05rem;
   line-height: 1.7;
   color: var(--neutral-500);
@@ -1239,19 +1247,6 @@ body.has-fixed-bar { padding-bottom: 86px; }
   line-height: 1.75;
   color: var(--neutral-600);
 }
-.offers-page__includes {
-  list-style: none;
-  margin: 28px 0 0;
-  padding: 0;
-}
-.offers-page__includes li {
-  padding: 14px 0;
-  border-top: 1px solid var(--neutral-200);
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--neutral-700);
-}
-.offers-page__includes li:last-child { border-bottom: 1px solid var(--neutral-200); }
 .offers-page__meta { margin-top: 28px; }
 .offers-page__meta p {
   margin: 0 0 6px;
@@ -1261,9 +1256,9 @@ body.has-fixed-bar { padding-bottom: 86px; }
 }
 .offers-page__links {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 36px;
   margin-top: 32px;
 }
 .offers-page__note {
@@ -1286,8 +1281,39 @@ body.has-fixed-bar { padding-bottom: 86px; }
   color: var(--neutral-500);
 }
 
+.offer-detail {
+  position: relative;
+  z-index: 1;
+  background: var(--neutral-50);
+  padding: 8px 0 120px;
+}
+.offer-detail__copy {
+  width: 90%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.offer-detail__copy p {
+  margin: 0 0 22px;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--neutral-600);
+}
+.offer-detail__meta { margin-top: 32px; }
+.offer-detail__meta p {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--neutral-600);
+}
+.offer-detail__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 36px;
+  margin-top: 36px;
+}
+
 @media (max-width: 900px) {
-  .offers-page__hero { padding: 120px 0 32px; }
   .offers-page__pair {
     grid-template-columns: 1fr;
     gap: 72px;
@@ -1429,52 +1455,52 @@ body.has-fixed-bar { padding-bottom: 86px; }
   .footer__bottom { flex-direction: column; text-align: center; }
 }
 
-/* ==================== WELLNESS PAGE ==================== */
-.wellness-page {
+/* ==================== SUBPAGE HERO ==================== */
+.subpage-hero {
   background: var(--neutral-50);
 }
-.wellness-page__hero {
+.subpage-hero__image {
   position: relative;
   height: 100vh;
   min-height: 600px;
   overflow: hidden;
 }
-.wellness-page__hero img {
+.subpage-hero__image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
 }
-.wellness-page__overlay {
+.subpage-hero__overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, rgba(19,59,92,0.45) 0%, rgba(19,59,92,0.12) 40%, rgba(19,59,92,0.35) 100%);
 }
-.wellness-page__fixed-layer {
+.subpage-hero__fixed {
   position: fixed;
   inset: 0;
   height: 100vh;
   z-index: 2;
   pointer-events: none;
 }
-.wellness-page__fixed-layer.is-hidden {
+.subpage-hero__fixed.is-hidden {
   opacity: 0;
 }
-.wellness-page__clip {
+.subpage-hero__clip {
   position: absolute;
   left: 0;
   right: 0;
   overflow: hidden;
 }
-.wellness-page__clip--white {
+.subpage-hero__clip--white {
   top: 0;
   height: var(--image-bottom);
 }
-.wellness-page__clip--dark {
+.subpage-hero__clip--dark {
   top: var(--image-bottom);
   bottom: 0;
 }
-.wellness-page__text {
+.subpage-hero__text {
   position: absolute;
   top: 45vh;
   left: 0;
@@ -1483,19 +1509,19 @@ body.has-fixed-bar { padding-bottom: 86px; }
   padding: 0 48px;
   box-sizing: border-box;
 }
-.wellness-page__clip--dark .wellness-page__text {
+.subpage-hero__clip--dark .subpage-hero__text {
   top: calc(45vh - var(--image-bottom));
 }
-.wellness-page__text--white {
+.subpage-hero__text--white {
   color: var(--neutral-0);
 }
-.wellness-page__text--white .wellness-page__subtitle { color: rgba(255,255,255,0.9); }
-.wellness-page__text--dark {
+.subpage-hero__text--white .subpage-hero__subtitle { color: rgba(255,255,255,0.9); }
+.subpage-hero__text--dark {
   color: var(--neutral-900);
 }
-.wellness-page__text--dark .wellness-page__subtitle { color: var(--neutral-600); }
-.wellness-page__text--dark .wellness-page__eyebrow { color: var(--accent-400); }
-.wellness-page__flow-headline {
+.subpage-hero__text--dark .subpage-hero__subtitle { color: var(--neutral-600); }
+.subpage-hero__text--dark .subpage-hero__eyebrow { color: var(--accent-400); }
+.subpage-hero__flow {
   position: relative;
   z-index: 3;
   background: var(--neutral-50);
@@ -1503,10 +1529,10 @@ body.has-fixed-bar { padding-bottom: 86px; }
   padding-bottom: 32px;
   visibility: hidden;
 }
-.wellness-page__flow-headline.is-docked {
+.subpage-hero__flow.is-docked {
   visibility: visible;
 }
-.wellness-page__text--flow {
+.subpage-hero__text--flow {
   position: relative;
   top: 0;
   left: 0;
@@ -1515,7 +1541,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
   padding: 0 48px;
   box-sizing: border-box;
 }
-.wellness-page__eyebrow {
+.subpage-hero__eyebrow {
   margin: 0 0 4px;
   font-family: var(--font-script);
   font-style: normal;
@@ -1523,7 +1549,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
   font-weight: 400;
   line-height: 0.9;
 }
-.wellness-page__title {
+.subpage-hero__title {
   max-width: 1080px;
   margin: 0 auto 14px;
   font-family: var(--font-heading);
@@ -1531,7 +1557,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
   font-weight: 500;
   line-height: 0.98;
 }
-.wellness-page__subtitle {
+.subpage-hero__subtitle {
   margin: 0;
   font-size: clamp(0.72rem, 1.1vw, 0.95rem);
   font-weight: 500;
@@ -1555,11 +1581,11 @@ body.has-fixed-bar { padding-bottom: 86px; }
 }
 
 @media (max-width: 768px) {
-  .wellness-page__text { padding: 0 24px; }
-  .wellness-page__eyebrow { font-size: clamp(2.8rem, 12vw, 4.5rem); }
-  .wellness-page__title { font-size: clamp(2rem, 9vw, 3.6rem); }
-  .wellness-page__subtitle { letter-spacing: 0.12em; }
-  .wellness-page__flow-headline { padding-top: 80px; }
+  .subpage-hero__text { padding: 0 24px; }
+  .subpage-hero__eyebrow { font-size: clamp(2.8rem, 12vw, 4.5rem); }
+  .subpage-hero__title { font-size: clamp(2rem, 9vw, 3.6rem); }
+  .subpage-hero__subtitle { letter-spacing: 0.12em; }
+  .subpage-hero__flow { padding-top: 80px; }
   .wellness-page__content { padding: 80px 0; }
 }
 
@@ -1591,10 +1617,9 @@ body.has-fixed-bar { padding-bottom: 86px; }
 .faq-page__title,
 .faq-page__cat-title,
 .faq-page__cta-text,
-.offers-page__title,
 .offers-page__name,
 .offers-page__note-title,
-.wellness-page__title,
+.subpage-hero__title,
 .teaser__title,
 .footer__col h2,
 .footer__col h4 {
@@ -1605,9 +1630,8 @@ body.has-fixed-bar { padding-bottom: 86px; }
 .welcome__script,
 .discover__script,
 .offers__script,
-.offers-page__script,
 .awards__script,
 .navbar__group-title,
-.wellness-page__eyebrow {
+.subpage-hero__eyebrow {
   font-weight: 400;
 }

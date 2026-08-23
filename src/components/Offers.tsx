@@ -34,7 +34,7 @@ const FALLBACK = {
       text: OFFER_TEXT,
       details: ['3 Nächte', 'ab 655 Euro pro Person'],
       links: [
-        { label: 'Mehr erfahren', href: '/angebote#wellnessurlaub' },
+        { label: 'Mehr erfahren', href: '/angebote/wellnessurlaub' },
         { label: 'Jetzt buchen', href: '#buchung' },
       ],
       image_primary: '/teaser-suite.webp',
@@ -48,7 +48,7 @@ const FALLBACK = {
       text: OFFER_TEXT,
       details: ['3 Nächte', 'ab 655 Euro pro Person'],
       links: [
-        { label: 'Mehr erfahren', href: '/angebote#feiertage' },
+        { label: 'Mehr erfahren', href: '/angebote/feiertage' },
         { label: 'Jetzt buchen', href: '#buchung' },
       ],
       image_primary: '/collage-pool.webp',
