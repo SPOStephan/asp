@@ -345,6 +345,7 @@ body.nav-menu-open { overflow: hidden; }
   z-index: 999;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
 }
+.availability-bar:has(.availability-layer) { z-index: 1100; }
 body.availability-stuck { padding-bottom: 118px; }
 body.has-fixed-bar { padding-bottom: 118px; }
 .availability-bar__form {
@@ -495,6 +496,9 @@ body.has-fixed-bar { padding-bottom: 118px; }
   left: 0;
   right: 0;
   padding: 22px 24px 26px;
+  max-height: min(72vh, calc(100vh - 168px));
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 .availability-layer--guests {
   left: 0;
@@ -566,29 +570,34 @@ body.has-fixed-bar { padding-bottom: 118px; }
 }
 .availability-cal__cell {
   position: relative;
-  min-height: 72px;
-  padding: 8px 6px 10px;
+  min-height: 64px;
   background: var(--neutral-0);
   color: var(--neutral-800);
   border-right: 1px solid var(--neutral-200);
   border-bottom: 1px solid var(--neutral-200);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.availability-cal__day {
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 4px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 6px;
-  transition: background 0.2s ease, color 0.2s ease;
+  gap: 4px;
+  color: inherit;
+  background: transparent;
 }
 .availability-cal__cell.is-empty {
   background: var(--neutral-50);
-  cursor: default;
 }
 .availability-cal__cell.is-past {
   background: var(--neutral-50);
   color: var(--neutral-400);
-  cursor: default;
 }
-.availability-cal__cell:not(:disabled):not(.is-empty):hover {
+.availability-cal__cell.is-past .availability-cal__day { cursor: default; }
+.availability-cal__cell:not(.is-past):not(.is-empty):hover {
   background: var(--accent-50);
 }
 .availability-cal__cell.is-selected,
@@ -608,15 +617,18 @@ body.has-fixed-bar { padding-bottom: 118px; }
   font-weight: 500;
 }
 .availability-cal__mark {
-  font-size: 0.58rem;
+  display: block;
+  font-size: 0.62rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  line-height: 1.15;
 }
 .availability-cal__clear {
   position: absolute;
   top: 4px;
   right: 4px;
+  z-index: 1;
   width: 16px;
   height: 16px;
   display: grid;

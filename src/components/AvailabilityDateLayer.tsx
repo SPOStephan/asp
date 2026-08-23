@@ -81,10 +81,10 @@ export function AvailabilityDateLayer({
                 const isArrival = arrival === key;
                 const isDeparture = departure === key;
                 const todayMark = isSameDay(date, today);
+                const mark = isArrival ? 'Anreise' : isDeparture ? 'Abreise' : null;
                 return (
-                  <button
+                  <div
                     key={key}
-                    type="button"
                     className={[
                       'availability-cal__cell',
                       past ? 'is-past' : '',
@@ -93,34 +93,27 @@ export function AvailabilityDateLayer({
                       isDeparture ? 'is-departure' : '',
                       todayMark ? 'is-today' : '',
                     ].filter(Boolean).join(' ')}
-                    disabled={past}
-                    onClick={() => onSelect(key)}
                   >
-                    <span className="availability-cal__num">{date.getDate()}</span>
-                    {isArrival ? <span className="availability-cal__mark">Anreise</span> : null}
-                    {isDeparture ? <span className="availability-cal__mark">Abreise</span> : null}
+                    <button
+                      type="button"
+                      className="availability-cal__day"
+                      disabled={past}
+                      onClick={() => onSelect(key)}
+                    >
+                      <span className="availability-cal__num">{date.getDate()}</span>
+                      {mark ? <span className="availability-cal__mark">{mark}</span> : null}
+                    </button>
                     {isDeparture ? (
-                      <span
+                      <button
+                        type="button"
                         className="availability-cal__clear"
-                        role="button"
-                        tabIndex={0}
                         aria-label="Auswahl löschen"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          onClear();
-                        }}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            onClear();
-                          }
-                        }}
+                        onClick={onClear}
                       >
                         <X size={10} strokeWidth={2} />
-                      </span>
+                      </button>
                     ) : null}
-                  </button>
+                  </div>
                 );
               })}
             </div>
