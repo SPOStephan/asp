@@ -6,9 +6,18 @@ interface TextCtaProps {
   href?: string;
   className?: string;
   onClick?: MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>;
+  'aria-expanded'?: boolean;
+  'aria-controls'?: string;
 }
 
-export function TextCta({ children, href, className = '', onClick }: TextCtaProps) {
+export function TextCta({
+  children,
+  href,
+  className = '',
+  onClick,
+  'aria-expanded': ariaExpanded,
+  'aria-controls': ariaControls,
+}: TextCtaProps) {
   const classes = ['text-cta', className].filter(Boolean).join(' ');
   const inner = (
     <>
@@ -28,7 +37,13 @@ export function TextCta({ children, href, className = '', onClick }: TextCtaProp
   }
 
   return (
-    <button type="button" className={classes} onClick={onClick}>
+    <button
+      type="button"
+      className={classes}
+      onClick={onClick}
+      aria-expanded={ariaExpanded}
+      aria-controls={ariaControls}
+    >
       {inner}
     </button>
   );
