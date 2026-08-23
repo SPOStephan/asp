@@ -369,11 +369,12 @@ body.has-fixed-bar { padding-bottom: 86px; }
 }
 .availability-bar__btn:hover { background: var(--accent-500); }
 .availability-bar__tools {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
+.availability-bar.is-stuck .availability-bar__tools { display: flex; }
 .availability-bar__tool {
   display: grid;
   place-items: center;
@@ -390,23 +391,40 @@ body.has-fixed-bar { padding-bottom: 86px; }
   background: rgba(255, 255, 255, 0.06);
 }
 .availability-bar__chat {
-  display: grid;
+  display: none;
   place-items: center;
   flex-shrink: 0;
-  width: 68px;
-  height: 68px;
-  margin-top: -34px;
+  width: 92px;
+  height: 92px;
+  margin-top: -46px;
   border: 0;
   border-radius: 50%;
   background: var(--accent-400);
   color: var(--neutral-0);
-  box-shadow: 0 10px 24px rgba(10, 32, 50, 0.28);
+  box-shadow: 0 12px 28px rgba(10, 32, 50, 0.3);
   transition: background var(--transition), transform var(--transition);
 }
+.availability-bar.is-stuck .availability-bar__chat { display: grid; }
 .availability-bar__chat:hover {
   background: var(--accent-300);
   transform: translateY(-3px);
 }
+.availability-bar__chat-lines {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 34px;
+}
+.availability-bar__chat-lines span {
+  display: block;
+  height: 2.5px;
+  border-radius: 99px;
+  background: currentColor;
+}
+.availability-bar__chat-lines span:nth-child(1) { width: 100%; }
+.availability-bar__chat-lines span:nth-child(2) { width: 78%; }
+.availability-bar__chat-lines span:nth-child(3) { width: 52%; }
 
 @media (max-width: 1100px) {
   .availability-bar__form { gap: 12px; }

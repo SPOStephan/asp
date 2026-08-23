@@ -1,4 +1,4 @@
-import { Gift, Mail, MapPin, MessageCircle, Phone, Search } from 'lucide-react';
+import { Gift, Mail, MapPin, Phone, Search } from 'lucide-react';
 import { useHotel } from '../context/HotelContext';
 
 interface AvailabilityBarFormProps {
@@ -52,7 +52,11 @@ export function AvailabilityBarForm({ idPrefix = '' }: AvailabilityBarFormProps)
         </a>
       </div>
       <button type="button" className="availability-bar__chat" aria-label="KI-Chat öffnen">
-        <MessageCircle size={28} strokeWidth={1.5} />
+        <span className="availability-bar__chat-lines" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
       </button>
     </form>
   );
