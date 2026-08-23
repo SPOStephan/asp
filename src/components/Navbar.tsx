@@ -172,20 +172,33 @@ export function Navbar() {
         </a>
 
         <div className="navbar__right">
-          <button className="navbar__lang">{data.lang_label}</button>
-          <button className="navbar__cta" onClick={() => handleNavClick(data.cta_solid_href)}>
-            {data.cta_text}
-          </button>
-          <a
-            className="navbar__cta navbar__cta--solid"
-            href={data.cta_solid_href}
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavClick(data.cta_solid_href);
-            }}
-          >
-            {data.cta_solid_text}
-          </a>
+          {menuOpen ? (
+            <button
+              type="button"
+              className="navbar__close"
+              onClick={() => setMenuOpen(false)}
+            >
+              <span>Schließen</span>
+              <X size={18} strokeWidth={1.6} />
+            </button>
+          ) : (
+            <>
+              <button className="navbar__lang">{data.lang_label}</button>
+              <button className="navbar__cta" onClick={() => handleNavClick(data.cta_solid_href)}>
+                {data.cta_text}
+              </button>
+              <a
+                className="navbar__cta navbar__cta--solid"
+                href={data.cta_solid_href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(data.cta_solid_href);
+                }}
+              >
+                {data.cta_solid_text}
+              </a>
+            </>
+          )}
         </div>
       </div>
 
@@ -198,14 +211,6 @@ export function Navbar() {
             onClick={() => setMenuOpen(false)}
           />
           <div className="navbar__panel" id="hauptmenue">
-            <button
-              type="button"
-              className="navbar__close"
-              aria-label="Menü schließen"
-              onClick={() => setMenuOpen(false)}
-            >
-              <X size={22} strokeWidth={1.4} />
-            </button>
             <div className="navbar__panel-inner">
               {menuGroups.map((group) => (
                 <div key={group.title} className="navbar__group">
