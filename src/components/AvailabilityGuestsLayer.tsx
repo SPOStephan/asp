@@ -30,7 +30,7 @@ export function AvailabilityGuestsLayer({ rooms, onChange, onApply }: Availabili
   };
 
   return (
-    <div className="availability-layer availability-layer--guests" role="dialog" aria-label="Gäste, Hunde und Zimmer">
+    <div className="availability-layer availability-layer--guests" role="dialog" aria-label="Zahl der Gäste">
       {rooms.map((room, index) => (
         <section key={`room-${index}`} className="availability-guests__room">
           {rooms.length > 1 ? (

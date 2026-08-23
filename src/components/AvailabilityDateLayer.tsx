@@ -18,6 +18,7 @@ interface AvailabilityDateLayerProps {
   onViewMonthChange: (date: Date) => void;
   onSelect: (key: string) => void;
   onClear: () => void;
+  onApply: () => void;
 }
 
 export function AvailabilityDateLayer({
@@ -27,6 +28,7 @@ export function AvailabilityDateLayer({
   onViewMonthChange,
   onSelect,
   onClear,
+  onApply,
 }: AvailabilityDateLayerProps) {
   const today = new Date();
   const minMonth = startOfMonth(today);
@@ -119,6 +121,16 @@ export function AvailabilityDateLayer({
             </div>
           </section>
         ))}
+      </div>
+      <div className="availability-cal__actions">
+        <button
+          type="button"
+          className="availability-cal__apply"
+          disabled={!arrival || !departure}
+          onClick={onApply}
+        >
+          Anwenden
+        </button>
       </div>
     </div>
   );
