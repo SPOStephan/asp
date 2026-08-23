@@ -52,7 +52,7 @@ export function AvailabilityBarForm({ idPrefix = '' }: AvailabilityBarFormProps)
           <MapPin size={18} strokeWidth={1.5} />
         </a>
       </div>
-      <button type="button" className="availability-bar__chat" aria-label="KI-Chat öffnen">
+      <button type="button" className="availability-bar__chat" aria-label="Frage stellen">
         <AiChatIcon />
       </button>
     </form>
