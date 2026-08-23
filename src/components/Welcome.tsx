@@ -28,8 +28,9 @@ export function Welcome() {
           </div>
         </Reveal>
 
-        <HighlightStrip />
       </div>
+
+      <HighlightStrip />
     </section>
   );
 }

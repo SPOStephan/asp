@@ -29,21 +29,21 @@ export function Generations() {
             <p className="generations__subtitle">{data.subtitle}</p>
           </div>
         </Reveal>
-
-        <Reveal delay={150}>
-          <div className="generations__masonry">
-            {images.map((img, i) => (
-              <article key={i} className={`generations__item ${img.className || ''}`}>
-                <img src={img.src} alt={img.alt} />
-                <div className="generations__overlay">
-                  <p className="generations__label">{img.label}</p>
-                  <p className="generations__caption">{img.caption}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </Reveal>
       </div>
+
+      <Reveal delay={150}>
+        <div className="generations__masonry">
+          {images.map((img, i) => (
+            <article key={i} className="generations__item">
+              <img src={img.src} alt={img.alt} />
+              <div className="generations__overlay">
+                <p className="generations__label">{img.label}</p>
+                <p className="generations__caption">{img.caption}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </Reveal>
     </section>
   );
 }
