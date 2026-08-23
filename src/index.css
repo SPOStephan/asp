@@ -393,51 +393,49 @@ body.has-fixed-bar { padding-bottom: 86px; }
   background: rgba(255, 255, 255, 0.06);
 }
 .availability-bar__chat {
-  --chat-fill: var(--accent-400);
   display: none;
   place-items: center;
   flex-shrink: 0;
   width: 92px;
   height: 92px;
   margin-top: -46px;
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 50%;
   background: var(--accent-400);
-  color: var(--neutral-0);
-  box-shadow: 0 12px 28px rgba(10, 32, 50, 0.3);
-  transition: background var(--transition), transform var(--transition);
+  color: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 22px rgba(10, 32, 50, 0.22);
+  transition: background var(--transition), transform var(--transition), border-color var(--transition);
 }
 .availability-bar.is-stuck .availability-bar__chat { display: grid; }
 .availability-bar__chat:hover {
-  --chat-fill: var(--accent-300);
   background: var(--accent-300);
-  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
 }
 .availability-bar__chat-icon {
-  width: 78px;
-  height: 60px;
+  width: 68px;
+  height: 52px;
   overflow: visible;
 }
 .availability-bar__chat-bubble,
-.availability-bar__chat-text {
+.availability-bar__chat-text,
+.availability-bar__chat-mark,
+.availability-bar__sparkle {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 1.15;
+  stroke-linecap: round;
   stroke-linejoin: round;
 }
-.availability-bar__chat-text { stroke-linecap: round; }
-.availability-bar__chat-bubble--front { fill: var(--chat-fill); }
-.availability-bar__chat-mark { fill: currentColor; }
+.availability-bar__chat-dot { fill: currentColor; stroke: none; }
 .availability-bar__sparkle {
-  fill: currentColor;
-  transform-origin: center;
-  animation: chatSparkle 2.4s ease-in-out infinite;
+  animation: chatSparkle 3.6s ease-in-out infinite;
 }
-.availability-bar__sparkle--sm { animation-delay: 0.7s; animation-duration: 2.8s; }
+.availability-bar__sparkle--sm { animation-delay: 1.2s; }
 
 @keyframes chatSparkle {
-  0%, 100% { opacity: 0.55; transform: scale(0.86); }
-  50% { opacity: 1; transform: scale(1.08); }
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.9; }
 }
 
 @media (max-width: 1100px) {
