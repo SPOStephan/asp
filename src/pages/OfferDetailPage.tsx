@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { IncludeList } from '../components/IncludeList';
-import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { resolveOfferStories } from '../lib/offers';
@@ -29,32 +28,34 @@ export function OfferDetailPage() {
   }
 
   return (
-    <main>
-      <SubpageHero
-        image={offer.hero_image}
-        imageAlt={offer.hero_image_alt}
-        eyebrow={offer.title}
-        title={offer.subtitle}
-        subtitle={offer.details.join(' · ')}
-      >
-        <div className="offer-detail">
-          <div className="offer-detail__copy">
-            {offer.detail_text.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-            <IncludeList items={offer.includes} />
-            <div className="offer-detail__meta">
-              {offer.details.map((detail) => (
-                <p key={detail}>{detail}</p>
-              ))}
-            </div>
-            <div className="offer-detail__links">
-              <TextCta href="#buchung">Jetzt buchen</TextCta>
-              <TextCta href="/angebote">Alle Angebote</TextCta>
-            </div>
-          </div>
+    <main className="offer-detail">
+      <header className="offer-detail__head">
+        <p className="offers-page__kicker">{offer.title}</p>
+        <h1 className="offer-detail__title heading-font">{offer.subtitle}</h1>
+        {offer.details.length ? (
+          <p className="offer-detail__lede">{offer.details.join(' · ')}</p>
+        ) : null}
+      </header>
+
+      <figure className="offer-detail__photo">
+        <img src={offer.image} alt={offer.image_alt} />
+      </figure>
+
+      <div className="offer-detail__copy">
+        {offer.detail_text.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+        <IncludeList items={offer.includes} />
+        <div className="offer-detail__meta">
+          {offer.details.map((detail) => (
+            <p key={detail}>{detail}</p>
+          ))}
         </div>
-      </SubpageHero>
+        <div className="offer-detail__links">
+          <TextCta href="#buchung">Jetzt buchen</TextCta>
+          <TextCta href="/angebote">Alle Angebote</TextCta>
+        </div>
+      </div>
     </main>
   );
 }

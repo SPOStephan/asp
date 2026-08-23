@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
+/** Opt-in scroll hero. Use only on pages that should have this effect. */
+
 interface SubpageHeroProps {
   image: string;
   imageAlt: string;
