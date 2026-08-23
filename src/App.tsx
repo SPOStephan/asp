@@ -16,6 +16,7 @@ import { Footer } from './components/Footer';
 import { FixedAvailabilityBar } from './components/FixedAvailabilityBar';
 import { WellnessPage } from './pages/WellnessPage';
 import { FAQPage } from './pages/FAQPage';
+import { OffersPage } from './pages/OffersPage';
 import { FontsPage } from './pages/FontsPage';
 import { TypePreviewHomeNote } from './pages/TypePreviewHome';
 import { FAQ } from './components/FAQ';
@@ -65,6 +66,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/vorschau" element={<HomePage />} />
         <Route path="/wellness" element={<WellnessPage />} />
+        <Route path="/angebote" element={<OffersPage />} />
         <Route path="/faqs" element={<FAQPage />} />
         <Route path="/schriften" element={<FontsPage />} />
       </Routes>

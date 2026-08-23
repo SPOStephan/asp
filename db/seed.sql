@@ -61,7 +61,7 @@ BEGIN
     'feature_image_right_alt', 'Suite mit Meerblick und Balkon',
     'tiles', jsonb_build_array(
       jsonb_build_object('image', '/suite-room.webp', 'eyebrow', 'Übernachten', 'title', 'Zimmer & Suiten', 'href', '#highlights'),
-      jsonb_build_object('image', '/teaser-autumn.webp', 'eyebrow', 'Saison', 'title', 'Angebote', 'href', '#newsletter'),
+      jsonb_build_object('image', '/teaser-autumn.webp', 'eyebrow', 'Saison', 'title', 'Angebote', 'href', '/angebote'),
       jsonb_build_object('image', '/spa-wellness.webp', 'eyebrow', 'Wohlbefinden', 'title', 'Wellness & Spa', 'href', '#wellness'),
       jsonb_build_object('image', '/culinary-dining.webp', 'eyebrow', 'Genuss', 'title', 'Restaurant & Bar', 'href', '#culinary'),
       jsonb_build_object('image', '/autumn-aerial.webp', 'eyebrow', 'Region', 'title', 'Urlaub an der Nordsee', 'href', '#generations'),
@@ -97,7 +97,7 @@ BEGIN
         'text', 'Genießen Sie zwei Übernachtungen an der Nordsee mit 50 € Wellnessguthaben und mehr …',
         'details', jsonb_build_array('3 Nächte', 'ab 655 Euro pro Person'),
         'links', jsonb_build_array(
-          jsonb_build_object('label', 'Mehr erfahren', 'href', '#buchung'),
+          jsonb_build_object('label', 'Mehr erfahren', 'href', '/angebote#wellnessurlaub'),
           jsonb_build_object('label', 'Jetzt buchen', 'href', '#buchung')
         ),
         'image_primary', '/teaser-suite.webp',
@@ -111,7 +111,7 @@ BEGIN
         'text', 'Genießen Sie zwei Übernachtungen an der Nordsee mit 50 € Wellnessguthaben und mehr …',
         'details', jsonb_build_array('3 Nächte', 'ab 655 Euro pro Person'),
         'links', jsonb_build_array(
-          jsonb_build_object('label', 'Mehr erfahren', 'href', '#buchung'),
+          jsonb_build_object('label', 'Mehr erfahren', 'href', '/angebote#feiertage'),
           jsonb_build_object('label', 'Jetzt buchen', 'href', '#buchung')
         ),
         'image_primary', '/collage-pool.webp',
@@ -231,6 +231,7 @@ BEGIN
     'col_explore_title', 'Entdecken',
     'col_explore_links', jsonb_build_array(
       jsonb_build_object('label', 'Das Resort', 'href', '#welcome'),
+      jsonb_build_object('label', 'Angebote', 'href', '/angebote'),
       jsonb_build_object('label', 'Wellness & Spa', 'href', '#wellness'),
       jsonb_build_object('label', 'Kulinarik', 'href', '#kulinarik'),
       jsonb_build_object('label', 'Zimmer & Suiten', 'href', '#suiten')
@@ -258,9 +259,9 @@ BEGIN
         jsonb_build_object('label', 'Direkt buchen', 'href', '#direktbuchung')
       )),
       jsonb_build_object('title', 'Angebote', 'links', jsonb_build_array(
-        jsonb_build_object('label', 'Aktuelle Angebote', 'href', '#angebote'),
-        jsonb_build_object('label', 'Wellnessurlaub', 'href', '#angebote'),
-        jsonb_build_object('label', 'Feiertage', 'href', '#angebote')
+        jsonb_build_object('label', 'Aktuelle Angebote', 'href', '/angebote'),
+        jsonb_build_object('label', 'Wellnessurlaub', 'href', '/angebote#wellnessurlaub'),
+        jsonb_build_object('label', 'Feiertage', 'href', '/angebote#feiertage')
       )),
       jsonb_build_object('title', 'Erlebnisse', 'links', jsonb_build_array(
         jsonb_build_object('label', 'Hotel-Highlights', 'href', '#highlights'),
@@ -289,6 +290,54 @@ BEGIN
     'cta_solid_text', 'Buchen',
     'cta_solid_href', '#buchung',
     'lang_label', 'DE'
+  )),
+  (h_id, 'offers_page', jsonb_build_object(
+    'eyebrow', 'Arrangements',
+    'title_line1', 'Unsere besten Angebote',
+    'title_line2', 'für Ihre',
+    'title_script', 'Nordsee-Ferien',
+    'intro', 'Zwei Arrangements, klar erzählt. Kein Buchungsraster — sondern zwei Geschichten vom Meer, mit allem was dazugehört.',
+    'note_title', 'Ein anderes Arrangement?',
+    'note_text', 'Wir stellen Ihnen gern ein individuelles Paket zusammen — passend zu Anreise, Anlass und Tempo.',
+    'note_cta', 'Persönliche Beratung',
+    'items', jsonb_build_array(
+      jsonb_build_object(
+        'id', 'wellnessurlaub',
+        'title', 'Wellnessurlaub',
+        'subtitle', 'Auszeit am Meer',
+        'text', 'Drei Nächte zwischen Suite, Spa und Salzwasser. Ein Guthaben für Anwendungen, der Pool mit Weitblick und Zeit, die niemand plant.',
+        'details', jsonb_build_array('3 Nächte', 'ab 655 Euro pro Person'),
+        'includes', jsonb_build_array(
+          'Übernachtung mit Frühstück',
+          '50 € Wellnessguthaben',
+          'Zugang zum gesamten Spa',
+          'Late Check-out nach Verfügbarkeit'
+        ),
+        'links', jsonb_build_array(
+          jsonb_build_object('label', 'Jetzt buchen', 'href', '#buchung')
+        ),
+        'image', '/teaser-spa.webp',
+        'image_alt', 'Wellness und Spa im ambassador hotel & spa'
+      ),
+      jsonb_build_object(
+        'id', 'feiertage',
+        'title', 'Feiertage',
+        'subtitle', 'Weihnachten mit Meerblick',
+        'text', 'Die stillen Tage am Deich. Festliche Menüs, ein helles Zimmer zum Meer und Abende, die länger werden als der Kalender.',
+        'details', jsonb_build_array('3 Nächte', 'ab 655 Euro pro Person'),
+        'includes', jsonb_build_array(
+          'Übernachtung mit Frühstück',
+          'Festtagsmenüs an den Feiertagen',
+          'Zugang zum gesamten Spa',
+          'Kleine Aufmerksamkeit zur Anreise'
+        ),
+        'links', jsonb_build_array(
+          jsonb_build_object('label', 'Jetzt buchen', 'href', '#buchung')
+        ),
+        'image', '/collage-dining1.webp',
+        'image_alt', 'Festliche Kulinarik im Hotel'
+      )
+    )
   )),
   (h_id, 'wellness_page', jsonb_build_object(
     'eyebrow', 'Wellnesserlebnis',

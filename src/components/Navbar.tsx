@@ -36,9 +36,9 @@ const FALLBACK_GROUPS: MenuGroup[] = [
   {
     title: 'Angebote',
     links: [
-      { label: 'Aktuelle Angebote', href: '#angebote' },
-      { label: 'Wellnessurlaub', href: '#angebote' },
-      { label: 'Feiertage', href: '#angebote' },
+      { label: 'Aktuelle Angebote', href: '/angebote' },
+      { label: 'Wellnessurlaub', href: '/angebote#wellnessurlaub' },
+      { label: 'Feiertage', href: '/angebote#feiertage' },
     ],
   },
   {
@@ -140,8 +140,11 @@ export function Navbar() {
         document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      navigate(href);
-      window.scrollTo({ top: 0 });
+      const next = new URL(href, window.location.origin);
+      navigate(`${next.pathname}${next.hash}`);
+      if (!next.hash) {
+        window.scrollTo({ top: 0 });
+      }
     }
   };
 
