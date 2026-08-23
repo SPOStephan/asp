@@ -393,6 +393,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
   background: rgba(255, 255, 255, 0.06);
 }
 .availability-bar__chat {
+  --chat-fill: var(--accent-400);
   display: none;
   place-items: center;
   flex-shrink: 0;
@@ -408,13 +409,14 @@ body.has-fixed-bar { padding-bottom: 86px; }
 }
 .availability-bar.is-stuck .availability-bar__chat { display: grid; }
 .availability-bar__chat:hover {
+  --chat-fill: var(--accent-300);
   background: var(--accent-300);
   border-color: rgba(255, 255, 255, 0.35);
   transform: translateY(-2px);
 }
 .availability-bar__chat-icon {
-  width: 68px;
-  height: 52px;
+  width: 70px;
+  height: 56px;
   overflow: visible;
 }
 .availability-bar__chat-bubble,
@@ -427,6 +429,7 @@ body.has-fixed-bar { padding-bottom: 86px; }
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.availability-bar__chat-bubble--front { fill: var(--chat-fill); }
 .availability-bar__chat-dot { fill: currentColor; stroke: none; }
 .availability-bar__sparkle {
   animation: chatSparkle 3.6s ease-in-out infinite;
