@@ -3,18 +3,21 @@ import { AvailabilityBarForm } from './AvailabilityBarForm';
 
 export function AvailabilityBar() {
   const barRef = useRef<HTMLDivElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
   const [stuck, setStuck] = useState(false);
+  const [slotHeight, setSlotHeight] = useState(0);
 
   useEffect(() => {
     let raf = 0;
     const update = () => {
       raf = 0;
       const bar = barRef.current;
-      if (!bar) return;
-      const hero = bar.closest('.hero') as HTMLElement | null;
-      if (!hero) return;
-      const heroBottom = hero.getBoundingClientRect().bottom;
-      setStuck(heroBottom <= bar.offsetHeight + 1);
+      const slot = slotRef.current;
+      if (!bar || !slot) return;
+      const height = bar.offsetHeight;
+      if (height) setSlotHeight(height);
+      const slotBottom = slot.getBoundingClientRect().bottom;
+      setStuck(slotBottom <= height + 1);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -36,11 +39,17 @@ export function AvailabilityBar() {
 
   return (
     <div
-      ref={barRef}
-      id="buchung"
-      className={`availability-bar${stuck ? ' is-stuck' : ''}`}
+      ref={slotRef}
+      className="availability-bar__slot"
+      style={stuck && slotHeight ? { height: slotHeight } : undefined}
     >
-      <AvailabilityBarForm />
+      <div
+        ref={barRef}
+        id="buchung"
+        className={`availability-bar${stuck ? ' is-stuck' : ''}`}
+      >
+        <AvailabilityBarForm />
+      </div>
     </div>
   );
 }
