@@ -17,7 +17,7 @@ export function Footer() {
 
   return (
     <footer className="footer" id="buchung">
-      <div className="container">
+      <div className="footer__inner">
         <div className="footer__top">
           <div className="footer__brand">
             <div className="footer__logo">
