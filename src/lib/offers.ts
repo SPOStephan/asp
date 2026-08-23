@@ -10,6 +10,8 @@ export interface OfferStory {
   text: string;
   detail_text: string[];
   details: string[];
+  travel_period_label: string;
+  travel_period: string;
   includes: string[];
   image: string;
   image_alt: string;
@@ -41,6 +43,8 @@ export const OFFERS_PAGE_FALLBACK = {
         'Late Check-out nach Verfügbarkeit verlängert den letzten Vormittag. Kein Hetzen, kein früher Koffer. Nur noch einmal der Blick aufs Wasser.',
       ],
       details: ['3 Nächte', 'ab 655 Euro pro Person'],
+      travel_period_label: 'Reisezeitraum',
+      travel_period: 'September bis Dezember',
       includes: [
         'Übernachtung mit Frühstück',
         '50 € Wellnessguthaben',
@@ -64,6 +68,8 @@ export const OFFERS_PAGE_FALLBACK = {
         'Zur Anreise liegt eine kleine Aufmerksamkeit bereit. Der Spa steht offen — für ein Bad zwischen den Festtagen oder einfach für Wärme, wenn der Wind von See kommt.',
       ],
       details: ['3 Nächte', 'ab 655 Euro pro Person'],
+      travel_period_label: 'Reisezeitraum',
+      travel_period: 'November bis Januar',
       includes: [
         'Übernachtung mit Frühstück',
         'Festtagsmenüs an den Feiertagen',
@@ -108,6 +114,8 @@ export function resolveOfferStories(
       text: item.text ?? fallback.text,
       detail_text: item.detail_text?.length ? item.detail_text : fallback.detail_text,
       details: item.details ?? fallback.details,
+      travel_period_label: item.travel_period_label ?? fallback.travel_period_label,
+      travel_period: item.travel_period ?? fallback.travel_period,
       includes: item.includes ?? fallback.includes,
       image: item.image ?? item.image_primary ?? fallback.image,
       image_alt: item.image_alt ?? item.image_primary_alt ?? fallback.image_alt,
