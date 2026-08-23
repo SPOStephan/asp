@@ -149,6 +149,8 @@ BEGIN
     'copy_eyebrow', 'Spa & Wellness',
     'copy_title', 'Wohlfühlen & Abschalten',
     'copy_text', 'Ein Kraftort aus Wasser, Dampf und Wärme. Zeit, die nur Ihnen gehört.',
+    'copy_cta', 'Mehr erfahren',
+    'copy_cta_href', '/wellness',
     'hero_image', '/spa-wellness.webp',
     'hero_image_alt', 'Spa-Bereich mit Blick auf die Nordsee',
     'collage_items', jsonb_build_array(

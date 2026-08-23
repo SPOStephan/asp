@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
 
 interface CollageItem {
@@ -80,10 +81,24 @@ export function Wellness() {
           </div>
         </div>
 
-        <div className="wellness-scene__copy" style={{ opacity: textOpacity }}>
+        <div
+          className="wellness-scene__copy"
+          style={{
+            opacity: textOpacity,
+            pointerEvents: textOpacity > 0.45 ? 'auto' : 'none',
+          }}
+        >
           <p className="eyebrow">{data.copy_eyebrow}</p>
           <h3 className="heading-font">{data.copy_title}</h3>
           <p>{data.copy_text}</p>
+          <div className="wellness-scene__cta">
+            <TextCta
+              className="text-cta--on-dark"
+              href={data.copy_cta_href || '/wellness'}
+            >
+              {data.copy_cta || 'Mehr erfahren'}
+            </TextCta>
+          </div>
         </div>
       </div>
     </section>
