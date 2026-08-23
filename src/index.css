@@ -414,28 +414,8 @@ body.has-fixed-bar { padding-bottom: 86px; }
 }
 .availability-bar__chat-icon {
   display: block;
-  width: 52px;
-  height: 52px;
-  overflow: visible;
-}
-.availability-bar__chat-bubble {
-  fill: var(--accent-400);
-  stroke: currentColor;
-  stroke-width: 2.4;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-.availability-bar__chat:hover .availability-bar__chat-bubble {
-  fill: var(--accent-300);
-}
-.availability-bar__chat-lines {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.4;
-  stroke-linecap: round;
-}
-.availability-bar__chat-q {
-  fill: currentColor;
+  width: 44px;
+  height: 44px;
 }
 
 @media (max-width: 1100px) {
