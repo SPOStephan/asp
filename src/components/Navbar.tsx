@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useSection, useHotel } from '../context/HotelContext';
+import { remapRoomsHref } from '../lib/rooms';
 
 interface NavLink {
   label: string;
@@ -28,7 +29,7 @@ const FALLBACK_GROUPS: MenuGroup[] = [
   {
     title: 'Zimmer & Suiten',
     links: [
-      { label: 'Zimmer & Suiten', href: '#suiten' },
+      { label: 'Zimmer & Suiten', href: '/zimmer' },
       { label: 'Für jede Generation', href: '#suiten' },
       { label: 'Direkt buchen', href: '#direktbuchung' },
     ],
@@ -128,19 +129,20 @@ export function Navbar() {
     };
   }, [langOpen]);
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = (href: string, label?: string) => {
     setMenuOpen(false);
-    if (href.startsWith('#')) {
+    const target = remapRoomsHref(href, label);
+    if (target.startsWith('#')) {
       if (window.location.pathname !== '/') {
         navigate('/');
         setTimeout(() => {
-          document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+          document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       } else {
-        document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+        document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      const next = new URL(href, window.location.origin);
+      const next = new URL(target, window.location.origin);
       navigate(`${next.pathname}${next.hash}`);
       if (!next.hash) {
         window.scrollTo({ top: 0 });
@@ -179,11 +181,11 @@ export function Navbar() {
               <a
                 key={link.href}
                 className="navbar__link link-underline"
-                href={link.href}
+                href={remapRoomsHref(link.href, link.label)}
                 tabIndex={scrolled ? 0 : -1}
                 onClick={(e) => {
                   e.preventDefault();
-                  handleNavClick(link.href);
+                  handleNavClick(link.href, link.label);
                 }}
               >
                 {link.label}
@@ -295,10 +297,10 @@ export function Navbar() {
                     {group.links.map((link) => (
                       <li key={`${group.title}-${link.label}`}>
                         <a
-                          href={link.href}
+                          href={remapRoomsHref(link.href, link.label)}
                           onClick={(e) => {
                             e.preventDefault();
-                            handleNavClick(link.href);
+                            handleNavClick(link.href, link.label);
                           }}
                         >
                           {link.label}

@@ -18,6 +18,8 @@ import { WellnessPage } from './pages/WellnessPage';
 import { FAQPage } from './pages/FAQPage';
 import { OffersPage } from './pages/OffersPage';
 import { OfferDetailPage } from './pages/OfferDetailPage';
+import { RoomsPage } from './pages/RoomsPage';
+import { RoomDetailPage } from './pages/RoomDetailPage';
 import { FontsPage } from './pages/FontsPage';
 import { TypePreviewHomeNote } from './pages/TypePreviewHome';
 import { FAQ } from './components/FAQ';
@@ -69,6 +71,8 @@ function App() {
         <Route path="/wellness" element={<WellnessPage />} />
         <Route path="/angebote" element={<OffersPage />} />
         <Route path="/angebote/:offerId" element={<OfferDetailPage />} />
+        <Route path="/zimmer" element={<RoomsPage />} />
+        <Route path="/zimmer/:roomId" element={<RoomDetailPage />} />
         <Route path="/faqs" element={<FAQPage />} />
         <Route path="/schriften" element={<FontsPage />} />
       </Routes>
