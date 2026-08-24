@@ -52,8 +52,8 @@ export function MobileChromeLab2() {
             <p className="chrome-lab__card-kicker">Variante 2</p>
             <h2>Chat als Goldkreis</h2>
             <p>
-              Menü-Symbol, Hörer, BUCHEN. Tippen auf Buchen öffnet Gäste, Anreise und
-              Abreise. Der Goldkreis liegt etwas auf der Leiste.
+              Drei gleich hohe Felder: Menü, BUCHEN, Telefon. Keine tote Fläche.
+              Der Goldkreis bleibt rechts auf der Kante der Leiste.
             </p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
