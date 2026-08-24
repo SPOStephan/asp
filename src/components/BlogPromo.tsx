@@ -10,7 +10,7 @@ export function BlogPromo({ offer }: { offer: OfferStory }) {
       <div className="blog-promo__copy">
         <p className="blog-promo__kicker">Angebot</p>
         <h2 className="blog-promo__title heading-font">{offer.title}</h2>
-        <p className="blog-promo__text">{offer.subtitle}. {offer.text}</p>
+        <p className="blog-promo__text">{offer.subtitle}</p>
         <TextCta href={offerHref(offer.id)}>Zum Angebot</TextCta>
       </div>
     </aside>
