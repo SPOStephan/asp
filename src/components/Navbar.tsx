@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useSection, useHotel } from '../context/HotelContext';
 import { remapSiteHref } from '../lib/links';
+import { menuGroupHref } from '../lib/wellness';
 
 interface NavLink {
   label: string;
@@ -12,6 +13,7 @@ interface NavLink {
 
 interface MenuGroup {
   title: string;
+  href?: string;
   links: NavLink[];
 }
 
@@ -28,6 +30,7 @@ const FALLBACK_LANGUAGES: LanguageOption[] = [
 const FALLBACK_GROUPS: MenuGroup[] = [
   {
     title: 'Zimmer & Suiten',
+    href: '/zimmer',
     links: [
       { label: 'Zimmer & Suiten', href: '/zimmer' },
       { label: 'Für jede Generation', href: '#suiten' },
@@ -36,6 +39,7 @@ const FALLBACK_GROUPS: MenuGroup[] = [
   },
   {
     title: 'Angebote',
+    href: '/angebote',
     links: [
       { label: 'Aktuelle Angebote', href: '/angebote' },
       { label: 'Wellnessurlaub', href: '/angebote/wellnessurlaub' },
@@ -52,13 +56,19 @@ const FALLBACK_GROUPS: MenuGroup[] = [
   },
   {
     title: 'Wellness',
+    href: '/wellness',
     links: [
-      { label: 'Wohlfühlen & Abschalten', href: '#wellness' },
-      { label: 'Spa & Wellness', href: '/wellness' },
+      { label: 'Schwimmbad & Sauna', href: '/wellness/schwimmbad-sauna' },
+      { label: 'Wellness-Informationen', href: '/wellness/informationen' },
+      { label: 'Auramaris Spa', href: '/wellness/auramaris' },
+      { label: 'Termin-Vereinbarung', href: '/wellness/termin' },
+      { label: 'Spa-Preisliste', href: '/wellness/preisliste' },
+      { label: 'Angebot des Monats', href: '/wellness/angebot' },
     ],
   },
   {
     title: 'Kulinarik',
+    href: '/kulinarik',
     links: [
       { label: 'Restaurant & Bar', href: '/kulinarik#restaurant' },
       { label: 'Strandstube', href: '/kulinarik#strandstube' },
@@ -290,9 +300,24 @@ export function Navbar() {
           />
           <div className="navbar__panel" id="hauptmenue">
             <div className="navbar__panel-inner">
-              {menuGroups.map((group) => (
+              {menuGroups.map((group) => {
+                const groupHref = menuGroupHref(group.title, group.href);
+                return (
                 <div key={group.title} className="navbar__group">
-                  <h2 className="navbar__group-title">{group.title}</h2>
+                  {groupHref ? (
+                    <a
+                      className="navbar__group-title"
+                      href={groupHref}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavClick(groupHref, group.title);
+                      }}
+                    >
+                      {group.title}
+                    </a>
+                  ) : (
+                    <h2 className="navbar__group-title">{group.title}</h2>
+                  )}
                   <ul className="navbar__group-links">
                     {group.links.map((link) => (
                       <li key={`${group.title}-${link.label}`}>
@@ -309,7 +334,8 @@ export function Navbar() {
                     ))}
                   </ul>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </>

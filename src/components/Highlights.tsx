@@ -13,6 +13,7 @@ interface HighlightItem {
 function highlightHref(item: HighlightItem) {
   if (item.href) return item.href;
   if (item.link === 'Restaurants entdecken') return '/kulinarik';
+  if (item.link === 'Zum Wellnessbereich') return '/wellness';
   return undefined;
 }
 
