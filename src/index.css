@@ -2019,6 +2019,221 @@ body.has-fixed-bar { padding-bottom: 92px; }
   }
 }
 
+/* ==================== ROOMS CARDS VARIANT ==================== */
+.rooms-cards {
+  position: relative;
+  z-index: 1;
+  background: var(--neutral-50);
+}
+.rooms-cards__compare {
+  width: 90%;
+  margin: 0 auto 28px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--neutral-400);
+}
+.rooms-cards__compare a {
+  color: var(--accent-400);
+}
+.rooms-cards__intro {
+  width: 90%;
+  max-width: 34em;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+.rooms-cards__list {
+  width: 90%;
+  margin: 0 auto;
+  padding: 64px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 104px;
+}
+.rooms-cards__empty {
+  margin: 0;
+  color: var(--neutral-500);
+}
+.rooms-overlap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 460px;
+  scroll-margin-top: 168px;
+}
+.rooms-overlap__media {
+  position: relative;
+  width: 64%;
+}
+.rooms-overlap--reverse .rooms-overlap__media { margin-left: auto; }
+.rooms-overlap__stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: var(--neutral-100);
+  cursor: pointer;
+}
+.rooms-overlap__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.55s ease;
+}
+.rooms-overlap__image.is-active { opacity: 1; }
+.rooms-overlap__dots {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transform: translateY(-50%);
+}
+.rooms-overlap--reverse .rooms-overlap__dots {
+  right: auto;
+  left: 16px;
+}
+.rooms-overlap__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.5);
+  border: 0;
+}
+.rooms-overlap__dot.is-active { background: var(--accent-400); }
+.rooms-overlap__card {
+  position: absolute;
+  right: 0;
+  z-index: 3;
+  width: min(500px, 48%);
+  background: var(--neutral-0);
+  padding: 44px 40px;
+  box-shadow: var(--shadow-md);
+}
+.rooms-overlap--reverse .rooms-overlap__card {
+  right: auto;
+  left: 0;
+}
+.rooms-overlap__kicker {
+  margin: 0 0 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--neutral-800);
+}
+.rooms-overlap__name {
+  margin: 0 0 14px;
+  font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+  font-weight: 500;
+  line-height: 1.12;
+  color: var(--neutral-900);
+}
+.rooms-overlap__text {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-600);
+}
+.rooms-overlap__meta {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--neutral-500);
+}
+.rooms-overlap__amenities {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+.rooms-overlap__amenities li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--neutral-700);
+}
+.rooms-overlap__amenities svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--accent-400);
+}
+.rooms-overlap__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 32px;
+  margin-top: 28px;
+}
+.rooms-cards__note {
+  width: 90%;
+  margin: 48px auto 120px;
+  padding-top: 64px;
+  border-top: 1px solid var(--neutral-200);
+  text-align: center;
+}
+.rooms-cards__note-title {
+  margin: 0 0 12px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 500;
+}
+.rooms-cards__note-text {
+  max-width: 28em;
+  margin: 0 auto 28px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+
+@media (max-width: 900px) {
+  .rooms-cards__list { gap: 72px; padding-top: 40px; }
+  .rooms-overlap {
+    display: block;
+    min-height: 0;
+  }
+  .rooms-overlap__media { width: 100%; }
+  .rooms-overlap__stage { aspect-ratio: 5 / 4; }
+  .rooms-overlap__dots,
+  .rooms-overlap--reverse .rooms-overlap__dots {
+    top: auto;
+    bottom: 16px;
+    left: auto;
+    right: 16px;
+    flex-direction: row;
+    transform: none;
+  }
+  .rooms-overlap__card,
+  .rooms-overlap--reverse .rooms-overlap__card {
+    position: relative;
+    right: auto;
+    left: auto;
+    width: auto;
+    margin: -56px 16px 0;
+    padding: 32px 24px;
+  }
+  .rooms-cards__note { margin-bottom: 88px; padding-top: 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rooms-overlap__image { transition: opacity 0.2s ease; }
+}
+
 /* ==================== FACTS ==================== */
 .facts { padding: 120px 0; background: var(--neutral-50); }
 .facts__inner { width: 90%; margin: 0 auto; }
@@ -2370,6 +2585,8 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .rooms-page__name,
 .rooms-page__note-title,
 .rooms-lookbook__title,
+.rooms-overlap__name,
+.rooms-cards__note-title,
 .subpage-hero__title,
 .teaser__title,
 .footer__col h2,

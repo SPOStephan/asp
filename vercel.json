@@ -7,6 +7,7 @@
     { "source": "/angebote", "destination": "/index.html" },
     { "source": "/angebote/:path*", "destination": "/index.html" },
     { "source": "/zimmer", "destination": "/index.html" },
+    { "source": "/zimmer-b", "destination": "/index.html" },
     { "source": "/zimmer/:path*", "destination": "/index.html" },
     { "source": "/faqs", "destination": "/index.html" },
     { "source": "/schriften", "destination": "/index.html" },
