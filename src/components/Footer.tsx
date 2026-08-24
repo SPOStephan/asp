@@ -1,6 +1,6 @@
 import { MapPin, Phone, Mail, Send, Share2 } from 'lucide-react';
 import { useSection, useHotel } from '../context/HotelContext';
-import { remapRoomsHref } from '../lib/rooms';
+import { remapSiteHref } from '../lib/links';
 
 interface FooterLink {
   label: string;
@@ -34,7 +34,7 @@ export function Footer() {
           <nav className="footer__col" aria-label="Entdecken">
             <h2>{data.col_explore_title}</h2>
             {exploreLinks.map((link, i) => (
-              <a key={`explore-${i}`} href={remapRoomsHref(link.href, link.label)} className="link-underline">{link.label}</a>
+              <a key={`explore-${i}`} href={remapSiteHref(link.href, link.label)} className="link-underline">{link.label}</a>
             ))}
           </nav>
 

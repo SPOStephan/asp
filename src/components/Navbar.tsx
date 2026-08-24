@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useSection, useHotel } from '../context/HotelContext';
-import { remapRoomsHref } from '../lib/rooms';
+import { remapSiteHref } from '../lib/links';
 
 interface NavLink {
   label: string;
@@ -60,9 +60,9 @@ const FALLBACK_GROUPS: MenuGroup[] = [
   {
     title: 'Kulinarik',
     links: [
-      { label: 'Restaurant & Bar', href: '#kulinarik' },
-      { label: 'Strandstube', href: '#kulinarik' },
-      { label: 'Grill & Dine', href: '#kulinarik' },
+      { label: 'Restaurant & Bar', href: '/kulinarik#restaurant' },
+      { label: 'Strandstube', href: '/kulinarik#strandstube' },
+      { label: 'Grill & Dine', href: '/kulinarik#grill' },
     ],
   },
   {
@@ -131,7 +131,7 @@ export function Navbar() {
 
   const handleNavClick = (href: string, label?: string) => {
     setMenuOpen(false);
-    const target = remapRoomsHref(href, label);
+    const target = remapSiteHref(href, label);
     if (target.startsWith('#')) {
       if (window.location.pathname !== '/') {
         navigate('/');
@@ -181,7 +181,7 @@ export function Navbar() {
               <a
                 key={link.href}
                 className="navbar__link link-underline"
-                href={remapRoomsHref(link.href, link.label)}
+                href={remapSiteHref(link.href, link.label)}
                 tabIndex={scrolled ? 0 : -1}
                 onClick={(e) => {
                   e.preventDefault();
@@ -297,7 +297,7 @@ export function Navbar() {
                     {group.links.map((link) => (
                       <li key={`${group.title}-${link.label}`}>
                         <a
-                          href={remapRoomsHref(link.href, link.label)}
+                          href={remapSiteHref(link.href, link.label)}
                           onClick={(e) => {
                             e.preventDefault();
                             handleNavClick(link.href, link.label);

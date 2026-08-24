@@ -981,9 +981,10 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .culinary__extra { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--neutral-200); animation: fadeUp 0.5s ease; }
 .culinary__extra p { font-size: 1.05rem; color: var(--neutral-500); }
 .culinary__toggle { display: flex; align-items: center; gap: 8px; margin: 24px auto 0; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-400); font-weight: 500; }
+.culinary__text .text-cta { margin-top: 28px; justify-content: center; }
 .culinary__toggle:hover { color: var(--accent-500); }
 .culinary__images { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding-bottom: 80px; }
-.culinary__img-block { position: relative; overflow: hidden; height: 500px; }
+.culinary__img-block { position: relative; display: block; overflow: hidden; height: 500px; color: inherit; }
 .culinary__img-block img { width: 100%; height: 100%; object-fit: cover; transition: transform 5s ease; }
 .culinary__img-block:hover img { transform: scale(1.05); }
 .culinary__img-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 32px 28px; background: linear-gradient(180deg, transparent, rgba(26,25,22,0.75)); }
@@ -1652,6 +1653,184 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .offers-page__photo { aspect-ratio: 5 / 4; }
   .offers-page__note { margin-bottom: 88px; padding-top: 48px; }
   .offer-detail__facts { grid-template-columns: 1fr; gap: 22px; }
+}
+
+/* ==================== CULINARY PAGE ==================== */
+.culinary-page {
+  position: relative;
+  z-index: 1;
+  background: var(--neutral-50);
+}
+.culinary-page__intro {
+  width: 90%;
+  max-width: 34em;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+.culinary-page__jump {
+  width: 90%;
+  margin: 36px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 28px;
+}
+.culinary-page__jump-link {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+}
+.culinary-page__jump-link:hover { color: var(--accent-400); }
+.culinary-page__venues {
+  width: 90%;
+  margin: 0 auto;
+  padding: 64px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 96px;
+}
+.culinary-venue {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 5vw;
+  align-items: center;
+  scroll-margin-top: 120px;
+}
+.culinary-venue--reverse { grid-template-columns: 0.9fr 1.1fr; }
+.culinary-venue--reverse .culinary-venue__copy { order: -1; }
+.culinary-venue__photo {
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 5 / 4;
+  background: var(--neutral-100);
+}
+.culinary-venue__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.culinary-venue__kicker {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--neutral-800);
+}
+.culinary-venue__name {
+  margin: 0 0 16px;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--neutral-900);
+}
+.culinary-venue__text {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--neutral-600);
+}
+.culinary-venue__facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 5vw;
+  margin: 28px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--neutral-200);
+}
+.culinary-venue__facts dt {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+}
+.culinary-venue__facts dd {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: var(--neutral-700);
+}
+.culinary-venue__copy .include-list { margin-top: 24px; }
+.culinary-venue__copy .text-cta { margin-top: 28px; }
+.culinary-page__rhythm {
+  width: 90%;
+  margin: 88px auto 0;
+  padding-top: 64px;
+  border-top: 1px solid var(--neutral-200);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4vw;
+}
+.culinary-page__beat-kicker {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-400);
+}
+.culinary-page__beat-title {
+  margin: 0 0 12px;
+  font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+  font-weight: 500;
+}
+.culinary-page__beat-text {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--neutral-600);
+}
+.culinary-page__aside {
+  width: 90%;
+  max-width: 36em;
+  margin: 56px auto 0;
+  text-align: center;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+.culinary-page__aside strong { font-weight: 500; color: var(--neutral-800); }
+.culinary-page__note {
+  width: 90%;
+  margin: 48px auto 120px;
+  padding-top: 64px;
+  border-top: 1px solid var(--neutral-200);
+  text-align: center;
+}
+.culinary-page__note-title {
+  margin: 0 0 12px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 500;
+}
+.culinary-page__note-text {
+  max-width: 28em;
+  margin: 0 auto 28px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+
+@media (max-width: 900px) {
+  .culinary-page__venues { gap: 72px; padding-top: 40px; }
+  .culinary-venue,
+  .culinary-venue--reverse { grid-template-columns: 1fr; gap: 28px; }
+  .culinary-venue--reverse .culinary-venue__copy { order: 0; }
+  .culinary-venue__photo { aspect-ratio: 5 / 4; }
+  .culinary-venue__facts { grid-template-columns: 1fr; gap: 16px; }
+  .culinary-page__rhythm {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    margin-top: 64px;
+    padding-top: 48px;
+  }
+  .culinary-page__note { margin-bottom: 88px; padding-top: 48px; }
 }
 
 /* ==================== ROOMS PAGE ==================== */
@@ -2660,6 +2839,9 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .faq-page__cta-text,
 .offers-page__name,
 .offers-page__note-title,
+.culinary-venue__name,
+.culinary-page__beat-title,
+.culinary-page__note-title,
 .rooms-page__name,
 .rooms-page__note-title,
 .rooms-lookbook__title,

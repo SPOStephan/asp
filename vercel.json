@@ -9,6 +9,7 @@
     { "source": "/zimmer", "destination": "/index.html" },
     { "source": "/zimmer-b", "destination": "/index.html" },
     { "source": "/zimmer/:path*", "destination": "/index.html" },
+    { "source": "/kulinarik", "destination": "/index.html" },
     { "source": "/faqs", "destination": "/index.html" },
     { "source": "/schriften", "destination": "/index.html" },
     { "source": "/vorschau", "destination": "/index.html" }
