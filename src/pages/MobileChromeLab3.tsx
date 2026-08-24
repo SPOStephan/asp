@@ -3,12 +3,12 @@ import { TextCta } from '../components/TextCta';
 import { ChromeDemo, ChromeLabSwitch } from './MobileChromeLab';
 import './MobileChromeLab.css';
 
-export function MobileChromeLab2() {
+export function MobileChromeLab3() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const previous = document.title;
-    document.title = 'Mobil Leiste 2 · ambassador hotel & spa';
+    document.title = 'Mobil Leiste 3 · ambassador hotel & spa';
     const robots = document.createElement('meta');
     robots.name = 'robots';
     robots.content = 'noindex, nofollow';
@@ -29,47 +29,41 @@ export function MobileChromeLab2() {
     <main className="chrome-lab">
       <header className="chrome-lab__hero">
         <div className="container">
-          <p className="chrome-lab__kicker">Nur zum Anschauen · Variante 2</p>
+          <p className="chrome-lab__kicker">Nur zum Anschauen · Variante 3</p>
           <h1>Leisten mobil</h1>
           <p className="chrome-lab__lead">
-            Schlankere Leiste: Menü ohne Text, Telefon zur Hotelnummer, großes BUCHEN.
-            Chat als goldener Kreis, der ein Stück auf dem Blau sitzt.
+            Wie Variante 2, ohne Home: nur Menü und Telefon links, BUCHEN rechts. Der
+            goldene Chat sitzt wieder etwas tiefer auf der Leiste.
           </p>
-          <ChromeLabSwitch current="/mobil-leiste2" />
+          <ChromeLabSwitch current="/mobil-leiste3" />
         </div>
       </header>
 
       <section className="chrome-lab__compare">
         <div className="chrome-lab__grid">
           <article className="chrome-lab__card">
-            <p className="chrome-lab__card-kicker">Variante 1</p>
-            <h2>Chat in der Leiste</h2>
-            <p>
-              Start, Menü, Buchen und Chat sitzen nebeneinander in der blauen Leiste.
-              Vergleich unter /mobil-leiste.
-            </p>
+            <p className="chrome-lab__card-kicker">Variante 2</p>
+            <h2>Mit Home</h2>
+            <p>Drei Symbole links. Zum direkten Vergleich unter Variante 2.</p>
           </article>
           <article className="chrome-lab__card">
-            <p className="chrome-lab__card-kicker">Variante 2</p>
-            <h2>Chat als Goldkreis</h2>
-            <p>
-              Home, Menü und Telefon links, BUCHEN rechts. Chat-Kreis etwas höher
-              auf der Kante.
-            </p>
+            <p className="chrome-lab__card-kicker">Variante 3</p>
+            <h2>Ohne Home</h2>
+            <p>Menü und Hörer links, BUCHEN rechts. Chat-Kreis ein Stück tiefer.</p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
         </div>
 
         <div className="chrome-lab__stage" aria-hidden={open}>
           <div className="chrome-lab__phone">
-            <ChromeDemo layout="icons-home" />
+            <ChromeDemo layout="icons" />
           </div>
         </div>
       </section>
 
       {open ? (
-        <div className="chrome-lab__overlay" role="dialog" aria-modal="true" aria-label="App-Leiste Variante 2">
-          <ChromeDemo layout="icons-home" fullscreen onClose={() => setOpen(false)} />
+        <div className="chrome-lab__overlay" role="dialog" aria-modal="true" aria-label="App-Leiste Variante 3">
+          <ChromeDemo layout="icons" fullscreen onClose={() => setOpen(false)} />
         </div>
       ) : null}
     </main>
