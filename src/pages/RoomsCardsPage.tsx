@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Reveal } from '../components/Reveal';
 import { RoomOverlapCard } from '../components/RoomOverlapCard';
 import { SubpageHero } from '../components/SubpageHero';
@@ -28,7 +28,7 @@ export function RoomsCardsPage() {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${data.title ?? 'Zimmer & Suiten'} · Entwurf B | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${data.title ?? 'Zimmer & Suiten'} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
@@ -52,12 +52,6 @@ export function RoomsCardsPage() {
         subtitle={page?.subtitle ?? ROOMS_PAGE_FALLBACK.subtitle}
       >
         <div className="rooms-cards">
-          <p className="rooms-cards__compare">
-            Entwurf B · überlappende Karten
-            <span aria-hidden="true"> · </span>
-            <Link to="/zimmer">Zur aktuellen Seite</Link>
-          </p>
-
           {data.intro ? <p className="rooms-cards__intro">{data.intro}</p> : null}
 
           <div className="rooms-page__filters" role="tablist" aria-label="Zimmer filtern">
@@ -86,6 +80,10 @@ export function RoomsCardsPage() {
               <p className="rooms-cards__empty">Keine Zimmer in dieser Auswahl.</p>
             )}
           </section>
+
+          <p className="rooms-cards__price-note">
+            {data.price_note ?? ROOMS_PAGE_FALLBACK.price_note}
+          </p>
 
           <section className="rooms-cards__note">
             <h2 className="rooms-cards__note-title heading-font">

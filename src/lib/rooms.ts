@@ -16,6 +16,8 @@ export interface RoomStory {
   size: string;
   view: string;
   occupancy: string;
+  price_from: string;
+  price_unit: string;
   tags: RoomTag[];
   amenities: string[];
   image: string;
@@ -38,10 +40,11 @@ export const ROOMS_PAGE_FALLBACK = {
   title: 'Zimmer & Suiten',
   subtitle: 'Meerblick · Ruhe · Weite',
   intro:
-    'Kein Katalog, keine Rasterpreise. Sechs Räume, in denen das Licht der Nordsee den Takt vorgibt — vom stillen Doppelzimmer bis zur Suite mit eigener Terrasse.',
+    'Sechs Räume, in denen das Licht der Nordsee den Takt vorgibt — vom stillen Doppelzimmer bis zur Suite mit eigener Terrasse. Die Preise gelten pro Nacht und Zimmer, je nach Saison und Belegung.',
   hero_image: '/hotel-stpeter-ording-Austernfischer-Suite05.jpg',
   hero_image_alt: 'Suite mit privater Terrasse und Blick ins Watt',
   lookbook_label: 'Lookbook',
+  price_note: 'Alle Preise gelten pro Nacht und Zimmer, je nach Saison und Belegung.',
   note_title: 'Nicht das passende Zimmer?',
   note_text:
     'Wir kennen jedes Zimmer im Haus. Schreiben Sie uns, was Sie brauchen — Blick, Größe, Anlass — wir finden die richtige Tür.',
@@ -60,6 +63,8 @@ export const ROOMS_PAGE_FALLBACK = {
       size: 'ca. 65 m²',
       view: 'Meerblick, private Terrasse',
       occupancy: '2 Personen',
+      price_from: 'ab 530 Euro',
+      price_unit: 'Nacht',
       tags: ['suite', 'meerblick'],
       amenities: [
         'Private Terrasse mit Weitblick',
@@ -90,6 +95,8 @@ export const ROOMS_PAGE_FALLBACK = {
       size: 'ca. 48 m²',
       view: 'Meerblick',
       occupancy: '2 Personen',
+      price_from: 'ab 330 Euro',
+      price_unit: 'Nacht',
       tags: ['suite', 'meerblick'],
       amenities: [
         'Balkon oder Terrasse',
@@ -120,6 +127,8 @@ export const ROOMS_PAGE_FALLBACK = {
       size: 'ca. 38 m²',
       view: 'Weitblick',
       occupancy: '2 Personen',
+      price_from: 'ab 270 Euro',
+      price_unit: 'Nacht',
       tags: ['suite'],
       amenities: [
         'Balkon oder Terrasse',
@@ -149,6 +158,8 @@ export const ROOMS_PAGE_FALLBACK = {
       size: 'ca. 28 m²',
       view: 'Meerblick',
       occupancy: '2 Personen',
+      price_from: 'ab 190 Euro',
+      price_unit: 'Nacht',
       tags: ['zimmer', 'meerblick'],
       amenities: [
         'Balkon mit Meerblick',
@@ -178,6 +189,8 @@ export const ROOMS_PAGE_FALLBACK = {
       size: 'ca. 42 m²',
       view: 'Landschaft',
       occupancy: '2 Erwachsene, bis 2 Kinder',
+      price_from: 'ab 210 Euro',
+      price_unit: 'Nacht',
       tags: ['zimmer', 'familie'],
       amenities: [
         'Platz für Zustellbett oder Babybett',
@@ -207,6 +220,8 @@ export const ROOMS_PAGE_FALLBACK = {
       size: 'ca. 26 m²',
       view: 'Landschaft',
       occupancy: '2 Personen',
+      price_from: 'ab 150 Euro',
+      price_unit: 'Nacht',
       tags: ['zimmer'],
       amenities: [
         'Balkon zur Landseite',
@@ -277,6 +292,8 @@ export function resolveRooms(pageItems?: RawRoom[]): RoomStory[] {
       size: item.size ?? fallback.size,
       view: item.view ?? fallback.view,
       occupancy: item.occupancy ?? fallback.occupancy,
+      price_from: item.price_from ?? fallback.price_from,
+      price_unit: item.price_unit ?? fallback.price_unit,
       tags: asTags(item.tags, fallback.tags),
       amenities: item.amenities?.length ? item.amenities : fallback.amenities,
       image: item.image ?? item.image_primary ?? fallback.image,
@@ -348,6 +365,14 @@ export function expandRoomFeatures(room: RoomStory): RoomFeature[] {
 
 export function roomHref(id: string) {
   return `/zimmer/${id}`;
+}
+
+export function formatRoomPriceCard(room: RoomStory) {
+  return `${room.price_from} / ${room.price_unit}`;
+}
+
+export function formatRoomPriceDetail(room: RoomStory) {
+  return `${room.price_from} pro ${room.price_unit}`;
 }
 
 export function remapRoomsHref(href: string, label?: string) {

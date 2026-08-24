@@ -5,7 +5,7 @@ import { RoomAmenityGrid } from '../components/RoomAmenityGrid';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
-import { expandRoomFeatures, resolveRooms } from '../lib/rooms';
+import { expandRoomFeatures, formatRoomPriceDetail, resolveRooms } from '../lib/rooms';
 
 export function RoomDetailPage() {
   const { roomId } = useParams();
@@ -37,7 +37,7 @@ export function RoomDetailPage() {
         imageAlt={room.hero_image_alt}
         eyebrow={room.kicker}
         title={room.name}
-        subtitle={`${room.size} · ${room.view}`}
+        subtitle={`${room.size} · ${formatRoomPriceDetail(room)}`}
       >
         <div className="room-detail">
           <div className="room-detail__split">
@@ -46,6 +46,10 @@ export function RoomDetailPage() {
                 <p key={paragraph}>{paragraph}</p>
               ))}
               <div className="room-detail__facts">
+                <div className="room-detail__fact">
+                  <p className="room-detail__fact-label">Preis</p>
+                  <p className="room-detail__fact-value">{formatRoomPriceDetail(room)}</p>
+                </div>
                 <div className="room-detail__fact">
                   <p className="room-detail__fact-label">Größe</p>
                   <p className="room-detail__fact-value">{room.size}</p>
