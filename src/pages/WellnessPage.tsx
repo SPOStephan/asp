@@ -7,6 +7,7 @@ import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import {
   resolveWellnessChapters,
+  resolveWellnessMedia,
   resolveWellnessTopics,
   wellnessTopicHref,
   WELLNESS_PAGE_FALLBACK,
@@ -31,7 +32,7 @@ export function WellnessPage() {
   return (
     <main>
       <SubpageHero
-        image={data.hero_image ?? WELLNESS_PAGE_FALLBACK.hero_image}
+        image={resolveWellnessMedia(data.hero_image, WELLNESS_PAGE_FALLBACK.hero_image)}
         imageAlt={data.hero_image_alt ?? WELLNESS_PAGE_FALLBACK.hero_image_alt}
         eyebrow={page?.eyebrow ?? WELLNESS_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? WELLNESS_PAGE_FALLBACK.title}

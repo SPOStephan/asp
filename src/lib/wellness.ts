@@ -344,6 +344,16 @@ export function wellnessTopicHref(id: string) {
   return `/wellness/${id}`;
 }
 
+const MEDIA_ALIASES: Record<string, string> = {
+  '/hotel-nordsee-wellness02.jpg': '/hotel-nordsee-wellness02.webp',
+};
+
+export function resolveWellnessMedia(value?: string | null, fallback = WELLNESS_PAGE_FALLBACK.hero_image) {
+  const raw = value?.trim();
+  if (!raw) return fallback;
+  return MEDIA_ALIASES[raw] ?? raw;
+}
+
 export function remapWellnessHref(href: string, label?: string) {
   if (label === 'Wellness & Spa' && (href === '#wellness' || href === '/wellness')) {
     return '/wellness';
