@@ -131,12 +131,23 @@ export function ChromeDemo({
           <>
             <button
               type="button"
+              className="chrome-demo__icon-only"
+              aria-label="Start"
+              onClick={() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
+              <House size={24} strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
               className={`chrome-demo__icon-only${sheet === 'menu' ? ' is-on' : ''}`}
               aria-label="Menü"
               onClick={() => toggle('menu')}
             >
               <Menu size={26} strokeWidth={1.5} />
             </button>
+            <a className="chrome-demo__icon-only" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
+              <Phone size={24} strokeWidth={1.5} />
+            </a>
             <button
               type="button"
               className={`chrome-demo__book-word${sheet === 'book' ? ' is-on' : ''}`}
@@ -144,9 +155,6 @@ export function ChromeDemo({
             >
               Buchen
             </button>
-            <a className="chrome-demo__icon-only" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
-              <Phone size={24} strokeWidth={1.5} />
-            </a>
           </>
         ) : (
           <>

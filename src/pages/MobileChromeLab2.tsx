@@ -52,8 +52,8 @@ export function MobileChromeLab2() {
             <p className="chrome-lab__card-kicker">Variante 2</p>
             <h2>Chat als Goldkreis</h2>
             <p>
-              Drei gleich hohe Felder: Menü, BUCHEN, Telefon. Keine tote Fläche.
-              Der Goldkreis bleibt rechts auf der Kante der Leiste.
+              Home, Menü und Telefon links, BUCHEN rechts. Chat-Kreis etwas höher
+              auf der Kante.
             </p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
