@@ -32,8 +32,8 @@ export function MobileChromeLab2() {
           <p className="chrome-lab__kicker">Nur zum Anschauen · Variante 2</p>
           <h1>Leisten mobil</h1>
           <p className="chrome-lab__lead">
-            Wie Variante 1, nur der Chat: nicht in der Leiste, sondern als goldener Kreis
-            rechts darüber — ohne Beschriftung. Leiste weiter Hotel-Blau, ohne Anfragen.
+            Schlankere Leiste: Menü ohne Text, Telefon zur Hotelnummer, großes BUCHEN.
+            Chat als goldener Kreis, der ein Stück auf dem Blau sitzt. Kein Start.
           </p>
         </div>
       </header>
@@ -52,8 +52,8 @@ export function MobileChromeLab2() {
             <p className="chrome-lab__card-kicker">Variante 2</p>
             <h2>Chat als Goldkreis</h2>
             <p>
-              Die Leiste hat drei Punkte. Der Chat schwebt rechts darüber, wie auf der
-              Vergleichsseite — ohne das Wort Chat.
+              Menü-Symbol, Hörer, BUCHEN. Tippen auf Buchen öffnet Gäste, Anreise und
+              Abreise. Der Goldkreis liegt etwas auf der Leiste.
             </p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
