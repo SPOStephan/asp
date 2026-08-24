@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { GalleryViewer } from '../components/GalleryViewer';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import {
+  classifyImpressionShape,
   filterImpressions,
   IMPRESSION_TOPICS,
   IMPRESSIONS_PAGE_FALLBACK,
+  packImpressions,
   resolveImpressions,
+  type ImpressionShape,
   type ImpressionTopic,
 } from '../lib/impressions';
 
@@ -18,7 +21,9 @@ export function ImpressionsPage() {
   const shots = resolveImpressions(page?.items);
   const [topic, setTopic] = useState<ImpressionTopic | 'alle'>('alle');
   const [active, setActive] = useState<number | null>(null);
+  const [shapes, setShapes] = useState<Record<string, ImpressionShape>>({});
   const visible = filterImpressions(shots, topic);
+  const packed = useMemo(() => packImpressions(visible, shapes), [visible, shapes]);
 
   useEffect(() => {
     const previous = document.title;
@@ -33,10 +38,30 @@ export function ImpressionsPage() {
     setActive(null);
   }, [topic]);
 
+  useEffect(() => {
+    let cancelled = false;
+    shots.forEach((shot) => {
+      if (shot.shape) {
+        setShapes((current) => ({ ...current, [shot.src]: shot.shape as ImpressionShape }));
+        return;
+      }
+      const image = new Image();
+      image.onload = () => {
+        if (cancelled) return;
+        const next = classifyImpressionShape(image.naturalWidth, image.naturalHeight);
+        setShapes((current) => (current[shot.src] === next ? current : { ...current, [shot.src]: next }));
+      };
+      image.src = shot.src;
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [shots]);
+
   const step = (delta: number) => {
     setActive((index) => {
-      if (index === null || !visible.length) return 0;
-      return (index + delta + visible.length) % visible.length;
+      if (index === null || !packed.length) return 0;
+      return (index + delta + packed.length) % packed.length;
     });
   };
 
@@ -70,11 +95,11 @@ export function ImpressionsPage() {
           </div>
 
           <div className="impressions-page__grid">
-            {visible.map((shot, index) => (
+            {packed.map((shot, index) => (
               <button
-                key={`${shot.src}-${index}`}
+                key={shot.src}
                 type="button"
-                className="impressions-page__shot"
+                className={`impressions-page__shot is-${shot.role}`}
                 aria-label={shot.alt}
                 onClick={() => setActive(index)}
               >
@@ -95,7 +120,7 @@ export function ImpressionsPage() {
       </SubpageHero>
 
       {active !== null ? (
-        <GalleryViewer shots={visible} active={active} onClose={() => setActive(null)} onStep={step} />
+        <GalleryViewer shots={packed} active={active} onClose={() => setActive(null)} onStep={step} />
       ) : null}
     </main>
   );
