@@ -166,7 +166,7 @@ export function ChromeDemo({
             </a>
             <button
               type="button"
-              className={`chrome-demo__gold${sheet === 'book' ? ' is-on' : ''}`}
+              className={`chrome-demo__book-group${sheet === 'book' ? ' is-on' : ''}`}
               aria-label="Gäste"
               onClick={() => toggle('book')}
             >
@@ -174,7 +174,7 @@ export function ChromeDemo({
             </button>
             <button
               type="button"
-              className={`chrome-demo__gold${sheet === 'book' ? ' is-on' : ''}`}
+              className={`chrome-demo__book-group${sheet === 'book' ? ' is-on' : ''}`}
               aria-label="Reisezeitraum"
               onClick={() => toggle('book')}
             >
@@ -182,7 +182,7 @@ export function ChromeDemo({
             </button>
             <button
               type="button"
-              className={`chrome-demo__book-word chrome-demo__gold${sheet === 'book' ? ' is-on' : ''}`}
+              className={`chrome-demo__book-word chrome-demo__book-group${sheet === 'book' ? ' is-on' : ''}`}
               onClick={() => toggle('book')}
             >
               Buchen
