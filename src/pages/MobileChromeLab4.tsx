@@ -32,8 +32,8 @@ export function MobileChromeLab4() {
           <p className="chrome-lab__kicker">Nur zum Anschauen · Variante 4</p>
           <h1>Leisten mobil</h1>
           <p className="chrome-lab__lead">
-            Zwei Ebenen: oben Gäste und Reisezeit mit Symbol und kurzer Zeile, darunter
-            Menü, Telefon und BUCHEN. Chat bleibt der goldene Kreis.
+            Eine Zeile: Menü und Hörer klein links, daneben Gäste-Symbol, Kalender und
+            Buchen in Gold. Chat bleibt der Kreis.
           </p>
           <ChromeLabSwitch current="/mobil-leiste4" />
         </div>
@@ -42,17 +42,14 @@ export function MobileChromeLab4() {
       <section className="chrome-lab__compare">
         <div className="chrome-lab__grid">
           <article className="chrome-lab__card">
-            <p className="chrome-lab__card-kicker">Oben</p>
-            <h2>Die Abfrage</h2>
-            <p>
-              Personen-Symbol mit Gästezahl, Kalender mit An- und Abreise. Tippen öffnet
-              die Eingabe.
-            </p>
+            <p className="chrome-lab__card-kicker">Links</p>
+            <h2>Menü und Hörer</h2>
+            <p>Klein, weiß, zusammengehalten — nicht die Buchung.</p>
           </article>
           <article className="chrome-lab__card">
-            <p className="chrome-lab__card-kicker">Unten</p>
-            <h2>Die Aktion</h2>
-            <p>Menü, Hörer, BUCHEN — nicht „Verfügbarkeit checken“.</p>
+            <p className="chrome-lab__card-kicker">Rechts</p>
+            <h2>Die Buchung</h2>
+            <p>Personen-Symbol, Kalender und Buchen in Gold — eine Zeile, nicht zwei.</p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
         </div>
