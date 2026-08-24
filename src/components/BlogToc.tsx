@@ -31,20 +31,22 @@ export function BlogToc({ blocks }: { blocks: BlogBlock[] }) {
 
   return (
     <nav className="blog-toc" aria-label="Inhalt">
-      <p className="blog-toc__label">Inhalt</p>
-      <ol>
-        {headings.map((item) => (
-          <li key={item.id}>
-            <a
-              href={`#${item.id}`}
-              className={item.id === active ? 'is-active' : undefined}
-              onClick={() => setActive(item.id)}
-            >
-              {item.text}
-            </a>
-          </li>
-        ))}
-      </ol>
+      <div className="blog-toc__inner">
+        <p className="blog-toc__label">Inhalt</p>
+        <ol>
+          {headings.map((item) => (
+            <li key={item.id}>
+              <a
+                href={`#${item.id}`}
+                className={item.id === active ? 'is-active' : undefined}
+                onClick={() => setActive(item.id)}
+              >
+                {item.text}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
     </nav>
   );
 }
