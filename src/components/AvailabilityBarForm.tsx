@@ -80,15 +80,17 @@ function AvailabilityBarFormModern({ idPrefix = '' }: AvailabilityBarFormProps) 
 
       {open === 'guests' ? (
         <AvailabilityGuestsLayer
-          rooms={query.rooms}
-          onChange={(rooms) => setQuery((current) => ({ ...current, rooms }))}
+          adults={query.adults}
+          children={query.children}
+          onChange={(next) => setQuery((current) => ({ ...current, ...next }))}
           onApply={() => setOpen(null)}
         />
       ) : null}
 
       <input type="hidden" name="arrival" value={query.arrival ?? ''} />
       <input type="hidden" name="departure" value={query.departure ?? ''} />
-      <input type="hidden" name="rooms" value={String(query.rooms.length)} />
+      <input type="hidden" name="adults" value={String(query.adults)} />
+      <input type="hidden" name="children" value={String(query.children)} />
 
       <div className="availability-bar__pickers">
         <button
@@ -104,7 +106,7 @@ function AvailabilityBarFormModern({ idPrefix = '' }: AvailabilityBarFormProps) 
           </span>
           <span className="availability-bar__picker-copy">
             <span className="availability-bar__picker-label">Zahl der Gäste</span>
-            <span className="availability-bar__picker-value">{formatGuestSummary(query.rooms)}</span>
+            <span className="availability-bar__picker-value">{formatGuestSummary(query.adults, query.children)}</span>
           </span>
           <ChevronDown
             className="availability-bar__picker-chevron"

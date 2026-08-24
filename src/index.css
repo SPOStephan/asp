@@ -638,28 +638,6 @@ body.has-fixed-bar { padding-bottom: 92px; }
   color: var(--neutral-0);
 }
 
-.availability-guests__room + .availability-guests__room {
-  border-top: 1px solid var(--neutral-200);
-}
-.availability-guests__room-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px 4px;
-}
-.availability-guests__room-head h3 {
-  font-family: var(--font-heading);
-  font-size: 1.05rem;
-  font-weight: 500;
-  color: var(--neutral-900);
-}
-.availability-guests__room-head button {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--neutral-500);
-}
-.availability-guests__room-head button:hover { color: var(--accent-400); }
 .availability-guests__row {
   display: flex;
   align-items: center;
@@ -672,11 +650,6 @@ body.has-fixed-bar { padding-bottom: 92px; }
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--neutral-900);
-}
-.availability-guests__hint {
-  font-size: 0.75rem;
-  color: var(--neutral-500);
-  margin-top: 2px;
 }
 .availability-guests__stepper {
   display: flex;
@@ -708,26 +681,18 @@ body.has-fixed-bar { padding-bottom: 92px; }
   color: var(--neutral-900);
 }
 .availability-guests__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: flex-end;
 }
-.availability-guests__more,
 .availability-guests__apply {
+  min-width: 50%;
   padding: 16px 18px;
+  background: var(--accent-400);
+  color: var(--neutral-0);
   font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-}
-.availability-guests__more {
-  background: var(--neutral-100);
-  color: var(--neutral-900);
-}
-.availability-guests__more:hover:not(:disabled) { background: var(--neutral-200); }
-.availability-guests__more:disabled { opacity: 0.45; cursor: default; }
-.availability-guests__apply {
-  background: var(--accent-400);
-  color: var(--neutral-0);
 }
 .availability-guests__apply:hover { background: var(--accent-500); }
 

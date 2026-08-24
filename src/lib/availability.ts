@@ -1,18 +1,11 @@
 /** Set to `legacy` to restore the previous Anreise / Abreise / Gäste form. */
 export const AVAILABILITY_UI_MODE: 'modern' | 'legacy' = 'modern';
 
-export interface RoomOccupancy {
-  adults: number;
-  infants: number;
-  children: number;
-  teens: number;
-  dogs: number;
-}
-
 export interface AvailabilityQuery {
   arrival: string | null;
   departure: string | null;
-  rooms: RoomOccupancy[];
+  adults: number;
+  children: number;
 }
 
 export const WEEKDAYS_DE = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'] as const;
@@ -32,15 +25,12 @@ export const MONTHS_DE = [
   'Dezember',
 ] as const;
 
-export function createRoom(adults = 2): RoomOccupancy {
-  return { adults, infants: 0, children: 0, teens: 0, dogs: 0 };
-}
-
 export function createAvailabilityQuery(): AvailabilityQuery {
   return {
     arrival: null,
     departure: null,
-    rooms: [createRoom(2)],
+    adults: 2,
+    children: 0,
   };
 }
 
@@ -126,18 +116,11 @@ export function nextDateSelection(
   return { arrival, departure: nextKey };
 }
 
-export function formatGuestSummary(rooms: RoomOccupancy[]): string {
-  const adults = rooms.reduce((sum, room) => sum + room.adults, 0);
-  const kids = rooms.reduce((sum, room) => sum + room.infants + room.children + room.teens, 0);
-  const dogs = rooms.reduce((sum, room) => sum + room.dogs, 0);
+export function formatGuestSummary(adults: number, children: number): string {
   const parts = [
     `${adults} ${adults === 1 ? 'Erwachsener' : 'Erwachsene'}`,
   ];
-  if (kids) parts.push(`${kids} ${kids === 1 ? 'Kind' : 'Kinder'}`);
-  if (dogs) parts.push(`${dogs} ${dogs === 1 ? 'Hund' : 'Hunde'}`);
-  if (rooms.length > 1) {
-    return `${rooms.length} Zimmer, ${parts.join(', ')}`;
-  }
+  if (children) parts.push(`${children} ${children === 1 ? 'Kind' : 'Kinder'}`);
   return parts.join(', ');
 }
 
@@ -153,24 +136,12 @@ export function toBookingParams(query: AvailabilityQuery): URLSearchParams {
   const params = new URLSearchParams();
   if (query.arrival) params.set('arrival', query.arrival);
   if (query.departure) params.set('departure', query.departure);
-  params.set('rooms', String(query.rooms.length));
-  query.rooms.forEach((room, index) => {
-    const n = String(index + 1);
-    params.set(`adults${n}`, String(room.adults));
-    params.set(`infants${n}`, String(room.infants));
-    params.set(`children${n}`, String(room.children));
-    params.set(`teens${n}`, String(room.teens));
-    params.set(`dogs${n}`, String(room.dogs));
-  });
+  params.set('adults', String(query.adults));
+  params.set('children', String(query.children));
   return params;
 }
 
 export const GUEST_ROWS = [
-  { key: 'adults', label: 'Erwachsene', hint: null, min: 1, max: 6 },
-  { key: 'infants', label: 'Säugling', hint: '0–4 Jahre', min: 0, max: 4 },
-  { key: 'children', label: 'Kleinkind', hint: '5–12 Jahre', min: 0, max: 4 },
-  { key: 'teens', label: 'Größere Rabauken', hint: '13–16 Jahre', min: 0, max: 4 },
-  { key: 'dogs', label: 'Hunde', hint: null, min: 0, max: 3 },
+  { key: 'adults', label: 'Erwachsene', min: 1, max: 6 },
+  { key: 'children', label: 'Kinder', min: 0, max: 6 },
 ] as const;
-
-export type GuestRowKey = (typeof GUEST_ROWS)[number]['key'];
