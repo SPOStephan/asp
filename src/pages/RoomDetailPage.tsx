@@ -37,7 +37,7 @@ export function RoomDetailPage() {
         imageAlt={room.hero_image_alt}
         eyebrow={room.kicker}
         title={room.name}
-        subtitle={`${room.size} · ${formatRoomPriceDetail(room)}`}
+        subtitle={`${room.size} · ${room.view}`}
       >
         <div className="room-detail">
           <div className="room-detail__split">
@@ -46,10 +46,6 @@ export function RoomDetailPage() {
                 <p key={paragraph}>{paragraph}</p>
               ))}
               <div className="room-detail__facts">
-                <div className="room-detail__fact">
-                  <p className="room-detail__fact-label">Preis</p>
-                  <p className="room-detail__fact-value">{formatRoomPriceDetail(room)}</p>
-                </div>
                 <div className="room-detail__fact">
                   <p className="room-detail__fact-label">Größe</p>
                   <p className="room-detail__fact-value">{room.size}</p>
@@ -63,9 +59,13 @@ export function RoomDetailPage() {
                   <p className="room-detail__fact-value">{room.occupancy}</p>
                 </div>
               </div>
-              <div className="room-detail__links">
-                <TextCta href="#buchung">Jetzt buchen</TextCta>
-                <TextCta href="/zimmer">Alle Zimmer</TextCta>
+              <div className="room-detail__book">
+                <p className="room-detail__book-label">Preis</p>
+                <p className="room-detail__book-price heading-font">{formatRoomPriceDetail(room)}</p>
+                <div className="room-detail__links">
+                  <TextCta href="#buchung">Jetzt buchen</TextCta>
+                  <TextCta href="/zimmer">Alle Zimmer</TextCta>
+                </div>
               </div>
             </div>
             <RoomAmenityGrid items={features} />
