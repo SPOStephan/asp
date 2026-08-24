@@ -185,21 +185,23 @@ function TwoStepMenu({
       <div className="menu-proto__body">
         {group ? (
           <div className="menu-proto__level">
-            {groupHref ? (
-              <a
-                className="menu-proto__group-title"
-                href={groupHref}
-                onClick={(event) => {
-                  event.preventDefault();
-                  go(groupHref, group.title);
-                }}
-              >
-                {group.title}
-              </a>
-            ) : (
-              <h2 className="menu-proto__group-title">{group.title}</h2>
-            )}
+            <h2 className="menu-proto__group-title">{group.title}</h2>
             <ul className="menu-proto__links">
+              {groupHref &&
+              !group.links.some((link) => remapSiteHref(link.href, link.label) === groupHref) ? (
+                <li>
+                  <a
+                    className="menu-proto__hub"
+                    href={groupHref}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      go(groupHref, group.title);
+                    }}
+                  >
+                    {group.title}
+                  </a>
+                </li>
+              ) : null}
               {group.links.map((link) => (
                 <li key={`${group.title}-${link.label}`}>
                   <a
@@ -325,8 +327,9 @@ export function MobileMenuLab() {
             <p className="menu-lab__card-kicker">Vorschlag</p>
             <h2>Zwei Stufen</h2>
             <p>
-              Hauptpunkte mit Pfeil, nach dem Antippen die Unterpunkte. Zurück führt in die
-              Übersicht. Am Telefon über den Button, am Desktop im Rahmen daneben.
+              Hauptpunkte mit Pfeil, nach dem Antippen die Unterpunkte. Der erste Eintrag führt
+              auf die Übersichtsseite des Überpunkts — Wellness, Kulinarik, Zimmer. Zurück führt
+              in die Übersicht. Am Telefon über den Button, am Desktop im Rahmen daneben.
             </p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
