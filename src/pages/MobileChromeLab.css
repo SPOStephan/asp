@@ -348,13 +348,14 @@ body.chrome-lab-open { overflow: hidden; }
   color: var(--neutral-0) !important;
 }
 
-.chrome-demo.is-stack .chrome-demo__gold {
-  color: var(--accent-400) !important;
-  background: rgba(149, 118, 64, 0.18);
-  border-right-color: rgba(149, 118, 64, 0.28) !important;
+.chrome-demo.is-stack .chrome-demo__book-group {
+  color: var(--primary-500) !important;
+  background: var(--neutral-50);
+  border-right-color: rgba(19, 59, 92, 0.1) !important;
 }
 
 .chrome-demo.is-stack .chrome-demo__book-word {
+  color: var(--accent-400) !important;
   font-size: 0.82rem !important;
   letter-spacing: 0.18em !important;
 }
