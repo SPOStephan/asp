@@ -1,9 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
-import { CalendarCheck, House, Menu, Phone, X } from 'lucide-react';
+import { CalendarCheck, CalendarDays, House, Menu, Phone, Users, X } from 'lucide-react';
 import { ChatCircleTextIcon } from '@phosphor-icons/react';
 import { useHotel, useSection } from '../context/HotelContext';
 import { TextCta } from '../components/TextCta';
 import './MobileChromeLab.css';
+
+export const CHROME_LAB_VARIANTS = [
+  { href: '/mobil-leiste', label: 'Variante 1' },
+  { href: '/mobil-leiste2', label: 'Variante 2' },
+  { href: '/mobil-leiste3', label: 'Variante 3' },
+  { href: '/mobil-leiste4', label: 'Variante 4' },
+];
+
+export function ChromeLabSwitch({ current }: { current: string }) {
+  return (
+    <nav className="chrome-lab__switch" aria-label="Labor-Varianten">
+      {CHROME_LAB_VARIANTS.map((item) => (
+        <a key={item.href} href={item.href} className={item.href === current ? 'is-on' : ''}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  );
+}
 
 type Sheet = 'menu' | 'book' | 'chat' | null;
 
@@ -12,15 +31,20 @@ function telHref(phone?: string | null) {
   return `tel:${cleaned || '+4948637090'}`;
 }
 
+export type ChromeLayout = 'bar' | 'icons-home' | 'icons' | 'stack';
+
 export function ChromeDemo({
   fullscreen,
   onClose,
-  chatFloat = false,
+  layout = 'bar',
+  chatFloat,
 }: {
   fullscreen?: boolean;
   onClose?: () => void;
+  layout?: ChromeLayout;
   chatFloat?: boolean;
 }) {
+  const dock = chatFloat ? 'icons-home' : layout;
   const data = useSection('navbar');
   const hotel = useHotel();
   const scroller = useRef<HTMLDivElement>(null);
@@ -42,7 +66,7 @@ export function ChromeDemo({
 
   return (
     <div
-      className={`chrome-demo${fullscreen ? ' is-full' : ''}${chatFloat ? ' has-chat-fab' : ''}`}
+      className={`chrome-demo${fullscreen ? ' is-full' : ''}${dock !== 'bar' ? ' has-chat-fab' : ''} is-${dock}`}
       style={{ ['--demo-dock' as string]: hotel?.primary_color || 'var(--primary-500)' }}
     >
       <header className={`chrome-demo__top${hidden ? ' is-hidden' : ''}`}>
@@ -127,16 +151,57 @@ export function ChromeDemo({
       ) : null}
 
       <nav className="chrome-demo__dock" aria-label="App-Leiste">
-        {chatFloat ? (
+        {dock === 'stack' ? (
+          <div className="chrome-demo__stack">
+            <div className="chrome-demo__tier chrome-demo__tier--fields">
+              <button type="button" onClick={() => toggle('book')}>
+                <Users size={20} strokeWidth={1.5} />
+                <span>
+                  <em>Gäste</em>
+                  2 Erwachsene
+                </span>
+              </button>
+              <button type="button" onClick={() => toggle('book')}>
+                <CalendarDays size={20} strokeWidth={1.5} />
+                <span>
+                  <em>Reisezeit</em>
+                  An- und Abreise
+                </span>
+              </button>
+            </div>
+            <div className="chrome-demo__tier chrome-demo__tier--actions">
+              <button
+                type="button"
+                className={`chrome-demo__icon-only${sheet === 'menu' ? ' is-on' : ''}`}
+                aria-label="Menü"
+                onClick={() => toggle('menu')}
+              >
+                <Menu size={26} strokeWidth={1.5} />
+              </button>
+              <a className="chrome-demo__icon-only" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
+                <Phone size={24} strokeWidth={1.5} />
+              </a>
+              <button
+                type="button"
+                className={`chrome-demo__book-word${sheet === 'book' ? ' is-on' : ''}`}
+                onClick={() => toggle('book')}
+              >
+                Buchen
+              </button>
+            </div>
+          </div>
+        ) : dock === 'icons' || dock === 'icons-home' ? (
           <>
-            <button
-              type="button"
-              className="chrome-demo__icon-only"
-              aria-label="Start"
-              onClick={() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-            >
-              <House size={24} strokeWidth={1.5} />
-            </button>
+            {dock === 'icons-home' ? (
+              <button
+                type="button"
+                className="chrome-demo__icon-only"
+                aria-label="Start"
+                onClick={() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+              >
+                <House size={24} strokeWidth={1.5} />
+              </button>
+            ) : null}
             <button
               type="button"
               className={`chrome-demo__icon-only${sheet === 'menu' ? ' is-on' : ''}`}
@@ -178,7 +243,7 @@ export function ChromeDemo({
         )}
       </nav>
 
-      {chatFloat ? (
+      {dock !== 'bar' ? (
         <button
           type="button"
           className={`chrome-demo__chat-fab${sheet === 'chat' ? ' is-on' : ''}`}
@@ -231,6 +296,7 @@ export function MobileChromeLab() {
             nach dem Scrollen ausblenden. Alles Wichtige wandert in eine schmale App-Leiste
             unten — Buchen öffnet die Verfügbarkeit erst auf Zuruf.
           </p>
+          <ChromeLabSwitch current="/mobil-leiste" />
         </div>
       </header>
 

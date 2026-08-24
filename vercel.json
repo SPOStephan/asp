@@ -19,6 +19,8 @@
     { "source": "/menue-mobil", "destination": "/index.html" },
     { "source": "/mobil-leiste", "destination": "/index.html" },
     { "source": "/mobil-leiste2", "destination": "/index.html" },
+    { "source": "/mobil-leiste3", "destination": "/index.html" },
+    { "source": "/mobil-leiste4", "destination": "/index.html" },
     { "source": "/vorschau", "destination": "/index.html" }
   ]
 }
