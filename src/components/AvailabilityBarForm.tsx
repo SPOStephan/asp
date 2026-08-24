@@ -17,11 +17,12 @@ import {
 
 interface AvailabilityBarFormProps {
   idPrefix?: string;
+  hideExtras?: boolean;
 }
 
 type OpenLayer = 'dates' | 'guests' | null;
 
-function AvailabilityBarFormModern({ idPrefix = '' }: AvailabilityBarFormProps) {
+function AvailabilityBarFormModern({ idPrefix = '', hideExtras = false }: AvailabilityBarFormProps) {
   const hotel = useHotel();
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState<OpenLayer>(null);
@@ -146,30 +147,34 @@ function AvailabilityBarFormModern({ idPrefix = '' }: AvailabilityBarFormProps) 
         <Search size={16} strokeWidth={1.5} />
         Verfügbarkeit prüfen
       </button>
-      <div className="availability-bar__tools" aria-label="Schnelle Kontakte">
-        <a className="availability-bar__tool" href="#" aria-label="Geschenkgutscheine">
-          <Gift size={18} strokeWidth={1.5} />
-        </a>
-        <a className="availability-bar__tool" href={mailHref} aria-label="E-Mail schreiben">
-          <Mail size={18} strokeWidth={1.5} />
-        </a>
-        <a className="availability-bar__tool" href={phoneHref} aria-label="Anrufen">
-          <Phone size={18} strokeWidth={1.5} />
-        </a>
-        <a className="availability-bar__tool" href="#anreise" aria-label="Anreise und Lage">
-          <MapPin size={18} strokeWidth={1.5} />
-        </a>
-      </div>
-      <button type="button" className="availability-bar__chat" aria-label="Frage stellen">
-        <AiChatIcon />
-      </button>
+      {hideExtras ? null : (
+        <>
+          <div className="availability-bar__tools" aria-label="Schnelle Kontakte">
+            <a className="availability-bar__tool" href="#" aria-label="Geschenkgutscheine">
+              <Gift size={18} strokeWidth={1.5} />
+            </a>
+            <a className="availability-bar__tool" href={mailHref} aria-label="E-Mail schreiben">
+              <Mail size={18} strokeWidth={1.5} />
+            </a>
+            <a className="availability-bar__tool" href={phoneHref} aria-label="Anrufen">
+              <Phone size={18} strokeWidth={1.5} />
+            </a>
+            <a className="availability-bar__tool" href="#anreise" aria-label="Anreise und Lage">
+              <MapPin size={18} strokeWidth={1.5} />
+            </a>
+          </div>
+          <button type="button" className="availability-bar__chat" aria-label="Frage stellen">
+            <AiChatIcon />
+          </button>
+        </>
+      )}
     </form>
   );
 }
 
-export function AvailabilityBarForm({ idPrefix = '' }: AvailabilityBarFormProps) {
+export function AvailabilityBarForm({ idPrefix = '', hideExtras = false }: AvailabilityBarFormProps) {
   if (AVAILABILITY_UI_MODE === 'legacy') {
     return <AvailabilityBarFormLegacy idPrefix={idPrefix} />;
   }
-  return <AvailabilityBarFormModern idPrefix={idPrefix} />;
+  return <AvailabilityBarFormModern idPrefix={idPrefix} hideExtras={hideExtras} />;
 }

@@ -14,6 +14,7 @@ import { Facts } from './components/Facts';
 import { Newsletter } from './components/Newsletter';
 import { Footer } from './components/Footer';
 import { FixedAvailabilityBar } from './components/FixedAvailabilityBar';
+import { MobileChromeDock } from './components/MobileChromeDock';
 import { WellnessPage } from './pages/WellnessPage';
 import { WellnessTopicPage } from './pages/WellnessTopicPage';
 import { FAQPage } from './pages/FAQPage';
@@ -35,6 +36,7 @@ import { BlogPage } from './pages/BlogPage';
 import { BlogPostPage } from './pages/BlogPostPage';
 import { ImpressionsPage } from './pages/ImpressionsPage';
 import { useHotelContent } from './context/HotelContext';
+import { usePhoneChrome } from './lib/phoneChrome';
 import { LoadingScreen, ErrorScreen } from './components/Loading';
 import { useEffect } from 'react';
 
@@ -66,12 +68,19 @@ function App() {
   const isFontLab = location.pathname === '/schriften';
   const isMenuLab = location.pathname === '/menue-mobil';
   const isChromeLab = location.pathname.startsWith('/mobil-leiste');
+  const isPhone = usePhoneChrome();
+  const showDock = isPhone && !isFontLab && !isMenuLab && !isChromeLab;
+  const showFixedBar = !isHome && !isFontLab && !isMenuLab && !isChromeLab && !isPhone;
   const { loading, error } = useHotelContent();
 
   useEffect(() => {
-    document.body.classList.toggle('has-fixed-bar', !isHome && !isFontLab && !isMenuLab && !isChromeLab);
-    return () => document.body.classList.remove('has-fixed-bar');
-  }, [isHome, isFontLab, isMenuLab, isChromeLab]);
+    document.body.classList.toggle('has-fixed-bar', showFixedBar);
+    document.body.classList.toggle('has-mobile-dock', showDock);
+    return () => {
+      document.body.classList.remove('has-fixed-bar');
+      document.body.classList.remove('has-mobile-dock');
+    };
+  }, [showFixedBar, showDock]);
 
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} />;
@@ -103,7 +112,8 @@ function App() {
       </Routes>
       <Footer />
       {isTypePreview && <TypePreviewHomeNote />}
-      {!isHome && !isFontLab && !isMenuLab && !isChromeLab && <FixedAvailabilityBar />}
+      {showFixedBar ? <FixedAvailabilityBar /> : null}
+      {showDock ? <MobileChromeDock /> : null}
     </div>
   );
 }

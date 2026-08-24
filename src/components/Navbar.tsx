@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useSection, useHotel } from '../context/HotelContext';
+import { useMobileChrome } from '../context/MobileChromeContext';
 import { remapSiteHref } from '../lib/links';
+import { isBookingHash, usePhoneChrome } from '../lib/phoneChrome';
 import { menuGroupHref } from '../lib/wellness';
 
 interface NavLink {
@@ -104,6 +106,7 @@ function CompactMenu({
   inquireHref,
   bookLabel,
   bookHref,
+  onBook,
 }: {
   groups: MenuGroup[];
   openGroup: string | null;
@@ -113,6 +116,7 @@ function CompactMenu({
   inquireHref?: string;
   bookLabel?: string;
   bookHref?: string;
+  onBook?: () => void;
 }) {
   const group = groups.find((item) => item.title === openGroup) ?? null;
   const groupHref = group ? mobileGroupHref(group.title, group.href) : undefined;
@@ -195,7 +199,10 @@ function CompactMenu({
         <button type="button" onClick={() => onNavigate(inquireHref || '#anfragen', inquireLabel)}>
           {inquireLabel || 'Anfragen'}
         </button>
-        <button type="button" onClick={() => onNavigate(bookHref || '#buchung', bookLabel)}>
+        <button
+          type="button"
+          onClick={() => (onBook ? onBook() : onNavigate(bookHref || '#buchung', bookLabel))}
+        >
           {bookLabel || 'Buchen'}
         </button>
       </div>
@@ -218,6 +225,8 @@ export function Navbar() {
   const navigate = useNavigate();
   const data = useSection('navbar');
   const hotel = useHotel();
+  const chrome = useMobileChrome();
+  const isPhone = usePhoneChrome();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -242,6 +251,15 @@ export function Navbar() {
   useEffect(() => {
     if (!menuOpen) setOpenGroup(null);
   }, [menuOpen]);
+
+  useEffect(() => {
+    chrome.registerMenu({
+      open: () => setMenuOpen(true),
+      close: () => setMenuOpen(false),
+      toggle: () => setMenuOpen((current) => !current),
+    });
+    return () => chrome.registerMenu(null);
+  }, [chrome]);
 
   useEffect(() => {
     if (!menuOpen || !barRef.current) return;
@@ -285,6 +303,10 @@ export function Navbar() {
     setOpenGroup(null);
     setMenuOpen(false);
     const target = remapSiteHref(href, label);
+    if (isPhone && isBookingHash(target)) {
+      chrome.openBook();
+      return;
+    }
     if (target.startsWith('#')) {
       if (window.location.pathname !== '/') {
         navigate('/');
@@ -464,6 +486,14 @@ export function Navbar() {
                 inquireHref={data.cta_solid_href}
                 bookLabel={data.cta_solid_text}
                 bookHref={data.cta_solid_href}
+                onBook={
+                  isPhone
+                    ? () => {
+                        setMenuOpen(false);
+                        chrome.openBook();
+                      }
+                    : undefined
+                }
               />
             ) : (
               <div className="navbar__panel-inner">
