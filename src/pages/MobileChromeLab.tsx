@@ -152,44 +152,42 @@ export function ChromeDemo({
 
       <nav className="chrome-demo__dock" aria-label="App-Leiste">
         {dock === 'stack' ? (
-          <div className="chrome-demo__stack">
-            <div className="chrome-demo__tier chrome-demo__tier--fields">
-              <button type="button" onClick={() => toggle('book')}>
-                <Users size={20} strokeWidth={1.5} />
-                <span>
-                  <em>Gäste</em>
-                  2 Erwachsene
-                </span>
-              </button>
-              <button type="button" onClick={() => toggle('book')}>
-                <CalendarDays size={20} strokeWidth={1.5} />
-                <span>
-                  <em>Reisezeit</em>
-                  An- und Abreise
-                </span>
-              </button>
-            </div>
-            <div className="chrome-demo__tier chrome-demo__tier--actions">
-              <button
-                type="button"
-                className={`chrome-demo__icon-only${sheet === 'menu' ? ' is-on' : ''}`}
-                aria-label="Menü"
-                onClick={() => toggle('menu')}
-              >
-                <Menu size={26} strokeWidth={1.5} />
-              </button>
-              <a className="chrome-demo__icon-only" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
-                <Phone size={24} strokeWidth={1.5} />
-              </a>
-              <button
-                type="button"
-                className={`chrome-demo__book-word${sheet === 'book' ? ' is-on' : ''}`}
-                onClick={() => toggle('book')}
-              >
-                Buchen
-              </button>
-            </div>
-          </div>
+          <>
+            <button
+              type="button"
+              className={`chrome-demo__icon-only${sheet === 'menu' ? ' is-on' : ''}`}
+              aria-label="Menü"
+              onClick={() => toggle('menu')}
+            >
+              <Menu size={22} strokeWidth={1.5} />
+            </button>
+            <a className="chrome-demo__icon-only" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
+              <Phone size={20} strokeWidth={1.5} />
+            </a>
+            <button
+              type="button"
+              className={`chrome-demo__gold${sheet === 'book' ? ' is-on' : ''}`}
+              aria-label="Gäste"
+              onClick={() => toggle('book')}
+            >
+              <Users size={20} strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
+              className={`chrome-demo__gold${sheet === 'book' ? ' is-on' : ''}`}
+              aria-label="Reisezeitraum"
+              onClick={() => toggle('book')}
+            >
+              <CalendarDays size={20} strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
+              className={`chrome-demo__book-word chrome-demo__gold${sheet === 'book' ? ' is-on' : ''}`}
+              onClick={() => toggle('book')}
+            >
+              Buchen
+            </button>
+          </>
         ) : dock === 'icons' || dock === 'icons-home' ? (
           <>
             {dock === 'icons-home' ? (

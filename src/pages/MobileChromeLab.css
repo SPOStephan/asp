@@ -331,81 +331,32 @@ body.chrome-lab-open { overflow: hidden; }
 }
 
 .chrome-demo.is-stack .chrome-demo__dock {
-  display: block;
-  height: auto;
-  min-height: 0;
+  grid-template-columns: 40px 40px 48px 48px 1fr;
+  height: 56px;
+  min-height: 56px;
 }
 
 .chrome-demo.is-stack .chrome-demo__sheet {
-  bottom: 110px;
+  bottom: 56px;
 }
 
 .chrome-demo.is-stack .chrome-demo__chat-fab {
-  bottom: 100px;
+  bottom: 46px;
 }
 
-.chrome-demo__stack {
-  display: flex;
-  flex-direction: column;
+.chrome-demo.is-stack .chrome-demo__icon-only {
+  color: var(--neutral-0) !important;
 }
 
-.chrome-demo__tier--fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 54px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+.chrome-demo.is-stack .chrome-demo__gold {
+  color: var(--accent-400) !important;
+  background: rgba(149, 118, 64, 0.18);
+  border-right-color: rgba(149, 118, 64, 0.28) !important;
 }
 
-.chrome-demo__dock .chrome-demo__tier--fields button {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  min-height: 54px;
-  padding: 8px 14px;
-  color: var(--neutral-0);
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0;
-  text-transform: none;
-  text-align: left;
-}
-
-.chrome-demo__tier--fields button + button {
-  border-left: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.chrome-demo__tier--fields em {
-  display: block;
-  margin-bottom: 2px;
-  font-style: normal;
-  font-size: 0.58rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.62);
-}
-
-.chrome-demo__tier--actions {
-  display: grid;
-  grid-template-columns: 56px 56px 1fr;
-  height: 56px;
-}
-
-.chrome-demo__tier--actions > a,
-.chrome-demo__tier--actions > button {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: 56px;
-  color: var(--neutral-0);
-  border-right: 1px solid rgba(255, 255, 255, 0.22);
-}
-
-.chrome-demo__tier--actions > :last-child {
-  border-right: 0;
+.chrome-demo.is-stack .chrome-demo__book-word {
+  font-size: 0.82rem !important;
+  letter-spacing: 0.18em !important;
 }
 
 .chrome-demo.has-chat-fab .chrome-demo__dock > a,
