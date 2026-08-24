@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useSection, useHotel } from '../context/HotelContext';
 import { remapSiteHref } from '../lib/links';
@@ -87,12 +87,134 @@ const FALLBACK_GROUPS: MenuGroup[] = [
   },
 ];
 
+function mobileGroupHref(title: string, href?: string) {
+  const known = menuGroupHref(title, href);
+  if (known) return known;
+  if (title === 'Erlebnisse') return '#highlights';
+  if (title === 'Hotel') return '#welcome';
+  return undefined;
+}
+
+function CompactMenu({
+  groups,
+  openGroup,
+  onOpenGroup,
+  onNavigate,
+  inquireLabel,
+  inquireHref,
+  bookLabel,
+  bookHref,
+}: {
+  groups: MenuGroup[];
+  openGroup: string | null;
+  onOpenGroup: (title: string | null) => void;
+  onNavigate: (href: string, label?: string) => void;
+  inquireLabel?: string;
+  inquireHref?: string;
+  bookLabel?: string;
+  bookHref?: string;
+}) {
+  const group = groups.find((item) => item.title === openGroup) ?? null;
+  const groupHref = group ? mobileGroupHref(group.title, group.href) : undefined;
+
+  return (
+    <div className="navbar__steps">
+      <div className="navbar__steps-body">
+        {group ? (
+          <>
+            <h2 className="navbar__group-title">{group.title}</h2>
+            <ul className="navbar__group-links">
+              {groupHref &&
+              !group.links.some((link) => remapSiteHref(link.href, link.label) === groupHref) ? (
+                <li>
+                  <a
+                    className="navbar__hub"
+                    href={groupHref}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onNavigate(groupHref, group.title);
+                    }}
+                  >
+                    {group.title}
+                  </a>
+                </li>
+              ) : null}
+              {group.links.map((link) => (
+                <li key={`${group.title}-${link.label}`}>
+                  <a
+                    href={remapSiteHref(link.href, link.label)}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onNavigate(link.href, link.label);
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <ul className="navbar__roots">
+            {groups.map((item) => {
+              const hub = mobileGroupHref(item.title, item.href);
+              return (
+                <li key={item.title}>
+                  <div className="navbar__root">
+                    {hub ? (
+                      <a
+                        href={hub}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          onNavigate(hub, item.title);
+                        }}
+                      >
+                        {item.title}
+                      </a>
+                    ) : (
+                      <button type="button" onClick={() => onOpenGroup(item.title)}>
+                        {item.title}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="navbar__more"
+                      aria-label={`${item.title}: Unterpunkte`}
+                      onClick={() => onOpenGroup(item.title)}
+                    >
+                      <ChevronRight size={18} strokeWidth={1.5} />
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      <div className="navbar__dock">
+        <button type="button" onClick={() => onNavigate(inquireHref || '#anfragen', inquireLabel)}>
+          {inquireLabel || 'Anfragen'}
+        </button>
+        <button type="button" onClick={() => onNavigate(bookHref || '#buchung', bookLabel)}>
+          {bookLabel || 'Buchen'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [compact, setCompact] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches
+  );
+  const [barHeight, setBarHeight] = useState(108);
   const [langOpen, setLangOpen] = useState(false);
   const [lang, setLang] = useState('de');
   const langRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const data = useSection('navbar');
   const hotel = useHotel();
@@ -110,17 +232,36 @@ export function Navbar() {
   }, [menuOpen]);
 
   useEffect(() => {
+    const media = window.matchMedia('(max-width: 900px)');
+    const apply = () => setCompact(media.matches);
+    apply();
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) setOpenGroup(null);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen || !barRef.current) return;
+    setBarHeight(barRef.current.getBoundingClientRect().height);
+  }, [menuOpen, openGroup, compact]);
+
+  useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
 
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false);
+      if (event.key !== 'Escape') return;
+      if (openGroup) setOpenGroup(null);
+      else setMenuOpen(false);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [menuOpen]);
+  }, [menuOpen, openGroup]);
 
   useEffect(() => {
     if (!langOpen) return;
@@ -141,6 +282,7 @@ export function Navbar() {
   }, [langOpen]);
 
   const handleNavClick = (href: string, label?: string) => {
+    setOpenGroup(null);
     setMenuOpen(false);
     const target = remapSiteHref(href, label);
     if (target.startsWith('#')) {
@@ -173,10 +315,16 @@ export function Navbar() {
     <nav
       className={`navbar${scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}`}
       aria-label="Hauptnavigation"
+      ref={barRef}
     >
       <div className="navbar__inner">
         <div className="navbar__left">
-          {menuOpen ? null : (
+          {menuOpen && compact && openGroup ? (
+            <button type="button" className="navbar__close" onClick={() => setOpenGroup(null)}>
+              <ChevronLeft size={18} strokeWidth={1.6} />
+              <span>Zurück</span>
+            </button>
+          ) : menuOpen ? null : (
             <TextCta
               className={lightBar ? '' : 'text-cta--on-dark'}
               onClick={() => {
@@ -301,45 +449,62 @@ export function Navbar() {
             aria-label="Menü schließen"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="navbar__panel" id="hauptmenue">
-            <div className="navbar__panel-inner">
-              {menuGroups.map((group) => {
-                const groupHref = menuGroupHref(group.title, group.href);
-                return (
-                <div key={group.title} className="navbar__group">
-                  {groupHref ? (
-                    <a
-                      className="navbar__group-title"
-                      href={groupHref}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavClick(groupHref, group.title);
-                      }}
-                    >
-                      {group.title}
-                    </a>
-                  ) : (
-                    <h2 className="navbar__group-title">{group.title}</h2>
-                  )}
-                  <ul className="navbar__group-links">
-                    {group.links.map((link) => (
-                      <li key={`${group.title}-${link.label}`}>
+          <div
+            className={`navbar__panel${compact ? ' navbar__panel--compact' : ''}`}
+            id="hauptmenue"
+            style={compact ? { top: barHeight, height: `calc(100dvh - ${barHeight}px)` } : undefined}
+          >
+            {compact ? (
+              <CompactMenu
+                groups={menuGroups}
+                openGroup={openGroup}
+                onOpenGroup={setOpenGroup}
+                onNavigate={handleNavClick}
+                inquireLabel={data.cta_text}
+                inquireHref={data.cta_solid_href}
+                bookLabel={data.cta_solid_text}
+                bookHref={data.cta_solid_href}
+              />
+            ) : (
+              <div className="navbar__panel-inner">
+                {menuGroups.map((group) => {
+                  const groupHref = menuGroupHref(group.title, group.href);
+                  return (
+                    <div key={group.title} className="navbar__group">
+                      {groupHref ? (
                         <a
-                          href={remapSiteHref(link.href, link.label)}
+                          className="navbar__group-title"
+                          href={groupHref}
                           onClick={(e) => {
                             e.preventDefault();
-                            handleNavClick(link.href, link.label);
+                            handleNavClick(groupHref, group.title);
                           }}
                         >
-                          {link.label}
+                          {group.title}
                         </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                );
-              })}
-            </div>
+                      ) : (
+                        <h2 className="navbar__group-title">{group.title}</h2>
+                      )}
+                      <ul className="navbar__group-links">
+                        {group.links.map((link) => (
+                          <li key={`${group.title}-${link.label}`}>
+                            <a
+                              href={remapSiteHref(link.href, link.label)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleNavClick(link.href, link.label);
+                              }}
+                            >
+                              {link.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </>
       )}
