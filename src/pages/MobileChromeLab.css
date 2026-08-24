@@ -194,7 +194,7 @@ body.chrome-lab-open { overflow: hidden; }
 }
 
 .chrome-demo.has-chat-fab .chrome-demo__sheet {
-  bottom: 60px;
+  bottom: 56px;
 }
 
 .chrome-demo__sheet {
@@ -296,8 +296,9 @@ body.chrome-lab-open { overflow: hidden; }
 
 .chrome-demo.has-chat-fab .chrome-demo__dock {
   grid-template-columns: 1fr 1.35fr 1fr;
-  min-height: 60px;
-  padding: 0;
+  height: 56px;
+  min-height: 56px;
+  padding: 0 !important;
   align-items: stretch;
 }
 
@@ -308,10 +309,16 @@ body.chrome-lab-open { overflow: hidden; }
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 60px;
+  height: 56px;
+  min-height: 56px;
   padding: 0;
+  line-height: 1;
   color: var(--neutral-0);
   border-right: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.chrome-demo.has-chat-fab .chrome-demo__dock svg {
+  display: block;
 }
 
 .chrome-demo.has-chat-fab .chrome-demo__dock > :last-child {
@@ -326,12 +333,13 @@ body.chrome-lab-open { overflow: hidden; }
   color: var(--neutral-0) !important;
   font-size: 0.95rem !important;
   letter-spacing: 0.22em !important;
+  line-height: 1 !important;
 }
 
 .chrome-demo__chat-fab {
   position: absolute;
   right: 16px;
-  bottom: 52px;
+  bottom: 48px;
   z-index: 6;
   display: grid;
   place-items: center;
