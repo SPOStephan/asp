@@ -15,6 +15,7 @@ import { Newsletter } from './components/Newsletter';
 import { Footer } from './components/Footer';
 import { FixedAvailabilityBar } from './components/FixedAvailabilityBar';
 import { WellnessPage } from './pages/WellnessPage';
+import { WellnessTopicPage } from './pages/WellnessTopicPage';
 import { FAQPage } from './pages/FAQPage';
 import { OffersPage } from './pages/OffersPage';
 import { OfferDetailPage } from './pages/OfferDetailPage';
@@ -70,6 +71,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/vorschau" element={<HomePage />} />
         <Route path="/wellness" element={<WellnessPage />} />
+        <Route path="/wellness/:topicId" element={<WellnessTopicPage />} />
         <Route path="/angebote" element={<OffersPage />} />
         <Route path="/angebote/:offerId" element={<OfferDetailPage />} />
         <Route path="/zimmer" element={<RoomsCardsPage />} />

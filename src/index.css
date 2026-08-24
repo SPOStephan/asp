@@ -275,6 +275,7 @@ img { display: block; max-width: 100%; }
   align-content: center;
 }
 .navbar__group-title {
+  display: inline-block;
   margin: 0 0 18px;
   font-family: var(--font-script);
   font-weight: 400;
@@ -282,7 +283,13 @@ img { display: block; max-width: 100%; }
   font-size: clamp(1.8rem, 2.4vw, 2.6rem);
   line-height: 0.9;
   color: var(--accent-400);
+  text-decoration: none;
 }
+a.navbar__group-title {
+  cursor: pointer;
+  transition: color var(--transition);
+}
+a.navbar__group-title:hover { color: var(--primary-500); }
 .navbar__group-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .navbar__group-links a {
   font-size: 0.78rem;
@@ -1833,6 +1840,304 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .culinary-page__note { margin-bottom: 88px; padding-top: 48px; }
 }
 
+/* ==================== WELLNESS HUB ==================== */
+.wellness-hub,
+.wellness-topic {
+  position: relative;
+  z-index: 1;
+  background: var(--neutral-50);
+}
+.wellness-hub__intro {
+  width: 90%;
+  max-width: 34em;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+.wellness-hub__day {
+  width: 90%;
+  max-width: 36em;
+  margin: 48px auto 0;
+  padding-top: 40px;
+  border-top: 1px solid var(--neutral-200);
+  text-align: center;
+}
+.wellness-hub__day-kicker,
+.wellness-chapter__kicker,
+.overlap-stage__kicker,
+.wellness-tile__kicker {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-400);
+}
+.wellness-hub__day-title {
+  margin: 0 0 12px;
+  font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+  font-weight: 500;
+}
+.wellness-hub__day-text {
+  margin: 0 auto 24px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-600);
+}
+.wellness-hub__tiles {
+  width: 90%;
+  margin: 64px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.4vw;
+}
+.wellness-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--neutral-900);
+  color: inherit;
+}
+.wellness-tile__image {
+  position: absolute;
+  inset: 0;
+}
+.wellness-tile__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.wellness-tile:hover .wellness-tile__image img { transform: scale(1.06); }
+.wellness-tile__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(19, 59, 92, 0.08) 0%, rgba(19, 59, 92, 0.62) 100%);
+}
+.wellness-tile__content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: 28px 24px;
+}
+.wellness-tile__kicker { color: rgba(255,255,255,0.78); }
+.wellness-tile__name {
+  margin: 0;
+  font-size: clamp(1.25rem, 1.8vw, 1.7rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--neutral-0);
+}
+.wellness-tile__arrow {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,0.55);
+  color: var(--neutral-0);
+}
+.wellness-hub__chapters {
+  width: 90%;
+  margin: 88px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 96px;
+}
+.wellness-chapter {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 5vw;
+  align-items: center;
+}
+.wellness-chapter--reverse { grid-template-columns: 0.9fr 1.1fr; }
+.wellness-chapter--reverse .wellness-chapter__copy { order: -1; }
+.wellness-chapter__photo {
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 5 / 4;
+  background: var(--neutral-100);
+}
+.wellness-chapter__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wellness-chapter__title,
+.overlap-stage__title {
+  margin: 0 0 16px;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+.wellness-chapter__text,
+.overlap-stage__text {
+  margin: 0 0 28px;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--neutral-600);
+}
+.overlap-stage {
+  width: 90%;
+  margin: 96px auto 0;
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 6vw;
+  align-items: center;
+}
+.overlap-stage__visual {
+  position: relative;
+  min-height: 520px;
+}
+.overlap-stage__front,
+.overlap-stage__back {
+  margin: 0;
+  overflow: hidden;
+  background: var(--neutral-100);
+}
+.overlap-stage__front {
+  position: relative;
+  z-index: 2;
+  width: 66%;
+  aspect-ratio: 1;
+}
+.overlap-stage__back {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 64%;
+  aspect-ratio: 16 / 10;
+}
+.overlap-stage__front img,
+.overlap-stage__back img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wellness-hub__note {
+  width: 90%;
+  margin: 64px auto 120px;
+  padding-top: 64px;
+  border-top: 1px solid var(--neutral-200);
+  text-align: center;
+}
+.wellness-hub__note-title {
+  margin: 0 0 12px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 500;
+}
+.wellness-hub__note-text {
+  max-width: 30em;
+  margin: 0 auto 28px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--neutral-500);
+}
+.wellness-topic__copy {
+  width: 90%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.wellness-topic__copy > p {
+  margin: 0 0 22px;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--neutral-600);
+}
+.wellness-topic__facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 5vw;
+  margin: 8px 0 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--neutral-200);
+}
+.wellness-topic__facts dt {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+}
+.wellness-topic__facts dd {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: var(--neutral-700);
+}
+.wellness-topic__prices { margin: 40px 0 0; }
+.wellness-topic__prices-title {
+  margin: 0 0 16px;
+  font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+  font-weight: 500;
+}
+.wellness-topic__prices ul { list-style: none; margin: 0; padding: 0; }
+.wellness-topic__prices li {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--neutral-200);
+  font-size: 1.02rem;
+  color: var(--neutral-700);
+}
+.wellness-topic__prices small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.82rem;
+  color: var(--neutral-500);
+}
+.wellness-topic__prices strong { font-weight: 500; white-space: nowrap; }
+.wellness-topic__price-note {
+  margin: 20px 0 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--neutral-500);
+}
+.wellness-topic__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 36px;
+  margin-top: 36px;
+}
+.wellness-topic .overlap-stage { margin-top: 72px; padding-bottom: 120px; }
+
+@media (max-width: 900px) {
+  .wellness-hub__tiles { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .wellness-hub__chapters { gap: 72px; margin-top: 64px; }
+  .wellness-chapter,
+  .wellness-chapter--reverse { grid-template-columns: 1fr; gap: 28px; }
+  .wellness-chapter--reverse .wellness-chapter__copy { order: 0; }
+  .overlap-stage {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    margin-top: 64px;
+  }
+  .overlap-stage__visual { min-height: 360px; }
+  .overlap-stage__front { width: 72%; }
+  .overlap-stage__back { width: 70%; }
+  .wellness-topic__facts { grid-template-columns: 1fr; }
+  .wellness-hub__note,
+  .wellness-topic .overlap-stage { margin-bottom: 88px; padding-bottom: 0; }
+}
+
+@media (max-width: 600px) {
+  .wellness-hub__tiles { grid-template-columns: 1fr; }
+  .wellness-tile { aspect-ratio: 16 / 10; }
+}
+
 /* ==================== ROOMS PAGE ==================== */
 .rooms-page {
   position: relative;
@@ -2842,6 +3147,12 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .culinary-venue__name,
 .culinary-page__beat-title,
 .culinary-page__note-title,
+.wellness-hub__day-title,
+.wellness-tile__name,
+.wellness-chapter__title,
+.overlap-stage__title,
+.wellness-hub__note-title,
+.wellness-topic__prices-title,
 .rooms-page__name,
 .rooms-page__note-title,
 .rooms-lookbook__title,

@@ -4,6 +4,7 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/wellness", "destination": "/index.html" },
+    { "source": "/wellness/:path*", "destination": "/index.html" },
     { "source": "/angebote", "destination": "/index.html" },
     { "source": "/angebote/:path*", "destination": "/index.html" },
     { "source": "/zimmer", "destination": "/index.html" },
