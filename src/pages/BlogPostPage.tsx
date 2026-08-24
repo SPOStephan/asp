@@ -2,22 +2,30 @@ import { useEffect } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { BlogBlocks } from '../components/BlogBlocks';
 import { BlogCard } from '../components/BlogCard';
+import { BlogPromo } from '../components/BlogPromo';
+import { BlogToc } from '../components/BlogToc';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
-import {
-  BLOG_TOPIC_LABEL,
-  formatBlogDate,
-  resolveBlogPosts,
-} from '../lib/blog';
+import { blogHeadings, BLOG_TOPIC_LABEL, formatBlogDate, resolveBlogPosts } from '../lib/blog';
+import { resolveOfferStories } from '../lib/offers';
 
 export function BlogPostPage() {
   const { postSlug } = useParams();
   const hotel = useHotel();
   const page = useSection('blog_page');
+  const offersPage = useSection('offers_page');
+  const homeOffers = useSection('offers');
   const posts = resolveBlogPosts(page?.items);
+  const offers = resolveOfferStories(offersPage?.items, homeOffers?.items);
   const post = posts.find((item) => item.slug === postSlug || item.id === postSlug);
   const more = posts.filter((item) => item.id !== post?.id).slice(0, 2);
+  const headings = post ? blogHeadings(post.blocks) : [];
+  const promoOffer =
+    post?.promo?.enabled === false
+      ? undefined
+      : offers.find((item) => item.id === post?.promo?.offer_id) ??
+        offers.find((item) => item.id === post?.promo?.suggested_offer_id);
 
   useEffect(() => {
     if (!post) return;
@@ -33,6 +41,10 @@ export function BlogPostPage() {
     return <Navigate to="/blog" replace />;
   }
 
+  const promo = promoOffer ? <BlogPromo offer={promoOffer} /> : null;
+  const inlinePromo = post.promo?.placement === 'inline' ? promo : null;
+  const afterPromo = post.promo?.placement !== 'inline' ? promo : null;
+
   return (
     <main>
       <SubpageHero
@@ -44,11 +56,17 @@ export function BlogPostPage() {
       >
         <article className="blog-post">
           <p className="blog-post__lead">{post.excerpt}</p>
-          <BlogBlocks blocks={post.blocks} />
 
-          <div className="blog-post__links">
-            <TextCta href="/blog">Alle Beiträge</TextCta>
-            <TextCta href="#buchung">Jetzt anfragen</TextCta>
+          <div className={`blog-post__layout${headings.length ? ' has-toc' : ''}`}>
+            {headings.length ? <BlogToc blocks={post.blocks} /> : null}
+            <div className="blog-post__body">
+              <BlogBlocks blocks={post.blocks} inlinePromo={inlinePromo} />
+              {afterPromo}
+              <div className="blog-post__links">
+                <TextCta href="/blog">Alle Beiträge</TextCta>
+                <TextCta href="#buchung">Jetzt anfragen</TextCta>
+              </div>
+            </div>
           </div>
 
           {more.length ? (

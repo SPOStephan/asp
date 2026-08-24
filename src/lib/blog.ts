@@ -8,6 +8,15 @@ export type BlogBlock =
   | { type: 'image'; src: string; alt: string; caption?: string }
   | { type: 'video'; src: string; provider?: 'file' | 'youtube'; caption?: string; poster?: string };
 
+export type BlogPromoPlacement = 'inline' | 'after';
+
+export interface BlogPromo {
+  enabled: boolean;
+  offer_id: string;
+  placement: BlogPromoPlacement;
+  suggested_offer_id: string;
+}
+
 export interface BlogPost {
   id: string;
   slug: string;
@@ -18,6 +27,7 @@ export interface BlogPost {
   hero_image_alt: string;
   published_at: string;
   source: BlogSource;
+  promo?: BlogPromo;
   blocks: BlogBlock[];
 }
 
@@ -61,6 +71,12 @@ export const BLOG_PAGE_FALLBACK = {
       hero_image_alt: 'Wellnessbereich mit Blick zur Nordsee',
       published_at: '2026-08-20',
       source: 'human',
+      promo: {
+        enabled: true,
+        offer_id: 'wellnessurlaub',
+        placement: 'inline',
+        suggested_offer_id: 'wellnessurlaub',
+      },
       blocks: [
         {
           type: 'paragraph',
@@ -89,6 +105,10 @@ export const BLOG_PAGE_FALLBACK = {
           text: 'Wer Anwendungen will, reserviert sie am besten mit der Zimmerbuchung. Wer nur liegen will, darf das auch. Handtuch, Bademantel, ein Platz am Fenster — mehr braucht der Nachmittag nicht.',
         },
         {
+          type: 'heading',
+          text: 'Der Abend übernimmt',
+        },
+        {
           type: 'paragraph',
           text: 'Abends wird die Luft kühler. Ein Tisch im Haus, ein Glas an der Bar, der Wind von See. Erholung hier ist keine Methode. Es ist die Landschaft, die den Kalender übernimmt.',
         },
@@ -105,6 +125,12 @@ export const BLOG_PAGE_FALLBACK = {
       hero_image_alt: 'Familie im ambassador hotel & spa',
       published_at: '2026-08-14',
       source: 'human',
+      promo: {
+        enabled: true,
+        offer_id: 'feiertage',
+        placement: 'after',
+        suggested_offer_id: 'feiertage',
+      },
       blocks: [
         {
           type: 'paragraph',
@@ -139,6 +165,10 @@ export const BLOG_PAGE_FALLBACK = {
           caption: 'Drei Generationen, ein Horizont.',
         },
         {
+          type: 'heading',
+          text: 'Ohne fertigen Plan',
+        },
+        {
           type: 'paragraph',
           text: 'Der beste Familienurlaub hier ist der, der nicht vollgeplant wird. Ein Termin im Mini-Spa für die Kleinen, ein stiller Gang für die Großen, dazwischen der Deich. SPO hält das aus.',
         },
@@ -155,6 +185,12 @@ export const BLOG_PAGE_FALLBACK = {
       hero_image_alt: 'Weite der Nordseeküste bei Sankt Peter-Ording',
       published_at: '2026-08-08',
       source: 'human',
+      promo: {
+        enabled: true,
+        offer_id: 'wellnessurlaub',
+        placement: 'after',
+        suggested_offer_id: 'wellnessurlaub',
+      },
       blocks: [
         {
           type: 'paragraph',
@@ -181,6 +217,10 @@ export const BLOG_PAGE_FALLBACK = {
         {
           type: 'paragraph',
           text: 'Drinnen bleibt der Spa den Menschen. Nach dem Gang über den Belag: Wasser, Sauna, ein stiller Tisch. Der Hund ruht, der Tag teilt sich. So bleibt der Urlaub für beide Seiten.',
+        },
+        {
+          type: 'heading',
+          text: 'Ankommen mit Hund',
         },
         {
           type: 'paragraph',
@@ -216,10 +256,54 @@ export function resolveBlogPosts(items?: RawPost[]): BlogPost[] {
         hero_image_alt: item.hero_image_alt ?? fallback.hero_image_alt,
         published_at: item.published_at ?? fallback.published_at,
         source: item.source ?? fallback.source,
+        promo: resolvePromo(item.promo, item.topic ?? fallback.topic, fallback.promo),
         blocks: resolveBlocks(item.blocks, fallback.blocks),
       };
     })
     .sort((a, b) => (a.published_at < b.published_at ? 1 : -1));
+}
+
+const TOPIC_PROMO: Record<BlogTopicId, string> = {
+  erholung: 'wellnessurlaub',
+  familie: 'feiertage',
+  hund: 'wellnessurlaub',
+};
+
+export function suggestPromoOfferId(topic: BlogTopicId) {
+  return TOPIC_PROMO[topic];
+}
+
+function resolvePromo(
+  value: Partial<BlogPromo> | undefined,
+  topic: BlogTopicId,
+  fallback?: BlogPromo
+): BlogPromo | undefined {
+  const suggested = value?.suggested_offer_id ?? fallback?.suggested_offer_id ?? suggestPromoOfferId(topic);
+  const enabled = value?.enabled ?? fallback?.enabled ?? true;
+  if (value?.enabled === false) return { enabled: false, offer_id: suggested, placement: 'after', suggested_offer_id: suggested };
+  return {
+    enabled,
+    offer_id: value?.offer_id ?? fallback?.offer_id ?? suggested,
+    placement: value?.placement ?? fallback?.placement ?? 'after',
+    suggested_offer_id: suggested,
+  };
+}
+
+export function blogHeadings(blocks: BlogBlock[]) {
+  return blocks
+    .filter((block): block is Extract<BlogBlock, { type: 'heading' }> => block.type === 'heading')
+    .map((block) => ({ id: headingAnchor(block.text), text: block.text }));
+}
+
+export function headingAnchor(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 function resolveBlocks(items: RawBlock[] | undefined, fallback: BlogBlock[]): BlogBlock[] {
