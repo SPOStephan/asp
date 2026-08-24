@@ -80,6 +80,7 @@ const FALLBACK_GROUPS: MenuGroup[] = [
     links: [
       { label: 'Das Resort', href: '#welcome' },
       { label: 'Anreise', href: '#anreise' },
+      { label: 'Blog', href: '/blog' },
       { label: 'FAQ', href: '/faqs' },
       { label: 'Newsletter', href: '#newsletter' },
     ],

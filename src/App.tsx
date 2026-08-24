@@ -25,6 +25,9 @@ import { CulinaryPage } from './pages/CulinaryPage';
 import { FontsPage } from './pages/FontsPage';
 import { TypePreviewHomeNote } from './pages/TypePreviewHome';
 import { FAQ } from './components/FAQ';
+import { HomeBlog } from './components/HomeBlog';
+import { BlogPage } from './pages/BlogPage';
+import { BlogPostPage } from './pages/BlogPostPage';
 import { useHotelContent } from './context/HotelContext';
 import { LoadingScreen, ErrorScreen } from './components/Loading';
 import { useEffect } from 'react';
@@ -44,6 +47,7 @@ function HomePage() {
       <Awards />
       <Facts />
       <FAQ />
+      <HomeBlog />
       <Newsletter />
     </main>
   );
@@ -78,6 +82,8 @@ function App() {
         <Route path="/zimmer-b" element={<Navigate to="/zimmer" replace />} />
         <Route path="/zimmer/:roomId" element={<RoomDetailPage />} />
         <Route path="/kulinarik" element={<CulinaryPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:postSlug" element={<BlogPostPage />} />
         <Route path="/faqs" element={<FAQPage />} />
         <Route path="/schriften" element={<FontsPage />} />
       </Routes>
