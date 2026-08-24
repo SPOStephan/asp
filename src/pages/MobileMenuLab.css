@@ -118,12 +118,21 @@ body.menu-lab-open {
 }
 
 .menu-proto__bar {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  position: relative;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   min-height: 88px;
   padding: 12px 20px;
   background: var(--neutral-50);
+}
+
+.menu-proto__logo,
+.menu-proto__wordmark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .menu-proto__logo {
