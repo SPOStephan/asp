@@ -367,10 +367,6 @@ export function roomHref(id: string) {
   return `/zimmer/${id}`;
 }
 
-export function formatRoomPriceCard(room: RoomStory) {
-  return `${room.price_from} / ${room.price_unit}`;
-}
-
 export function formatRoomPriceDetail(room: RoomStory) {
   return `${room.price_from} pro ${room.price_unit}`;
 }
