@@ -7,6 +7,13 @@ interface HighlightItem {
   title: string;
   text: string;
   link: string;
+  href?: string;
+}
+
+function highlightHref(item: HighlightItem) {
+  if (item.href) return item.href;
+  if (item.link === 'Restaurants entdecken') return '/kulinarik';
+  return undefined;
 }
 
 export function Highlights() {
@@ -37,7 +44,9 @@ export function Highlights() {
               <div className="hcard__text">
                 <h3 className="hcard__title heading-font">{h.title}</h3>
                 <p className="hcard__desc">{h.text}</p>
-                <TextCta className="hcard__link">{h.link}</TextCta>
+                <TextCta className="hcard__link" href={highlightHref(h)}>
+                  {h.link}
+                </TextCta>
               </div>
               <div className="hcard__image">
                 <img src={h.image} alt={h.title} />

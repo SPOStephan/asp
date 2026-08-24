@@ -118,6 +118,12 @@ WHERE section_key = 'discover'
   AND data #>> '{tiles,3,title}' = 'Restaurant & Bar';
 
 UPDATE hotel_sections
+SET data = jsonb_set(data, '{items,3,href}', '"/kulinarik"')
+WHERE section_key = 'highlights'
+  AND hotel_id = (SELECT id FROM hotels WHERE slug = 'ambassador-hotel-spa')
+  AND data #>> '{items,3,title}' = 'Nordsee Cuisine';
+
+UPDATE hotel_sections
 SET data = jsonb_set(
   data,
   '{col_explore_links}',

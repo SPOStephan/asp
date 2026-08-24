@@ -197,7 +197,7 @@ BEGIN
       jsonb_build_object('image', '/collage-ski.webp', 'title', 'Direkte Strandlage', 'text', 'Nur wenige Schritte bis zum Nordseestrand — Landaufenthalt mit maximalem Komfort.', 'link', 'Zum Resort'),
       jsonb_build_object('image', '/spa-wellness.webp', 'title', 'Großzügiger Spa-Bereich', 'text', 'Adults-Only-Bereiche, Familien-Spa, Aktiv- und Signature-Treatments.', 'link', 'Zum Wellnessbereich'),
       jsonb_build_object('image', '/teaser-family.webp', 'title', 'Familiengeführt & authentisch', 'text', 'Herzliche Gastfreundschaft seit drei Generationen.', 'link', 'Unsere Geschichte'),
-      jsonb_build_object('image', '/collage-dining1.webp', 'title', 'Nordsee Cuisine', 'text', 'Fine Dining, regionales Steakhouse und Spezialitäten der Nordseeküste.', 'link', 'Restaurants entdecken'),
+      jsonb_build_object('image', '/collage-dining1.webp', 'title', 'Nordsee Cuisine', 'text', 'Fine Dining, regionales Steakhouse und Spezialitäten der Nordseeküste.', 'link', 'Restaurants entdecken', 'href', '/kulinarik'),
       jsonb_build_object('image', '/collage-kids.webp', 'title', 'Kinderbetreuung ab 0 Jahren', 'text', 'Abwechslungsreiches Programm für alle Altersklassen.', 'link', 'Familienurlaub'),
       jsonb_build_object('image', '/collage-mtb.webp', 'title', 'Nordsee-Lifestyle', 'text', 'Natur, frische Meeresluft und unvergessliche Ausblicke.', 'link', 'Erlebnisse')
     )
