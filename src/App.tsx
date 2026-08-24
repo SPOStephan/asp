@@ -24,6 +24,7 @@ import { RoomDetailPage } from './pages/RoomDetailPage';
 import { CulinaryPage } from './pages/CulinaryPage';
 import { FontsPage } from './pages/FontsPage';
 import { MobileMenuLab } from './pages/MobileMenuLab';
+import { MobileChromeLab } from './pages/MobileChromeLab';
 import { TypePreviewHomeNote } from './pages/TypePreviewHome';
 import { FAQ } from './components/FAQ';
 import { HomeBlog } from './components/HomeBlog';
@@ -61,12 +62,13 @@ function App() {
   const isHome = location.pathname === '/' || isTypePreview;
   const isFontLab = location.pathname === '/schriften';
   const isMenuLab = location.pathname === '/menue-mobil';
+  const isChromeLab = location.pathname === '/mobil-leiste';
   const { loading, error } = useHotelContent();
 
   useEffect(() => {
-    document.body.classList.toggle('has-fixed-bar', !isHome && !isFontLab && !isMenuLab);
+    document.body.classList.toggle('has-fixed-bar', !isHome && !isFontLab && !isMenuLab && !isChromeLab);
     return () => document.body.classList.remove('has-fixed-bar');
-  }, [isHome, isFontLab, isMenuLab]);
+  }, [isHome, isFontLab, isMenuLab, isChromeLab]);
 
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} />;
@@ -91,10 +93,11 @@ function App() {
         <Route path="/faqs" element={<FAQPage />} />
         <Route path="/schriften" element={<FontsPage />} />
         <Route path="/menue-mobil" element={<MobileMenuLab />} />
+        <Route path="/mobil-leiste" element={<MobileChromeLab />} />
       </Routes>
       <Footer />
       {isTypePreview && <TypePreviewHomeNote />}
-      {!isHome && !isFontLab && !isMenuLab && <FixedAvailabilityBar />}
+      {!isHome && !isFontLab && !isMenuLab && !isChromeLab && <FixedAvailabilityBar />}
     </div>
   );
 }
