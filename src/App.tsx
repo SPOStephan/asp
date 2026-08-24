@@ -19,6 +19,7 @@ import { FAQPage } from './pages/FAQPage';
 import { OffersPage } from './pages/OffersPage';
 import { OfferDetailPage } from './pages/OfferDetailPage';
 import { RoomsPage } from './pages/RoomsPage';
+import { RoomsCardsPage } from './pages/RoomsCardsPage';
 import { RoomDetailPage } from './pages/RoomDetailPage';
 import { FontsPage } from './pages/FontsPage';
 import { TypePreviewHomeNote } from './pages/TypePreviewHome';
@@ -72,6 +73,7 @@ function App() {
         <Route path="/angebote" element={<OffersPage />} />
         <Route path="/angebote/:offerId" element={<OfferDetailPage />} />
         <Route path="/zimmer" element={<RoomsPage />} />
+        <Route path="/zimmer-b" element={<RoomsCardsPage />} />
         <Route path="/zimmer/:roomId" element={<RoomDetailPage />} />
         <Route path="/faqs" element={<FAQPage />} />
         <Route path="/schriften" element={<FontsPage />} />
