@@ -267,11 +267,11 @@ body.chrome-lab-open { overflow: hidden; }
   bottom: 0;
   z-index: 5;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   min-height: 72px;
   padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
-  background: var(--neutral-50);
-  border-top: 1px solid var(--neutral-200);
+  background: var(--demo-dock, var(--primary-500));
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .chrome-demo__dock button {
@@ -280,7 +280,7 @@ body.chrome-lab-open { overflow: hidden; }
   align-items: center;
   justify-content: center;
   gap: 4px;
-  color: var(--neutral-400);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.58rem;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -288,7 +288,7 @@ body.chrome-lab-open { overflow: hidden; }
 }
 
 .chrome-demo__dock button.is-active,
-.chrome-demo__dock button.is-on { color: var(--primary-500); }
+.chrome-demo__dock button.is-on { color: var(--neutral-0); }
 
 .chrome-demo__book-btn {
   color: var(--accent-400) !important;
