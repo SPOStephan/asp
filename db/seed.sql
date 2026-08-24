@@ -706,7 +706,13 @@ BEGIN
         'hero_image', '/hotel-nordsee-wellness02.webp',
         'hero_image_alt', 'Wellnessbereich mit Blick zur Nordsee',
         'published_at', '2026-08-20',
-        'source', 'human'
+        'source', 'human',
+        'promo', jsonb_build_object(
+          'enabled', true,
+          'offer_id', 'wellnessurlaub',
+          'placement', 'inline',
+          'suggested_offer_id', 'wellnessurlaub'
+        )
       ),
       jsonb_build_object(
         'id', 'familienurlaub-spo',
@@ -717,7 +723,13 @@ BEGIN
         'hero_image', '/teaser-family.webp',
         'hero_image_alt', 'Familie im ambassador hotel & spa',
         'published_at', '2026-08-14',
-        'source', 'human'
+        'source', 'human',
+        'promo', jsonb_build_object(
+          'enabled', true,
+          'offer_id', 'feiertage',
+          'placement', 'after',
+          'suggested_offer_id', 'feiertage'
+        )
       ),
       jsonb_build_object(
         'id', 'hund-spo',
@@ -728,7 +740,13 @@ BEGIN
         'hero_image', '/autumn-aerial.webp',
         'hero_image_alt', 'Weite der Nordseeküste bei Sankt Peter-Ording',
         'published_at', '2026-08-08',
-        'source', 'human'
+        'source', 'human',
+        'promo', jsonb_build_object(
+          'enabled', true,
+          'offer_id', 'wellnessurlaub',
+          'placement', 'after',
+          'suggested_offer_id', 'wellnessurlaub'
+        )
       )
     )
   )),

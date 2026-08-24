@@ -1,32 +1,34 @@
+import { Fragment, type ReactNode } from 'react';
 import type { BlogBlock } from '../lib/blog';
-import { youtubeId } from '../lib/blog';
+import { headingAnchor, youtubeId } from '../lib/blog';
 
-export function BlogBlocks({ blocks }: { blocks: BlogBlock[] }) {
+interface BlogBlocksProps {
+  blocks: BlogBlock[];
+  inlinePromo?: ReactNode;
+}
+
+export function BlogBlocks({ blocks, inlinePromo }: BlogBlocksProps) {
+  const firstHeading = blocks.findIndex((block) => block.type === 'heading');
+  const promoAfter = firstHeading === -1 ? -1 : firstHeading + 1 < blocks.length ? firstHeading + 1 : firstHeading;
+
   return (
     <div className="blog-blocks">
       {blocks.map((block, index) => {
-        if (block.type === 'heading') {
-          return (
-            <h2 key={`${block.text}-${index}`} className="blog-blocks__heading heading-font">
+        const node =
+          block.type === 'heading' ? (
+            <h2 id={headingAnchor(block.text)} className="blog-blocks__heading heading-font">
               {block.text}
             </h2>
-          );
-        }
-        if (block.type === 'image') {
-          return (
-            <figure key={`${block.src}-${index}`} className="blog-blocks__figure">
+          ) : block.type === 'image' ? (
+            <figure className="blog-blocks__figure">
               <img src={block.src} alt={block.alt} />
               {block.caption ? <figcaption>{block.caption}</figcaption> : null}
             </figure>
-          );
-        }
-        if (block.type === 'video') {
-          const youtube = block.provider === 'youtube' ? youtubeId(block.src) : null;
-          return (
-            <figure key={`${block.src}-${index}`} className="blog-blocks__figure blog-blocks__video">
-              {youtube ? (
+          ) : block.type === 'video' ? (
+            <figure className="blog-blocks__figure blog-blocks__video">
+              {block.provider === 'youtube' && youtubeId(block.src) ? (
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${youtube}`}
+                  src={`https://www.youtube-nocookie.com/embed/${youtubeId(block.src)}`}
                   title={block.caption || 'Video'}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -36,12 +38,15 @@ export function BlogBlocks({ blocks }: { blocks: BlogBlock[] }) {
               )}
               {block.caption ? <figcaption>{block.caption}</figcaption> : null}
             </figure>
+          ) : (
+            <p className="blog-blocks__text">{block.text}</p>
           );
-        }
+
         return (
-          <p key={`${block.text.slice(0, 24)}-${index}`} className="blog-blocks__text">
-            {block.text}
-          </p>
+          <Fragment key={`${block.type}-${index}`}>
+            {node}
+            {inlinePromo && index === promoAfter ? inlinePromo : null}
+          </Fragment>
         );
       })}
     </div>

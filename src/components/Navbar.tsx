@@ -176,17 +176,19 @@ export function Navbar() {
     >
       <div className="navbar__inner">
         <div className="navbar__left">
-          <TextCta
-            className={lightBar ? '' : 'text-cta--on-dark'}
-            onClick={() => {
-              setLangOpen(false);
-              setMenuOpen((open) => !open);
-            }}
-            aria-expanded={menuOpen}
-            aria-controls="hauptmenue"
-          >
-            {data.menu_label || 'Menü'}
-          </TextCta>
+          {menuOpen ? null : (
+            <TextCta
+              className={lightBar ? '' : 'text-cta--on-dark'}
+              onClick={() => {
+                setLangOpen(false);
+                setMenuOpen(true);
+              }}
+              aria-expanded={false}
+              aria-controls="hauptmenue"
+            >
+              {data.menu_label || 'Menü'}
+            </TextCta>
+          )}
           <div className="navbar__links" aria-hidden={!scrolled}>
             {navLinks.map((link) => (
               <a
