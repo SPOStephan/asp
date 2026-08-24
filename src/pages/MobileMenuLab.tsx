@@ -220,14 +220,38 @@ function TwoStepMenu({
         ) : (
           <div className="menu-proto__level">
             <ul className="menu-proto__roots">
-              {groups.map((item) => (
-                <li key={item.title}>
-                  <button type="button" onClick={() => setOpenGroup(item.title)}>
-                    <span>{item.title}</span>
-                    <ChevronRight size={18} strokeWidth={1.5} />
-                  </button>
-                </li>
-              ))}
+              {groups.map((item) => {
+                const hub = menuGroupHref(item.title, item.href);
+                return (
+                  <li key={item.title}>
+                    <div className="menu-proto__root">
+                      {hub ? (
+                        <a
+                          href={hub}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            go(hub, item.title);
+                          }}
+                        >
+                          {item.title}
+                        </a>
+                      ) : (
+                        <button type="button" onClick={() => setOpenGroup(item.title)}>
+                          {item.title}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="menu-proto__more"
+                        aria-label={`${item.title}: Unterpunkte`}
+                        onClick={() => setOpenGroup(item.title)}
+                      >
+                        <ChevronRight size={18} strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             <ul className="menu-proto__secondary">
               {SECONDARY.map((item) => (
@@ -305,9 +329,8 @@ export function MobileMenuLab() {
           <h1>Menü mobil</h1>
           <p className="menu-lab__lead">
             Links oben bleibt das <strong>heutige Menü</strong> — lange Liste, alle Unterpunkte
-            zugleich. Daneben die <strong>zweistufige Variante</strong>: zuerst nur die Hauptpunkte,
-            die Unterpunkte erst nach der Auswahl. Das Logo bleibt in einer eigenen Leiste und
-            wird nicht überdeckt.
+            zugleich. Daneben die <strong>zweistufige Variante</strong>: der Name des Hauptpunkts
+            öffnet die Übersichtsseite, der Pfeil die Unterpunkte. Das Logo bleibt frei.
           </p>
         </div>
       </header>
@@ -327,9 +350,8 @@ export function MobileMenuLab() {
             <p className="menu-lab__card-kicker">Vorschlag</p>
             <h2>Zwei Stufen</h2>
             <p>
-              Hauptpunkte mit Pfeil, nach dem Antippen die Unterpunkte. Der erste Eintrag führt
-              auf die Übersichtsseite des Überpunkts — Wellness, Kulinarik, Zimmer. Zurück führt
-              in die Übersicht. Am Telefon über den Button, am Desktop im Rahmen daneben.
+              Den Namen antippen — Wellness, Kulinarik, Zimmer — führt auf die Seite. Nur der
+              Pfeil öffnet die Unterpunkte. Zurück führt in die Übersicht.
             </p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
