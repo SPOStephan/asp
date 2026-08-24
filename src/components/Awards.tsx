@@ -1,5 +1,5 @@
+import { ImpressionsGallery, type ImpressionShot } from './ImpressionsGallery';
 import { Reveal } from './Reveal';
-import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
 
 interface AwardItem {
@@ -7,12 +7,7 @@ interface AwardItem {
   label: string;
 }
 
-interface Impression {
-  src: string;
-  alt: string;
-}
-
-const FALLBACK_IMPRESSIONS: Impression[] = [
+const FALLBACK_IMPRESSIONS: ImpressionShot[] = [
   { src: '/collage-pool.webp', alt: 'Poolbereich mit Blick ins Weite' },
   { src: '/autumn-aerial.webp', alt: 'Luftaufnahme der Nordseeküste' },
   { src: '/collage-dining1.webp', alt: 'Kulinarik im Hotel' },
@@ -29,7 +24,7 @@ export function Awards() {
   if (!data) return null;
 
   const items: AwardItem[] = data.items ?? [];
-  const impressions: Impression[] = data.impressions?.length
+  const impressions: ImpressionShot[] = data.impressions?.length
     ? data.impressions
     : FALLBACK_IMPRESSIONS;
 
@@ -62,18 +57,10 @@ export function Awards() {
             <br />
             {data.impressions_title || 'aus Ihrem Nordsee-Hotel'}
           </h2>
-          <div className="awards__shots">
-            {impressions.map((shot) => (
-              <figure key={shot.src} className="awards__shot">
-                <img src={shot.src} alt={shot.alt} />
-              </figure>
-            ))}
-          </div>
-          <div className="awards__cta">
-            <TextCta className="text-cta--on-dark" href={data.impressions_cta_href || '#impressionen'}>
-              {data.impressions_cta || 'Alle Impressionen'}
-            </TextCta>
-          </div>
+          <ImpressionsGallery
+            shots={impressions}
+            cta={data.impressions_cta || 'Galerie öffnen'}
+          />
         </div>
       </Reveal>
     </section>
