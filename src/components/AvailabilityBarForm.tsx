@@ -74,6 +74,7 @@ function AvailabilityBarFormModern({ idPrefix = '' }: AvailabilityBarFormProps) 
             setQuery((current) => ({ ...current, ...nextDateSelection(current, key) }));
           }}
           onClear={() => setQuery((current) => ({ ...current, arrival: null, departure: null }))}
+          onApply={() => setOpen(null)}
         />
       ) : null}
 
@@ -102,7 +103,7 @@ function AvailabilityBarFormModern({ idPrefix = '' }: AvailabilityBarFormProps) 
             <Users size={18} strokeWidth={1.5} />
           </span>
           <span className="availability-bar__picker-copy">
-            <span className="availability-bar__picker-label">Gäste, Hunde &amp; Zimmer</span>
+            <span className="availability-bar__picker-label">Zahl der Gäste</span>
             <span className="availability-bar__picker-value">{formatGuestSummary(query.rooms)}</span>
           </span>
           <ChevronDown
