@@ -7,12 +7,14 @@ import './MobileChromeLab.css';
 
 type Sheet = 'menu' | 'book' | 'chat' | null;
 
-function ChromeDemo({
+export function ChromeDemo({
   fullscreen,
   onClose,
+  chatFloat = false,
 }: {
   fullscreen?: boolean;
   onClose?: () => void;
+  chatFloat?: boolean;
 }) {
   const data = useSection('navbar');
   const hotel = useHotel();
@@ -35,7 +37,7 @@ function ChromeDemo({
 
   return (
     <div
-      className={`chrome-demo${fullscreen ? ' is-full' : ''}`}
+      className={`chrome-demo${fullscreen ? ' is-full' : ''}${chatFloat ? ' has-chat-fab' : ''}`}
       style={{ ['--demo-dock' as string]: hotel?.primary_color || 'var(--primary-500)' }}
     >
       <header className={`chrome-demo__top${hidden ? ' is-hidden' : ''}`}>
@@ -128,11 +130,24 @@ function ChromeDemo({
           <CalendarCheck size={22} strokeWidth={1.6} />
           <span>Buchen</span>
         </button>
-        <button type="button" className={sheet === 'chat' ? 'is-on' : ''} onClick={() => toggle('chat')}>
-          <ChatCircleTextIcon size={24} weight="thin" />
-          <span>Chat</span>
-        </button>
+        {chatFloat ? null : (
+          <button type="button" className={sheet === 'chat' ? 'is-on' : ''} onClick={() => toggle('chat')}>
+            <ChatCircleTextIcon size={24} weight="thin" />
+            <span>Chat</span>
+          </button>
+        )}
       </nav>
+
+      {chatFloat ? (
+        <button
+          type="button"
+          className={`chrome-demo__chat-fab${sheet === 'chat' ? ' is-on' : ''}`}
+          onClick={() => toggle('chat')}
+          aria-label="Chat"
+        >
+          <ChatCircleTextIcon size={28} weight="thin" />
+        </button>
+      ) : null}
 
       {fullscreen && onClose ? (
         <button type="button" className="chrome-demo__leave" onClick={onClose}>

@@ -290,6 +290,29 @@ body.chrome-lab-open { overflow: hidden; }
 .chrome-demo__dock button.is-active,
 .chrome-demo__dock button.is-on { color: var(--neutral-0); }
 
+.chrome-demo.has-chat-fab .chrome-demo__dock {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.chrome-demo__chat-fab {
+  position: absolute;
+  right: 16px;
+  bottom: 88px;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-400);
+  color: var(--neutral-0);
+  box-shadow: 0 8px 20px rgba(19, 59, 92, 0.28);
+}
+
+.chrome-demo__chat-fab.is-on {
+  outline: 2px solid var(--neutral-0);
+}
+
 .chrome-demo__book-btn {
   color: var(--accent-400) !important;
 }
