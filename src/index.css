@@ -1987,7 +1987,7 @@ body.has-fixed-bar { padding-bottom: 92px; }
 }
 .room-detail__facts {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 28px 5vw;
   margin-top: 36px;
 }
@@ -2159,6 +2159,14 @@ body.has-fixed-bar { padding-bottom: 92px; }
   right: auto;
   left: 0;
 }
+.rooms-overlap__price {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-400);
+}
 .rooms-overlap__kicker {
   margin: 0 0 12px;
   font-size: 0.72rem;
@@ -2212,6 +2220,14 @@ body.has-fixed-bar { padding-bottom: 92px; }
   align-items: center;
   gap: 14px 32px;
   margin-top: 28px;
+}
+.rooms-cards__price-note {
+  width: 90%;
+  margin: 8px auto 0;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--neutral-500);
 }
 .rooms-cards__note {
   width: 90%;

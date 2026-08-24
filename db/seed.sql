@@ -356,10 +356,11 @@ BEGIN
     'eyebrow', 'Ankommen',
     'title', 'Zimmer & Suiten',
     'subtitle', 'Meerblick · Ruhe · Weite',
-    'intro', 'Kein Katalog, keine Rasterpreise. Sechs Räume, in denen das Licht der Nordsee den Takt vorgibt — vom stillen Doppelzimmer bis zur Suite mit eigener Terrasse.',
+    'intro', 'Sechs Räume, in denen das Licht der Nordsee den Takt vorgibt — vom stillen Doppelzimmer bis zur Suite mit eigener Terrasse. Die Preise gelten pro Nacht und Zimmer, je nach Saison und Belegung.',
     'hero_image', '/hotel-stpeter-ording-Austernfischer-Suite05.jpg',
     'hero_image_alt', 'Suite mit privater Terrasse und Blick ins Watt',
     'lookbook_label', 'Lookbook',
+    'price_note', 'Alle Preise gelten pro Nacht und Zimmer, je nach Saison und Belegung.',
     'note_title', 'Nicht das passende Zimmer?',
     'note_text', 'Wir kennen jedes Zimmer im Haus. Schreiben Sie uns, was Sie brauchen — Blick, Größe, Anlass — wir finden die richtige Tür.',
     'note_cta', 'Persönliche Beratung',
@@ -377,6 +378,8 @@ BEGIN
         'size', 'ca. 65 m²',
         'view', 'Meerblick, private Terrasse',
         'occupancy', '2 Personen',
+        'price_from', 'ab 530 Euro',
+        'price_unit', 'Nacht',
         'tags', jsonb_build_array('suite', 'meerblick'),
         'amenities', jsonb_build_array(
           'Private Terrasse mit Weitblick',
@@ -407,6 +410,8 @@ BEGIN
         'size', 'ca. 48 m²',
         'view', 'Meerblick',
         'occupancy', '2 Personen',
+        'price_from', 'ab 330 Euro',
+        'price_unit', 'Nacht',
         'tags', jsonb_build_array('suite', 'meerblick'),
         'amenities', jsonb_build_array(
           'Balkon oder Terrasse',
@@ -437,6 +442,8 @@ BEGIN
         'size', 'ca. 38 m²',
         'view', 'Weitblick',
         'occupancy', '2 Personen',
+        'price_from', 'ab 270 Euro',
+        'price_unit', 'Nacht',
         'tags', jsonb_build_array('suite'),
         'amenities', jsonb_build_array(
           'Balkon oder Terrasse',
@@ -466,6 +473,8 @@ BEGIN
         'size', 'ca. 28 m²',
         'view', 'Meerblick',
         'occupancy', '2 Personen',
+        'price_from', 'ab 190 Euro',
+        'price_unit', 'Nacht',
         'tags', jsonb_build_array('zimmer', 'meerblick'),
         'amenities', jsonb_build_array(
           'Balkon mit Meerblick',
@@ -495,6 +504,8 @@ BEGIN
         'size', 'ca. 42 m²',
         'view', 'Landschaft',
         'occupancy', '2 Erwachsene, bis 2 Kinder',
+        'price_from', 'ab 210 Euro',
+        'price_unit', 'Nacht',
         'tags', jsonb_build_array('zimmer', 'familie'),
         'amenities', jsonb_build_array(
           'Platz für Zustellbett oder Babybett',
@@ -524,6 +535,8 @@ BEGIN
         'size', 'ca. 26 m²',
         'view', 'Landschaft',
         'occupancy', '2 Personen',
+        'price_from', 'ab 150 Euro',
+        'price_unit', 'Nacht',
         'tags', jsonb_build_array('zimmer'),
         'amenities', jsonb_build_array(
           'Balkon zur Landseite',

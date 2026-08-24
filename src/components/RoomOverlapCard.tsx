@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { TextCta } from './TextCta';
-import { roomHref, type RoomStory } from '../lib/rooms';
+import { formatRoomPriceCard, roomHref, type RoomStory } from '../lib/rooms';
 
 interface RoomOverlapCardProps {
   room: RoomStory;
@@ -70,6 +70,7 @@ export function RoomOverlapCard({ room, reverse = false }: RoomOverlapCardProps)
       </div>
 
       <div className="rooms-overlap__card">
+        <p className="rooms-overlap__price">{formatRoomPriceCard(room)}</p>
         <p className="rooms-overlap__kicker">{room.kicker}</p>
         <h2 className="rooms-overlap__name heading-font">{room.name}</h2>
         <p className="rooms-overlap__text">{room.text}</p>
