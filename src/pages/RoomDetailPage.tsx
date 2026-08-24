@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
-import { IncludeList } from '../components/IncludeList';
 import { Reveal } from '../components/Reveal';
+import { RoomAmenityGrid } from '../components/RoomAmenityGrid';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
-import { resolveRooms } from '../lib/rooms';
+import { expandRoomFeatures, resolveRooms } from '../lib/rooms';
 
 export function RoomDetailPage() {
   const { roomId } = useParams();
@@ -14,6 +14,7 @@ export function RoomDetailPage() {
   const items = resolveRooms(page?.items);
   const room = items.find((item) => item.id === roomId);
   const pair = room?.gallery.slice(0, 2) ?? [];
+  const features = room ? expandRoomFeatures(room) : [];
 
   useEffect(() => {
     if (!room) return;
@@ -39,29 +40,31 @@ export function RoomDetailPage() {
         subtitle={`${room.size} · ${room.view}`}
       >
         <div className="room-detail">
-          <div className="room-detail__copy">
-            {room.detail_text.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-            <IncludeList items={room.amenities} />
-            <div className="room-detail__facts">
-              <div className="room-detail__fact">
-                <p className="room-detail__fact-label">Größe</p>
-                <p className="room-detail__fact-value">{room.size}</p>
+          <div className="room-detail__split">
+            <div className="room-detail__copy">
+              {room.detail_text.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+              <div className="room-detail__facts">
+                <div className="room-detail__fact">
+                  <p className="room-detail__fact-label">Größe</p>
+                  <p className="room-detail__fact-value">{room.size}</p>
+                </div>
+                <div className="room-detail__fact">
+                  <p className="room-detail__fact-label">Ausblick</p>
+                  <p className="room-detail__fact-value">{room.view}</p>
+                </div>
+                <div className="room-detail__fact">
+                  <p className="room-detail__fact-label">Belegung</p>
+                  <p className="room-detail__fact-value">{room.occupancy}</p>
+                </div>
               </div>
-              <div className="room-detail__fact">
-                <p className="room-detail__fact-label">Ausblick</p>
-                <p className="room-detail__fact-value">{room.view}</p>
-              </div>
-              <div className="room-detail__fact">
-                <p className="room-detail__fact-label">Belegung</p>
-                <p className="room-detail__fact-value">{room.occupancy}</p>
+              <div className="room-detail__links">
+                <TextCta href="#buchung">Jetzt buchen</TextCta>
+                <TextCta href="/zimmer">Alle Zimmer</TextCta>
               </div>
             </div>
-            <div className="room-detail__links">
-              <TextCta href="#buchung">Jetzt buchen</TextCta>
-              <TextCta href="/zimmer">Alle Zimmer</TextCta>
-            </div>
+            <RoomAmenityGrid items={features} />
           </div>
 
           {pair.length === 2 ? (

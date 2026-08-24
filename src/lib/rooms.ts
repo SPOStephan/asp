@@ -297,6 +297,55 @@ export function isRoomFilter(value: string | null): value is RoomFilterId {
   return ROOM_FILTERS.some((filter) => filter.id === value);
 }
 
+export type AmenityIcon =
+  | 'bed'
+  | 'terrace'
+  | 'view'
+  | 'bath'
+  | 'robe'
+  | 'spa'
+  | 'wifi'
+  | 'tv'
+  | 'minibar'
+  | 'safe'
+  | 'sitting'
+  | 'family';
+
+export interface RoomFeature {
+  icon: AmenityIcon;
+  label: string;
+}
+
+export function iconForAmenity(label: string): AmenityIcon {
+  const value = label.toLowerCase();
+  if (/zustell|baby|kind/.test(value)) return 'family';
+  if (/sitz|wohn-schlaf/.test(value)) return 'sitting';
+  if (/terrasse|balkon/.test(value)) return 'terrace';
+  if (/meerblick|weitblick/.test(value)) return 'view';
+  if (/wellness-bad|badezimmer|\bbad\b/.test(value)) return 'bath';
+  if (/bademantel/.test(value)) return 'robe';
+  if (/spa/.test(value)) return 'spa';
+  if (/wlan|wifi/.test(value)) return 'wifi';
+  if (/tv|fernseh/.test(value)) return 'tv';
+  if (/minibar/.test(value)) return 'minibar';
+  if (/safe/.test(value)) return 'safe';
+  if (/bett|king/.test(value)) return 'bed';
+  return 'spa';
+}
+
+export function expandRoomFeatures(room: RoomStory): RoomFeature[] {
+  const labels = room.amenities.flatMap((item) => {
+    if (item.includes(',')) {
+      return item.split(',').map((part) => part.trim()).filter(Boolean);
+    }
+    if (/bademantel und spa/i.test(item)) {
+      return ['Bademantel', 'Spa-Zugang'];
+    }
+    return [item];
+  });
+  return labels.map((label) => ({ icon: iconForAmenity(label), label }));
+}
+
 export function roomHref(id: string) {
   return `/zimmer/${id}`;
 }
