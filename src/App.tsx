@@ -25,6 +25,7 @@ import { CulinaryPage } from './pages/CulinaryPage';
 import { FontsPage } from './pages/FontsPage';
 import { MobileMenuLab } from './pages/MobileMenuLab';
 import { MobileChromeLab } from './pages/MobileChromeLab';
+import { MobileChromeLab2 } from './pages/MobileChromeLab2';
 import { TypePreviewHomeNote } from './pages/TypePreviewHome';
 import { FAQ } from './components/FAQ';
 import { HomeBlog } from './components/HomeBlog';
@@ -62,7 +63,7 @@ function App() {
   const isHome = location.pathname === '/' || isTypePreview;
   const isFontLab = location.pathname === '/schriften';
   const isMenuLab = location.pathname === '/menue-mobil';
-  const isChromeLab = location.pathname === '/mobil-leiste';
+  const isChromeLab = location.pathname === '/mobil-leiste' || location.pathname === '/mobil-leiste2';
   const { loading, error } = useHotelContent();
 
   useEffect(() => {
@@ -94,6 +95,7 @@ function App() {
         <Route path="/schriften" element={<FontsPage />} />
         <Route path="/menue-mobil" element={<MobileMenuLab />} />
         <Route path="/mobil-leiste" element={<MobileChromeLab />} />
+        <Route path="/mobil-leiste2" element={<MobileChromeLab2 />} />
       </Routes>
       <Footer />
       {isTypePreview && <TypePreviewHomeNote />}

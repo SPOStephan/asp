@@ -18,6 +18,7 @@
     { "source": "/schriften", "destination": "/index.html" },
     { "source": "/menue-mobil", "destination": "/index.html" },
     { "source": "/mobil-leiste", "destination": "/index.html" },
+    { "source": "/mobil-leiste2", "destination": "/index.html" },
     { "source": "/vorschau", "destination": "/index.html" }
   ]
 }
