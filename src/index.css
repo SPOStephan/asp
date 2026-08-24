@@ -1725,7 +1725,7 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .faq__icon::after { width: 2px; height: 14px; transform: translate(-50%, -50%); }
 .faq__item[open] .faq__icon::after { opacity: 0; transform: translate(-50%, -50%) rotate(90deg); }
 .faq__item[open] summary { color: var(--primary-600); }
-.faq__answer { padding: 0 0 28px; max-width: 46em; }
+.faq__answer { padding: 0 0 28px; }
 .faq__answer p { font-size: 0.98rem; line-height: 1.7; color: var(--neutral-500); margin: 0; }
 .faq__more { text-align: center; margin-top: 48px; }
 .faq__more-link { font-size: 0.9rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-400); }
