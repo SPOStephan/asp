@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { CalendarCheck, House, Mail, Menu, X } from 'lucide-react';
+import { CalendarCheck, House, Menu, X } from 'lucide-react';
 import { ChatCircleTextIcon } from '@phosphor-icons/react';
 import { useHotel, useSection } from '../context/HotelContext';
 import { TextCta } from '../components/TextCta';
 import './MobileChromeLab.css';
 
-type Sheet = 'menu' | 'book' | 'mail' | 'chat' | null;
+type Sheet = 'menu' | 'book' | 'chat' | null;
 
 function ChromeDemo({
   fullscreen,
@@ -34,7 +34,10 @@ function ChromeDemo({
   };
 
   return (
-    <div className={`chrome-demo${fullscreen ? ' is-full' : ''}`}>
+    <div
+      className={`chrome-demo${fullscreen ? ' is-full' : ''}`}
+      style={{ ['--demo-dock' as string]: hotel?.primary_color || 'var(--primary-500)' }}
+    >
       <header className={`chrome-demo__top${hidden ? ' is-hidden' : ''}`}>
         {data?.logo_normal ? (
           <img src={data.logo_normal} alt={hotel?.name || 'ambassador'} />
@@ -53,9 +56,9 @@ function ChromeDemo({
           <p className="chrome-demo__kicker">Vorschlag · nur Labor</p>
           <h2>Mehr Bild, weniger Leiste</h2>
           <p>
-            Oben verschwindet das Logo nach dem Scrollen. Unten bleibt eine schmale App-Leiste:
-            Start, Menü, Buchen, Anfragen, Chat. Die Verfügbarkeit liegt nicht dauerhaft im Weg
-            — sie öffnet sich nur, wenn man Buchen tippt.
+            Oben verschwindet das Logo nach dem Scrollen. Unten eine schmale Leiste in
+            Hotel-Blau: Start, Menü, Buchen, Chat. Die Farbe kommt vom Hotel — später im CMS
+            also auch Rot oder Grün. Buchen öffnet die Verfügbarkeit erst auf Zuruf.
           </p>
           <p>
             Sprache und das lange Menü sitzen nicht mehr oben fest. Menü öffnet die zweistufige
@@ -78,13 +81,7 @@ function ChromeDemo({
         <div className="chrome-demo__sheet">
           <div className="chrome-demo__sheet-head">
             <h3>
-              {sheet === 'menu'
-                ? 'Menü'
-                : sheet === 'book'
-                  ? 'Verfügbarkeit'
-                  : sheet === 'mail'
-                    ? 'Anfragen'
-                    : 'Chat'}
+              {sheet === 'menu' ? 'Menü' : sheet === 'book' ? 'Verfügbarkeit' : 'Chat'}
             </h3>
             <button type="button" onClick={() => setSheet(null)} aria-label="Schließen">
               <X size={18} strokeWidth={1.6} />
@@ -112,9 +109,7 @@ function ChromeDemo({
             <p className="chrome-demo__sheet-text">
               {sheet === 'menu'
                 ? 'Hier öffnet später das zweistufige Mobilmenü — ohne zweite Leiste oben.'
-                : sheet === 'mail'
-                  ? 'Anfrageformular oder Mail an das Haus. Nicht dauerhaft in der Ansicht.'
-                  : 'Der Assistent, bisher als schwebendes Icon über der Buchungsleiste.'}
+                : 'Der Assistent, bisher als schwebendes Icon über der Buchungsleiste.'}
             </p>
           )}
         </div>
@@ -132,10 +127,6 @@ function ChromeDemo({
         <button type="button" className="chrome-demo__book-btn" onClick={() => toggle('book')}>
           <CalendarCheck size={22} strokeWidth={1.6} />
           <span>Buchen</span>
-        </button>
-        <button type="button" className={sheet === 'mail' ? 'is-on' : ''} onClick={() => toggle('mail')}>
-          <Mail size={22} strokeWidth={1.5} />
-          <span>Anfragen</span>
         </button>
         <button type="button" className={sheet === 'chat' ? 'is-on' : ''} onClick={() => toggle('chat')}>
           <ChatCircleTextIcon size={24} weight="thin" />
@@ -203,8 +194,8 @@ export function MobileChromeLab() {
             <p className="chrome-lab__card-kicker">Vorschlag</p>
             <h2>Eine Leiste unten</h2>
             <p>
-              Start · Menü · Buchen · Anfragen · Chat. Kopfzeile nur am Anfang, dann weg.
-              Sprache später im Menü. Am Desktop im Rahmen, am Telefon über den Button.
+              Start · Menü · Buchen · Chat, in Hotel-Blau. Anfragen entfällt. Kopfzeile nur
+              am Anfang, dann weg. Am Desktop im Rahmen, am Telefon über den Button.
             </p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
