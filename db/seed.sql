@@ -63,7 +63,7 @@ BEGIN
       jsonb_build_object('image', '/suite-room.webp', 'eyebrow', 'Übernachten', 'title', 'Zimmer & Suiten', 'href', '/zimmer'),
       jsonb_build_object('image', '/teaser-autumn.webp', 'eyebrow', 'Saison', 'title', 'Angebote', 'href', '/angebote'),
       jsonb_build_object('image', '/spa-wellness.webp', 'eyebrow', 'Wohlbefinden', 'title', 'Wellness & Spa', 'href', '#wellness'),
-      jsonb_build_object('image', '/culinary-dining.webp', 'eyebrow', 'Genuss', 'title', 'Restaurant & Bar', 'href', '#culinary'),
+      jsonb_build_object('image', '/culinary-dining.webp', 'eyebrow', 'Genuss', 'title', 'Restaurant & Bar', 'href', '/kulinarik'),
       jsonb_build_object('image', '/autumn-aerial.webp', 'eyebrow', 'Region', 'title', 'Urlaub an der Nordsee', 'href', '#generations'),
       jsonb_build_object('image', '/collage-ski.webp', 'eyebrow', 'Winter', 'title', 'Strand & See', 'href', '#highlights'),
       jsonb_build_object('image', '/teaser-family.webp', 'eyebrow', 'Familie', 'title', 'Familienurlaub', 'href', '#generations'),
@@ -197,7 +197,7 @@ BEGIN
       jsonb_build_object('image', '/collage-ski.webp', 'title', 'Direkte Strandlage', 'text', 'Nur wenige Schritte bis zum Nordseestrand — Landaufenthalt mit maximalem Komfort.', 'link', 'Zum Resort'),
       jsonb_build_object('image', '/spa-wellness.webp', 'title', 'Großzügiger Spa-Bereich', 'text', 'Adults-Only-Bereiche, Familien-Spa, Aktiv- und Signature-Treatments.', 'link', 'Zum Wellnessbereich'),
       jsonb_build_object('image', '/teaser-family.webp', 'title', 'Familiengeführt & authentisch', 'text', 'Herzliche Gastfreundschaft seit drei Generationen.', 'link', 'Unsere Geschichte'),
-      jsonb_build_object('image', '/collage-dining1.webp', 'title', 'Nordsee Cuisine', 'text', 'Fine Dining, regionales Steakhouse und Spezialitäten der Nordseeküste.', 'link', 'Restaurants entdecken'),
+      jsonb_build_object('image', '/collage-dining1.webp', 'title', 'Nordsee Cuisine', 'text', 'Fine Dining, regionales Steakhouse und Spezialitäten der Nordseeküste.', 'link', 'Restaurants entdecken', 'href', '/kulinarik'),
       jsonb_build_object('image', '/collage-kids.webp', 'title', 'Kinderbetreuung ab 0 Jahren', 'text', 'Abwechslungsreiches Programm für alle Altersklassen.', 'link', 'Familienurlaub'),
       jsonb_build_object('image', '/collage-mtb.webp', 'title', 'Nordsee-Lifestyle', 'text', 'Natur, frische Meeresluft und unvergessliche Ausblicke.', 'link', 'Erlebnisse')
     )
@@ -233,7 +233,7 @@ BEGIN
       jsonb_build_object('label', 'Das Resort', 'href', '#welcome'),
       jsonb_build_object('label', 'Angebote', 'href', '/angebote'),
       jsonb_build_object('label', 'Wellness & Spa', 'href', '#wellness'),
-      jsonb_build_object('label', 'Kulinarik', 'href', '#kulinarik'),
+      jsonb_build_object('label', 'Kulinarik', 'href', '/kulinarik'),
       jsonb_build_object('label', 'Zimmer & Suiten', 'href', '/zimmer')
     ),
     'col_service_title', 'Service',
@@ -249,7 +249,7 @@ BEGIN
     'links', jsonb_build_array(
       jsonb_build_object('label', 'Resort', 'href', '#welcome'),
       jsonb_build_object('label', 'Wellness', 'href', '/wellness'),
-      jsonb_build_object('label', 'Kulinarik', 'href', '#kulinarik'),
+      jsonb_build_object('label', 'Kulinarik', 'href', '/kulinarik'),
       jsonb_build_object('label', 'Erlebnisse', 'href', '#highlights')
     ),
     'menu_groups', jsonb_build_array(
@@ -273,9 +273,9 @@ BEGIN
         jsonb_build_object('label', 'Spa & Wellness', 'href', '/wellness')
       )),
       jsonb_build_object('title', 'Kulinarik', 'links', jsonb_build_array(
-        jsonb_build_object('label', 'Restaurant & Bar', 'href', '#kulinarik'),
-        jsonb_build_object('label', 'Strandstube', 'href', '#kulinarik'),
-        jsonb_build_object('label', 'Grill & Dine', 'href', '#kulinarik')
+        jsonb_build_object('label', 'Restaurant & Bar', 'href', '/kulinarik#restaurant'),
+        jsonb_build_object('label', 'Strandstube', 'href', '/kulinarik#strandstube'),
+        jsonb_build_object('label', 'Grill & Dine', 'href', '/kulinarik#grill')
       )),
       jsonb_build_object('title', 'Hotel', 'links', jsonb_build_array(
         jsonb_build_object('label', 'Das Resort', 'href', '#welcome'),
@@ -552,6 +552,90 @@ BEGIN
           jsonb_build_object('src', '/collage-restroom.webp', 'alt', 'Bad im Doppelzimmer'),
           jsonb_build_object('src', '/teaser-suite.webp', 'alt', 'Heller Aufenthalt im Haus')
         )
+      )
+    )
+  )),
+  (h_id, 'culinary_page', jsonb_build_object(
+    'eyebrow', 'Kulinarik',
+    'title', 'Genuss am Meer',
+    'subtitle', 'Restaurant · Bar · Steakhouse',
+    'intro', 'Norddeutsche Küche, Fine Dining und Grill — drei Adressen im Haus, eine Küche mit Produkten von der Küste und den Höfen ringsum. Halbpension, vegetarisch und vegan sind selbstverständlich.',
+    'hero_image', '/culinary-dining.webp',
+    'hero_image_alt', 'Gedeckter Tisch im Restaurant des ambassador hotel & spa',
+    'also_title', 'Auch im Haus',
+    'also_text', 'Sushi-Bar und Nordseelounge bleiben zwei leise Alternativen, wenn der Abend eine andere Richtung nimmt.',
+    'note_title', 'Einen Tisch reservieren?',
+    'note_text', 'Wir decken gern Ihren Tisch. Schreiben Sie uns oder sprechen Sie die Rezeption an — Allergien und Wünsche nehmen wir vorher auf.',
+    'note_cta', 'Persönliche Beratung',
+    'items', jsonb_build_array(
+      jsonb_build_object(
+        'id', 'restaurant',
+        'name', 'Restaurant & Bar',
+        'kicker', 'Hausrestaurant',
+        'text', 'Der Abend beginnt hier. Nordseefisch, Gemüse von den Höfen ringsum und eine Bar, die nicht hetzt. Regionale Tradition, internationale Ideen — und immer ein Tisch zum Horizont.',
+        'details', jsonb_build_array(
+          jsonb_build_object('label', 'Stil', 'value', 'À la carte & Bar'),
+          jsonb_build_object('label', 'Küche', 'value', 'Nordsee, international, vegetarisch und vegan')
+        ),
+        'includes', jsonb_build_array(
+          'Regionale Produkte',
+          'Internationale Karte',
+          'Vegetarisch und vegan',
+          'Bar im Haus'
+        ),
+        'image', '/culinary-dining.webp',
+        'image_alt', 'Fine Dining und Bar im ambassador hotel & spa'
+      ),
+      jsonb_build_object(
+        'id', 'strandstube',
+        'name', 'Strandstube',
+        'kicker', 'Fine Dining',
+        'text', 'Weniger Tische, mehr Ruhe. Die Strandstube ist das Fine Dining im Haus — saisonale Gänge, präzise und ohne Spektakel. Für Abende, die länger werden als die Speisekarte.',
+        'details', jsonb_build_array(
+          jsonb_build_object('label', 'Stil', 'value', 'Fine Dining'),
+          jsonb_build_object('label', 'Küche', 'value', 'Saisonale Menüs, 5-Gang-Wahlmenü zur Halbpension')
+        ),
+        'includes', jsonb_build_array(
+          'Saisonale Karte',
+          '5-Gang-Wahlmenü zur Halbpension',
+          'Individuelle Alternativen bei Unverträglichkeiten'
+        ),
+        'image', '/collage-dining1.webp',
+        'image_alt', 'Gourmetküche in der Strandstube'
+      ),
+      jsonb_build_object(
+        'id', 'grill',
+        'name', 'Grill & Dine',
+        'kicker', 'Steakhouse',
+        'text', 'Feuer, Fleisch und ein klarer Teller. Das Steakhouse im Haus — geradlinig, regional, ohne Schnörkel. Für Gäste, die den Abend lieber am Grill als an sieben Gängen verbringen.',
+        'details', jsonb_build_array(
+          jsonb_build_object('label', 'Stil', 'value', 'Steakhouse'),
+          jsonb_build_object('label', 'Küche', 'value', 'Grill und regionale Cuts')
+        ),
+        'includes', jsonb_build_array(
+          'Steaks vom Grill',
+          'Regionale Beilagen',
+          'Abendliche Atmosphäre'
+        ),
+        'image', '/collage-dining2.webp',
+        'image_alt', 'Steakhouse Grill & Dine'
+      )
+    ),
+    'rhythm', jsonb_build_array(
+      jsonb_build_object(
+        'kicker', 'Morgen',
+        'title', 'Frühstück',
+        'text', 'Ein reichhaltiges Buffet, ohne Uhr. Der Tag darf langsam beginnen — bevor der Deich den Takt übernimmt.'
+      ),
+      jsonb_build_object(
+        'kicker', 'Abend',
+        'title', 'Halbpension',
+        'text', 'Frühstück und ein 5-Gang-Wahlmenü. Zusätzliche Getränke sind nicht enthalten — Allergien klären wir vorher.'
+      ),
+      jsonb_build_object(
+        'kicker', 'Spät',
+        'title', 'Bar',
+        'text', 'Ein Glas nach dem letzten Gang. Die Bar bleibt der leise Ort im Haus, wenn der Wind von See kommt.'
       )
     )
   )),

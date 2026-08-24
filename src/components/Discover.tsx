@@ -1,7 +1,7 @@
 import { Reveal } from './Reveal';
 import { ArrowUpRight } from 'lucide-react';
 import { useSection } from '../context/HotelContext';
-import { remapRoomsHref } from '../lib/rooms';
+import { remapSiteHref } from '../lib/links';
 
 interface DiscoverTile {
   image: string;
@@ -43,7 +43,7 @@ export function Discover() {
       <div className="discover__grid">
         {tiles.map((tile, i) => (
           <Reveal key={tile.title} delay={i * 70}>
-            <a className="discover__tile" href={remapRoomsHref(tile.href, tile.title)}>
+            <a className="discover__tile" href={remapSiteHref(tile.href, tile.title)}>
               <div className="discover__tile-image">
                 <img src={tile.image} alt={tile.title} loading="lazy" />
               </div>

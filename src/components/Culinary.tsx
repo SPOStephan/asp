@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Reveal } from './Reveal';
 import { Plus, Minus } from 'lucide-react';
+import { TextCta } from './TextCta';
+import { culinaryVenueHref } from '../lib/culinary';
 import { useSection } from '../context/HotelContext';
 
 interface Restaurant {
@@ -8,6 +10,12 @@ interface Restaurant {
   alt: string;
   eyebrow: string;
   name: string;
+}
+
+function venueHref(name: string) {
+  if (/grill/i.test(name)) return culinaryVenueHref('grill');
+  if (/strand/i.test(name)) return culinaryVenueHref('strandstube');
+  return culinaryVenueHref('restaurant');
 }
 
 export function Culinary() {
@@ -56,6 +64,8 @@ export function Culinary() {
                   <><Plus size={16} strokeWidth={1.5} /> Mehr lesen</>
                 )}
               </button>
+
+              <TextCta href="/kulinarik">Alle Restaurants</TextCta>
             </div>
           </Reveal>
         </div>
@@ -63,13 +73,13 @@ export function Culinary() {
         <Reveal delay={200}>
           <div className="culinary__images">
             {restaurants.map((r) => (
-              <div className="culinary__img-block" key={r.name}>
+              <a className="culinary__img-block" key={r.name} href={venueHref(r.name)}>
                 <img src={r.image} alt={r.alt} />
                 <div className="culinary__img-label">
                   <p className="eyebrow">{r.eyebrow}</p>
                   <h3 className="heading-font">{r.name}</h3>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </Reveal>
