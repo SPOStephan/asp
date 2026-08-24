@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { CalendarCheck, House, Menu, X } from 'lucide-react';
+import { CalendarCheck, House, Menu, Phone, X } from 'lucide-react';
 import { ChatCircleTextIcon } from '@phosphor-icons/react';
 import { useHotel, useSection } from '../context/HotelContext';
 import { TextCta } from '../components/TextCta';
 import './MobileChromeLab.css';
 
 type Sheet = 'menu' | 'book' | 'chat' | null;
+
+function telHref(phone?: string | null) {
+  const cleaned = (phone || '+49 4863 7090').replace(/\(0\)/g, '').replace(/[^\d+]/g, '');
+  return `tel:${cleaned || '+4948637090'}`;
+}
 
 export function ChromeDemo({
   fullscreen,
@@ -98,11 +103,15 @@ export function ChromeDemo({
               }}
             >
               <label>
-                Gäste
+                Gästezahl
                 <input defaultValue="2 Erwachsene" readOnly />
               </label>
               <label>
-                Reisezeitraum
+                Anreise
+                <input defaultValue="Datum wählen" readOnly />
+              </label>
+              <label>
+                Abreise
                 <input defaultValue="Datum wählen" readOnly />
               </label>
               <button type="submit">Verfügbarkeit prüfen</button>
@@ -118,23 +127,46 @@ export function ChromeDemo({
       ) : null}
 
       <nav className="chrome-demo__dock" aria-label="App-Leiste">
-        <button type="button" className="is-active" onClick={() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <House size={22} strokeWidth={1.5} />
-          <span>Start</span>
-        </button>
-        <button type="button" className={sheet === 'menu' ? 'is-on' : ''} onClick={() => toggle('menu')}>
-          <Menu size={22} strokeWidth={1.5} />
-          <span>Menü</span>
-        </button>
-        <button type="button" className="chrome-demo__book-btn" onClick={() => toggle('book')}>
-          <CalendarCheck size={22} strokeWidth={1.6} />
-          <span>Buchen</span>
-        </button>
-        {chatFloat ? null : (
-          <button type="button" className={sheet === 'chat' ? 'is-on' : ''} onClick={() => toggle('chat')}>
-            <ChatCircleTextIcon size={24} weight="thin" />
-            <span>Chat</span>
-          </button>
+        {chatFloat ? (
+          <>
+            <button
+              type="button"
+              className={`chrome-demo__icon-only${sheet === 'menu' ? ' is-on' : ''}`}
+              aria-label="Menü"
+              onClick={() => toggle('menu')}
+            >
+              <Menu size={24} strokeWidth={1.5} />
+            </button>
+            <a className="chrome-demo__icon-only" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
+              <Phone size={22} strokeWidth={1.5} />
+            </a>
+            <button
+              type="button"
+              className={`chrome-demo__book-word${sheet === 'book' ? ' is-on' : ''}`}
+              onClick={() => toggle('book')}
+            >
+              Buchen
+            </button>
+          </>
+        ) : (
+          <>
+            <button type="button" className="is-active" onClick={() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <House size={22} strokeWidth={1.5} />
+              <span>Start</span>
+            </button>
+            <button type="button" className={sheet === 'menu' ? 'is-on' : ''} onClick={() => toggle('menu')}>
+              <Menu size={22} strokeWidth={1.5} />
+              <span>Menü</span>
+            </button>
+            <button type="button" className="chrome-demo__book-btn" onClick={() => toggle('book')}>
+              <CalendarCheck size={22} strokeWidth={1.6} />
+              <span>Buchen</span>
+            </button>
+            <button type="button" className={sheet === 'chat' ? 'is-on' : ''} onClick={() => toggle('chat')}>
+              <ChatCircleTextIcon size={24} weight="thin" />
+              <span>Chat</span>
+            </button>
+          </>
         )}
       </nav>
 
