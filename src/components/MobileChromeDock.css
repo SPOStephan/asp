@@ -48,12 +48,25 @@
     border-right: 0;
   }
 
+  .mobile-chrome__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(19, 59, 92, 0.32);
+    border: 0;
+  }
+
   .mobile-chrome__book {
     font-size: 0.95rem;
     font-weight: 500;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     line-height: 1;
+  }
+
+  .mobile-chrome__book.is-on {
+    background: var(--accent-400);
+    outline: 0;
   }
 
   .mobile-chrome__query {
@@ -111,9 +124,49 @@
     box-shadow: 0 8px 20px rgba(19, 59, 92, 0.28);
   }
 
-  .mobile-chrome__fab.is-on,
-  .mobile-chrome__book.is-on {
+  .mobile-chrome__fab.is-on {
     outline: 2px solid var(--neutral-0);
     outline-offset: -2px;
+  }
+
+  .mobile-chrome__query .availability-bar__form--sheet {
+    display: grid;
+    gap: 12px;
+    width: 90%;
+    padding: 14px 0 16px;
+  }
+
+  .mobile-chrome__query .availability-layer {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    max-height: min(58dvh, calc(100dvh - 220px));
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-chrome__query .availability-layer--dates {
+    padding: 12px 12px 8px;
+  }
+
+  .mobile-chrome__query .availability-cal__mark,
+  .mobile-chrome__query .availability-cal__clear {
+    display: none;
+  }
+
+  .mobile-chrome__query .availability-cal__cell,
+  .mobile-chrome__query .availability-cal__day {
+    min-height: 44px;
+  }
+
+  .mobile-chrome__query .availability-cal__day {
+    padding: 4px 0;
+  }
+
+  .mobile-chrome__query .availability-bar__form--sheet:has(.availability-layer--dates) .availability-bar__picker:first-child,
+  .mobile-chrome__query .availability-bar__form--sheet:has(.availability-layer--guests) .availability-bar__picker:last-child {
+    display: none;
   }
 }

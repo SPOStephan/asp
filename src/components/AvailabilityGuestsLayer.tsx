@@ -6,6 +6,7 @@ interface AvailabilityGuestsLayerProps {
   children: number;
   onChange: (next: { adults: number; children: number }) => void;
   onApply: () => void;
+  hideApply?: boolean;
 }
 
 export function AvailabilityGuestsLayer({
@@ -13,6 +14,7 @@ export function AvailabilityGuestsLayer({
   children,
   onChange,
   onApply,
+  hideApply = false,
 }: AvailabilityGuestsLayerProps) {
   const values = { adults, children };
 
@@ -47,11 +49,13 @@ export function AvailabilityGuestsLayer({
           </div>
         );
       })}
-      <div className="availability-guests__actions">
-        <button type="button" className="availability-guests__apply" onClick={onApply}>
-          Anwenden
-        </button>
-      </div>
+      {hideApply ? null : (
+        <div className="availability-guests__actions">
+          <button type="button" className="availability-guests__apply" onClick={onApply}>
+            Anwenden
+          </button>
+        </div>
+      )}
     </div>
   );
 }

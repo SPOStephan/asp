@@ -18,11 +18,22 @@ import {
 interface AvailabilityBarFormProps {
   idPrefix?: string;
   hideExtras?: boolean;
+  hideSubmit?: boolean;
+  variant?: 'bar' | 'sheet';
+  formId?: string;
+  onSubmitted?: () => void;
 }
 
 type OpenLayer = 'dates' | 'guests' | null;
 
-function AvailabilityBarFormModern({ idPrefix = '', hideExtras = false }: AvailabilityBarFormProps) {
+function AvailabilityBarFormModern({
+  idPrefix = '',
+  hideExtras = false,
+  hideSubmit = false,
+  variant = 'bar',
+  formId,
+  onSubmitted,
+}: AvailabilityBarFormProps) {
   const hotel = useHotel();
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState<OpenLayer>(null);
@@ -35,34 +46,49 @@ function AvailabilityBarFormModern({ idPrefix = '', hideExtras = false }: Availa
 
   useEffect(() => {
     if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(null);
+    };
+    window.addEventListener('keydown', onKey);
+    if (variant === 'sheet') {
+      return () => window.removeEventListener('keydown', onKey);
+    }
     const onPointer = (event: MouseEvent) => {
       if (!formRef.current?.contains(event.target as Node)) {
         setOpen(null);
       }
     };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(null);
-    };
     window.addEventListener('mousedown', onPointer);
-    window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('mousedown', onPointer);
       window.removeEventListener('keydown', onKey);
     };
-  }, [open]);
+  }, [open, variant]);
+
+  const sheet = variant === 'sheet';
 
   const toggle = (layer: Exclude<OpenLayer, null>) => {
     setOpen((current) => (current === layer ? null : layer));
   };
 
+  const selectDate = (key: string) => {
+    setQuery((current) => {
+      const nextDates = nextDateSelection(current, key);
+      if (sheet && nextDates.arrival && nextDates.departure) setOpen(null);
+      return { ...current, ...nextDates };
+    });
+  };
+
   return (
     <form
+      id={formId}
       ref={formRef}
-      className="availability-bar__form availability-bar__form--modern"
+      className={`availability-bar__form availability-bar__form--modern${sheet ? ' availability-bar__form--sheet' : ''}`}
       onSubmit={(event) => {
         event.preventDefault();
         toBookingParams(query);
         setOpen(null);
+        onSubmitted?.();
       }}
     >
       {open === 'dates' ? (
@@ -71,11 +97,10 @@ function AvailabilityBarFormModern({ idPrefix = '', hideExtras = false }: Availa
           departure={query.departure}
           viewMonth={viewMonth}
           onViewMonthChange={setViewMonth}
-          onSelect={(key) => {
-            setQuery((current) => ({ ...current, ...nextDateSelection(current, key) }));
-          }}
+          onSelect={selectDate}
           onClear={() => setQuery((current) => ({ ...current, arrival: null, departure: null }))}
           onApply={() => setOpen(null)}
+          hideApply={sheet}
         />
       ) : null}
 
@@ -85,6 +110,7 @@ function AvailabilityBarFormModern({ idPrefix = '', hideExtras = false }: Availa
           children={query.children}
           onChange={(next) => setQuery((current) => ({ ...current, ...next }))}
           onApply={() => setOpen(null)}
+          hideApply={sheet}
         />
       ) : null}
 
@@ -143,10 +169,12 @@ function AvailabilityBarFormModern({ idPrefix = '', hideExtras = false }: Availa
         </button>
       </div>
 
+      {hideSubmit ? null : (
       <button type="submit" className="availability-bar__btn">
         <Search size={16} strokeWidth={1.5} />
         Verfügbarkeit prüfen
       </button>
+      )}
       {hideExtras ? null : (
         <>
           <div className="availability-bar__tools" aria-label="Schnelle Kontakte">
@@ -172,9 +200,25 @@ function AvailabilityBarFormModern({ idPrefix = '', hideExtras = false }: Availa
   );
 }
 
-export function AvailabilityBarForm({ idPrefix = '', hideExtras = false }: AvailabilityBarFormProps) {
+export function AvailabilityBarForm({
+  idPrefix = '',
+  hideExtras = false,
+  hideSubmit = false,
+  variant = 'bar',
+  formId,
+  onSubmitted,
+}: AvailabilityBarFormProps) {
   if (AVAILABILITY_UI_MODE === 'legacy') {
     return <AvailabilityBarFormLegacy idPrefix={idPrefix} />;
   }
-  return <AvailabilityBarFormModern idPrefix={idPrefix} hideExtras={hideExtras} />;
+  return (
+    <AvailabilityBarFormModern
+      idPrefix={idPrefix}
+      hideExtras={hideExtras}
+      hideSubmit={hideSubmit}
+      variant={variant}
+      formId={formId}
+      onSubmitted={onSubmitted}
+    />
+  );
 }
