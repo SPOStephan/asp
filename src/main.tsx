@@ -5,12 +5,15 @@ import './index.css'
 import './App.css'
 import App from './App.tsx'
 import { HotelProvider } from './context/HotelContext'
+import { MobileChromeProvider } from './context/MobileChromeContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <HotelProvider>
-        <App />
+        <MobileChromeProvider>
+          <App />
+        </MobileChromeProvider>
       </HotelProvider>
     </BrowserRouter>
   </StrictMode>,

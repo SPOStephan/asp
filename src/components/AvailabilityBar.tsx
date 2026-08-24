@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { usePhoneChrome } from '../lib/phoneChrome';
 import { AvailabilityBarForm } from './AvailabilityBarForm';
 
 export function AvailabilityBar() {
+  const isPhone = usePhoneChrome();
   const barRef = useRef<HTMLDivElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
   const [stuck, setStuck] = useState(false);
@@ -33,9 +35,11 @@ export function AvailabilityBar() {
   }, []);
 
   useEffect(() => {
-    document.body.classList.toggle('availability-stuck', stuck);
+    document.body.classList.toggle('availability-stuck', stuck && !isPhone);
     return () => document.body.classList.remove('availability-stuck');
-  }, [stuck]);
+  }, [stuck, isPhone]);
+
+  if (isPhone) return null;
 
   return (
     <div
