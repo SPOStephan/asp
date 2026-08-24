@@ -51,7 +51,7 @@ const FALLBACK_GROUPS: MenuGroup[] = [
     links: [
       { label: 'Hotel-Highlights', href: '#highlights' },
       { label: 'Entdecken', href: '#discover' },
-      { label: 'Impressionen', href: '#impressionen' },
+      { label: 'Impressionen', href: '/impressionen' },
     ],
   },
   {

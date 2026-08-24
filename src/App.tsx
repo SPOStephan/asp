@@ -28,6 +28,7 @@ import { FAQ } from './components/FAQ';
 import { HomeBlog } from './components/HomeBlog';
 import { BlogPage } from './pages/BlogPage';
 import { BlogPostPage } from './pages/BlogPostPage';
+import { ImpressionsPage } from './pages/ImpressionsPage';
 import { useHotelContent } from './context/HotelContext';
 import { LoadingScreen, ErrorScreen } from './components/Loading';
 import { useEffect } from 'react';
@@ -84,6 +85,7 @@ function App() {
         <Route path="/kulinarik" element={<CulinaryPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:postSlug" element={<BlogPostPage />} />
+        <Route path="/impressionen" element={<ImpressionsPage />} />
         <Route path="/faqs" element={<FAQPage />} />
         <Route path="/schriften" element={<FontsPage />} />
       </Routes>
