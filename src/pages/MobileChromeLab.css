@@ -342,6 +342,7 @@ body.chrome-lab-open { overflow: hidden; }
 
 .chrome-demo.is-stack .chrome-demo__chat-fab {
   bottom: 46px;
+  background: var(--demo-dock, var(--primary-500));
 }
 
 .chrome-demo.is-stack .chrome-demo__icon-only {
@@ -349,13 +350,13 @@ body.chrome-lab-open { overflow: hidden; }
 }
 
 .chrome-demo.is-stack .chrome-demo__book-group {
-  color: var(--primary-500) !important;
-  background: var(--neutral-50);
-  border-right-color: rgba(19, 59, 92, 0.1) !important;
+  color: var(--neutral-0) !important;
+  background: var(--accent-400);
+  border-right-color: rgba(255, 255, 255, 0.22) !important;
 }
 
 .chrome-demo.is-stack .chrome-demo__book-word {
-  color: var(--accent-400) !important;
+  color: var(--neutral-0) !important;
   font-size: 0.82rem !important;
   letter-spacing: 0.18em !important;
 }

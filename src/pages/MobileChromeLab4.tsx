@@ -32,8 +32,8 @@ export function MobileChromeLab4() {
           <p className="chrome-lab__kicker">Nur zum Anschauen · Variante 4</p>
           <h1>Leisten mobil</h1>
           <p className="chrome-lab__lead">
-            Eine Zeile: Menü und Hörer klein links, daneben Gäste, Kalender und Buchen
-            auf hellem Grund — Gold auf Blau fällt weg. Chat bleibt der Kreis.
+            Eine Zeile: Menü und Hörer klein links, Gäste, Kalender und Buchen auf Gold
+            mit weißer Schrift. Der Chat-Kreis ist blau.
           </p>
           <ChromeLabSwitch current="/mobil-leiste4" />
         </div>
@@ -49,7 +49,7 @@ export function MobileChromeLab4() {
           <article className="chrome-lab__card">
             <p className="chrome-lab__card-kicker">Rechts</p>
             <h2>Die Buchung</h2>
-            <p>Personen, Kalender und Buchen als helle Gruppe. Gold nur auf Hell, nicht auf Blau.</p>
+            <p>Goldene Fläche, Icons und Buchen weiß. Chat-Kreis dafür in Hotel-Blau.</p>
             <TextCta onClick={() => setOpen(true)}>Variante öffnen</TextCta>
           </article>
         </div>
