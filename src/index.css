@@ -3213,18 +3213,24 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .blog-promo {
   width: 100%;
   max-width: 100%;
-  margin: 40px 0;
+  margin: 52px 0;
+  background: var(--accent-50);
+  border-top: 1px solid var(--accent-200);
+  border-bottom: 1px solid var(--accent-200);
 }
 .blog-promo__photo {
-  margin: 0 0 16px;
+  margin: 0;
   overflow: hidden;
   background: var(--neutral-100);
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 2 / 1;
 }
 .blog-promo__photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.blog-promo__copy {
+  padding: 22px 28px 28px;
 }
 .blog-promo__kicker {
   margin: 0 0 6px;
