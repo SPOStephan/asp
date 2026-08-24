@@ -176,7 +176,7 @@ BEGIN
     ),
     'impressions_script', 'Impressionen',
     'impressions_title', 'aus Ihrem Nordsee-Hotel',
-    'impressions_cta', 'Alle Impressionen',
+    'impressions_cta', 'Galerie öffnen',
     'impressions_cta_href', '#impressionen',
     'impressions', jsonb_build_array(
       jsonb_build_object('src', '/collage-pool.webp', 'alt', 'Poolbereich mit Blick ins Weite'),
