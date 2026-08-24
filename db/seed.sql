@@ -234,7 +234,8 @@ BEGIN
       jsonb_build_object('label', 'Angebote', 'href', '/angebote'),
       jsonb_build_object('label', 'Wellness & Spa', 'href', '/wellness'),
       jsonb_build_object('label', 'Kulinarik', 'href', '/kulinarik'),
-      jsonb_build_object('label', 'Zimmer & Suiten', 'href', '/zimmer')
+      jsonb_build_object('label', 'Zimmer & Suiten', 'href', '/zimmer'),
+      jsonb_build_object('label', 'Blog', 'href', '/blog')
     ),
     'col_service_title', 'Service',
     'col_service_links', jsonb_build_array(
@@ -284,6 +285,7 @@ BEGIN
       jsonb_build_object('title', 'Hotel', 'links', jsonb_build_array(
         jsonb_build_object('label', 'Das Resort', 'href', '#welcome'),
         jsonb_build_object('label', 'Anreise', 'href', '#anreise'),
+        jsonb_build_object('label', 'Blog', 'href', '/blog'),
         jsonb_build_object('label', 'FAQ', 'href', '/faqs'),
         jsonb_build_object('label', 'Newsletter', 'href', '#newsletter')
       ))
@@ -678,6 +680,56 @@ BEGIN
       jsonb_build_object('id', 'termin', 'name', 'Termin-Vereinbarung', 'kicker', 'Reservierung', 'tile_cta', 'Mehr dazu', 'image', '/collage-restroom.webp', 'image_alt', 'Ankommen an der Spa-Rezeption'),
       jsonb_build_object('id', 'preisliste', 'name', 'Spa-Preisliste', 'kicker', 'Karte', 'tile_cta', 'Mehr dazu', 'image', '/teaser-spa.webp', 'image_alt', 'Spa-Anwendungen im ambassador hotel & spa'),
       jsonb_build_object('id', 'angebot', 'name', 'Spa-Angebot des Monats', 'kicker', 'Saison', 'tile_cta', 'Mehr dazu', 'image', '/spa-adults-only.webp', 'image_alt', 'Saisonales Spa-Angebot')
+    )
+  )),
+  (h_id, 'blog_page', jsonb_build_object(
+    'eyebrow', 'Journal',
+    'title', 'Geschichten vom Meer',
+    'subtitle', 'Erholung · Familie · Hund',
+    'intro', 'Drei Blickwinkel auf Sankt Peter-Ording: die stille Nordsee, der Urlaub mit Kindern und der Tag mit Hund. Mehr folgt — von uns und später auch aus dem Admin.',
+    'hero_image', '/teaser-autumn.webp',
+    'hero_image_alt', 'Herbstlicht über Sankt Peter-Ording',
+    'home_eyebrow', 'Journal',
+    'home_title', 'Zuletzt geschrieben',
+    'home_cta', 'Alle Beiträge',
+    'note_title', 'Mehr aus dem Haus?',
+    'note_text', 'Zimmer, Spa und Küche liegen eine Seite weiter. Der Blog bleibt der Ort für Tempo und Stimmung.',
+    'note_cta', 'Zimmer ansehen',
+    'note_cta_href', '/zimmer',
+    'items', jsonb_build_array(
+      jsonb_build_object(
+        'id', 'erholung-nordsee',
+        'slug', 'erholung-an-der-nordsee',
+        'title', 'Erholung an der Nordsee',
+        'excerpt', 'Weite, Wind und ein Tag ohne Uhr. Warum die Küste bei Sankt Peter-Ording zur Ruhe zwingt — und der Spa sie hält.',
+        'topic', 'erholung',
+        'hero_image', '/hotel-nordsee-wellness02.webp',
+        'hero_image_alt', 'Wellnessbereich mit Blick zur Nordsee',
+        'published_at', '2026-08-20',
+        'source', 'human'
+      ),
+      jsonb_build_object(
+        'id', 'familienurlaub-spo',
+        'slug', 'familienurlaub-sankt-peter-ording',
+        'title', 'Familienurlaub in Sankt Peter-Ording',
+        'excerpt', 'Platz für Kinder, Wege zum Strand und ein Haus, das drei Generationen kennt. Was in SPO den Familienurlaub trägt.',
+        'topic', 'familie',
+        'hero_image', '/teaser-family.webp',
+        'hero_image_alt', 'Familie im ambassador hotel & spa',
+        'published_at', '2026-08-14',
+        'source', 'human'
+      ),
+      jsonb_build_object(
+        'id', 'hund-spo',
+        'slug', 'ferien-mit-hund-sankt-peter-ording',
+        'title', 'SPO-Ferien mit Hund',
+        'excerpt', 'Leine, Wind und ein Strand, der mitkommt. Wie Sankt Peter-Ording den Urlaub mit Hund trägt — ohne dass der Mensch zu kurz kommt.',
+        'topic', 'hund',
+        'hero_image', '/autumn-aerial.webp',
+        'hero_image_alt', 'Weite der Nordseeküste bei Sankt Peter-Ording',
+        'published_at', '2026-08-08',
+        'source', 'human'
+      )
     )
   )),
   (h_id, 'faq_page', jsonb_build_object(
