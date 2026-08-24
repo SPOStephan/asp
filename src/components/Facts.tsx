@@ -28,7 +28,7 @@ export function Facts() {
 
   return (
     <section className="facts" id="anreise" aria-label="Wichtige Informationen">
-      <div className="container">
+      <div className="facts__inner">
         <Reveal>
           <div className="facts__head">
             <p className="eyebrow">{data.eyebrow}</p>
@@ -41,11 +41,11 @@ export function Facts() {
               const Icon = iconMap[fact.icon] ?? Clock;
               return (
                 <div key={fact.label} className="facts__item">
-                  <div className="facts__icon" aria-hidden="true">
-                    <Icon size={22} strokeWidth={1.5} />
+                  <Icon className="facts__icon" size={20} strokeWidth={1.25} aria-hidden="true" />
+                  <div>
+                    <dt className="facts__label">{fact.label}</dt>
+                    <dd className="facts__value">{fact.value}</dd>
                   </div>
-                  <dt className="facts__label">{fact.label}</dt>
-                  <dd className="facts__value">{fact.value}</dd>
                 </div>
               );
             })}
@@ -53,9 +53,7 @@ export function Facts() {
         </Reveal>
         <Reveal delay={200}>
           <div className="facts__location">
-            <div className="facts__location-icon" aria-hidden="true">
-              <MapPin size={22} strokeWidth={1.5} />
-            </div>
+            <MapPin className="facts__location-icon" size={18} strokeWidth={1.25} aria-hidden="true" />
             <p className="facts__location-text">
               <strong>{data.location_label}</strong> {data.location_text}
             </p>
