@@ -13,6 +13,7 @@
     { "source": "/kulinarik", "destination": "/index.html" },
     { "source": "/blog", "destination": "/index.html" },
     { "source": "/blog/:path*", "destination": "/index.html" },
+    { "source": "/impressionen", "destination": "/index.html" },
     { "source": "/faqs", "destination": "/index.html" },
     { "source": "/schriften", "destination": "/index.html" },
     { "source": "/vorschau", "destination": "/index.html" }

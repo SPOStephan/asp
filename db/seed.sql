@@ -176,7 +176,7 @@ BEGIN
     ),
     'impressions_script', 'Impressionen',
     'impressions_title', 'aus Ihrem Nordsee-Hotel',
-    'impressions_cta', 'Galerie öffnen',
+    'impressions_cta', 'Alle Impressionen',
     'impressions_cta_href', '#impressionen',
     'impressions', jsonb_build_array(
       jsonb_build_object('src', '/collage-pool.webp', 'alt', 'Poolbereich mit Blick ins Weite'),
@@ -267,7 +267,7 @@ BEGIN
       jsonb_build_object('title', 'Erlebnisse', 'links', jsonb_build_array(
         jsonb_build_object('label', 'Hotel-Highlights', 'href', '#highlights'),
         jsonb_build_object('label', 'Entdecken', 'href', '#discover'),
-        jsonb_build_object('label', 'Impressionen', 'href', '#impressionen')
+        jsonb_build_object('label', 'Impressionen', 'href', '/impressionen')
       )),
       jsonb_build_object('title', 'Wellness', 'href', '/wellness', 'links', jsonb_build_array(
         jsonb_build_object('label', 'Schwimmbad & Sauna', 'href', '/wellness/schwimmbad-sauna'),
