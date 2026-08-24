@@ -69,12 +69,6 @@ export function RoomsPage() {
         <div className="rooms-page">
           {data.intro ? <p className="rooms-page__intro">{data.intro}</p> : null}
 
-          <RoomsLookbook
-            rooms={visible}
-            label={data.lookbook_label ?? ROOMS_PAGE_FALLBACK.lookbook_label}
-            onChoose={scrollToRoom}
-          />
-
           <div className="rooms-page__filters" role="tablist" aria-label="Zimmer filtern">
             {ROOM_FILTERS.map((item) => (
               <button
@@ -89,6 +83,12 @@ export function RoomsPage() {
               </button>
             ))}
           </div>
+
+          <RoomsLookbook
+            rooms={visible}
+            label={data.lookbook_label ?? ROOMS_PAGE_FALLBACK.lookbook_label}
+            onChoose={scrollToRoom}
+          />
 
           <section className="rooms-page__list" aria-label="Zimmer und Suiten">
             {visible.length ? (
