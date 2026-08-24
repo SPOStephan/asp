@@ -2061,14 +2061,13 @@ body.has-fixed-bar { padding-bottom: 92px; }
 }
 .rooms-overlap {
   position: relative;
-  display: flex;
-  align-items: center;
-  min-height: 460px;
+  display: block;
+  overflow: visible;
   scroll-margin-top: 168px;
 }
 .rooms-overlap__media {
   position: relative;
-  width: 64%;
+  width: 74%;
 }
 .rooms-overlap--reverse .rooms-overlap__media { margin-left: auto; }
 .rooms-overlap__stage {
@@ -2095,7 +2094,7 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .rooms-overlap__dots {
   position: absolute;
   top: 50%;
-  right: 16px;
+  left: 16px;
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -2103,8 +2102,8 @@ body.has-fixed-bar { padding-bottom: 92px; }
   transform: translateY(-50%);
 }
 .rooms-overlap--reverse .rooms-overlap__dots {
-  right: auto;
-  left: 16px;
+  left: auto;
+  right: 16px;
 }
 .rooms-overlap__dot {
   width: 8px;
@@ -2116,12 +2115,14 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .rooms-overlap__dot.is-active { background: var(--accent-400); }
 .rooms-overlap__card {
   position: absolute;
+  top: 50%;
   right: 0;
   z-index: 3;
-  width: min(500px, 48%);
+  width: 50%;
   background: var(--neutral-0);
   padding: 44px 40px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-50%);
 }
 .rooms-overlap--reverse .rooms-overlap__card {
   right: auto;
@@ -2203,10 +2204,6 @@ body.has-fixed-bar { padding-bottom: 92px; }
 
 @media (max-width: 900px) {
   .rooms-cards__list { gap: 72px; padding-top: 40px; }
-  .rooms-overlap {
-    display: block;
-    min-height: 0;
-  }
   .rooms-overlap__media { width: 100%; }
   .rooms-overlap__stage { aspect-ratio: 5 / 4; }
   .rooms-overlap__dots,
@@ -2221,11 +2218,13 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .rooms-overlap__card,
   .rooms-overlap--reverse .rooms-overlap__card {
     position: relative;
+    top: auto;
     right: auto;
     left: auto;
     width: auto;
-    margin: -56px 16px 0;
+    margin: -72px 16px 0;
     padding: 32px 24px;
+    transform: none;
   }
   .rooms-cards__note { margin-bottom: 88px; padding-top: 48px; }
 }
