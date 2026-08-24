@@ -268,8 +268,8 @@ body.chrome-lab-open { overflow: hidden; }
   z-index: 5;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  min-height: 72px;
-  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  min-height: 80px;
+  padding: 16px 4px calc(10px + env(safe-area-inset-bottom, 0px));
   background: var(--demo-dock, var(--primary-500));
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
@@ -311,10 +311,6 @@ body.chrome-lab-open { overflow: hidden; }
 
 .chrome-demo__chat-fab.is-on {
   outline: 2px solid var(--neutral-0);
-}
-
-.chrome-demo__book-btn {
-  color: var(--accent-400) !important;
 }
 
 .chrome-demo__leave {
