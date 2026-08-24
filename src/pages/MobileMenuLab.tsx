@@ -93,6 +93,14 @@ const SECONDARY = [
   { label: 'FAQ', href: '/faqs' },
 ];
 
+function labGroupHref(title: string, href?: string) {
+  const known = menuGroupHref(title, href);
+  if (known) return known;
+  if (title === 'Erlebnisse') return '#highlights';
+  if (title === 'Hotel') return '#welcome';
+  return undefined;
+}
+
 function useMenuData() {
   const data = useSection('navbar');
   const hotel = useHotel();
@@ -142,7 +150,7 @@ function TwoStepMenu({
   const [lang, setLang] = useState('de');
   const go = useMenuNavigation(onClose);
   const group = groups.find((item) => item.title === openGroup) ?? null;
-  const groupHref = group ? menuGroupHref(group.title, group.href) : undefined;
+  const groupHref = group ? labGroupHref(group.title, group.href) : undefined;
 
   useEffect(() => {
     if (variant !== 'overlay') return;
@@ -221,7 +229,7 @@ function TwoStepMenu({
           <div className="menu-proto__level">
             <ul className="menu-proto__roots">
               {groups.map((item) => {
-                const hub = menuGroupHref(item.title, item.href);
+                const hub = labGroupHref(item.title, item.href);
                 return (
                   <li key={item.title}>
                     <div className="menu-proto__root">
