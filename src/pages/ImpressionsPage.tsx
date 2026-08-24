@@ -72,7 +72,7 @@ export function ImpressionsPage() {
           <div className="impressions-page__grid">
             {visible.map((shot, index) => (
               <button
-                key={`${shot.src}-${index}`}
+                key={shot.src}
                 type="button"
                 className="impressions-page__shot"
                 aria-label={shot.alt}
