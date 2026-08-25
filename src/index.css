@@ -928,12 +928,23 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .availability-cal__cell,
   .availability-cal__day { min-height: 52px; }
 
-  body.has-mobile-dock .hero__bg img {
-    object-position: center 28%;
+  .hero {
+    min-height: 100dvh;
   }
 
-  body.has-mobile-dock .hero__content {
-    margin-bottom: calc(56px + 2.25rem + env(safe-area-inset-bottom, 0px));
+  .hero__bg img {
+    object-fit: cover;
+    object-position: center 22%;
+    transform: scale(1.45);
+    transform-origin: center 22%;
+  }
+
+  .hero__content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(56px + 2.75rem + env(safe-area-inset-bottom, 0px));
+    margin: 0 auto;
     padding-left: 24px;
     padding-right: 24px;
   }
