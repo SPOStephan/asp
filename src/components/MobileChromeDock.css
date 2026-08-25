@@ -79,7 +79,9 @@
   }
 
   .mobile-chrome__query .availability-bar__form {
-    width: 90%;
+    width: auto;
+    margin-left: 5%;
+    margin-right: 88px;
     padding: 16px 0 18px;
   }
 
@@ -132,7 +134,9 @@
   .mobile-chrome__query .availability-bar__form--sheet {
     display: grid;
     gap: 12px;
-    width: 90%;
+    width: auto;
+    margin-left: 5%;
+    margin-right: 88px;
     padding: 14px 0 16px;
   }
 
@@ -159,6 +163,13 @@
   .mobile-chrome__query .availability-cal__cell,
   .mobile-chrome__query .availability-cal__day {
     min-height: 44px;
+  }
+
+  .mobile-chrome__query .availability-cal__cell.is-selected,
+  .mobile-chrome__query .availability-cal__cell.is-arrival,
+  .mobile-chrome__query .availability-cal__cell.is-departure {
+    background: var(--accent-400);
+    color: var(--neutral-0);
   }
 
   .mobile-chrome__query .availability-cal__day {
