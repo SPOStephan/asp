@@ -1,9 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import type { ImpressionShot } from '../lib/impressions';
+interface GalleryShot {
+  src: string;
+  alt: string;
+}
 
 interface GalleryViewerProps {
-  shots: ImpressionShot[];
+  shots: GalleryShot[];
   active: number;
   onClose: () => void;
   onStep: (delta: number) => void;

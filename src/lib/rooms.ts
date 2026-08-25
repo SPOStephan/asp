@@ -363,6 +363,19 @@ export function expandRoomFeatures(room: RoomStory): RoomFeature[] {
   return labels.map((label) => ({ icon: iconForAmenity(label), label }));
 }
 
+export function roomGalleryImages(room: RoomStory): RoomGalleryImage[] {
+  const seen = new Set<string>();
+  return [
+    { src: room.hero_image || room.image, alt: room.hero_image_alt || room.image_alt },
+    { src: room.image, alt: room.image_alt },
+    ...room.gallery,
+  ].filter((slide) => {
+    if (!slide.src || seen.has(slide.src)) return false;
+    seen.add(slide.src);
+    return true;
+  });
+}
+
 export function roomHref(id: string) {
   return `/zimmer/${id}`;
 }
