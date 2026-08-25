@@ -1,9 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
+import { authStorage } from './authStorage';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    storage: authStorage(),
+  },
+});
 
 export interface Hotel {
   id: string;
