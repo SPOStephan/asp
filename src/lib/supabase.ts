@@ -1,10 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabaseConfigError =
+  supabaseUrl && supabaseAnonKey
+    ? null
+    : 'In diesem Build fehlen die Supabase-Zugangsdaten. Im Vercel-Projekt lohbeck-admin müssen VITE_SUPABASE_URL und VITE_SUPABASE_ANON_KEY stehen (oder SUPABASE_URL / SUPABASE_ANON_KEY), danach Redeploy.';
+
+export const supabase = createClient(supabaseUrl || 'https://unavailable.invalid', supabaseAnonKey || 'unavailable');
 
 export interface Hotel {
   id: string;
