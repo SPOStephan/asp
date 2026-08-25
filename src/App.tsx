@@ -98,6 +98,7 @@ function App() {
         <Route path="/zimmer" element={<RoomsCardsPage />} />
         <Route path="/zimmer-b" element={<Navigate to="/zimmer" replace />} />
         <Route path="/zimmer/:roomId" element={<RoomDetailPage />} />
+        <Route path="/zimmer-vergleich/:roomId" element={<RoomDetailPage compareAmenities />} />
         <Route path="/kulinarik" element={<CulinaryPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:postSlug" element={<BlogPostPage />} />

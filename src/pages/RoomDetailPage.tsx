@@ -1,13 +1,18 @@
 import { useEffect } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { Reveal } from '../components/Reveal';
 import { RoomAmenityGrid } from '../components/RoomAmenityGrid';
+import { RoomLookbook } from '../components/RoomLookbook';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { expandRoomFeatures, formatRoomPriceDetail, resolveRooms } from '../lib/rooms';
 
-export function RoomDetailPage() {
+interface RoomDetailPageProps {
+  compareAmenities?: boolean;
+}
+
+export function RoomDetailPage({ compareAmenities = false }: RoomDetailPageProps) {
   const { roomId } = useParams();
   const hotel = useHotel();
   const page = useSection('rooms_page');
@@ -39,7 +44,14 @@ export function RoomDetailPage() {
         title={room.name}
         subtitle={`${room.size} · ${room.view}`}
       >
-        <div className="room-detail">
+        <div className={`room-detail${compareAmenities ? ' room-detail--compare' : ''}`}>
+          {compareAmenities ? (
+            <p className="room-compare-note">
+              Vergleich: Ausstattung in zwei Spalten. Nicht die Live-Seite.
+              {' '}
+              <Link to={`/zimmer/${room.id}`}>Zur echten Detailseite</Link>
+            </p>
+          ) : null}
           <div className="room-detail__split">
             <div className="room-detail__copy">
               {room.detail_text.map((paragraph) => (
@@ -70,6 +82,8 @@ export function RoomDetailPage() {
             </div>
             <RoomAmenityGrid items={features} />
           </div>
+
+          <RoomLookbook room={room} />
 
           {pair.length === 2 ? (
             <Reveal className="discover__feature-pair room-detail__pair">
