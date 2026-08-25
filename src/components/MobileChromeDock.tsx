@@ -15,7 +15,18 @@ function telHref(phone?: string | null) {
 export function MobileChromeDock() {
   const hotel = useHotel();
   const phone = usePhoneChrome();
-  const { panel, openBook, closePanels, toggleBook, toggleChat, openMenu } = useMobileChrome();
+  const { panel, openBook, closePanels, toggleBook, toggleChat, openMenu, isGhostTap } =
+    useMobileChrome();
+
+  const onBookClick = () => {
+    if (panel !== 'book') {
+      toggleBook();
+      return;
+    }
+    if (isGhostTap()) return;
+    const form = document.getElementById('dock-availability');
+    if (form instanceof HTMLFormElement) form.requestSubmit();
+  };
   const mailHref = hotel?.email ? `mailto:${hotel.email}` : undefined;
 
   useEffect(() => {
@@ -97,15 +108,13 @@ export function MobileChromeDock() {
         <a className="mobile-chrome__icon" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
           <Phone size={24} strokeWidth={1.5} />
         </a>
-        {panel === 'book' ? (
-          <button type="submit" form="dock-availability" className="mobile-chrome__book is-on">
-            Buchen
-          </button>
-        ) : (
-          <button type="button" className="mobile-chrome__book" onClick={toggleBook}>
-            Buchen
-          </button>
-        )}
+        <button
+          type="button"
+          className={`mobile-chrome__book${panel === 'book' ? ' is-on' : ''}`}
+          onClick={onBookClick}
+        >
+          Buchen
+        </button>
       </nav>
 
       <button
