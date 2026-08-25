@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
-export const PHONE_CHROME_MQ = '(max-width: 600px)';
+export const PHONE_CHROME_MQ =
+  '(max-width: 600px), (max-height: 500px) and (pointer: coarse)';
 
 export function usePhoneChrome() {
   const [phone, setPhone] = useState(

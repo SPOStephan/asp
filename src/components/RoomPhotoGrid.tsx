@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { roomGalleryImages, type RoomStory } from '../lib/rooms';
-import { GalleryViewer } from './GalleryViewer';
+import { RoomLightbox } from './RoomLightbox';
 
 interface RoomPhotoGridProps {
   room: RoomStory;
@@ -62,7 +62,7 @@ export function RoomPhotoGrid({ room }: RoomPhotoGridProps) {
         })}
       </div>
       {active !== null ? (
-        <GalleryViewer
+        <RoomLightbox
           shots={slides}
           active={active}
           onClose={() => setActive(null)}
