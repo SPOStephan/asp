@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
+import { isAdminHost, isAdminPath } from '../admin/adminHost';
 import { loadHotelContent, type HotelContent } from '../lib/hotelData';
 
 interface HotelContextValue {
@@ -14,12 +16,20 @@ const HotelContext = createContext<HotelContextValue>({
 });
 
 export function HotelProvider({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const skipHotel = isAdminHost() || isAdminPath(location.pathname);
   const [content, setContent] = useState<HotelContent | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!skipHotel);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (skipHotel) {
+      setLoading(false);
+      setError(null);
+      return;
+    }
     let cancelled = false;
+    setLoading(true);
     (async () => {
       try {
         const data = await loadHotelContent();
@@ -37,7 +47,7 @@ export function HotelProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [skipHotel]);
 
   useEffect(() => {
     if (!content) return;

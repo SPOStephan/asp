@@ -25,6 +25,8 @@ export interface Hotel {
   seo_title: string | null;
   seo_description: string | null;
   is_active: boolean;
+  color_world?: 'blue' | 'red' | 'green';
+  booking_url?: string | null;
 }
 
 export interface HotelSection {
