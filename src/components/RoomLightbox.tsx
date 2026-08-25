@@ -11,6 +11,7 @@ interface RoomLightboxProps {
 
 export function RoomLightbox({ shots, active, onClose, onStep }: RoomLightboxProps) {
   const swipeX = useRef<number | null>(null);
+  const skipTap = useRef(false);
   const current = shots[active];
 
   useEffect(() => {
@@ -34,28 +35,38 @@ export function RoomLightbox({ shots, active, onClose, onStep }: RoomLightboxPro
 
   if (!current) return null;
 
+  const goNext = () => {
+    if (shots.length < 2) return;
+    onStep(1);
+  };
+
   return (
-    <div
-      className="room-lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Zimmerfotos"
-      onTouchStart={(event) => {
-        swipeX.current = event.changedTouches[0].clientX;
-      }}
-      onTouchEnd={(event) => {
-        if (swipeX.current === null) return;
-        const delta = event.changedTouches[0].clientX - swipeX.current;
-        swipeX.current = null;
-        if (Math.abs(delta) < 40) return;
-        onStep(delta < 0 ? 1 : -1);
-      }}
-    >
-      <img
-        src={current.src}
-        alt={current.alt}
-        className="room-lightbox__image"
-      />
+    <div className="room-lightbox" role="dialog" aria-modal="true" aria-label="Zimmerfotos">
+      <button
+        type="button"
+        className="room-lightbox__stage"
+        aria-label={shots.length > 1 ? 'Nächstes Foto' : current.alt}
+        onClick={() => {
+          if (skipTap.current) {
+            skipTap.current = false;
+            return;
+          }
+          goNext();
+        }}
+        onTouchStart={(event) => {
+          swipeX.current = event.changedTouches[0].clientX;
+        }}
+        onTouchEnd={(event) => {
+          if (swipeX.current === null) return;
+          const delta = event.changedTouches[0].clientX - swipeX.current;
+          swipeX.current = null;
+          if (Math.abs(delta) < 40) return;
+          skipTap.current = true;
+          onStep(delta < 0 ? 1 : -1);
+        }}
+      >
+        <img src={current.src} alt={current.alt} className="room-lightbox__image" />
+      </button>
       <button type="button" className="room-lightbox__close" aria-label="Schließen" onClick={onClose}>
         <X size={22} strokeWidth={1.6} />
       </button>
