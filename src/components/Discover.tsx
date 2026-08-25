@@ -2,12 +2,14 @@ import { Reveal } from './Reveal';
 import { ArrowUpRight } from 'lucide-react';
 import { useSection } from '../context/HotelContext';
 import { remapSiteHref } from '../lib/links';
+import { wideDiscoverIndex } from '../lib/discoverLayout';
 
 interface DiscoverTile {
   image: string;
   eyebrow: string;
   title: string;
   href: string;
+  priority?: number;
 }
 
 export function Discover() {
@@ -16,6 +18,7 @@ export function Discover() {
   if (!data) return null;
 
   const tiles: DiscoverTile[] = data.tiles ?? [];
+  const wideIndex = wideDiscoverIndex(tiles, 2);
 
   return (
     <section className="discover" id="discover">
@@ -42,7 +45,11 @@ export function Discover() {
 
       <div className="discover__grid">
         {tiles.map((tile, i) => (
-          <Reveal key={tile.title} delay={i * 70}>
+          <Reveal
+            key={tile.title}
+            delay={i * 70}
+            className={i === wideIndex ? 'discover__cell--wide' : undefined}
+          >
             <a className="discover__tile" href={remapSiteHref(tile.href, tile.title)}>
               <div className="discover__tile-image">
                 <img src={tile.image} alt={tile.title} loading="lazy" />
