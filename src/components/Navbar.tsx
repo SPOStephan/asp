@@ -383,11 +383,11 @@ export function Navbar() {
   const menuGroups: MenuGroup[] = data.menu_groups?.length ? data.menu_groups : FALLBACK_GROUPS;
   const languages: LanguageOption[] = data.languages?.length ? data.languages : FALLBACK_LANGUAGES;
   const currentLang = languages.find((item) => item.code === lang) ?? languages[0];
-  const lightBar = scrolled || menuOpen;
+  const lightBar = (!isPhone && scrolled) || menuOpen;
 
   return (
     <nav
-      className={`navbar${scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}${isPhone ? ' navbar--phone' : ''}`}
+      className={`navbar${!isPhone && scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}${isPhone ? ' navbar--phone' : ''}${isPhone && scrolled && !menuOpen ? ' navbar--away' : ''}`}
       aria-label="Hauptnavigation"
       ref={barRef}
     >

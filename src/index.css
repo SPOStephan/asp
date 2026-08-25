@@ -446,29 +446,33 @@ body.nav-menu-open { overflow: hidden; }
 }
 
 @media (max-width: 600px) {
-  body.has-mobile-dock .navbar.navbar--phone:not(.navbar--menu-open) {
-    visibility: hidden;
+  body.has-mobile-dock .navbar.navbar--phone {
+    background: transparent;
+    box-shadow: none;
+    transition: transform 0.35s ease, background 0.5s ease, padding 0.5s ease;
+  }
+
+  body.has-mobile-dock .navbar.navbar--phone.navbar--away {
+    transform: translateY(-110%);
     pointer-events: none;
-    height: 0;
-    padding: 0;
-    overflow: hidden;
   }
 
   body.has-mobile-dock .navbar.navbar--phone.navbar--menu-open {
+    transform: none;
     padding: 0;
     background: var(--neutral-50);
+    pointer-events: auto;
   }
 
-  body.has-mobile-dock .navbar.navbar--phone .navbar__inner {
+  body.has-mobile-dock .navbar.navbar--phone.navbar--menu-open .navbar__inner {
     display: none;
   }
 
   body.has-mobile-dock .faq-page__hero {
-    padding-top: 48px;
-  }
-
-  body.has-mobile-dock .subpage-hero__flow {
-    padding-top: 40px;
+    padding-top: 120px;
+    background:
+      linear-gradient(180deg, rgba(19, 59, 92, 0.62) 0%, rgba(19, 59, 92, 0) 120px),
+      var(--neutral-50);
   }
 }
 
