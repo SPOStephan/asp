@@ -107,6 +107,11 @@ function CompactMenu({
   bookLabel,
   bookHref,
   onBook,
+  onClose,
+  languages,
+  lang,
+  onLang,
+  phoneChrome,
 }: {
   groups: MenuGroup[];
   openGroup: string | null;
@@ -117,12 +122,33 @@ function CompactMenu({
   bookLabel?: string;
   bookHref?: string;
   onBook?: () => void;
+  onClose?: () => void;
+  languages?: LanguageOption[];
+  lang?: string;
+  onLang?: (code: string) => void;
+  phoneChrome?: boolean;
 }) {
   const group = groups.find((item) => item.title === openGroup) ?? null;
   const groupHref = group ? mobileGroupHref(group.title, group.href) : undefined;
 
   return (
     <div className="navbar__steps">
+      {phoneChrome ? (
+        <div className="navbar__steps-bar">
+          {openGroup ? (
+            <button type="button" className="navbar__close" onClick={() => onOpenGroup(null)}>
+              <ChevronLeft size={18} strokeWidth={1.6} />
+              <span>Zurück</span>
+            </button>
+          ) : (
+            <span />
+          )}
+          <button type="button" className="navbar__close" onClick={onClose}>
+            <span>Schließen</span>
+            <X size={18} strokeWidth={1.6} />
+          </button>
+        </div>
+      ) : null}
       <div className="navbar__steps-body">
         {group ? (
           <>
@@ -194,6 +220,20 @@ function CompactMenu({
             })}
           </ul>
         )}
+        {languages?.length ? (
+          <div className="navbar__langs" aria-label="Sprache">
+            {languages.map((item) => (
+              <button
+                type="button"
+                key={item.code}
+                className={item.code === lang ? 'is-on' : ''}
+                onClick={() => onLang?.(item.code)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
       <div className="navbar__dock">
         <button type="button" onClick={() => onNavigate(inquireHref || '#anfragen', inquireLabel)}>
@@ -335,7 +375,7 @@ export function Navbar() {
 
   return (
     <nav
-      className={`navbar${scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}`}
+      className={`navbar${scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}${isPhone ? ' navbar--phone' : ''}`}
       aria-label="Hauptnavigation"
       ref={barRef}
     >
@@ -474,7 +514,13 @@ export function Navbar() {
           <div
             className={`navbar__panel${compact ? ' navbar__panel--compact' : ''}`}
             id="hauptmenue"
-            style={compact ? { top: barHeight, height: `calc(100dvh - ${barHeight}px)` } : undefined}
+            style={
+              compact
+                ? isPhone
+                  ? { top: 0, height: '100dvh' }
+                  : { top: barHeight, height: `calc(100dvh - ${barHeight}px)` }
+                : undefined
+            }
           >
             {compact ? (
               <CompactMenu
@@ -494,6 +540,11 @@ export function Navbar() {
                       }
                     : undefined
                 }
+                onClose={() => setMenuOpen(false)}
+                languages={isPhone ? languages : undefined}
+                lang={lang}
+                onLang={setLang}
+                phoneChrome={isPhone}
               />
             ) : (
               <div className="navbar__panel-inner">

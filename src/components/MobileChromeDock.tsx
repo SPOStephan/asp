@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Menu, Phone } from 'lucide-react';
+import { Menu, Phone, X } from 'lucide-react';
 import { ChatCircleTextIcon } from '@phosphor-icons/react';
 import { useHotel } from '../context/HotelContext';
 import { useMobileChrome } from '../context/MobileChromeContext';
@@ -96,18 +96,34 @@ export function MobileChromeDock() {
         </div>
       ) : null}
 
-      <nav className="mobile-chrome__dock" aria-label="App-Leiste">
-        <button
-          type="button"
-          className="mobile-chrome__icon"
-          aria-label="Menü"
-          onClick={openMenu}
-        >
-          <Menu size={26} strokeWidth={1.5} />
-        </button>
-        <a className="mobile-chrome__icon" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
-          <Phone size={24} strokeWidth={1.5} />
-        </a>
+      <nav
+        className={`mobile-chrome__dock${panel === 'book' ? ' is-booking' : ''}`}
+        aria-label="App-Leiste"
+      >
+        {panel === 'book' ? (
+          <button
+            type="button"
+            className="mobile-chrome__cancel"
+            aria-label="Buchung abbrechen"
+            onClick={closePanels}
+          >
+            <X size={22} strokeWidth={1.6} />
+          </button>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="mobile-chrome__icon"
+              aria-label="Menü"
+              onClick={openMenu}
+            >
+              <Menu size={26} strokeWidth={1.5} />
+            </button>
+            <a className="mobile-chrome__icon" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
+              <Phone size={24} strokeWidth={1.5} />
+            </a>
+          </>
+        )}
         <button
           type="button"
           className={`mobile-chrome__book${panel === 'book' ? ' is-on' : ''}`}
