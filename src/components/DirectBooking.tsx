@@ -1,3 +1,4 @@
+import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
 import {
   BadgeCheck,
@@ -48,10 +49,11 @@ export function DirectBooking() {
   const items: BenefitItem[] = data.items ?? FALLBACK.items;
 
   return (
+    <CmsSection sectionKey="direct_booking" label="Direktbuchung">
     <section className="direct-booking" id="direktbuchung" aria-label="Vorteile der Direktbuchung">
       <div className="direct-booking__inner">
         <Reveal>
-          <div className="direct-booking__intro">
+          <div className="direct-booking__intro" data-cms-focus="title">
             <p className="eyebrow">{data.eyebrow}</p>
             <h2 className="direct-booking__title heading-font">{data.title}</h2>
             {data.subtitle ? <p className="direct-booking__subtitle">{data.subtitle}</p> : null}
@@ -65,10 +67,10 @@ export function DirectBooking() {
 
         <Reveal delay={80}>
           <ul className="direct-booking__list">
-            {items.map((item) => {
+            {items.map((item, index) => {
               const Icon = iconMap[item.icon] ?? Star;
               return (
-                <li key={item.title} className="direct-booking__item">
+                <li key={item.title} className="direct-booking__item" data-cms-focus={`items:${index}`}>
                   <Icon className="direct-booking__icon" size={22} strokeWidth={1.25} aria-hidden="true" />
                   <div>
                     <p className="direct-booking__item-title">{item.title}</p>
@@ -81,5 +83,6 @@ export function DirectBooking() {
         </Reveal>
       </div>
     </section>
+    </CmsSection>
   );
 }

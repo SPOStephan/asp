@@ -37,7 +37,7 @@ function WelcomeCopy({ paragraphs }: { paragraphs: string[] }) {
   }, [open, paragraphs]);
 
   return (
-    <div className={`welcome__text${open ? ' welcome__text--open' : ''}`}>
+    <div className={`welcome__text${open ? ' welcome__text--open' : ''}`} data-cms-focus="text">
       <div className="welcome__text-inner" id={copyId} ref={innerRef}>
         {paragraphs.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
@@ -70,12 +70,12 @@ export function Welcome() {
       <div className="container">
         <Reveal>
           <div className="welcome__head">
-            <h2 className="welcome__title heading-font">
+            <h2 className="welcome__title heading-font" data-cms-focus="title">
               {data.title_line1}<br />
               <span className="welcome__normal-word">{data.title_word_normal}</span>{' '}
               <span className="welcome__script">{data.title_word_script}</span>
             </h2>
-            <p className="welcome__subtitle">{data.subtitle}</p>
+            <p className="welcome__subtitle" data-cms-focus="subtitle">{data.subtitle}</p>
           </div>
         </Reveal>
 

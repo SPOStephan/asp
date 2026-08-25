@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
@@ -124,9 +125,10 @@ export function Offers() {
   const headline = offerHeadline(data);
 
   return (
+    <CmsSection sectionKey="offers" label="Angebote">
     <section className="offers" id="angebote" aria-label="Aktuelle Angebote">
       <Reveal>
-        <h2 className="offers__headline heading-font">
+        <h2 className="offers__headline heading-font" data-cms-focus="title_line1">
           {headline.line1}
           <br />
           {headline.line2}{' '}
@@ -141,6 +143,7 @@ export function Offers() {
             <article
               key={item.title}
               className={`offers__row${imagesLeft ? '' : ' offers__row--reverse'}`}
+              data-cms-focus={`items:${index}`}
             >
               <OfferVisual item={item} from={imagesLeft ? 'left' : 'right'} />
               <Reveal className="offers__copy" delay={80}>
@@ -171,5 +174,6 @@ export function Offers() {
         })}
       </div>
     </section>
+    </CmsSection>
   );
 }

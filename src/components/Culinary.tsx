@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
 import { Plus, Minus } from 'lucide-react';
 import { TextCta } from './TextCta';
@@ -27,9 +28,10 @@ export function Culinary() {
   const restaurants: Restaurant[] = data.restaurants ?? [];
 
   return (
+    <CmsSection sectionKey="culinary" label="Kulinarik">
     <section className="culinary" id="kulinarik">
       <Reveal>
-        <div className="culinary__hero">
+        <div className="culinary__hero" data-cms-focus="title_line1">
           <img src={data.hero_image} alt={data.hero_image_alt || ''} />
           <div className="culinary__hero-overlay" />
           <div className="culinary__hero-content">
@@ -45,7 +47,7 @@ export function Culinary() {
       <div className="container">
         <div className="culinary__body">
           <Reveal>
-            <div className="culinary__text">
+            <div className="culinary__text" data-cms-focus="text">
               <p>{data.text}</p>
 
               {expanded && (
@@ -72,8 +74,8 @@ export function Culinary() {
 
         <Reveal delay={200}>
           <div className="culinary__images">
-            {restaurants.map((r) => (
-              <a className="culinary__img-block" key={r.name} href={venueHref(r.name)}>
+            {restaurants.map((r, index) => (
+              <a className="culinary__img-block" key={r.name} href={venueHref(r.name)} data-cms-focus={`restaurants:${index}`}>
                 <img src={r.image} alt={r.alt} />
                 <div className="culinary__img-label">
                   <p className="eyebrow">{r.eyebrow}</p>
@@ -85,5 +87,6 @@ export function Culinary() {
         </Reveal>
       </div>
     </section>
+    </CmsSection>
   );
 }

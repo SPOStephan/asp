@@ -1,3 +1,4 @@
+import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
@@ -25,10 +26,11 @@ export function Highlights() {
   const items: HighlightItem[] = data.items ?? [];
 
   return (
+    <CmsSection sectionKey="highlights" label="Highlights">
     <section className="highlights" id="highlights">
       <div className="container">
         <Reveal>
-          <div className="highlights__head">
+          <div className="highlights__head" data-cms-focus="title_line1">
             <p className="eyebrow">{data.eyebrow}</p>
             <h2 className="highlights__title heading-font">
               {data.title_line1}<br />
@@ -41,7 +43,7 @@ export function Highlights() {
       <div className="highlights__list">
         {items.map((h, i) => (
           <Reveal key={i} delay={i * 60}>
-            <article className={`hcard ${i % 2 === 1 ? 'hcard--reverse' : ''}`}>
+            <article className={`hcard ${i % 2 === 1 ? 'hcard--reverse' : ''}`} data-cms-focus={`items:${i}`}>
               <div className="hcard__text">
                 <h3 className="hcard__title heading-font">{h.title}</h3>
                 <p className="hcard__desc">{h.text}</p>
@@ -57,5 +59,6 @@ export function Highlights() {
         ))}
       </div>
     </section>
+    </CmsSection>
   );
 }

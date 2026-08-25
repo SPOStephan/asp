@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
 import { Mail, Check, ArrowRight } from 'lucide-react';
 import { useSection } from '../context/HotelContext';
@@ -18,17 +19,18 @@ export function Newsletter() {
   };
 
   return (
+    <CmsSection sectionKey="newsletter" label="Newsletter">
     <section className="newsletter" id="newsletter">
       <div className="newsletter__bg" />
       <Reveal>
         <div className="newsletter__inner">
-          <div className="newsletter__text">
+          <div className="newsletter__text" data-cms-focus="title_line1">
             <p className="eyebrow newsletter__eyebrow">{data.eyebrow}</p>
             <h2 className="newsletter__title heading-font">
               {data.title_line1}<br />
               <em>{data.title_line2_em}</em>
             </h2>
-            <p className="newsletter__desc">{data.description}</p>
+            <p className="newsletter__desc" data-cms-focus="description">{data.description}</p>
           </div>
 
           <div className="newsletter__form-wrap">
@@ -59,5 +61,6 @@ export function Newsletter() {
         </div>
       </Reveal>
     </section>
+    </CmsSection>
   );
 }
