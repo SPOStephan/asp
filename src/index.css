@@ -410,12 +410,29 @@ body.nav-menu-open { overflow: hidden; }
   min-height: 56px;
   padding: 8px 5%;
 }
+.navbar__tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 28px;
+  padding-top: 20px;
+}
+.navbar__home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-500);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.navbar__home:hover { color: var(--accent-400); }
 .navbar__langs {
   display: flex;
   flex-wrap: wrap;
   gap: 22px;
-  margin-top: 28px;
-  padding-top: 20px;
 }
 .navbar__langs button {
   color: var(--accent-400);
