@@ -1,11 +1,67 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Reveal } from './Reveal';
 import { HighlightStrip } from './HighlightStrip';
+import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
+import { PHONE_CHROME_MQ } from '../lib/phoneChrome';
+
+function WelcomeCopy({ paragraphs }: { paragraphs: string[] }) {
+  const [open, setOpen] = useState(false);
+  const [needsMore, setNeedsMore] = useState(false);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const copyId = 'welcome-copy';
+
+  useLayoutEffect(() => {
+    const el = innerRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      const phone = window.matchMedia(PHONE_CHROME_MQ).matches;
+      if (!phone || open) {
+        setNeedsMore(false);
+        return;
+      }
+      setNeedsMore(el.scrollHeight > el.clientHeight + 2);
+    };
+
+    measure();
+    const media = window.matchMedia(PHONE_CHROME_MQ);
+    media.addEventListener('change', measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => {
+      media.removeEventListener('change', measure);
+      observer.disconnect();
+    };
+  }, [open, paragraphs]);
+
+  return (
+    <div className={`welcome__text${open ? ' welcome__text--open' : ''}`}>
+      <div className="welcome__text-inner" id={copyId} ref={innerRef}>
+        {paragraphs.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+      </div>
+      {needsMore && !open && (
+        <TextCta
+          className="welcome__more"
+          onClick={() => setOpen(true)}
+          aria-expanded={false}
+          aria-controls={copyId}
+        >
+          Weiterlesen
+        </TextCta>
+      )}
+    </div>
+  );
+}
 
 export function Welcome() {
   const data = useSection('welcome');
 
   if (!data) return null;
+
+  const paragraphs = [data.text_paragraph1, data.text_paragraph2].filter(Boolean);
 
   return (
     <section className="welcome" id="welcome">
@@ -22,10 +78,7 @@ export function Welcome() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="welcome__text">
-            <p>{data.text_paragraph1}</p>
-            <p>{data.text_paragraph2}</p>
-          </div>
+          <WelcomeCopy paragraphs={paragraphs} />
         </Reveal>
 
       </div>
