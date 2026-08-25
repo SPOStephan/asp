@@ -51,6 +51,15 @@ export function MobileChromeDock() {
       className="mobile-chrome"
       style={{ ['--mobile-dock' as string]: hotel?.primary_color || 'var(--primary-500)' }}
     >
+      {panel === 'book' || panel === 'chat' ? (
+        <button
+          type="button"
+          className="mobile-chrome__backdrop"
+          aria-label="Schließen"
+          onClick={closePanels}
+        />
+      ) : null}
+
       {panel === 'book' ? (
         <div
           id="buchung-mobile"
@@ -58,7 +67,14 @@ export function MobileChromeDock() {
           role="dialog"
           aria-label="Verfügbarkeit"
         >
-          <AvailabilityBarForm idPrefix="dock-" hideExtras />
+          <AvailabilityBarForm
+            idPrefix="dock-"
+            formId="dock-availability"
+            variant="sheet"
+            hideExtras
+            hideSubmit
+            onSubmitted={closePanels}
+          />
         </div>
       ) : null}
 
@@ -81,13 +97,15 @@ export function MobileChromeDock() {
         <a className="mobile-chrome__icon" href={telHref(hotel?.phone)} aria-label="Hotel anrufen">
           <Phone size={24} strokeWidth={1.5} />
         </a>
-        <button
-          type="button"
-          className={`mobile-chrome__book${panel === 'book' ? ' is-on' : ''}`}
-          onClick={toggleBook}
-        >
-          Buchen
-        </button>
+        {panel === 'book' ? (
+          <button type="submit" form="dock-availability" className="mobile-chrome__book is-on">
+            Buchen
+          </button>
+        ) : (
+          <button type="button" className="mobile-chrome__book" onClick={toggleBook}>
+            Buchen
+          </button>
+        )}
       </nav>
 
       <button

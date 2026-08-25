@@ -3,6 +3,7 @@ import {
   WEEKDAYS_DE,
   addMonths,
   dateInRange,
+  formatDateDe,
   formatMonthTitle,
   isPastDay,
   isSameDay,
@@ -19,6 +20,7 @@ interface AvailabilityDateLayerProps {
   onSelect: (key: string) => void;
   onClear: () => void;
   onApply: () => void;
+  hideApply?: boolean;
 }
 
 export function AvailabilityDateLayer({
@@ -29,6 +31,7 @@ export function AvailabilityDateLayer({
   onSelect,
   onClear,
   onApply,
+  hideApply = false,
 }: AvailabilityDateLayerProps) {
   const today = new Date();
   const minMonth = startOfMonth(today);
@@ -63,6 +66,18 @@ export function AvailabilityDateLayer({
           <ChevronRight size={18} strokeWidth={1.5} />
         </button>
       </header>
+      <p className="availability-cal__hint">
+        {!arrival
+          ? 'Anreise tippen, dann Abreise.'
+          : !departure
+            ? `${formatDateDe(arrival)} — jetzt Abreise tippen.`
+            : `${formatDateDe(arrival)} → ${formatDateDe(departure)}`}
+        {arrival ? (
+          <button type="button" className="availability-cal__reset" onClick={onClear}>
+            Löschen
+          </button>
+        ) : null}
+      </p>
 
       <div className="availability-cal">
         {months.map((month) => (
@@ -105,7 +120,7 @@ export function AvailabilityDateLayer({
                       <span className="availability-cal__num">{date.getDate()}</span>
                       {mark ? <span className="availability-cal__mark">{mark}</span> : null}
                     </button>
-                    {isDeparture ? (
+                    {isDeparture && !hideApply ? (
                       <button
                         type="button"
                         className="availability-cal__clear"
@@ -122,16 +137,18 @@ export function AvailabilityDateLayer({
           </section>
         ))}
       </div>
-      <div className="availability-cal__actions">
-        <button
-          type="button"
-          className="availability-cal__apply"
-          disabled={!arrival || !departure}
-          onClick={onApply}
-        >
-          Anwenden
-        </button>
-      </div>
+      {hideApply ? null : (
+        <div className="availability-cal__actions">
+          <button
+            type="button"
+            className="availability-cal__apply"
+            disabled={!arrival || !departure}
+            onClick={onApply}
+          >
+            Anwenden
+          </button>
+        </div>
+      )}
     </div>
   );
 }

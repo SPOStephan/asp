@@ -613,6 +613,23 @@ body.has-fixed-bar { padding-bottom: 92px; }
   color: var(--neutral-900);
   text-align: center;
 }
+.availability-cal__hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 14px;
+  font-size: 0.88rem;
+  color: var(--neutral-600);
+}
+.availability-cal__reset {
+  flex-shrink: 0;
+  color: var(--accent-400);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .availability-cal__nav {
   width: 40px;
   height: 40px;
