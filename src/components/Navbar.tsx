@@ -104,6 +104,7 @@ function CompactMenu({
   onNavigate,
   inquireLabel,
   inquireHref,
+  showInquire = false,
   bookLabel,
   bookHref,
   onBook,
@@ -119,6 +120,7 @@ function CompactMenu({
   onNavigate: (href: string, label?: string) => void;
   inquireLabel?: string;
   inquireHref?: string;
+  showInquire?: boolean;
   bookLabel?: string;
   bookHref?: string;
   onBook?: () => void;
@@ -247,10 +249,12 @@ function CompactMenu({
           </div>
         ) : null}
       </div>
-      <div className="navbar__dock">
-        <button type="button" onClick={() => onNavigate(inquireHref || '#anfragen', inquireLabel)}>
-          {inquireLabel || 'Anfragen'}
-        </button>
+      <div className={`navbar__dock${showInquire ? '' : ' navbar__dock--book-only'}`}>
+        {showInquire ? (
+          <button type="button" onClick={() => onNavigate(inquireHref || '#anfragen', inquireLabel)}>
+            {inquireLabel || 'Anfragen'}
+          </button>
+        ) : null}
         <button
           type="button"
           onClick={() => (onBook ? onBook() : onNavigate(bookHref || '#buchung', bookLabel))}
@@ -542,6 +546,7 @@ export function Navbar() {
                 onNavigate={handleNavClick}
                 inquireLabel={data.cta_text}
                 inquireHref={data.cta_solid_href}
+                showInquire={data.show_inquire === true}
                 bookLabel={data.cta_solid_text}
                 bookHref={data.cta_solid_href}
                 onBook={
