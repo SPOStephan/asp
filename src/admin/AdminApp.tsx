@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
-import { supabaseConfigError } from '../lib/supabase';
 import { AdminAuthProvider, useAdminAuth } from './AdminAuth';
 import { AdminAdminsPage } from './pages/AdminAdminsPage';
 import { AdminHotelFormPage } from './pages/AdminHotelFormPage';
@@ -69,19 +68,6 @@ export function AdminApp() {
   useEffect(() => {
     document.title = 'Lohbeck CMS';
   }, []);
-
-  if (supabaseConfigError) {
-    return (
-      <div className="admin-app">
-        <div className="admin-login">
-          <div className="admin-card">
-            <h1>Lohbeck CMS</h1>
-            <p className="admin-error">{supabaseConfigError}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <AdminAuthProvider>

@@ -1,17 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
-import {
-  BUNNY_CDN_KEYS,
-  BUNNY_KEY_KEYS,
-  BUNNY_STORAGE_HOST_KEYS,
-  BUNNY_ZONE_KEYS,
-  SUPABASE_ANON_KEYS,
-  SUPABASE_URL_KEYS,
-  firstPresent,
-  readEnv,
-} from './env';
 
 const MAX_BYTES = 12 * 1024 * 1024;
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
+
+function env(name: string) {
+  return (process.env[name] || '').trim();
+}
 
 function json(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
@@ -25,36 +19,18 @@ function safeName(name: string) {
   return base.slice(0, 80) || 'image';
 }
 
-function normalizeCdn(value: string) {
-  const trimmed = value.trim().replace(/\/$/, '');
-  if (!trimmed) return '';
-  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-}
-
-export async function handleBunnyUpload(request: Request) {
+export default async function handler(request: Request) {
   if (request.method !== 'POST') return json(405, { error: 'Nur POST.' });
 
-  const zone = readEnv(...BUNNY_ZONE_KEYS);
-  const accessKey = readEnv(...BUNNY_KEY_KEYS);
-  const cdn = normalizeCdn(readEnv(...BUNNY_CDN_KEYS));
-  const storageHost = readEnv(...BUNNY_STORAGE_HOST_KEYS) || 'storage.bunnycdn.com';
-  const supabaseUrl = readEnv(...SUPABASE_URL_KEYS);
-  const supabaseAnon = readEnv(...SUPABASE_ANON_KEYS);
+  const zone = env('BUNNY_STORAGE_ZONE');
+  const accessKey = env('BUNNY_STORAGE_API_KEY');
+  const cdn = env('BUNNY_CDN_URL').replace(/\/$/, '');
+  const storageHost = env('BUNNY_STORAGE_HOST') || 'storage.bunnycdn.com';
+  const supabaseUrl = env('VITE_SUPABASE_URL');
+  const supabaseAnon = env('VITE_SUPABASE_ANON_KEY');
 
   if (!zone || !accessKey || !cdn) {
-    return json(503, {
-      error: 'Bunny-Zugang gefunden, aber nicht unter den erwarteten Namen — oder die Werte erreichen die Funktion nicht.',
-      missing: {
-        zone: !zone,
-        apiKey: !accessKey,
-        cdn: !cdn,
-      },
-      used: {
-        zone: firstPresent(...BUNNY_ZONE_KEYS),
-        apiKey: firstPresent(...BUNNY_KEY_KEYS),
-        cdn: firstPresent(...BUNNY_CDN_KEYS),
-      },
-    });
+    return json(503, { error: 'Bunny ist nicht konfiguriert.' });
   }
   if (!supabaseUrl || !supabaseAnon) {
     return json(503, { error: 'Supabase-Zugang fehlt auf dem Server.' });
@@ -113,7 +89,3 @@ export async function handleBunnyUpload(request: Request) {
 }
 
 export const config = { runtime: 'edge' };
-
-export default async function handler(request: Request) {
-  return handleBunnyUpload(request);
-}

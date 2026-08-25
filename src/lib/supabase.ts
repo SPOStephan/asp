@@ -1,49 +1,9 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
-const bakedUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
-const bakedAnon = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export let supabaseConfigError: string | null = null;
-
-export let supabase: SupabaseClient = createClient(
-  bakedUrl || 'https://unavailable.invalid',
-  bakedAnon || 'unavailable',
-);
-
-type PublicConfig = {
-  url?: string | null;
-  anon?: string | null;
-};
-
-async function loadPublicConfig(): Promise<PublicConfig> {
-  const response = await fetch('/api/public-config');
-  if (!response.ok) return {};
-  return (await response.json()) as PublicConfig;
-}
-
-export async function initSupabase() {
-  let url = bakedUrl;
-  let anon = bakedAnon;
-
-  if (!url || !anon) {
-    try {
-      const runtime = await loadPublicConfig();
-      url = (runtime.url || '').trim();
-      anon = (runtime.anon || '').trim();
-    } catch {
-      // keep empty; error below
-    }
-  }
-
-  if (!url || !anon) {
-    supabaseConfigError =
-      'Supabase-Zugang kommt in diesem Admin-Build nicht an. Die Werte stehen in Vercel, werden aber nicht ins Frontend durchgereicht. Nach diesem Update holt die Seite sie zur Laufzeit von /api/public-config.';
-    return;
-  }
-
-  supabase = createClient(url, anon);
-  supabaseConfigError = null;
-}
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface Hotel {
   id: string;

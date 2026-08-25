@@ -6,18 +6,15 @@ import './App.css'
 import App from './App.tsx'
 import { HotelProvider } from './context/HotelContext'
 import { MobileChromeProvider } from './context/MobileChromeContext'
-import { initSupabase } from './lib/supabase'
 
-void initSupabase().then(() => {
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <BrowserRouter>
-        <HotelProvider>
-          <MobileChromeProvider>
-            <App />
-          </MobileChromeProvider>
-        </HotelProvider>
-      </BrowserRouter>
-    </StrictMode>,
-  )
-})
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <BrowserRouter>
+      <HotelProvider>
+        <MobileChromeProvider>
+          <App />
+        </MobileChromeProvider>
+      </HotelProvider>
+    </BrowserRouter>
+  </StrictMode>,
+)
