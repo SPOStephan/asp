@@ -54,20 +54,22 @@ export function RoomsCardsPage() {
         <div className="rooms-cards">
           {data.intro ? <p className="rooms-cards__intro">{data.intro}</p> : null}
 
-          <div className="rooms-page__filters" role="tablist" aria-label="Zimmer filtern">
-            {ROOM_FILTERS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={filter === item.id}
-                className={`rooms-page__filter${filter === item.id ? ' is-active' : ''}`}
-                onClick={() => setFilter(item.id)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
+          {data.show_filters !== false ? (
+            <div className="rooms-page__filters" role="tablist" aria-label="Zimmer filtern">
+              {ROOM_FILTERS.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === item.id}
+                  className={`rooms-page__filter${filter === item.id ? ' is-active' : ''}`}
+                  onClick={() => setFilter(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           <section className="rooms-cards__list" aria-label="Zimmer und Suiten">
             {visible.length ? (

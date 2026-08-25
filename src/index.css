@@ -2808,6 +2808,43 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .room-amenities { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 600px) {
+  .rooms-page__filters {
+    position: static;
+    top: auto;
+    z-index: auto;
+    width: calc(100% - 48px);
+    margin-top: 28px;
+    padding: 8px 0 16px;
+    background: transparent;
+    box-shadow: none;
+  }
+  .rooms-page__story,
+  .rooms-overlap { scroll-margin-top: 16px; }
+  .room-detail__facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+  .room-detail__fact {
+    padding: 0 10px;
+    text-align: center;
+  }
+  .room-detail__fact:first-child { padding-left: 0; }
+  .room-detail__fact:last-child { padding-right: 0; }
+  .room-detail__fact + .room-detail__fact {
+    border-left: 1px solid var(--neutral-200);
+  }
+  .room-detail__fact-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .room-detail__fact-value {
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rooms-lookbook__image {
     transform: none !important;
