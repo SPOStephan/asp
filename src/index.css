@@ -934,9 +934,9 @@ body.has-fixed-bar { padding-bottom: 92px; }
 
   .hero__bg img {
     object-fit: cover;
-    /* Landscape source fills a tall phone frame by cropping left/right.
-       The Seebrücke sits on the right of asp-start01.jpg — pin that axis. */
-    object-position: 88% 50%;
+    /* Phone cover crops left/right. 68% shows both hotel wings
+       (gap near center) and keeps the Seebrücke on the right. */
+    object-position: 68% 50%;
   }
 
   .hero__content {
