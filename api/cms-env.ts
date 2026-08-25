@@ -14,13 +14,15 @@ function runtimeEnv(): EnvMap {
   return (globalThis as { process?: { env?: EnvMap } }).process?.env ?? {};
 }
 
-export default function handler(req: { url?: string }, res: { status: (code: number) => { json: (body: unknown) => void } }) {
+export const config = { runtime: 'edge' };
+
+export default function handler() {
   const env = runtimeEnv();
   const bunnyish = Object.keys(env)
     .filter((key) => /bunny|cdn|storage_zone|pull.?zone/i.test(key))
     .sort();
 
-  res.status(200).json({
+  return Response.json({
     supabaseUrl: firstPresent(...SUPABASE_URL_KEYS),
     supabaseAnon: firstPresent(...SUPABASE_ANON_KEYS),
     bunnyZone: firstPresent(...BUNNY_ZONE_KEYS),
