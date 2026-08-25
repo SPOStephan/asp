@@ -392,6 +392,9 @@ body.nav-menu-open { overflow: hidden; }
   grid-template-columns: 1fr 1fr;
   background: var(--primary-500);
 }
+.navbar__dock--book-only {
+  grid-template-columns: 1fr;
+}
 .navbar__dock button {
   min-height: 56px;
   color: var(--neutral-0);
