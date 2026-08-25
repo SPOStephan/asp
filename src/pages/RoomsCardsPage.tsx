@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from '../components/Reveal';
 import { RoomOverlapCard } from '../components/RoomOverlapCard';
 import { SubpageHero } from '../components/SubpageHero';
@@ -43,6 +44,7 @@ export function RoomsCardsPage() {
   };
 
   return (
+    <CmsSection sectionKey="rooms_page" label="Zimmer">
     <main>
       <SubpageHero
         image={data.hero_image ?? ROOMS_PAGE_FALLBACK.hero_image}
@@ -101,5 +103,6 @@ export function RoomsCardsPage() {
         </div>
       </SubpageHero>
     </main>
+    </CmsSection>
   );
 }

@@ -14,7 +14,7 @@ if (!url || !key) {
   process.exit(1);
 }
 
-const tables = ['hotels', 'hotel_sections', 'hotel_images', 'hotel_faqs', 'media', 'admins', 'admin_invites'];
+const tables = ['hotels', 'hotel_sections', 'hotel_images', 'hotel_faqs', 'hotel_pages', 'media', 'admins', 'admin_invites'];
 const outDir = resolve(process.cwd(), 'cms-export');
 await mkdir(outDir, { recursive: true });
 

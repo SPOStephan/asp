@@ -1,7 +1,9 @@
-import { Reveal } from './Reveal';
 import { ArrowUpRight } from 'lucide-react';
-import { useSection } from '../context/HotelContext';
+import { CmsSection } from '../cms/CmsSection';
+import { useHotelContent, useSection } from '../context/HotelContext';
 import { remapSiteHref } from '../lib/links';
+import { pageKeyFromHref } from '../lib/musterPages';
+import { Reveal } from './Reveal';
 
 interface DiscoverTile {
   image: string;
@@ -12,12 +14,17 @@ interface DiscoverTile {
 
 export function Discover() {
   const data = useSection('discover');
+  const { isPageEnabled } = useHotelContent();
 
   if (!data) return null;
 
-  const tiles: DiscoverTile[] = data.tiles ?? [];
+  const tiles: DiscoverTile[] = (data.tiles ?? []).filter((tile: DiscoverTile) => {
+    const key = pageKeyFromHref(remapSiteHref(tile.href, tile.title));
+    return !key || isPageEnabled(key);
+  });
 
   return (
+    <CmsSection sectionKey="discover" label="Discover">
     <section className="discover" id="discover">
       <Reveal className="discover__feature-pair">
         <div className="discover__feature-image discover__feature-image--left">
@@ -60,5 +67,6 @@ export function Discover() {
         ))}
       </div>
     </section>
+    </CmsSection>
   );
 }

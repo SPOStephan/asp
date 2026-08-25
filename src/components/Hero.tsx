@@ -1,13 +1,22 @@
-import { AvailabilityBar } from './AvailabilityBar';
+import type { CSSProperties } from 'react';
+import { CmsSection } from '../cms/CmsSection';
 import { useSection } from '../context/HotelContext';
+import { AvailabilityBar } from './AvailabilityBar';
 
 export function Hero() {
   const data = useSection('hero');
 
   if (!data) return null;
 
+  const focal = data.hero_focal;
+  const style =
+    focal && Number.isFinite(Number(focal.x)) && Number.isFinite(Number(focal.y))
+      ? ({ '--hero-focal': `${Number(focal.x)}% ${Number(focal.y)}%` } as CSSProperties)
+      : undefined;
+
   return (
-    <section className="hero" id="top">
+    <CmsSection sectionKey="hero" label="Hero">
+    <section className="hero" id="top" style={style}>
       <div className="hero__visual">
         <div className="hero__bg">
           <img src={data.hero_image} alt={data.hero_image_alt || ''} />
@@ -22,5 +31,6 @@ export function Hero() {
 
       <AvailabilityBar />
     </section>
+    </CmsSection>
   );
 }

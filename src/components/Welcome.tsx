@@ -1,9 +1,10 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Reveal } from './Reveal';
-import { HighlightStrip } from './HighlightStrip';
-import { TextCta } from './TextCta';
+import { CmsSection } from '../cms/CmsSection';
 import { useSection } from '../context/HotelContext';
 import { PHONE_CHROME_MQ } from '../lib/phoneChrome';
+import { HighlightStrip } from './HighlightStrip';
+import { Reveal } from './Reveal';
+import { TextCta } from './TextCta';
 
 function WelcomeCopy({ paragraphs }: { paragraphs: string[] }) {
   const [open, setOpen] = useState(false);
@@ -64,6 +65,7 @@ export function Welcome() {
   const paragraphs = [data.text_paragraph1, data.text_paragraph2].filter(Boolean);
 
   return (
+    <CmsSection sectionKey="welcome" label="Welcome">
     <section className="welcome" id="welcome">
       <div className="container">
         <Reveal>
@@ -85,5 +87,6 @@ export function Welcome() {
 
       <HighlightStrip />
     </section>
+    </CmsSection>
   );
 }

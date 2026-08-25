@@ -2,17 +2,24 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { useLocation } from 'react-router-dom';
 import { isAdminHost, isAdminPath } from '../admin/adminHost';
 import { loadHotelContent, type HotelContent } from '../lib/hotelData';
+import type { MusterPageKey } from '../lib/musterPages';
 
 interface HotelContextValue {
   content: HotelContent | null;
   loading: boolean;
   error: string | null;
+  isPageEnabled: (key: MusterPageKey) => boolean;
+  patchSection: (sectionKey: string, data: Record<string, unknown>) => void;
+  reload: () => Promise<void>;
 }
 
 const HotelContext = createContext<HotelContextValue>({
   content: null,
   loading: true,
   error: null,
+  isPageEnabled: () => true,
+  patchSection: () => undefined,
+  reload: async () => undefined,
 });
 
 export function HotelProvider({ children }: { children: ReactNode }) {
@@ -21,6 +28,11 @@ export function HotelProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<HotelContent | null>(null);
   const [loading, setLoading] = useState(!skipHotel);
   const [error, setError] = useState<string | null>(null);
+
+  async function load() {
+    const data = await loadHotelContent();
+    setContent(data);
+  }
 
   useEffect(() => {
     if (skipHotel) {
@@ -73,7 +85,24 @@ export function HotelProvider({ children }: { children: ReactNode }) {
   }, [content]);
 
   return (
-    <HotelContext.Provider value={{ content, loading, error }}>
+    <HotelContext.Provider
+      value={{
+        content,
+        loading,
+        error,
+        isPageEnabled: (key) => content?.pages[key] !== false,
+        patchSection: (sectionKey, data) => {
+          setContent((current) =>
+            current
+              ? { ...current, sections: { ...current.sections, [sectionKey]: data } }
+              : current,
+          );
+        },
+        reload: async () => {
+          await load();
+        },
+      }}
+    >
       {children}
     </HotelContext.Provider>
   );
@@ -91,4 +120,8 @@ export function useSection(sectionKey: string): Record<string, any> | null {
 export function useHotel() {
   const { content } = useContext(HotelContext);
   return content?.hotel ?? null;
+}
+
+export function usePageEnabled(key: MusterPageKey) {
+  return useHotelContent().isPageEnabled(key);
 }

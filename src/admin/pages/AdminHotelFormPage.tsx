@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { COLOR_WORLDS, hotelColorsFromWorld, type ColorWorld } from '../../lib/colorWorlds';
+import { MUSTER_PAGES, publicHotelOrigin } from '../../lib/musterPages';
 
 const EMPTY = {
   name: '',
@@ -30,6 +31,9 @@ export function AdminHotelFormPage() {
   const [initialWorld, setInitialWorld] = useState<ColorWorld>('blue');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pages, setPages] = useState<Record<string, boolean>>(
+    Object.fromEntries(MUSTER_PAGES.map((page) => [page.key, true])),
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -55,6 +59,18 @@ export function AdminHotelFormPage() {
             is_active: Boolean(data.is_active),
           });
         }
+      });
+    void supabase
+      .from('hotel_pages')
+      .select('page_key, enabled')
+      .eq('hotel_id', id)
+      .then(({ data }) => {
+        if (!data?.length) return;
+        setPages((current) => {
+          const next = { ...current };
+          for (const row of data) next[row.page_key] = row.enabled !== false;
+          return next;
+        });
       });
   }, [id]);
 
@@ -83,8 +99,26 @@ export function AdminHotelFormPage() {
     const result = isNew
       ? await supabase.from('hotels').insert(payload)
       : await supabase.from('hotels').update(payload).eq('id', id);
-    if (result.error) setError(result.error.message);
-    else navigate('/admin');
+    if (result.error) {
+      setError(result.error.message);
+      setBusy(false);
+      return;
+    }
+    if (id) {
+      const pageRows = MUSTER_PAGES.map((page) => ({
+        hotel_id: id,
+        page_key: page.key,
+        enabled: pages[page.key] !== false,
+        muster_version: 'v1',
+      }));
+      const pageResult = await supabase.from('hotel_pages').upsert(pageRows, { onConflict: 'hotel_id,page_key' });
+      if (pageResult.error) {
+        setError(pageResult.error.message);
+        setBusy(false);
+        return;
+      }
+    }
+    navigate('/admin');
     setBusy(false);
   }
 
@@ -94,7 +128,17 @@ export function AdminHotelFormPage() {
         <Link to="/admin">← Hotels</Link>
       </p>
       <h2>{isNew ? 'Neues Hotel' : 'Hotel bearbeiten'}</h2>
-      <p className="lead">Domain, Farbwelt und Stammdaten. Inhalte kommen später im visuellen Editor auf der echten Seite.</p>
+      <p className="lead">Stammdaten, Muster-Seiten und der Link zum visuellen Editor auf der echten Hotel-Domain.</p>
+      {!isNew && publicHotelOrigin(parseDomains(form.domains)) ? (
+        <p className="admin-actions">
+          <a className="admin-btn admin-btn--gold" href={`${publicHotelOrigin(parseDomains(form.domains))}/cms`}>
+            Startseite visuell bearbeiten
+          </a>
+          <a className="admin-btn admin-btn--ghost" href={`${publicHotelOrigin(parseDomains(form.domains))}/cms/zimmer`}>
+            Zimmer visuell bearbeiten
+          </a>
+        </p>
+      ) : null}
       <form className="admin-form" onSubmit={(event) => void onSubmit(event)}>
         <label>
           Name
@@ -140,6 +184,19 @@ export function AdminHotelFormPage() {
               />
               <span className="admin-dot" style={{ background: world.primary }} />
               {world.label}
+            </label>
+          ))}
+        </fieldset>
+        <fieldset>
+          <legend>Muster-Seiten</legend>
+          {MUSTER_PAGES.map((page) => (
+            <label key={page.key} className="admin-choice">
+              <input
+                type="checkbox"
+                checked={pages[page.key] !== false}
+                onChange={(event) => setPages({ ...pages, [page.key]: event.target.checked })}
+              />
+              {page.label}
             </label>
           ))}
         </fieldset>

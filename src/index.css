@@ -939,7 +939,7 @@ body.has-fixed-bar { padding-bottom: 92px; }
     object-fit: cover;
     /* Phone cover crops left/right. 68% shows both hotel wings
        (gap near center) and keeps the Seebrücke on the right. */
-    object-position: 68% 50%;
+    object-position: var(--hero-focal, 68% 50%);
   }
 
   .hero__content {

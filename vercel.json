@@ -25,6 +25,8 @@
     { "source": "/mobil-leiste4", "destination": "/index.html" },
     { "source": "/vorschau", "destination": "/index.html" },
     { "source": "/admin", "destination": "/index.html" },
-    { "source": "/admin/:path*", "destination": "/index.html" }
+    { "source": "/admin/:path*", "destination": "/index.html" },
+    { "source": "/cms", "destination": "/index.html" },
+    { "source": "/cms/:path*", "destination": "/index.html" }
   ]
 }

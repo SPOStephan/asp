@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, House, X } from 'lucide-react';
 import { TextCta } from './TextCta';
-import { useSection, useHotel } from '../context/HotelContext';
+import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
+import { filterMenuGroups, pageKeyFromHref } from '../lib/musterPages';
 import { useMobileChrome } from '../context/MobileChromeContext';
 import { remapSiteHref } from '../lib/links';
 import { isBookingHash, usePhoneChrome } from '../lib/phoneChrome';
@@ -383,8 +384,15 @@ export function Navbar() {
 
   if (!data) return null;
 
-  const navLinks: NavLink[] = data.links ?? [];
-  const menuGroups: MenuGroup[] = data.menu_groups?.length ? data.menu_groups : FALLBACK_GROUPS;
+  const { isPageEnabled } = useHotelContent();
+  const navLinks: NavLink[] = ((data.links ?? []) as NavLink[]).filter((link) => {
+    const key = pageKeyFromHref(remapSiteHref(link.href, link.label));
+    return !key || isPageEnabled(key);
+  });
+  const menuGroups: MenuGroup[] = filterMenuGroups(
+    data.menu_groups?.length ? data.menu_groups : FALLBACK_GROUPS,
+    isPageEnabled,
+  );
   const languages: LanguageOption[] = data.languages?.length ? data.languages : FALLBACK_LANGUAGES;
   const currentLang = languages.find((item) => item.code === lang) ?? languages[0];
   const lightBar = (!isPhone && scrolled) || menuOpen;
