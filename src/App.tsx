@@ -39,6 +39,8 @@ import { useHotelContent } from './context/HotelContext';
 import { usePhoneChrome } from './lib/phoneChrome';
 import { LoadingScreen, ErrorScreen } from './components/Loading';
 import { useEffect } from 'react';
+import { AdminApp } from './admin/AdminApp';
+import { isAdminHost, isAdminPath } from './admin/adminHost';
 
 function HomePage() {
   return (
@@ -68,18 +70,19 @@ function RoomCompareRedirect() {
 
 function App() {
   const location = useLocation();
+  const adminShell = isAdminHost() || isAdminPath(location.pathname);
   const isTypePreview = location.pathname === '/vorschau';
   const isHome = location.pathname === '/' || isTypePreview;
   const isFontLab = location.pathname === '/schriften';
   const isMenuLab = location.pathname === '/menue-mobil';
   const isChromeLab = location.pathname.startsWith('/mobil-leiste');
   const isPhone = usePhoneChrome();
-  const showDock = isPhone && !isFontLab && !isMenuLab && !isChromeLab;
-  const showFixedBar = !isHome && !isFontLab && !isMenuLab && !isChromeLab && !isPhone;
+  const showDock = !adminShell && isPhone && !isFontLab && !isMenuLab && !isChromeLab;
+  const showFixedBar = !adminShell && !isHome && !isFontLab && !isMenuLab && !isChromeLab && !isPhone;
   const { loading, error } = useHotelContent();
 
   useEffect(() => {
-    document.body.classList.toggle('is-phone', isPhone);
+    document.body.classList.toggle('is-phone', !adminShell && isPhone);
     document.body.classList.toggle('has-fixed-bar', showFixedBar);
     document.body.classList.toggle('has-mobile-dock', showDock);
     return () => {
@@ -87,7 +90,14 @@ function App() {
       document.body.classList.remove('has-fixed-bar');
       document.body.classList.remove('has-mobile-dock');
     };
-  }, [isPhone, showFixedBar, showDock]);
+  }, [adminShell, isPhone, showFixedBar, showDock]);
+
+  if (isAdminHost() && location.pathname === '/') {
+    return <Navigate to="/admin" replace />;
+  }
+  if (adminShell) {
+    return <AdminApp />;
+  }
 
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} />;

@@ -23,6 +23,8 @@
     { "source": "/mobil-leiste2", "destination": "/index.html" },
     { "source": "/mobil-leiste3", "destination": "/index.html" },
     { "source": "/mobil-leiste4", "destination": "/index.html" },
-    { "source": "/vorschau", "destination": "/index.html" }
+    { "source": "/vorschau", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin/:path*", "destination": "/index.html" }
   ]
 }
