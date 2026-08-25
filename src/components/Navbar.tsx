@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, House, X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useSection, useHotel } from '../context/HotelContext';
 import { useMobileChrome } from '../context/MobileChromeContext';
@@ -220,18 +220,30 @@ function CompactMenu({
             })}
           </ul>
         )}
-        {languages?.length ? (
-          <div className="navbar__langs" aria-label="Sprache">
-            {languages.map((item) => (
-              <button
-                type="button"
-                key={item.code}
-                className={item.code === lang ? 'is-on' : ''}
-                onClick={() => onLang?.(item.code)}
-              >
-                {item.label}
-              </button>
-            ))}
+        {phoneChrome ? (
+          <div className="navbar__tools">
+            <button
+              type="button"
+              className="navbar__home"
+              onClick={() => onNavigate('/', 'Startseite')}
+            >
+              <House size={18} strokeWidth={1.5} />
+              Startseite
+            </button>
+            {languages?.length ? (
+              <div className="navbar__langs" aria-label="Sprache">
+                {languages.map((item) => (
+                  <button
+                    type="button"
+                    key={item.code}
+                    className={item.code === lang ? 'is-on' : ''}
+                    onClick={() => onLang?.(item.code)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
