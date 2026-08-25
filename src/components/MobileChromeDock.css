@@ -64,6 +64,16 @@
     line-height: 1;
   }
 
+  .mobile-chrome__dock.is-booking {
+    grid-template-columns: 56px 1fr;
+    background: var(--accent-400);
+  }
+
+  .mobile-chrome__cancel {
+    color: var(--neutral-0);
+    border-right: 1px solid rgba(255, 255, 255, 0.28);
+  }
+
   .mobile-chrome__book.is-on {
     background: var(--accent-400);
     outline: 0;
