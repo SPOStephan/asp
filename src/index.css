@@ -1592,6 +1592,8 @@ body.has-fixed-bar { padding-bottom: 92px; }
   }
   .discover__tile-content { padding: 16px 14px; }
   .discover__tile-arrow { display: none; }
+  .discover__grid > .discover__cell--wide { grid-column: 1 / -1; }
+  .discover__cell--wide .discover__tile { aspect-ratio: 2 / 1; }
 }
 
 /* ==================== OFFERS ==================== */
