@@ -1,4 +1,4 @@
-import { Navigate, Routes, Route, useLocation } from 'react-router-dom';
+import { Navigate, Routes, Route, useLocation, useParams } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Welcome } from './components/Welcome';
@@ -61,6 +61,11 @@ function HomePage() {
   );
 }
 
+function RoomCompareRedirect() {
+  const { roomId } = useParams();
+  return <Navigate to={roomId ? `/zimmer/${roomId}` : '/zimmer'} replace />;
+}
+
 function App() {
   const location = useLocation();
   const isTypePreview = location.pathname === '/vorschau';
@@ -98,7 +103,7 @@ function App() {
         <Route path="/zimmer" element={<RoomsCardsPage />} />
         <Route path="/zimmer-b" element={<Navigate to="/zimmer" replace />} />
         <Route path="/zimmer/:roomId" element={<RoomDetailPage />} />
-        <Route path="/zimmer-vergleich/:roomId" element={<RoomDetailPage compareAmenities />} />
+        <Route path="/zimmer-vergleich/:roomId" element={<RoomCompareRedirect />} />
         <Route path="/kulinarik" element={<CulinaryPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:postSlug" element={<BlogPostPage />} />
