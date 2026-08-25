@@ -2,7 +2,7 @@
   display: none;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) {
   body.has-mobile-dock {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   }

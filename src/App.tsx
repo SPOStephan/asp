@@ -79,13 +79,15 @@ function App() {
   const { loading, error } = useHotelContent();
 
   useEffect(() => {
+    document.body.classList.toggle('is-phone', isPhone);
     document.body.classList.toggle('has-fixed-bar', showFixedBar);
     document.body.classList.toggle('has-mobile-dock', showDock);
     return () => {
+      document.body.classList.remove('is-phone');
       document.body.classList.remove('has-fixed-bar');
       document.body.classList.remove('has-mobile-dock');
     };
-  }, [showFixedBar, showDock]);
+  }, [isPhone, showFixedBar, showDock]);
 
   if (loading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} />;
