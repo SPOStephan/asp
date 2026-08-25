@@ -4,6 +4,7 @@ export type HotelContent = {
   hotel: Hotel;
   sections: Record<string, Record<string, any>>;
   faqs: HotelFAQ[];
+  pages: Record<string, boolean>;
 };
 
 const FALLBACK_SLUG = 'ambassador-hotel-spa';
@@ -41,13 +42,14 @@ export async function loadHotelContent(): Promise<HotelContent> {
 
   const hotelId = resolvedHotel.id;
 
-  const [sectionsResult, faqsResult] = await Promise.all([
+  const [sectionsResult, faqsResult, pagesResult] = await Promise.all([
     supabase.from('hotel_sections').select('*').eq('hotel_id', hotelId),
     supabase
       .from('hotel_faqs')
       .select('*')
       .eq('hotel_id', hotelId)
       .order('sort_order', { ascending: true }),
+    supabase.from('hotel_pages').select('page_key, enabled').eq('hotel_id', hotelId),
   ]);
 
   const sectionsMap: Record<string, Record<string, any>> = {};
@@ -55,9 +57,15 @@ export async function loadHotelContent(): Promise<HotelContent> {
     sectionsMap[s.section_key] = s.data;
   }
 
+  const pages: Record<string, boolean> = {};
+  for (const row of pagesResult.data ?? []) {
+    pages[row.page_key] = row.enabled !== false;
+  }
+
   return {
     hotel: resolvedHotel,
     sections: sectionsMap,
     faqs: (faqsResult.data as HotelFAQ[] | null) ?? [],
+    pages,
   };
 }
