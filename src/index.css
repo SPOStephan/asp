@@ -934,9 +934,9 @@ body.has-fixed-bar { padding-bottom: 92px; }
 
   .hero__bg img {
     object-fit: cover;
-    object-position: center 22%;
-    transform: scale(1.45);
-    transform-origin: center 22%;
+    /* Landscape source fills a tall phone frame by cropping left/right.
+       The Seebrücke sits on the right of asp-start01.jpg — pin that axis. */
+    object-position: 88% 50%;
   }
 
   .hero__content {
