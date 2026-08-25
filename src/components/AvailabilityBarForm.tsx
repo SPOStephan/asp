@@ -109,8 +109,8 @@ function AvailabilityBarFormModern({
           adults={query.adults}
           children={query.children}
           onChange={(next) => setQuery((current) => ({ ...current, ...next }))}
-          onApply={() => setOpen(null)}
-          hideApply={sheet}
+          onApply={() => setOpen(sheet ? 'dates' : null)}
+          applyLabel={sheet ? 'Weiter' : 'Anwenden'}
         />
       ) : null}
 

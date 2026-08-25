@@ -706,7 +706,11 @@ body.has-fixed-bar { padding-bottom: 92px; }
   background: var(--accent-50);
 }
 .availability-cal__cell.is-selected,
-.availability-cal__cell.is-selected:hover {
+.availability-cal__cell.is-selected:hover,
+.availability-cal__cell.is-arrival,
+.availability-cal__cell.is-departure,
+.availability-cal__cell.is-selected:not(.is-past):not(.is-empty),
+.availability-cal__cell.is-selected:not(.is-past):not(.is-empty):hover {
   background: var(--accent-400);
   color: var(--neutral-0);
 }
