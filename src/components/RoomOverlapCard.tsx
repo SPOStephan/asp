@@ -31,6 +31,7 @@ export function RoomOverlapCard({ room, reverse = false }: RoomOverlapCardProps)
     <article
       className={`rooms-overlap${reverse ? ' rooms-overlap--reverse' : ''}`}
       id={room.id}
+      data-cms-focus={`room:${room.id}`}
     >
       <div className="rooms-overlap__media">
         <button

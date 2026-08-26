@@ -18,26 +18,21 @@ export function Discover() {
 
   if (!data) return null;
 
-  const tiles: DiscoverTile[] = (data.tiles ?? []).filter((tile: DiscoverTile) => {
-    const key = pageKeyFromHref(remapSiteHref(tile.href, tile.title));
-    return !key || isPageEnabled(key);
-  });
-
   return (
     <CmsSection sectionKey="discover" label="Discover">
     <section className="discover" id="discover">
       <Reveal className="discover__feature-pair">
-        <div className="discover__feature-image discover__feature-image--left">
+        <div className="discover__feature-image discover__feature-image--left" data-cms-focus="feature_left">
           <img src={data.feature_image_left} alt={data.feature_image_left_alt || ''} />
         </div>
-        <div className="discover__feature-image discover__feature-image--right">
+        <div className="discover__feature-image discover__feature-image--right" data-cms-focus="feature_right">
           <img src={data.feature_image_right} alt={data.feature_image_right_alt || ''} />
         </div>
       </Reveal>
 
       <div className="container">
         <Reveal>
-          <div className="discover__head">
+          <div className="discover__head" data-cms-focus="head">
             <p className="eyebrow">{data.eyebrow}</p>
             <h2 className="discover__title heading-font">
               {data.title}
@@ -48,9 +43,12 @@ export function Discover() {
       </div>
 
       <div className="discover__grid">
-        {tiles.map((tile, i) => (
+        {(data.tiles ?? []).map((tile: DiscoverTile, i: number) => {
+          const key = pageKeyFromHref(remapSiteHref(tile.href, tile.title));
+          if (key && !isPageEnabled(key)) return null;
+          return (
           <Reveal key={tile.title} delay={i * 70}>
-            <a className="discover__tile" href={remapSiteHref(tile.href, tile.title)}>
+            <a className="discover__tile" href={remapSiteHref(tile.href, tile.title)} data-cms-focus={`tiles:${i}`}>
               <div className="discover__tile-image">
                 <img src={tile.image} alt={tile.title} loading="lazy" />
               </div>
@@ -64,7 +62,8 @@ export function Discover() {
               </div>
             </a>
           </Reveal>
-        ))}
+          );
+        })}
       </div>
     </section>
     </CmsSection>

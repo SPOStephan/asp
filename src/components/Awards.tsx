@@ -1,3 +1,4 @@
+import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
@@ -34,10 +35,11 @@ export function Awards() {
     : FALLBACK_IMPRESSIONS;
 
   return (
+    <CmsSection sectionKey="awards" label="Awards">
     <section className="awards">
       <div className="container">
         <Reveal>
-          <div className="awards__head">
+          <div className="awards__head" data-cms-focus="title">
             <p className="eyebrow">{data.eyebrow}</p>
             <h2 className="awards__title heading-font">{data.title}</h2>
           </div>
@@ -46,7 +48,7 @@ export function Awards() {
         <Reveal delay={150}>
           <div className="awards__row">
             {items.map((a, i) => (
-              <article key={i} className="awards__item">
+              <article key={i} className="awards__item" data-cms-focus={`items:${i}`}>
                 <img src={a.src} alt={a.label} />
                 <p>{a.label}</p>
               </article>
@@ -57,14 +59,14 @@ export function Awards() {
 
       <Reveal delay={80}>
         <div className="awards__impressions" id="impressionen">
-          <h2 className="awards__impressions-title heading-font">
+          <h2 className="awards__impressions-title heading-font" data-cms-focus="impressions_title">
             <span className="awards__script">{data.impressions_script || 'Impressionen'}</span>
             <br />
             {data.impressions_title || 'aus Ihrem Nordsee-Hotel'}
           </h2>
           <div className="awards__shots">
-            {impressions.map((shot) => (
-              <figure key={shot.src} className="awards__shot">
+            {impressions.map((shot, index) => (
+              <figure key={shot.src} className="awards__shot" data-cms-focus={`impressions:${index}`}>
                 <img src={shot.src} alt={shot.alt} />
               </figure>
             ))}
@@ -77,5 +79,6 @@ export function Awards() {
         </div>
       </Reveal>
     </section>
+    </CmsSection>
   );
 }

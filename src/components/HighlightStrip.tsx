@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Zap, Bike, BedDouble, Dog, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
+import { CmsSection } from '../cms/CmsSection';
 import { useSection } from '../context/HotelContext';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -40,6 +41,7 @@ export function HighlightStrip() {
   const items: HighlightItem[] = data?.items ?? [];
 
   return (
+    <CmsSection sectionKey="highlight_strip" label="Highlight-Leiste">
     <div className="welcome__highlights" aria-label="Das Resort auf einen Blick" ref={ref}>
       {items.map(({ icon, title, text }, i) => {
         const Icon = iconMap[icon] ?? Sparkles;
@@ -48,6 +50,7 @@ export function HighlightStrip() {
             className={`welcome__highlight ${visible ? 'welcome__highlight--in' : ''}`}
             style={{ transitionDelay: `${i * 120}ms` }}
             key={title}
+            data-cms-focus={`items:${i}`}
           >
             <div className="welcome__highlight-icon">
               <Icon size={30} strokeWidth={1.25} />
@@ -58,5 +61,6 @@ export function HighlightStrip() {
         );
       })}
     </div>
+    </CmsSection>
   );
 }

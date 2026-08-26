@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { CmsSection } from '../cms/CmsSection';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
 
@@ -59,9 +60,10 @@ export function Wellness() {
   const collageItems: CollageItem[] = data.collage_items ?? [];
 
   return (
+    <CmsSection sectionKey="wellness" label="Wellness">
     <section className="wellness-scene" id="wellness" ref={sectionRef}>
       <div className="wellness-scene__sticky">
-        <div className={`wellness-scene__heading${expanded ? ' is-hidden' : ''}`}>
+        <div className={`wellness-scene__heading${expanded ? ' is-hidden' : ''}`} data-cms-focus="title">
           <p className="eyebrow">{data.eyebrow}</p>
           <h2 className="wellness-scene__title heading-font">{data.title}</h2>
         </div>
@@ -74,9 +76,10 @@ export function Wellness() {
               src={item.src}
               alt={item.alt}
               style={{ transitionDelay: sideImagesVisible && !expanded ? `${i * 100}ms` : undefined }}
+              data-cms-focus={`collage_items:${i}`}
             />
           ))}
-          <div className={`wellness-scene__hero${expanded ? ' is-expanded' : ''}`}>
+          <div className={`wellness-scene__hero${expanded ? ' is-expanded' : ''}`} data-cms-focus="hero_image">
             <img src={data.hero_image} alt={data.hero_image_alt || ''} />
           </div>
         </div>
@@ -87,6 +90,7 @@ export function Wellness() {
             opacity: textOpacity,
             pointerEvents: textOpacity > 0.45 ? 'auto' : 'none',
           }}
+          data-cms-focus="copy_title"
         >
           <p className="eyebrow">{data.copy_eyebrow}</p>
           <h3 className="heading-font">{data.copy_title}</h3>
@@ -102,5 +106,6 @@ export function Wellness() {
         </div>
       </div>
     </section>
+    </CmsSection>
   );
 }

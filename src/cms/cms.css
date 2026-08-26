@@ -39,6 +39,23 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+.cms-dock__hit {
+  margin: 12px 0 0;
+  color: #957640;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.cms-list,
+.cms-room {
+  display: grid;
+  gap: 12px;
+}
+.cms-panel-flash {
+  outline: 2px solid #957640;
+  outline-offset: 4px;
+  background: #faf6ee;
+}
 .cms-dock__body { padding: 20px; }
 .cms-form,
 .cms-field {
@@ -108,6 +125,12 @@ body.cms-on .cms-block:hover,
 body.cms-on .cms-block.is-on {
   outline: 2px solid #957640;
   outline-offset: -2px;
+}
+body.cms-on [data-cms-focus]:hover,
+body.cms-on [data-cms-focus].is-on {
+  outline: 2px solid #957640;
+  outline-offset: 2px;
+  cursor: pointer;
 }
 .cms-block__label {
   display: none;

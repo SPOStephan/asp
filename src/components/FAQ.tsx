@@ -1,3 +1,4 @@
+import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 import { useHotelContent } from '../context/HotelContext';
@@ -51,6 +52,7 @@ export function FAQ() {
   };
 
   return (
+    <CmsSection sectionKey="faq_home_section" label="FAQ">
     <section className="faq" id="faq" aria-label="Häufig gestellte Fragen">
       <script
         type="application/ld+json"
@@ -58,7 +60,7 @@ export function FAQ() {
       />
       <div className="container">
         <Reveal>
-          <div className="faq__head">
+          <div className="faq__head" data-cms-focus="title">
             <p className="eyebrow">{sectionData.eyebrow}</p>
             <h2 className="faq__title heading-font">{sectionData.title}</h2>
           </div>
@@ -87,5 +89,6 @@ export function FAQ() {
         </div>
       </Reveal>
     </section>
+    </CmsSection>
   );
 }
