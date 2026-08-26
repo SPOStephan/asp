@@ -1,16 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Zap, Bike, BedDouble, Dog, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { CmsSection } from '../cms/CmsSection';
+import { resolveCmsIcon } from '../cms/cmsIcons';
 import { useSection } from '../context/HotelContext';
-
-const iconMap: Record<string, LucideIcon> = {
-  MapPin,
-  BedDouble,
-  Sparkles,
-  Bike,
-  Dog,
-  Zap,
-};
 
 interface HighlightItem {
   icon: string;
@@ -44,7 +36,7 @@ export function HighlightStrip() {
     <CmsSection sectionKey="highlight_strip" label="Highlight-Leiste">
     <div className="welcome__highlights" aria-label="Das Resort auf einen Blick" ref={ref}>
       {items.map(({ icon, title, text }, i) => {
-        const Icon = iconMap[icon] ?? Sparkles;
+        const Icon = resolveCmsIcon(icon, Sparkles);
         return (
           <div
             className={`welcome__highlight ${visible ? 'welcome__highlight--in' : ''}`}
@@ -52,11 +44,11 @@ export function HighlightStrip() {
             key={title}
             data-cms-focus={`items:${i}`}
           >
-            <div className="welcome__highlight-icon">
+            <div className="welcome__highlight-icon" data-cms-path={`items.${i}.icon`} data-cms-kind="icon">
               <Icon size={30} strokeWidth={1.25} />
             </div>
-            <h3>{title}</h3>
-            <p>{text}</p>
+            <h3 data-cms-path={`items.${i}.title`}>{title}</h3>
+            <p data-cms-path={`items.${i}.text`}>{text}</p>
           </div>
         );
       })}

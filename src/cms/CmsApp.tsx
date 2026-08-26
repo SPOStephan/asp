@@ -7,6 +7,8 @@ import { Navbar } from '../components/Navbar';
 import { HomePage } from '../pages/HomePage';
 import { RoomsCardsPage } from '../pages/RoomsCardsPage';
 import { CmsEditor } from './CmsEditor';
+import { CmsImageDialog } from './CmsImageDialog';
+import { CmsInlineEdit } from './CmsInlineEdit';
 import { CmsProvider } from './CmsContext';
 import './cms.css';
 
@@ -39,6 +41,8 @@ function CmsGate() {
           <Footer />
         </div>
         <CmsEditor />
+        <CmsInlineEdit />
+        <CmsImageDialog />
       </div>
     </CmsProvider>
   );
