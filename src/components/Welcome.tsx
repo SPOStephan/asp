@@ -6,7 +6,7 @@ import { HighlightStrip } from './HighlightStrip';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 
-function WelcomeCopy({ paragraphs }: { paragraphs: string[] }) {
+function WelcomeCopy({ paragraphs }: { paragraphs: Array<{ text: string; path: string }> }) {
   const [open, setOpen] = useState(false);
   const [needsMore, setNeedsMore] = useState(false);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +40,7 @@ function WelcomeCopy({ paragraphs }: { paragraphs: string[] }) {
     <div className={`welcome__text${open ? ' welcome__text--open' : ''}`} data-cms-focus="text">
       <div className="welcome__text-inner" id={copyId} ref={innerRef}>
         {paragraphs.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
+          <p key={paragraph.path} data-cms-path={paragraph.path}>{paragraph.text}</p>
         ))}
       </div>
       {needsMore && !open && (
@@ -62,7 +62,10 @@ export function Welcome() {
 
   if (!data) return null;
 
-  const paragraphs = [data.text_paragraph1, data.text_paragraph2].filter(Boolean);
+  const paragraphs = [
+    data.text_paragraph1 ? { text: String(data.text_paragraph1), path: 'text_paragraph1' } : null,
+    data.text_paragraph2 ? { text: String(data.text_paragraph2), path: 'text_paragraph2' } : null,
+  ].filter((item): item is { text: string; path: string } => Boolean(item));
 
   return (
     <CmsSection sectionKey="welcome" label="Welcome">
@@ -75,7 +78,7 @@ export function Welcome() {
               <span className="welcome__normal-word">{data.title_word_normal}</span>{' '}
               <span className="welcome__script">{data.title_word_script}</span>
             </h2>
-            <p className="welcome__subtitle" data-cms-focus="subtitle">{data.subtitle}</p>
+            <p className="welcome__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{data.subtitle}</p>
           </div>
         </Reveal>
 

@@ -1,25 +1,9 @@
 import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
-import {
-  BadgeCheck,
-  BadgePercent,
-  BedDouble,
-  Car,
-  Star,
-  Wifi,
-  type LucideIcon,
-} from 'lucide-react';
+import { Star } from 'lucide-react';
+import { resolveCmsIcon } from '../cms/cmsIcons';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
-
-const iconMap: Record<string, LucideIcon> = {
-  BadgePercent,
-  Car,
-  BedDouble,
-  BadgeCheck,
-  Wifi,
-  Star,
-};
 
 interface BenefitItem {
   icon: string;
@@ -54,9 +38,9 @@ export function DirectBooking() {
       <div className="direct-booking__inner">
         <Reveal>
           <div className="direct-booking__intro" data-cms-focus="title">
-            <p className="eyebrow">{data.eyebrow}</p>
-            <h2 className="direct-booking__title heading-font">{data.title}</h2>
-            {data.subtitle ? <p className="direct-booking__subtitle">{data.subtitle}</p> : null}
+            <p className="eyebrow" data-cms-path="eyebrow">{data.eyebrow}</p>
+            <h2 className="direct-booking__title heading-font" data-cms-path="title">{data.title}</h2>
+            {data.subtitle ? <p className="direct-booking__subtitle" data-cms-path="subtitle">{data.subtitle}</p> : null}
             {data.cta_text ? (
               <TextCta className="direct-booking__link" href={data.cta_href || '#buchung'}>
                 {data.cta_text}
@@ -68,12 +52,12 @@ export function DirectBooking() {
         <Reveal delay={80}>
           <ul className="direct-booking__list">
             {items.map((item, index) => {
-              const Icon = iconMap[item.icon] ?? Star;
+              const Icon = resolveCmsIcon(item.icon, Star);
               return (
                 <li key={item.title} className="direct-booking__item" data-cms-focus={`items:${index}`}>
-                  <Icon className="direct-booking__icon" size={22} strokeWidth={1.25} aria-hidden="true" />
+                  <Icon className="direct-booking__icon" size={22} strokeWidth={1.25} aria-hidden="true" data-cms-path={`items.${index}.icon`} data-cms-kind="icon" />
                   <div>
-                    <p className="direct-booking__item-title">{item.title}</p>
+                    <p className="direct-booking__item-title" data-cms-path={`items.${index}.title`}>{item.title}</p>
                     {item.text ? <p className="direct-booking__item-text">{item.text}</p> : null}
                   </div>
                 </li>

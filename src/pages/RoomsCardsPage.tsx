@@ -54,7 +54,7 @@ export function RoomsCardsPage() {
         subtitle={page?.subtitle ?? ROOMS_PAGE_FALLBACK.subtitle}
       >
         <div className="rooms-cards">
-          {data.intro ? <p className="rooms-cards__intro" data-cms-focus="intro">{data.intro}</p> : null}
+          {data.intro ? <p className="rooms-cards__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
 
           {data.show_filters !== false ? (
             <div className="rooms-page__filters" role="tablist" aria-label="Zimmer filtern">

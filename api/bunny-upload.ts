@@ -56,7 +56,10 @@ export default async function handler(request: Request) {
   const hotelId = String(form.get('hotelId') ?? '').trim() || null;
   const alt = String(form.get('alt') ?? '').trim() || null;
   const folder = hotelId ? `hotels/${hotelId}` : 'shared';
-  const bunnyPath = `${folder}/${Date.now()}-${safeName(file.name)}`;
+  const fileName = file.type === 'image/webp'
+    ? safeName(file.name.replace(/\.[a-z0-9]+$/i, '.webp'))
+    : safeName(file.name);
+  const bunnyPath = `${folder}/${Date.now()}-${fileName}`;
   const bytes = new Uint8Array(await file.arrayBuffer());
 
   const put = await fetch(`https://${storageHost}/${zone}/${bunnyPath}`, {

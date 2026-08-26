@@ -18,14 +18,14 @@ export function Hero() {
     <CmsSection sectionKey="hero" label="Hero">
     <section className="hero" id="top" style={style}>
       <div className="hero__visual">
-        <div className="hero__bg" data-cms-focus="image">
+        <div className="hero__bg" data-cms-focus="image" data-cms-path="hero_image" data-cms-kind="image">
           <img src={data.hero_image} alt={data.hero_image_alt || ''} />
           <div className="hero__overlay" />
         </div>
 
         <div className="hero__content">
-          <h1 className="hero__title" data-cms-focus="title">{data.title}</h1>
-          <p className="hero__subtitle" data-cms-focus="subtitle">{data.subtitle}</p>
+          <h1 className="hero__title" data-cms-focus="title" data-cms-path="title">{data.title}</h1>
+          <p className="hero__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{data.subtitle}</p>
         </div>
       </div>
 

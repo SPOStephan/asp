@@ -54,9 +54,9 @@ export function SubpageHero({
 
   const Headline = (
     <>
-      <p className="subpage-hero__eyebrow" data-cms-focus="head">{eyebrow}</p>
-      <h1 className="subpage-hero__title" data-cms-focus="title">{title}</h1>
-      {subtitle ? <p className="subpage-hero__subtitle" data-cms-focus="subtitle">{subtitle}</p> : null}
+      <p className="subpage-hero__eyebrow" data-cms-focus="head" data-cms-path="eyebrow">{eyebrow}</p>
+      <h1 className="subpage-hero__title" data-cms-focus="title" data-cms-path="title">{title}</h1>
+      {subtitle ? <p className="subpage-hero__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{subtitle}</p> : null}
     </>
   );
 
