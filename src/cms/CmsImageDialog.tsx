@@ -36,7 +36,6 @@ export function CmsImageDialog() {
       return;
     }
     setAlt('');
-    inputRef.current?.click();
   }, [request]);
 
   useEffect(() => {

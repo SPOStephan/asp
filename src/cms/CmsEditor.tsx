@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
-import { fieldKind, isLongText, isPlainObject } from './cmsDraft';
+import { fieldKind, isLongText, isPlainObject, shouldPublishPreview } from './cmsDraft';
 import { CMS_EDITOR_PAGES, sectionDraft } from './cmsPages';
 import { useCms } from './CmsContext';
 import { CmsIconPicker } from './CmsIconPicker';
@@ -15,15 +15,19 @@ const CUSTOM_SECTIONS = new Set(['hero', 'welcome', 'discover', 'rooms_page', 'f
 
 function useLivePreview(sectionKey: string, payload: Record<string, unknown>) {
   const cms = useCms();
+  const preview = cms?.preview;
+  const previewRef = useRef(preview);
+  previewRef.current = preview;
   const serial = JSON.stringify(payload);
-  const skip = useRef(true);
+  const lastSerial = useRef<string | null>(null);
   useEffect(() => {
-    if (skip.current) {
-      skip.current = false;
+    if (!shouldPublishPreview(serial, lastSerial.current)) {
+      lastSerial.current = serial;
       return;
     }
-    cms?.preview(sectionKey, JSON.parse(serial) as Record<string, unknown>);
-  }, [cms, sectionKey, serial]);
+    lastSerial.current = serial;
+    previewRef.current?.(sectionKey, JSON.parse(serial) as Record<string, unknown>);
+  }, [sectionKey, serial]);
 }
 
 function Field({
@@ -477,15 +481,19 @@ function FaqFields() {
 
   const payload = { ...base, ...draft };
   useLivePreview('faq_page', payload);
-  const skipFaqs = useRef(true);
+  const previewFaqs = cms?.previewFaqs;
+  const previewFaqsRef = useRef(previewFaqs);
+  previewFaqsRef.current = previewFaqs;
   const faqsSerial = JSON.stringify(faqs);
+  const lastFaqs = useRef<string | null>(null);
   useEffect(() => {
-    if (skipFaqs.current) {
-      skipFaqs.current = false;
+    if (!shouldPublishPreview(faqsSerial, lastFaqs.current)) {
+      lastFaqs.current = faqsSerial;
       return;
     }
-    cms?.previewFaqs(JSON.parse(faqsSerial) as HotelFAQ[]);
-  }, [cms, faqsSerial]);
+    lastFaqs.current = faqsSerial;
+    previewFaqsRef.current?.(JSON.parse(faqsSerial) as HotelFAQ[]);
+  }, [faqsSerial]);
 
   function updateFaq(index: number, key: keyof HotelFAQ, value: string | boolean) {
     setFaqs(faqs.map((faq, faqIndex) => (faqIndex === index ? { ...faq, [key]: value } : faq)));

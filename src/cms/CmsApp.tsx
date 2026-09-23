@@ -13,6 +13,7 @@ import { OffersPage } from '../pages/OffersPage';
 import { RoomsCardsPage } from '../pages/RoomsCardsPage';
 import { WellnessPage } from '../pages/WellnessPage';
 import { CmsEditor } from './CmsEditor';
+import { CmsErrorBoundary } from './CmsErrorBoundary';
 import { CmsImageDialog } from './CmsImageDialog';
 import { CmsInlineEdit } from './CmsInlineEdit';
 import { CmsProvider } from './CmsContext';
@@ -36,6 +37,7 @@ function CmsGate() {
   }
   return (
     <CmsProvider>
+      <CmsErrorBoundary>
       <div className="cms-shell">
         <div className="cms-stage">
           <Navbar />
@@ -56,6 +58,7 @@ function CmsGate() {
         <CmsInlineEdit />
         <CmsImageDialog />
       </div>
+      </CmsErrorBoundary>
     </CmsProvider>
   );
 }

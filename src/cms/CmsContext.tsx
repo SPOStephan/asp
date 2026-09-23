@@ -4,7 +4,6 @@ import { useHotel, useHotelContent } from '../context/HotelContext';
 import { setPath } from './cmsDraft';
 import {
   hitKind,
-  inferAltPath,
   isPlainTextHost,
   selectionFromEvent,
   type CmsImageRequest,
@@ -79,12 +78,12 @@ export function CmsProvider({ children }: { children: ReactNode }) {
 
   function preview(sectionKey: string, data: Record<string, unknown>) {
     patchSection(sectionKey, data);
-    setDirty((current) => ({ ...current, [sectionKey]: true }));
+    setDirty((current) => (current[sectionKey] ? current : { ...current, [sectionKey]: true }));
   }
 
   function previewFaqs(faqs: HotelFAQ[]) {
     patchFaqs(faqs);
-    setDirty((current) => ({ ...current, faq_page: true }));
+    setDirty((current) => (current.faq_page ? current : { ...current, faq_page: true }));
   }
 
   function applyField(sectionKey: string, path: string, value: unknown) {
@@ -128,10 +127,6 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       const kind = hitKind(next, event.target);
       const path = next.path;
       if (kind === 'image') {
-        const imagePath = path || inferImagePath(next);
-        if (imagePath) {
-          setImageRequest({ section: next.section, path: imagePath, altPath: inferAltPath(imagePath) });
-        }
         return;
       }
       if (kind === 'text' && path && isPlainTextHost(event.target instanceof Element ? event.target.closest('[data-cms-path]') : null)) {
@@ -247,13 +242,6 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       {children}
     </CmsContext.Provider>
   );
-}
-
-function inferImagePath(selection: CmsSelection) {
-  if (selection.focus === 'feature_left') return 'feature_image_left';
-  if (selection.focus === 'feature_right') return 'feature_image_right';
-  if (selection.focus === 'image') return 'hero_image';
-  return selection.path;
 }
 
 export function useCms() {

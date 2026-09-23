@@ -45,4 +45,13 @@ const draft = sectionDraft('footer', { tagline: 'Neu' }, { footer: { tagline: 'A
 assert.equal(draft.tagline, 'Neu');
 assert.equal(draft.col_explore_title, 'Entdecken');
 
+function shouldPublishPreview(serial, lastSerial) {
+  if (lastSerial === null) return false;
+  return lastSerial !== serial;
+}
+
+assert.equal(shouldPublishPreview('a', null), false);
+assert.equal(shouldPublishPreview('a', 'a'), false);
+assert.equal(shouldPublishPreview('b', 'a'), true);
+
 console.log('cms page helpers ok');

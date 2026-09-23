@@ -57,6 +57,11 @@ export function fieldKind(key: string, value?: unknown): 'icon' | 'image' | 'tex
   return 'other';
 }
 
+export function shouldPublishPreview(serial: string, lastSerial: string | null) {
+  if (lastSerial === null) return false;
+  return lastSerial !== serial;
+}
+
 export function isLongText(value: string, key = '') {
   const name = key.split('.').pop() ?? key;
   if (/text|intro|note|desc|copy|paragraph|amenities/i.test(name)) return true;

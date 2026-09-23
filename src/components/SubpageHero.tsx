@@ -52,11 +52,11 @@ export function SubpageHero({
     '--image-bottom': string;
   };
 
-  const Headline = (
+  const Headline = ({ editable = false }: { editable?: boolean }) => (
     <>
-      <p className="subpage-hero__eyebrow" data-cms-focus="head" data-cms-path="eyebrow">{eyebrow}</p>
-      <h1 className="subpage-hero__title" data-cms-focus="title" data-cms-path="title">{title}</h1>
-      {subtitle ? <p className="subpage-hero__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{subtitle}</p> : null}
+      <p className="subpage-hero__eyebrow" {...(editable ? { 'data-cms-focus': 'head', 'data-cms-path': 'eyebrow' } : {})}>{eyebrow}</p>
+      <h1 className="subpage-hero__title" {...(editable ? { 'data-cms-focus': 'title', 'data-cms-path': 'title' } : {})}>{title}</h1>
+      {subtitle ? <p className="subpage-hero__subtitle" {...(editable ? { 'data-cms-focus': 'subtitle', 'data-cms-path': 'subtitle' } : {})}>{subtitle}</p> : null}
     </>
   );
 
@@ -76,16 +76,16 @@ export function SubpageHero({
 
       <div className={`subpage-hero__flow${docked ? ' is-docked' : ''}`}>
         <div className="subpage-hero__text subpage-hero__text--dark subpage-hero__text--flow">
-          {Headline}
+          <Headline editable />
         </div>
       </div>
 
       <div className={`subpage-hero__fixed${docked ? ' is-hidden' : ''}`} aria-hidden={docked}>
         <div className="subpage-hero__clip subpage-hero__clip--white">
-          <div className="subpage-hero__text subpage-hero__text--white">{Headline}</div>
+          <div className="subpage-hero__text subpage-hero__text--white"><Headline /></div>
         </div>
         <div className="subpage-hero__clip subpage-hero__clip--dark">
-          <div className="subpage-hero__text subpage-hero__text--dark">{Headline}</div>
+          <div className="subpage-hero__text subpage-hero__text--dark"><Headline /></div>
         </div>
       </div>
 
