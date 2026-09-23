@@ -26,18 +26,18 @@ export function OverlapStage({
 }: OverlapStageProps) {
   return (
     <Reveal>
-      <section className="overlap-stage" aria-label={title}>
+      <section className="overlap-stage" aria-label={title} data-cms-focus="overlap">
         <div className="overlap-stage__copy">
-          <p className="overlap-stage__kicker">{kicker}</p>
-          <h2 className="overlap-stage__title heading-font">{title}</h2>
-          <p className="overlap-stage__text">{text}</p>
+          <p className="overlap-stage__kicker" data-cms-path="overlap_kicker">{kicker}</p>
+          <h2 className="overlap-stage__title heading-font" data-cms-path="overlap_title">{title}</h2>
+          <p className="overlap-stage__text" data-cms-path="overlap_text">{text}</p>
           <TextCta href={href}>{cta}</TextCta>
         </div>
         <div className="overlap-stage__visual">
-          <figure className="overlap-stage__front">
+          <figure className="overlap-stage__front" data-cms-path="overlap_front" data-cms-kind="image">
             <img src={front} alt={frontAlt} />
           </figure>
-          <figure className="overlap-stage__back">
+          <figure className="overlap-stage__back" data-cms-path="overlap_back" data-cms-kind="image">
             <img src={back} alt={backAlt} />
           </figure>
         </div>

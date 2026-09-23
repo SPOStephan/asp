@@ -1,27 +1,33 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useHotel, useSection } from '../context/HotelContext';
+import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
-import { fieldKind, isLongText, isPlainObject } from './cmsDraft';
+import type { HotelFAQ } from '../lib/supabase';
+import { fieldKind, isLongText, isPlainObject, shouldPublishPreview } from './cmsDraft';
+import { CMS_EDITOR_PAGES, sectionDraft } from './cmsPages';
 import { useCms } from './CmsContext';
 import { CmsIconPicker } from './CmsIconPicker';
 import { CmsImageField } from './CmsImageField';
 import { CmsTextarea } from './CmsTextarea';
 import { CMS_SECTION_LABELS, describeSelection } from './cmsSelect';
 
-const CUSTOM_SECTIONS = new Set(['hero', 'welcome', 'discover', 'rooms_page']);
+const CUSTOM_SECTIONS = new Set(['hero', 'welcome', 'discover', 'rooms_page', 'faq_page']);
 
 function useLivePreview(sectionKey: string, payload: Record<string, unknown>) {
   const cms = useCms();
+  const preview = cms?.preview;
+  const previewRef = useRef(preview);
+  previewRef.current = preview;
   const serial = JSON.stringify(payload);
-  const skip = useRef(true);
+  const lastSerial = useRef<string | null>(null);
   useEffect(() => {
-    if (skip.current) {
-      skip.current = false;
+    if (!shouldPublishPreview(serial, lastSerial.current)) {
+      lastSerial.current = serial;
       return;
     }
-    cms?.preview(sectionKey, JSON.parse(serial) as Record<string, unknown>);
-  }, [cms, sectionKey, serial]);
+    lastSerial.current = serial;
+    previewRef.current?.(sectionKey, JSON.parse(serial) as Record<string, unknown>);
+  }, [sectionKey, serial]);
 }
 
 function Field({
@@ -103,8 +109,11 @@ export function CmsEditor() {
         {selected ? <p className="cms-dock__hit">{describeSelection(selected)}</p> : null}
         {dirty ? <p className="cms-dock__hit">Vorschau — noch nicht gespeichert</p> : null}
         <nav className="cms-dock__nav">
-          <Link to="/cms">Start</Link>
-          <Link to="/cms/zimmer">Zimmer</Link>
+          {CMS_EDITOR_PAGES.map((page) => (
+            <Link key={page.to} to={page.to}>
+              {page.label}
+            </Link>
+          ))}
           <a href="/">Öffentliche Seite</a>
         </nav>
       </header>
@@ -114,6 +123,7 @@ export function CmsEditor() {
         {section === 'welcome' ? <WelcomeFields /> : null}
         {section === 'discover' ? <DiscoverFields /> : null}
         {section === 'rooms_page' ? <RoomsFields /> : null}
+        {section === 'faq_page' ? <FaqFields /> : null}
         {section && !CUSTOM_SECTIONS.has(section) ? <GenericFields key={section} sectionKey={section} /> : null}
       </div>
     </aside>
@@ -443,16 +453,118 @@ function RoomsFields() {
   );
 }
 
-function GenericFields({ sectionKey }: { sectionKey: string }) {
+function FaqFields() {
   const cms = useCms();
-  const data = useSection(sectionKey) ?? {};
-  const [draft, setDraft] = useState<Record<string, unknown>>({ ...data });
+  const { content } = useHotelContent();
+  const page = useSection('faq_page');
+  const base = sectionDraft('faq_page', page);
+  const [draft, setDraft] = useState({
+    eyebrow: String(base.eyebrow ?? ''),
+    title: String(base.title ?? ''),
+    subtitle: String(base.subtitle ?? ''),
+    cta_text: String(base.cta_text ?? ''),
+    cta_button: String(base.cta_button ?? ''),
+  });
+  const [faqs, setFaqs] = useState<HotelFAQ[]>(content?.faqs ?? []);
 
   useEffect(() => {
-    setDraft({ ...data });
+    const next = sectionDraft('faq_page', page);
+    setDraft({
+      eyebrow: String(next.eyebrow ?? ''),
+      title: String(next.title ?? ''),
+      subtitle: String(next.subtitle ?? ''),
+      cta_text: String(next.cta_text ?? ''),
+      cta_button: String(next.cta_button ?? ''),
+    });
+    setFaqs(content?.faqs ?? []);
   }, [cms?.draftTick]);
 
-  const payload = { ...data, ...draft };
+  const payload = { ...base, ...draft };
+  useLivePreview('faq_page', payload);
+  const previewFaqs = cms?.previewFaqs;
+  const previewFaqsRef = useRef(previewFaqs);
+  previewFaqsRef.current = previewFaqs;
+  const faqsSerial = JSON.stringify(faqs);
+  const lastFaqs = useRef<string | null>(null);
+  useEffect(() => {
+    if (!shouldPublishPreview(faqsSerial, lastFaqs.current)) {
+      lastFaqs.current = faqsSerial;
+      return;
+    }
+    lastFaqs.current = faqsSerial;
+    previewFaqsRef.current?.(JSON.parse(faqsSerial) as HotelFAQ[]);
+  }, [faqsSerial]);
+
+  function updateFaq(index: number, key: keyof HotelFAQ, value: string | boolean) {
+    setFaqs(faqs.map((faq, faqIndex) => (faqIndex === index ? { ...faq, [key]: value } : faq)));
+  }
+
+  async function save() {
+    const pageOk = await cms!.saveSection('faq_page', payload);
+    if (!pageOk) return;
+    await cms!.saveFaqs(faqs);
+  }
+
+  return (
+    <form className="cms-form" onSubmit={(event) => event.preventDefault()}>
+      <h3>FAQ</h3>
+      <Field focus="head" path="eyebrow" label="Eyebrow" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
+      <Field focus="title" path="title" label="Titel" value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
+      <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
+      <Field focus="cta" path="cta_text" label="CTA-Text" value={draft.cta_text} onChange={(cta_text) => setDraft({ ...draft, cta_text })} />
+      <Field path="cta_button" label="CTA-Button" value={draft.cta_button} onChange={(cta_button) => setDraft({ ...draft, cta_button })} />
+      {faqs.map((faq, index) => (
+        <fieldset key={faq.id} className="cms-tile" data-cms-panel-focus={`faq:${faq.id}`}>
+          <legend>Frage {index + 1}</legend>
+          <Field label="Kategorie" value={faq.category} onChange={(category) => updateFaq(index, 'category', category)} />
+          <Field label="Frage" value={faq.question} onChange={(question) => updateFaq(index, 'question', question)} multiline />
+          <Field label="Antwort" value={faq.answer} onChange={(answer) => updateFaq(index, 'answer', answer)} multiline />
+          <label className="cms-choice">
+            <input
+              type="checkbox"
+              checked={faq.show_on_home}
+              onChange={(event) => updateFaq(index, 'show_on_home', event.target.checked)}
+            />
+            Auf der Startseite
+          </label>
+        </fieldset>
+      ))}
+      <button
+        type="button"
+        className="cms-btn cms-btn--ghost"
+        onClick={() =>
+          setFaqs([
+            ...faqs,
+            {
+              id: `new-${Date.now()}`,
+              hotel_id: content?.hotel.id ?? '',
+              category: 'Allgemein',
+              question: '',
+              answer: '',
+              sort_order: faqs.length,
+              show_on_home: false,
+            },
+          ])
+        }
+      >
+        Frage hinzufügen
+      </button>
+      <SaveBar sectionKey="faq_page" onSave={save} />
+    </form>
+  );
+}
+
+function GenericFields({ sectionKey }: { sectionKey: string }) {
+  const cms = useCms();
+  const data = useSection(sectionKey);
+  const base = sectionDraft(sectionKey, data);
+  const [draft, setDraft] = useState<Record<string, unknown>>(base);
+
+  useEffect(() => {
+    setDraft(sectionDraft(sectionKey, data));
+  }, [cms?.draftTick, sectionKey]);
+
+  const payload = { ...base, ...draft };
   useLivePreview(sectionKey, payload);
   const entries = Object.entries(draft);
 
@@ -557,7 +669,20 @@ function GenericValue({
                       }}
                       multiline
                     />
-                  ) : null,
+                  ) : (
+                    <GenericValue
+                      key={childKey}
+                      section={section}
+                      path={`${itemPath}.${childKey}`}
+                      label={childKey}
+                      value={childValue}
+                      onChange={(next) => {
+                        const copy = value.slice();
+                        copy[index] = { ...item, [childKey]: next };
+                        onChange(copy);
+                      }}
+                    />
+                  ),
                 )
               ) : (
                 <Field

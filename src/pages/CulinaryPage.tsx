@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { CmsSection } from '../cms/CmsSection';
 import { IncludeList } from '../components/IncludeList';
 import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
@@ -43,6 +44,7 @@ export function CulinaryPage() {
   }, [data.title, hotel?.name, location.hash]);
 
   return (
+    <CmsSection sectionKey="culinary_page" label="Kulinarik">
     <main>
       <SubpageHero
         image={data.hero_image ?? CULINARY_PAGE_FALLBACK.hero_image}
@@ -52,13 +54,13 @@ export function CulinaryPage() {
         subtitle={page?.subtitle ?? CULINARY_PAGE_FALLBACK.subtitle}
       >
         <div className="culinary-page">
-          <p className="culinary-page__intro">
+          <p className="culinary-page__intro" data-cms-focus="intro" data-cms-path="intro">
             {data.intro ?? home?.text ?? CULINARY_PAGE_FALLBACK.intro}
           </p>
 
           <nav className="culinary-page__jump" aria-label="Restaurants">
-            {items.map((venue) => (
-              <a key={venue.id} href={`#${venue.id}`} className="culinary-page__jump-link">
+            {items.map((venue, index) => (
+              <a key={venue.id} href={`#${venue.id}`} className="culinary-page__jump-link" data-cms-focus={`items:${index}`}>
                 {venue.name}
               </a>
             ))}
@@ -70,14 +72,15 @@ export function CulinaryPage() {
                 <article
                   className={`culinary-venue${index % 2 === 1 ? ' culinary-venue--reverse' : ''}`}
                   id={venue.id}
+                  data-cms-focus={`items:${index}`}
                 >
-                  <figure className="culinary-venue__photo">
+                  <figure className="culinary-venue__photo" data-cms-path={`items.${venue.id}.image`} data-cms-kind="image">
                     <img src={venue.image} alt={venue.image_alt} />
                   </figure>
                   <div className="culinary-venue__copy">
-                    <p className="culinary-venue__kicker">{venue.kicker}</p>
-                    <h2 className="culinary-venue__name heading-font">{venue.name}</h2>
-                    <p className="culinary-venue__text">{venue.text}</p>
+                    <p className="culinary-venue__kicker" data-cms-path={`items.${venue.id}.kicker`}>{venue.kicker}</p>
+                    <h2 className="culinary-venue__name heading-font" data-cms-path={`items.${venue.id}.name`}>{venue.name}</h2>
+                    <p className="culinary-venue__text" data-cms-path={`items.${venue.id}.text`}>{venue.text}</p>
                     {venue.details.length ? (
                       <dl className="culinary-venue__facts">
                         {venue.details.map((fact) => (
@@ -97,25 +100,25 @@ export function CulinaryPage() {
           </section>
 
           <section className="culinary-page__rhythm" aria-label="Vom Morgen bis in die Nacht">
-            {rhythm.map((item) => (
-              <article key={item.title} className="culinary-page__beat">
-                <p className="culinary-page__beat-kicker">{item.kicker}</p>
-                <h2 className="culinary-page__beat-title heading-font">{item.title}</h2>
-                <p className="culinary-page__beat-text">{item.text}</p>
+            {rhythm.map((item, index) => (
+              <article key={item.title} className="culinary-page__beat" data-cms-focus={`rhythm:${index}`}>
+                <p className="culinary-page__beat-kicker" data-cms-path={`rhythm.${index}.kicker`}>{item.kicker}</p>
+                <h2 className="culinary-page__beat-title heading-font" data-cms-path={`rhythm.${index}.title`}>{item.title}</h2>
+                <p className="culinary-page__beat-text" data-cms-path={`rhythm.${index}.text`}>{item.text}</p>
               </article>
             ))}
           </section>
 
-          <p className="culinary-page__aside">
-            <strong>{data.also_title ?? CULINARY_PAGE_FALLBACK.also_title}.</strong>{' '}
-            {data.also_text ?? CULINARY_PAGE_FALLBACK.also_text}
+          <p className="culinary-page__aside" data-cms-focus="also">
+            <strong data-cms-path="also_title">{data.also_title ?? CULINARY_PAGE_FALLBACK.also_title}.</strong>{' '}
+            <span data-cms-path="also_text">{data.also_text ?? CULINARY_PAGE_FALLBACK.also_text}</span>
           </p>
 
-          <section className="culinary-page__note">
-            <h2 className="culinary-page__note-title heading-font">
+          <section className="culinary-page__note" data-cms-focus="note">
+            <h2 className="culinary-page__note-title heading-font" data-cms-path="note_title">
               {data.note_title ?? CULINARY_PAGE_FALLBACK.note_title}
             </h2>
-            <p className="culinary-page__note-text">
+            <p className="culinary-page__note-text" data-cms-path="note_text">
               {data.note_text ?? CULINARY_PAGE_FALLBACK.note_text}
             </p>
             <TextCta href={data.note_cta_href ?? adviceHref}>
@@ -125,5 +128,6 @@ export function CulinaryPage() {
         </div>
       </SubpageHero>
     </main>
+    </CmsSection>
   );
 }

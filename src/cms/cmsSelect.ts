@@ -35,6 +35,12 @@ export const CMS_SECTION_LABELS: Record<string, string> = {
   blog_page: 'Journal',
   newsletter: 'Newsletter',
   rooms_page: 'Zimmer',
+  wellness_page: 'Wellness',
+  culinary_page: 'Kulinarik',
+  offers_page: 'Angebote',
+  impressions_page: 'Impressionen',
+  faq_page: 'FAQ',
+  footer: 'Footer',
 };
 
 const FOCUS_LABELS: Record<string, string> = {
@@ -59,6 +65,9 @@ export function describeSelection(selection: CmsSelection | null): string {
   }
   if (selection.focus.startsWith('room:')) {
     return `${label} · gewähltes Zimmer`;
+  }
+  if (selection.focus.startsWith('faq:')) {
+    return `${label} · Frage`;
   }
   const split = selection.focus.split(':');
   if (split.length === 2 && /^\d+$/.test(split[1])) {

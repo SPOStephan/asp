@@ -1,10 +1,12 @@
+import { CmsSection } from '../cms/CmsSection';
+import { FAQ_PAGE_FALLBACK } from '../cms/cmsPages';
 import { useHotelContent } from '../context/HotelContext';
 
 export function FAQPage() {
   const { content } = useHotelContent();
-  const pageData = content?.sections['faq_page'];
+  const pageData = { ...FAQ_PAGE_FALLBACK, ...content?.sections['faq_page'] };
 
-  if (!content || !pageData) return null;
+  if (!content) return null;
 
   const faqsByCategory = content.faqs.reduce<
     Record<string, typeof content.faqs>
@@ -31,6 +33,7 @@ export function FAQPage() {
   };
 
   return (
+    <CmsSection sectionKey="faq_page" label="FAQ">
     <main className="faq-page">
       <script
         type="application/ld+json"
@@ -38,9 +41,9 @@ export function FAQPage() {
       />
       <div className="faq-page__hero">
         <div className="container">
-          <p className="eyebrow">{pageData.eyebrow}</p>
-          <h1 className="faq-page__title heading-font">{pageData.title}</h1>
-          <p className="faq-page__subtitle">{pageData.subtitle}</p>
+          <p className="eyebrow" data-cms-focus="head" data-cms-path="eyebrow">{pageData.eyebrow}</p>
+          <h1 className="faq-page__title heading-font" data-cms-focus="title" data-cms-path="title">{pageData.title}</h1>
+          <p className="faq-page__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{pageData.subtitle}</p>
         </div>
       </div>
 
@@ -71,7 +74,7 @@ export function FAQPage() {
             <h2 className="faq-page__cat-title heading-font">{cat}</h2>
             <div className="faq__list">
               {faqsByCategory[cat].map((item) => (
-                <details key={item.id} className="faq__item">
+                <details key={item.id} className="faq__item" data-cms-focus={`faq:${item.id}`}>
                   <summary className="faq__question">
                     <span>{item.question}</span>
                     <span className="faq__icon" aria-hidden="true" />
@@ -86,14 +89,15 @@ export function FAQPage() {
         ))}
       </div>
 
-      <div className="faq-page__cta">
+      <div className="faq-page__cta" data-cms-focus="cta">
         <div className="container">
-          <p className="faq-page__cta-text">{pageData.cta_text}</p>
-          <a href={`mailto:${content.hotel.email}`} className="faq-page__cta-btn">
+          <p className="faq-page__cta-text" data-cms-path="cta_text">{pageData.cta_text}</p>
+          <a href={`mailto:${content.hotel.email}`} className="faq-page__cta-btn" data-cms-path="cta_button">
             {pageData.cta_button}
           </a>
         </div>
       </div>
     </main>
+    </CmsSection>
   );
 }

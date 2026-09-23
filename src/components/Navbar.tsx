@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, House, X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
+import { useCms } from '../cms/CmsContext';
+import { toCmsHref } from '../cms/cmsPages';
 import { filterMenuGroups, pageKeyFromHref } from '../lib/musterPages';
 import { useMobileChrome } from '../context/MobileChromeContext';
 import { remapSiteHref } from '../lib/links';
@@ -280,6 +282,7 @@ export function Navbar() {
   const langRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const cms = useCms();
   const data = useSection('navbar');
   const hotel = useHotel();
   const chrome = useMobileChrome();
@@ -365,8 +368,9 @@ export function Navbar() {
       return;
     }
     if (target.startsWith('#')) {
-      if (window.location.pathname !== '/') {
-        navigate('/');
+      const homePath = cms ? '/cms' : '/';
+      if (window.location.pathname !== homePath) {
+        navigate(homePath);
         setTimeout(() => {
           document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
@@ -374,7 +378,7 @@ export function Navbar() {
         document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      const next = new URL(target, window.location.origin);
+      const next = new URL(cms ? toCmsHref(target) : target, window.location.origin);
       navigate(`${next.pathname}${next.hash}`);
       if (!next.hash) {
         window.scrollTo({ top: 0 });
@@ -442,12 +446,12 @@ export function Navbar() {
         </div>
 
         <a
-          href="/"
+          href={cms ? '/cms' : '/'}
           className="navbar__logo"
           onClick={(e) => {
             e.preventDefault();
             setMenuOpen(false);
-            navigate('/');
+            navigate(cms ? '/cms' : '/');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >

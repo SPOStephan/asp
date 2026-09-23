@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { useLocation } from 'react-router-dom';
 import { isAdminHost, isAdminPath } from '../admin/adminHost';
 import { loadHotelContent, type HotelContent } from '../lib/hotelData';
+import type { HotelFAQ } from '../lib/supabase';
 import type { MusterPageKey } from '../lib/musterPages';
 
 interface HotelContextValue {
@@ -10,6 +11,7 @@ interface HotelContextValue {
   error: string | null;
   isPageEnabled: (key: MusterPageKey) => boolean;
   patchSection: (sectionKey: string, data: Record<string, unknown>) => void;
+  patchFaqs: (faqs: HotelFAQ[]) => void;
   reload: () => Promise<void>;
 }
 
@@ -19,6 +21,7 @@ const HotelContext = createContext<HotelContextValue>({
   error: null,
   isPageEnabled: () => true,
   patchSection: () => undefined,
+  patchFaqs: () => undefined,
   reload: async () => undefined,
 });
 
@@ -97,6 +100,9 @@ export function HotelProvider({ children }: { children: ReactNode }) {
               ? { ...current, sections: { ...current.sections, [sectionKey]: data } }
               : current,
           );
+        },
+        patchFaqs: (faqs) => {
+          setContent((current) => (current ? { ...current, faqs } : current));
         },
         reload: async () => {
           await load();

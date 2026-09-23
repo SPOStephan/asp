@@ -1,5 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import type { MouseEventHandler, ReactNode } from 'react';
+import { useCms } from '../cms/CmsContext';
+import { toCmsHref } from '../cms/cmsPages';
 
 interface TextCtaProps {
   children: ReactNode;
@@ -18,6 +20,8 @@ export function TextCta({
   'aria-expanded': ariaExpanded,
   'aria-controls': ariaControls,
 }: TextCtaProps) {
+  const cms = useCms();
+  const resolved = href && cms ? toCmsHref(href) : href;
   const classes = ['text-cta', className].filter(Boolean).join(' ');
   const inner = (
     <>
@@ -28,9 +32,9 @@ export function TextCta({
     </>
   );
 
-  if (href) {
+  if (resolved) {
     return (
-      <a className={classes} href={href} onClick={onClick}>
+      <a className={classes} href={resolved} onClick={onClick}>
         {inner}
       </a>
     );

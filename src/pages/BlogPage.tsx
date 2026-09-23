@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { CmsSection } from '../cms/CmsSection';
 import { BlogCard } from '../components/BlogCard';
 import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
@@ -43,6 +44,7 @@ export function BlogPage() {
   };
 
   return (
+    <CmsSection sectionKey="blog_page" label="Journal">
     <main>
       <SubpageHero
         image={data.hero_image ?? BLOG_PAGE_FALLBACK.hero_image}
@@ -52,7 +54,7 @@ export function BlogPage() {
         subtitle={page?.subtitle ?? BLOG_PAGE_FALLBACK.subtitle}
       >
         <div className="blog-page">
-          <p className="blog-page__intro">{data.intro ?? BLOG_PAGE_FALLBACK.intro}</p>
+          <p className="blog-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro ?? BLOG_PAGE_FALLBACK.intro}</p>
 
           <div className="blog-page__filters" role="tablist" aria-label="Themen">
             {BLOG_TOPICS.map((item) => (
@@ -71,7 +73,9 @@ export function BlogPage() {
 
           {featured ? (
             <Reveal>
-              <BlogCard post={featured} featured />
+              <div data-cms-focus={`items:${posts.findIndex((post) => post.id === featured.id)}`}>
+                <BlogCard post={featured} featured />
+              </div>
             </Reveal>
           ) : (
             <p className="blog-page__empty">Keine Beiträge in diesem Thema.</p>
@@ -81,17 +85,19 @@ export function BlogPage() {
             <section className="blog-page__grid" aria-label="Weitere Beiträge">
               {rest.map((post, index) => (
                 <Reveal key={post.id} delay={index * 60}>
-                  <BlogCard post={post} />
+                  <div data-cms-focus={`items:${posts.findIndex((item) => item.id === post.id)}`}>
+                    <BlogCard post={post} />
+                  </div>
                 </Reveal>
               ))}
             </section>
           ) : null}
 
-          <section className="blog-page__note">
-            <h2 className="blog-page__note-title heading-font">
+          <section className="blog-page__note" data-cms-focus="note">
+            <h2 className="blog-page__note-title heading-font" data-cms-path="note_title">
               {data.note_title ?? BLOG_PAGE_FALLBACK.note_title}
             </h2>
-            <p className="blog-page__note-text">
+            <p className="blog-page__note-text" data-cms-path="note_text">
               {data.note_text ?? BLOG_PAGE_FALLBACK.note_text}
             </p>
             <TextCta href={data.note_cta_href ?? BLOG_PAGE_FALLBACK.note_cta_href}>
@@ -101,5 +107,6 @@ export function BlogPage() {
         </div>
       </SubpageHero>
     </main>
+    </CmsSection>
   );
 }

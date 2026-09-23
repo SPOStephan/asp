@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { CmsSection } from '../cms/CmsSection';
 import { IncludeList } from '../components/IncludeList';
 import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
@@ -25,6 +26,7 @@ export function OffersPage() {
   const adviceHref = hotel?.email ? `mailto:${hotel.email}` : '#buchung';
 
   return (
+    <CmsSection sectionKey="offers_page" label="Angebote">
     <main>
       <SubpageHero
         image={data.hero_image ?? OFFERS_PAGE_FALLBACK.hero_image}
@@ -34,18 +36,18 @@ export function OffersPage() {
         subtitle={page?.subtitle ?? page?.title_script ?? OFFERS_PAGE_FALLBACK.subtitle}
       >
         <div className="offers-page">
-          {data.intro ? <p className="offers-page__intro">{data.intro}</p> : null}
+          {data.intro ? <p className="offers-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
 
           <section className="offers-page__pair" aria-label="Aktuelle Angebote">
             {items.map((item, index) => (
               <Reveal key={item.id} delay={index * 80}>
-                <article className="offers-page__story" id={item.id}>
-                  <figure className="offers-page__photo">
+                <article className="offers-page__story" id={item.id} data-cms-focus={`items:${index}`}>
+                  <figure className="offers-page__photo" data-cms-path={`items.${item.id}.image`} data-cms-kind="image">
                     <img src={item.image} alt={item.image_alt} />
                   </figure>
-                  <p className="offers-page__kicker">{item.title}</p>
-                  <h2 className="offers-page__name heading-font">{item.subtitle}</h2>
-                  <p className="offers-page__text">{item.text}</p>
+                  <p className="offers-page__kicker" data-cms-path={`items.${item.id}.title`}>{item.title}</p>
+                  <h2 className="offers-page__name heading-font" data-cms-path={`items.${item.id}.subtitle`}>{item.subtitle}</h2>
+                  <p className="offers-page__text" data-cms-path={`items.${item.id}.text`}>{item.text}</p>
                   <IncludeList items={item.includes} />
                   {item.details.length ? (
                     <div className="offers-page__meta">
@@ -63,11 +65,11 @@ export function OffersPage() {
             ))}
           </section>
 
-          <section className="offers-page__note">
-            <h2 className="offers-page__note-title heading-font">
+          <section className="offers-page__note" data-cms-focus="note">
+            <h2 className="offers-page__note-title heading-font" data-cms-path="note_title">
               {data.note_title ?? OFFERS_PAGE_FALLBACK.note_title}
             </h2>
-            <p className="offers-page__note-text">
+            <p className="offers-page__note-text" data-cms-path="note_text">
               {data.note_text ?? OFFERS_PAGE_FALLBACK.note_text}
             </p>
             <TextCta href={data.note_cta_href ?? adviceHref}>
@@ -77,5 +79,6 @@ export function OffersPage() {
         </div>
       </SubpageHero>
     </main>
+    </CmsSection>
   );
 }
