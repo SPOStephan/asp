@@ -42,6 +42,10 @@ export const IMPRESSIONS_PAGE_FALLBACK = {
     'Suite, Spa, Küche und die weite Küste. Eine Galerie aus dem Haus — zum Durchsehen, nicht zum Abhaken.',
   hero_image: '/autumn-aerial.webp',
   hero_image_alt: 'Luftaufnahme der Nordseeküste bei Sankt Peter-Ording',
+  note_title: 'Ein Bild sagt nicht alles',
+  note_text: 'Zimmer, Spa und Küche liegen eine Seite weiter. Die Galerie bleibt der Ort für Licht und Weite.',
+  note_cta: 'Zimmer ansehen',
+  note_cta_href: '/zimmer',
   items: [
     { src: '/collage-pool.webp', alt: 'Poolbereich mit Blick ins Weite', topic: 'wellness' },
     { src: '/autumn-aerial.webp', alt: 'Luftaufnahme der Nordseeküste', topic: 'kueste' },

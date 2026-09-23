@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { CmsSection } from '../cms/CmsSection';
+import { useCms } from '../cms/CmsContext';
 import { GalleryViewer } from '../components/GalleryViewer';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
@@ -16,6 +18,7 @@ import {
 
 export function ImpressionsPage() {
   const hotel = useHotel();
+  const cms = useCms();
   const page = useSection('impressions_page');
   const data = page ?? IMPRESSIONS_PAGE_FALLBACK;
   const shots = resolveImpressions(page?.items);
@@ -66,6 +69,7 @@ export function ImpressionsPage() {
   };
 
   return (
+    <CmsSection sectionKey="impressions_page" label="Impressionen">
     <main>
       <SubpageHero
         image={data.hero_image ?? IMPRESSIONS_PAGE_FALLBACK.hero_image}
@@ -75,7 +79,7 @@ export function ImpressionsPage() {
         subtitle={page?.subtitle ?? IMPRESSIONS_PAGE_FALLBACK.subtitle}
       >
         <article className="impressions-page">
-          <p className="impressions-page__intro">
+          <p className="impressions-page__intro" data-cms-focus="intro" data-cms-path="intro">
             {data.intro ?? IMPRESSIONS_PAGE_FALLBACK.intro}
           </p>
 
@@ -95,33 +99,44 @@ export function ImpressionsPage() {
           </div>
 
           <div className="impressions-page__grid">
-            {packed.map((shot, index) => (
+            {packed.map((shot, index) => {
+              const itemIndex = shots.findIndex((item) => item.src === shot.src);
+              return (
               <button
                 key={shot.src}
                 type="button"
                 className={`impressions-page__shot is-${shot.role}`}
                 aria-label={shot.alt}
+                data-cms-focus={itemIndex >= 0 ? `items:${itemIndex}` : undefined}
+                data-cms-path={itemIndex >= 0 ? `items.${itemIndex}.src` : undefined}
+                data-cms-kind="image"
                 onClick={() => setActive(index)}
               >
                 <img src={shot.src} alt="" />
-                <span className="impressions-page__shot-label">{shot.alt}</span>
+                <span className="impressions-page__shot-label" data-cms-path={itemIndex >= 0 ? `items.${itemIndex}.alt` : undefined}>{shot.alt}</span>
               </button>
-            ))}
+              );
+            })}
           </div>
 
-          <div className="impressions-page__note">
-            <h2 className="impressions-page__note-title heading-font">Ein Bild sagt nicht alles</h2>
-            <p className="impressions-page__note-text">
-              Zimmer, Spa und Küche liegen eine Seite weiter. Die Galerie bleibt der Ort für Licht und Weite.
+          <div className="impressions-page__note" data-cms-focus="note">
+            <h2 className="impressions-page__note-title heading-font" data-cms-path="note_title">
+              {data.note_title ?? IMPRESSIONS_PAGE_FALLBACK.note_title}
+            </h2>
+            <p className="impressions-page__note-text" data-cms-path="note_text">
+              {data.note_text ?? IMPRESSIONS_PAGE_FALLBACK.note_text}
             </p>
-            <TextCta href="/zimmer">Zimmer ansehen</TextCta>
+            <TextCta href={data.note_cta_href ?? IMPRESSIONS_PAGE_FALLBACK.note_cta_href}>
+              {data.note_cta ?? IMPRESSIONS_PAGE_FALLBACK.note_cta}
+            </TextCta>
           </div>
         </article>
       </SubpageHero>
 
-      {active !== null ? (
+      {active !== null && !cms ? (
         <GalleryViewer shots={packed} active={active} onClose={() => setActive(null)} onStep={step} />
       ) : null}
     </main>
+    </CmsSection>
   );
 }

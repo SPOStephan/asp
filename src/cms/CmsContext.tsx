@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, type HotelFAQ } from '../lib/supabase';
 import { useHotel, useHotelContent } from '../context/HotelContext';
 import { setPath } from './cmsDraft';
 import {
@@ -23,8 +23,10 @@ interface CmsValue {
   saving: boolean;
   saveError: string | null;
   preview: (sectionKey: string, data: Record<string, unknown>) => void;
+  previewFaqs: (faqs: HotelFAQ[]) => void;
   applyField: (sectionKey: string, path: string, value: unknown) => void;
   saveSection: (sectionKey: string, data: Record<string, unknown>) => Promise<boolean>;
+  saveFaqs: (faqs: HotelFAQ[]) => Promise<boolean>;
   commitInline: (value: string) => void;
   cancelInline: () => void;
   openImage: (request: CmsImageRequest) => void;
@@ -35,7 +37,7 @@ const CmsContext = createContext<CmsValue | null>(null);
 
 export function CmsProvider({ children }: { children: ReactNode }) {
   const hotel = useHotel();
-  const { patchSection, content } = useHotelContent();
+  const { patchSection, patchFaqs, content } = useHotelContent();
   const contentRef = useRef(content);
   contentRef.current = content;
   const [selected, setSelected] = useState<CmsSelection | null>(null);
@@ -78,6 +80,11 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   function preview(sectionKey: string, data: Record<string, unknown>) {
     patchSection(sectionKey, data);
     setDirty((current) => ({ ...current, [sectionKey]: true }));
+  }
+
+  function previewFaqs(faqs: HotelFAQ[]) {
+    patchFaqs(faqs);
+    setDirty((current) => ({ ...current, faq_page: true }));
   }
 
   function applyField(sectionKey: string, path: string, value: unknown) {
@@ -161,6 +168,59 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     return true;
   }
 
+  async function saveFaqs(faqs: HotelFAQ[]) {
+    if (!hotel) return false;
+    setSaving(true);
+    setSaveError(null);
+    const toRow = (faq: HotelFAQ, index: number) => ({
+      hotel_id: hotel.id,
+      category: faq.category,
+      question: faq.question,
+      answer: faq.answer,
+      sort_order: index,
+      show_on_home: faq.show_on_home,
+    });
+    const existing = faqs
+      .map((faq, index) => ({ faq, index }))
+      .filter(({ faq }) => !faq.id.startsWith('new-'))
+      .map(({ faq, index }) => ({ id: faq.id, ...toRow(faq, index) }));
+    const created = faqs
+      .map((faq, index) => ({ faq, index }))
+      .filter(({ faq }) => faq.id.startsWith('new-'))
+      .map(({ faq, index }) => toRow(faq, index));
+
+    if (existing.length) {
+      const result = await supabase.from('hotel_faqs').upsert(existing);
+      if (result.error) {
+        setSaving(false);
+        setSaveError(result.error.message);
+        return false;
+      }
+    }
+    if (created.length) {
+      const result = await supabase.from('hotel_faqs').insert(created);
+      if (result.error) {
+        setSaving(false);
+        setSaveError(result.error.message);
+        return false;
+      }
+    }
+
+    const reload = await supabase
+      .from('hotel_faqs')
+      .select('*')
+      .eq('hotel_id', hotel.id)
+      .order('sort_order', { ascending: true });
+    setSaving(false);
+    if (reload.error) {
+      setSaveError(reload.error.message);
+      return false;
+    }
+    patchFaqs((reload.data as HotelFAQ[] | null) ?? faqs);
+    setDirty((current) => ({ ...current, faq_page: false }));
+    return true;
+  }
+
   return (
     <CmsContext.Provider
       value={{
@@ -174,8 +234,10 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         saving,
         saveError,
         preview,
+        previewFaqs,
         applyField,
         saveSection,
+        saveFaqs,
         commitInline,
         cancelInline,
         openImage: setImageRequest,
@@ -190,11 +252,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
 function inferImagePath(selection: CmsSelection) {
   if (selection.focus === 'feature_left') return 'feature_image_left';
   if (selection.focus === 'feature_right') return 'feature_image_right';
-  if (selection.focus === 'image') {
-    if (selection.section === 'hero') return 'hero_image';
-    if (selection.section === 'rooms_page') return 'hero_image';
-    return 'image';
-  }
+  if (selection.focus === 'image') return 'hero_image';
   return selection.path;
 }
 

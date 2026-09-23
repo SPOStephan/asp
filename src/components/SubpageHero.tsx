@@ -62,7 +62,7 @@ export function SubpageHero({
 
   return (
     <div className="subpage-hero" style={cssVars}>
-      <div className="subpage-hero__image" ref={heroRef} data-cms-focus="image">
+      <div className="subpage-hero__image" ref={heroRef} data-cms-focus="image" data-cms-path="hero_image" data-cms-kind="image">
         <img
           src={image}
           alt={imageAlt}
