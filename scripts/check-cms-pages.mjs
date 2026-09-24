@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 function splitHref(href) {
   const url = href.startsWith('http') ? new URL(href) : new URL(href, 'https://local.test');
@@ -98,5 +99,16 @@ function shouldPublishPreview(serial, lastSerial) {
 assert.equal(shouldPublishPreview('a', null), false);
 assert.equal(shouldPublishPreview('a', 'a'), false);
 assert.equal(shouldPublishPreview('b', 'a'), true);
+
+const editor = readFileSync(new URL('../src/cms/CmsEditor.tsx', import.meta.url), 'utf8');
+assert.match(editor, /className="cms-dock__save"/);
+assert.match(editor, /cms\.runSave/);
+assert.match(editor, /'Speichern'/);
+
+const chrome = readFileSync(new URL('../src/cms/cms.css', import.meta.url), 'utf8');
+assert.match(chrome, /body\.cms-on \.navbar/);
+assert.match(chrome, /body\.cms-on \.availability-bar\.is-stuck/);
+assert.match(chrome, /body\.cms-on \.subpage-hero__fixed/);
+assert.match(chrome, /\.cms-dock__save/);
 
 console.log('cms page helpers ok');

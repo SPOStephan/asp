@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import { useCms } from '../cms/CmsContext';
 import { usePhoneChrome } from '../lib/phoneChrome';
 import { AvailabilityBarForm } from './AvailabilityBarForm';
 
 export function AvailabilityBar() {
+  const cms = useCms();
   const isPhone = usePhoneChrome();
   const barRef = useRef<HTMLDivElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
@@ -35,9 +37,9 @@ export function AvailabilityBar() {
   }, []);
 
   useEffect(() => {
-    document.body.classList.toggle('availability-stuck', stuck && !isPhone);
+    document.body.classList.toggle('availability-stuck', stuck && !isPhone && !cms);
     return () => document.body.classList.remove('availability-stuck');
-  }, [stuck, isPhone]);
+  }, [stuck, isPhone, cms]);
 
   if (isPhone) return null;
 
@@ -50,7 +52,7 @@ export function AvailabilityBar() {
       <div
         ref={barRef}
         id="buchung"
-        className={`availability-bar${stuck ? ' is-stuck' : ''}`}
+        className={`availability-bar${stuck && !cms ? ' is-stuck' : ''}`}
       >
         <AvailabilityBarForm />
       </div>

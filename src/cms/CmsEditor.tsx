@@ -156,21 +156,30 @@ export function CmsEditor() {
         ) : null}
         {section && !CUSTOM_SECTIONS.has(section) && !showEntry ? <GenericFields key={section} sectionKey={section} /> : null}
       </div>
+      <footer className="cms-dock__save">
+        {dirty ? <p className="cms-muted">Vorschau — noch nicht gespeichert.</p> : null}
+        {cms.saveError ? <p className="cms-error">{cms.saveError}</p> : null}
+        <button type="button" className="cms-btn" disabled={!cms.canSave || cms.saving} onClick={() => void cms.runSave()}>
+          {cms.saving ? 'Speichert…' : 'Speichern'}
+        </button>
+      </footer>
     </aside>
   );
 }
 
 function SaveBar({ sectionKey, onSave }: { sectionKey: string; onSave: () => Promise<unknown> }) {
   const cms = useCms();
-  return (
-    <div className="cms-save">
-      {cms?.dirty[sectionKey] ? <p className="cms-muted">Die Seite zeigt die Vorschau. Erst Speichern bleibt dauerhaft.</p> : null}
-      {cms?.saveError ? <p className="cms-error">{cms.saveError}</p> : null}
-      <button type="button" className="cms-btn" disabled={cms?.saving} onClick={() => void onSave()}>
-        {cms?.saving ? 'Speichert…' : 'Block speichern'}
-      </button>
-    </div>
-  );
+  const setSaveAction = cms?.setSaveAction;
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
+
+  useEffect(() => {
+    if (!setSaveAction) return;
+    setSaveAction(() => onSaveRef.current());
+    return () => setSaveAction(null);
+  }, [sectionKey, setSaveAction]);
+
+  return null;
 }
 
 function HeroFields() {

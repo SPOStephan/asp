@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase, type HotelFAQ } from '../lib/supabase';
 import { useHotel, useHotelContent } from '../context/HotelContext';
@@ -27,6 +27,9 @@ interface CmsValue {
   applyField: (sectionKey: string, path: string, value: unknown) => void;
   saveSection: (sectionKey: string, data: Record<string, unknown>) => Promise<boolean>;
   saveFaqs: (faqs: HotelFAQ[]) => Promise<boolean>;
+  canSave: boolean;
+  setSaveAction: (action: (() => Promise<unknown>) | null) => void;
+  runSave: () => Promise<unknown>;
   commitInline: (value: string) => void;
   cancelInline: () => void;
   openImage: (request: CmsImageRequest) => void;
@@ -48,6 +51,13 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const [draftTick, setDraftTick] = useState(0);
   const [inline, setInline] = useState<CmsInline | null>(null);
   const [imageRequest, setImageRequest] = useState<CmsImageRequest | null>(null);
+  const saveActionRef = useRef<(() => Promise<unknown>) | null>(null);
+  const [canSave, setCanSave] = useState(false);
+  const setSaveAction = useCallback((action: (() => Promise<unknown>) | null) => {
+    saveActionRef.current = action;
+    setCanSave(Boolean(action));
+  }, []);
+  const runSave = useCallback(() => saveActionRef.current?.() ?? Promise.resolve(), []);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const inlineRef = useRef(inline);
@@ -251,6 +261,9 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         applyField,
         saveSection,
         saveFaqs,
+        canSave,
+        setSaveAction,
+        runSave,
         commitInline,
         cancelInline,
         openImage: setImageRequest,
