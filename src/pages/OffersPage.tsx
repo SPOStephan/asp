@@ -34,6 +34,8 @@ export function OffersPage() {
         eyebrow={page?.eyebrow ?? OFFERS_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? page?.title_line1 ?? OFFERS_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? page?.title_script ?? OFFERS_PAGE_FALLBACK.subtitle}
+        focal={data.hero_focal}
+        cms={{ section: 'offers_page' }}
       >
         <div className="offers-page">
           {data.intro ? <p className="offers-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}

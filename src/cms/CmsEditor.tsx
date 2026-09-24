@@ -4,6 +4,7 @@ import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, shouldPublishPreview } from './cmsDraft';
+import { readHeroFocal, writeHeroFocal } from './cmsFocal';
 import {
   CMS_DETAIL_LABELS,
   CMS_EDITOR_PAGES,
@@ -135,6 +136,22 @@ export function CmsEditor() {
         <p>Text direkt auf der Seite ändern und übernehmen. Rechts dasselbe, mit Live-Vorschau. Speichern schreibt den ganzen Block.</p>
         {selected ? <p className="cms-dock__hit">{describeSelection(selected)}</p> : null}
         {dirty ? <p className="cms-dock__hit">Vorschau — noch nicht gespeichert</p> : null}
+        <div className="cms-dock__preview">
+          <button
+            type="button"
+            className={`cms-chip${cms.focalPreview === 'desktop' ? ' is-on' : ''}`}
+            onClick={() => cms.setFocalPreview('desktop')}
+          >
+            Desktop
+          </button>
+          <button
+            type="button"
+            className={`cms-chip${cms.focalPreview === 'mobile' ? ' is-on' : ''}`}
+            onClick={() => cms.setFocalPreview('mobile')}
+          >
+            Telefon
+          </button>
+        </div>
         <nav className="cms-dock__nav">
           {CMS_EDITOR_PAGES.map((page) => (
             <Link key={page.to} to={page.to} aria-current={currentHub?.to === page.to ? 'page' : undefined}>
@@ -185,13 +202,14 @@ function SaveBar({ sectionKey, onSave }: { sectionKey: string; onSave: () => Pro
 function HeroFields() {
   const cms = useCms();
   const data = useSection('hero') ?? {};
+  const focal = readHeroFocal(data.hero_focal);
+  const device = cms?.focalPreview ?? 'desktop';
+  const active = focal[device];
   const [draft, setDraft] = useState({
     title: String(data.title ?? ''),
     subtitle: String(data.subtitle ?? ''),
     hero_image: String(data.hero_image ?? ''),
     hero_image_alt: String(data.hero_image_alt ?? ''),
-    focal_x: Number(data.hero_focal?.x ?? 68),
-    focal_y: Number(data.hero_focal?.y ?? 50),
   });
 
   useEffect(() => {
@@ -200,8 +218,6 @@ function HeroFields() {
       subtitle: String(data.subtitle ?? ''),
       hero_image: String(data.hero_image ?? ''),
       hero_image_alt: String(data.hero_image_alt ?? ''),
-      focal_x: Number(data.hero_focal?.x ?? 68),
-      focal_y: Number(data.hero_focal?.y ?? 50),
     });
   }, [cms?.draftTick]);
 
@@ -211,9 +227,13 @@ function HeroFields() {
     subtitle: draft.subtitle,
     hero_image: draft.hero_image,
     hero_image_alt: draft.hero_image_alt,
-    hero_focal: { x: draft.focal_x, y: draft.focal_y },
+    hero_focal: focal,
   };
   useLivePreview('hero', payload);
+
+  function setFocal(nextX: number, nextY: number) {
+    cms?.applyField('hero', 'hero_focal', writeHeroFocal(data.hero_focal, device, { x: nextX, y: nextY }), true);
+  }
 
   return (
     <form className="cms-form" onSubmit={(event: FormEvent) => event.preventDefault()}>
@@ -222,17 +242,15 @@ function HeroFields() {
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <CmsImageField focus="image" label="Bild" value={draft.hero_image} section="hero" path="hero_image" />
       <Field label="Alt-Text" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
+      <p className="cms-muted">Ausschnitt {device === 'mobile' ? 'Telefon' : 'Desktop'}: im Header ziehen oder hier feinjustieren.</p>
       <label className="cms-field" data-cms-panel-focus="image">
-        Bildausschnitt Telefon (horizontal {draft.focal_x}%)
-        <input type="range" min={0} max={100} value={draft.focal_x} onChange={(event) => setDraft({ ...draft, focal_x: Number(event.target.value) })} />
+        Horizontal {Math.round(active.x)}%
+        <input type="range" min={0} max={100} value={active.x} onChange={(event) => setFocal(Number(event.target.value), active.y)} />
       </label>
       <label className="cms-field">
-        Bildausschnitt Telefon (vertikal {draft.focal_y}%)
-        <input type="range" min={0} max={100} value={draft.focal_y} onChange={(event) => setDraft({ ...draft, focal_y: Number(event.target.value) })} />
+        Vertikal {Math.round(active.y)}%
+        <input type="range" min={0} max={100} value={active.y} onChange={(event) => setFocal(active.x, Number(event.target.value))} />
       </label>
-      <div className="cms-phone">
-        <img src={draft.hero_image} alt="" style={{ objectPosition: `${draft.focal_x}% ${draft.focal_y}%` }} />
-      </div>
       <SaveBar sectionKey="hero" onSave={() => cms!.saveSection('hero', payload)} />
     </form>
   );

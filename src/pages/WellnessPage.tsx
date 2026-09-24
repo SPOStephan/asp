@@ -42,6 +42,8 @@ export function WellnessPage() {
         eyebrow={page?.eyebrow ?? WELLNESS_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? WELLNESS_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? WELLNESS_PAGE_FALLBACK.subtitle}
+        focal={data.hero_focal}
+        cms={{ section: 'wellness_page' }}
       >
         <div className="wellness-hub">
           <p className="wellness-hub__intro" data-cms-focus="intro" data-cms-path="intro">

@@ -77,6 +77,8 @@ export function ImpressionsPage() {
         eyebrow={page?.eyebrow ?? IMPRESSIONS_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? IMPRESSIONS_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? IMPRESSIONS_PAGE_FALLBACK.subtitle}
+        focal={data.hero_focal}
+        cms={{ section: 'impressions_page' }}
       >
         <article className="impressions-page">
           <p className="impressions-page__intro" data-cms-focus="intro" data-cms-path="intro">

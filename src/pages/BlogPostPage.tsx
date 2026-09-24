@@ -9,6 +9,7 @@ import { BlogToc } from '../components/BlogToc';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { entryFocal } from '../cms/cmsFocal';
 import { blogHeadings, BLOG_TOPIC_LABEL, formatBlogDate, resolveBlogPosts } from '../lib/blog';
 import { resolveOfferStories } from '../lib/offers';
 
@@ -58,9 +59,12 @@ export function BlogPostPage() {
         eyebrow={BLOG_TOPIC_LABEL[post.topic]}
         title={post.title}
         subtitle={formatBlogDate(post.published_at)}
+        focal={entryFocal(page?.items, post.id) ?? entryFocal(page?.items, post.slug)}
         cms={{
           image: `${prefix}.hero_image`,
           title: `${prefix}.title`,
+          section: 'blog_page',
+          focalPath: `${prefix}.hero_focal`,
         }}
       >
         <article className="blog-post">

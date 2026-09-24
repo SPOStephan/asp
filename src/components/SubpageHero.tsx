@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { CmsHeroPan } from '../cms/CmsHeroPan';
+import { heroFocalStyle } from '../cms/cmsFocal';
 
 interface SubpageHeroCms {
   image?: string;
   eyebrow?: string;
   title?: string;
   subtitle?: string;
+  section?: string;
+  focalPath?: string;
 }
 
 interface SubpageHeroProps {
@@ -13,6 +17,7 @@ interface SubpageHeroProps {
   eyebrow: string;
   title: string;
   subtitle?: string;
+  focal?: unknown;
   cms?: SubpageHeroCms;
   children?: ReactNode;
 }
@@ -23,6 +28,7 @@ export function SubpageHero({
   eyebrow,
   title,
   subtitle,
+  focal,
   cms,
   children,
 }: SubpageHeroProps) {
@@ -57,7 +63,10 @@ export function SubpageHero({
     };
   }, []);
 
-  const cssVars = { '--image-bottom': `${imageBottom}px` } as CSSProperties & {
+  const cssVars = {
+    '--image-bottom': `${imageBottom}px`,
+    ...heroFocalStyle(focal),
+  } as CSSProperties & {
     '--image-bottom': string;
   };
 
@@ -76,6 +85,7 @@ export function SubpageHero({
 
   return (
     <div className="subpage-hero" style={cssVars}>
+      <CmsHeroPan section={cms?.section ?? ''} path={cms?.focalPath ?? 'hero_focal'} value={focal}>
       <div className="subpage-hero__image" ref={heroRef} data-cms-focus="image" data-cms-path={imagePath} data-cms-kind="image">
         <img
           src={image}
@@ -84,9 +94,11 @@ export function SubpageHero({
           height={692}
           fetchPriority="high"
           decoding="async"
+          draggable={false}
         />
         <div className="subpage-hero__overlay" />
       </div>
+      </CmsHeroPan>
 
       <div className={`subpage-hero__flow${docked ? ' is-docked' : ''}`}>
         <div className="subpage-hero__text subpage-hero__text--dark subpage-hero__text--flow">

@@ -19,7 +19,7 @@ import { CmsEditor } from './CmsEditor';
 import { CmsErrorBoundary } from './CmsErrorBoundary';
 import { CmsImageDialog } from './CmsImageDialog';
 import { CmsInlineEdit } from './CmsInlineEdit';
-import { CmsProvider } from './CmsContext';
+import { CmsProvider, useCms } from './CmsContext';
 import './cms.css';
 
 function CmsGate() {
@@ -41,8 +41,17 @@ function CmsGate() {
   return (
     <CmsProvider>
       <CmsErrorBoundary>
+      <CmsShell />
+      </CmsErrorBoundary>
+    </CmsProvider>
+  );
+}
+
+function CmsShell() {
+  const cms = useCms();
+  return (
       <div className="cms-shell">
-        <div className="cms-stage">
+        <div className={`cms-stage${cms?.focalPreview === 'mobile' ? ' is-phone-preview' : ''}`}>
           <Navbar />
           <Routes>
             <Route path="/cms" element={<HomePage />} />
@@ -64,8 +73,6 @@ function CmsGate() {
         <CmsInlineEdit />
         <CmsImageDialog />
       </div>
-      </CmsErrorBoundary>
-    </CmsProvider>
   );
 }
 
