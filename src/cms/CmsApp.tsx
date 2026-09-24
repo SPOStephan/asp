@@ -5,13 +5,16 @@ import { AdminLoginPage } from '../admin/pages/AdminLoginPage';
 import { Footer } from '../components/Footer';
 import { Navbar } from '../components/Navbar';
 import { BlogPage } from '../pages/BlogPage';
+import { BlogPostPage } from '../pages/BlogPostPage';
 import { CulinaryPage } from '../pages/CulinaryPage';
 import { FAQPage } from '../pages/FAQPage';
 import { HomePage } from '../pages/HomePage';
 import { ImpressionsPage } from '../pages/ImpressionsPage';
+import { OfferDetailPage } from '../pages/OfferDetailPage';
 import { OffersPage } from '../pages/OffersPage';
 import { RoomsCardsPage } from '../pages/RoomsCardsPage';
 import { WellnessPage } from '../pages/WellnessPage';
+import { WellnessTopicPage } from '../pages/WellnessTopicPage';
 import { CmsEditor } from './CmsEditor';
 import { CmsErrorBoundary } from './CmsErrorBoundary';
 import { CmsImageDialog } from './CmsImageDialog';
@@ -44,9 +47,12 @@ function CmsGate() {
           <Routes>
             <Route path="/cms" element={<HomePage />} />
             <Route path="/cms/zimmer" element={<RoomsCardsPage />} />
+            <Route path="/cms/wellness/:topicId" element={<WellnessTopicPage />} />
             <Route path="/cms/wellness" element={<WellnessPage />} />
             <Route path="/cms/kulinarik" element={<CulinaryPage />} />
+            <Route path="/cms/angebote/:offerId" element={<OfferDetailPage />} />
             <Route path="/cms/angebote" element={<OffersPage />} />
+            <Route path="/cms/blog/:postSlug" element={<BlogPostPage />} />
             <Route path="/cms/blog" element={<BlogPage />} />
             <Route path="/cms/impressionen" element={<ImpressionsPage />} />
             <Route path="/cms/faqs" element={<FAQPage />} />

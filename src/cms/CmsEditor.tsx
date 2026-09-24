@@ -1,10 +1,17 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, shouldPublishPreview } from './cmsDraft';
-import { CMS_EDITOR_PAGES, sectionDraft } from './cmsPages';
+import {
+  CMS_DETAIL_LABELS,
+  CMS_EDITOR_PAGES,
+  cmsDetailFromPath,
+  cmsEntryHref,
+  matchesCmsEntry,
+  sectionDraft,
+} from './cmsPages';
 import { useCms } from './CmsContext';
 import { CmsIconPicker } from './CmsIconPicker';
 import { CmsImageField } from './CmsImageField';
@@ -74,14 +81,26 @@ function Field({
   );
 }
 
+function useCmsDetail() {
+  const location = useLocation();
+  return cmsDetailFromPath(location.pathname);
+}
+
 export function CmsEditor() {
   const cms = useCms();
-  if (!cms) return null;
-  const selected = cms.selected;
-  const section = selected?.section ?? null;
-  const dirty = section ? cms.dirty[section] : false;
+  const location = useLocation();
+  const detail = useCmsDetail();
+  const selectRef = useRef(cms?.select);
+  selectRef.current = cms?.select;
+  const selected = cms?.selected ?? null;
 
   useEffect(() => {
+    if (!detail) return;
+    selectRef.current?.(detail.section, `item:${detail.entryId}`, `items.${detail.entryId}`);
+  }, [detail?.section, detail?.entryId]);
+
+  useEffect(() => {
+    if (!cms) return;
     let timer = 0;
     const frame = window.requestAnimationFrame(() => {
       const root = document.querySelector('.cms-dock__body');
@@ -101,6 +120,14 @@ export function CmsEditor() {
     };
   }, [selected?.section, selected?.focus, selected?.path]);
 
+  if (!cms) return null;
+  const section = selected?.section ?? detail?.section ?? null;
+  const dirty = section ? cms.dirty[section] : false;
+  const currentHub = CMS_EDITOR_PAGES.find(
+    (page) => page.to === location.pathname || (page.to !== '/cms' && location.pathname.startsWith(`${page.to}/`)),
+  );
+  const showEntry = Boolean(detail && section === detail.section);
+
   return (
     <aside className="cms-dock">
       <header className="cms-dock__top">
@@ -110,7 +137,7 @@ export function CmsEditor() {
         {dirty ? <p className="cms-dock__hit">Vorschau — noch nicht gespeichert</p> : null}
         <nav className="cms-dock__nav">
           {CMS_EDITOR_PAGES.map((page) => (
-            <Link key={page.to} to={page.to}>
+            <Link key={page.to} to={page.to} aria-current={currentHub?.to === page.to ? 'page' : undefined}>
               {page.label}
             </Link>
           ))}
@@ -124,7 +151,10 @@ export function CmsEditor() {
         {section === 'discover' ? <DiscoverFields /> : null}
         {section === 'rooms_page' ? <RoomsFields /> : null}
         {section === 'faq_page' ? <FaqFields /> : null}
-        {section && !CUSTOM_SECTIONS.has(section) ? <GenericFields key={section} sectionKey={section} /> : null}
+        {showEntry && detail ? (
+          <EntryFields key={`${detail.section}:${detail.entryId}`} sectionKey={detail.section} entryId={detail.entryId} hub={detail.hub} />
+        ) : null}
+        {section && !CUSTOM_SECTIONS.has(section) && !showEntry ? <GenericFields key={section} sectionKey={section} /> : null}
       </div>
     </aside>
   );
@@ -554,6 +584,57 @@ function FaqFields() {
   );
 }
 
+function EntryFields({ sectionKey, entryId, hub }: { sectionKey: string; entryId: string; hub: string }) {
+  const cms = useCms();
+  const data = useSection(sectionKey);
+  const base = sectionDraft(sectionKey, data);
+  const [draft, setDraft] = useState<Record<string, unknown>>(base);
+
+  useEffect(() => {
+    setDraft(sectionDraft(sectionKey, data));
+  }, [cms?.draftTick, sectionKey]);
+
+  const payload = { ...base, ...draft };
+  useLivePreview(sectionKey, payload);
+
+  const items = Array.isArray(draft.items) ? (draft.items as Record<string, unknown>[]) : [];
+  const item = items.find((entry) => matchesCmsEntry(entry, entryId));
+  const itemId = typeof item?.id === 'string' ? item.id : entryId;
+  const title =
+    (typeof item?.title === 'string' && item.title) ||
+    (typeof item?.name === 'string' && item.name) ||
+    entryId;
+
+  function updateItem(next: unknown) {
+    setDraft({
+      ...draft,
+      items: items.map((entry) => (matchesCmsEntry(entry, entryId) ? (next as Record<string, unknown>) : entry)),
+    });
+  }
+
+  return (
+    <form className="cms-form" onSubmit={(event) => event.preventDefault()}>
+      <h3>{CMS_DETAIL_LABELS[sectionKey] ?? CMS_SECTION_LABELS[sectionKey] ?? sectionKey}</h3>
+      <p className="cms-muted">{title}</p>
+      <Link className="cms-entry-open" to={hub}>
+        Zur Übersicht
+      </Link>
+      {!item ? (
+        <p className="cms-muted">Dieser Eintrag liegt nicht in den Daten.</p>
+      ) : (
+        <GenericValue
+          section={sectionKey}
+          path={`items.${itemId}`}
+          label={CMS_DETAIL_LABELS[sectionKey] ?? 'Eintrag'}
+          value={item}
+          onChange={updateItem}
+        />
+      )}
+      <SaveBar sectionKey={sectionKey} onSave={() => cms!.saveSection(sectionKey, payload)} />
+    </form>
+  );
+}
+
 function GenericFields({ sectionKey }: { sectionKey: string }) {
   const cms = useCms();
   const data = useSection(sectionKey);
@@ -636,12 +717,19 @@ function GenericValue({
     return (
       <div className="cms-list">
         {value.map((item, index) => {
-          const itemPath = `${path}.${index}`;
+          const itemId = isPlainObject(item) && typeof item.id === 'string' ? item.id : String(index);
+          const itemPath = `${path}.${itemId}`;
+          const openTo = path === 'items' && isPlainObject(item) ? cmsEntryHref(section, item) : null;
           return (
             <fieldset key={itemPath} className="cms-tile" data-cms-panel-focus={`${path}:${index}`}>
               <legend>
                 {label} {index + 1}
               </legend>
+              {openTo ? (
+                <Link className="cms-entry-open" to={openTo}>
+                  Seite öffnen
+                </Link>
+              ) : null}
               {isPlainObject(item) ? (
                 Object.entries(item).map(([childKey, childValue]) =>
                   typeof childValue === 'string' || typeof childValue === 'number' || typeof childValue === 'boolean' ? (

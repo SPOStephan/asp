@@ -20,10 +20,34 @@ function toCmsHref(href) {
   if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return href;
   const { pathname, search, hash } = splitHref(href);
   if (pathname === '/' || pathname === '') return `/cms${search}${hash}`;
-  const match = CMS_EDITOR_PAGES.find(
-    (page) => page.publicPath !== '/' && (pathname === page.publicPath || pathname.startsWith(`${page.publicPath}/`)),
-  );
-  return `${match?.to ?? pathname}${search}${hash}`;
+  const match = [...CMS_EDITOR_PAGES]
+    .filter((page) => page.publicPath !== '/' && (pathname === page.publicPath || pathname.startsWith(`${page.publicPath}/`)))
+    .sort((a, b) => b.publicPath.length - a.publicPath.length)[0];
+  if (!match) return `${pathname}${search}${hash}`;
+  return `${match.to}${pathname.slice(match.publicPath.length)}${search}${hash}`;
+}
+
+function cmsDetailFromPath(pathname) {
+  const patterns = [
+    { section: 'blog_page', hub: '/cms/blog', re: /^\/cms\/blog\/([^/]+)$/ },
+    { section: 'offers_page', hub: '/cms/angebote', re: /^\/cms\/angebote\/([^/]+)$/ },
+    { section: 'wellness_page', hub: '/cms/wellness', re: /^\/cms\/wellness\/([^/]+)$/ },
+  ];
+  for (const pattern of patterns) {
+    const match = pathname.match(pattern.re);
+    if (match) return { section: pattern.section, entryId: decodeURIComponent(match[1]), hub: pattern.hub };
+  }
+  return null;
+}
+
+function cmsEntryHref(section, item) {
+  const id = typeof item.id === 'string' ? item.id : '';
+  const slug = typeof item.slug === 'string' && item.slug ? item.slug : id;
+  if (!id && !slug) return null;
+  if (section === 'blog_page') return `/cms/blog/${slug}`;
+  if (section === 'offers_page') return `/cms/angebote/${id || slug}`;
+  if (section === 'wellness_page') return `/cms/wellness/${id || slug}`;
+  return null;
 }
 
 function sectionDraft(sectionKey, data, fallbacks) {
@@ -35,9 +59,30 @@ assert.equal(toCmsHref('#welcome'), '#welcome');
 assert.equal(toCmsHref('mailto:info@example.com'), 'mailto:info@example.com');
 assert.equal(toCmsHref('/'), '/cms');
 assert.equal(toCmsHref('/wellness'), '/cms/wellness');
-assert.equal(toCmsHref('/wellness/auramaris'), '/cms/wellness');
-assert.equal(toCmsHref('/angebote/feiertage'), '/cms/angebote');
-assert.equal(toCmsHref('/blog/erholung-an-der-nordsee'), '/cms/blog');
+assert.equal(toCmsHref('/wellness/auramaris'), '/cms/wellness/auramaris');
+assert.equal(toCmsHref('/angebote/feiertage'), '/cms/angebote/feiertage');
+assert.equal(toCmsHref('/blog/erholung-an-der-nordsee'), '/cms/blog/erholung-an-der-nordsee');
+assert.equal(toCmsHref('/blog?thema=hund'), '/cms/blog?thema=hund');
+assert.equal(toCmsHref('/blog/foo?x=1#y'), '/cms/blog/foo?x=1#y');
+assert.deepEqual(cmsDetailFromPath('/cms/blog/erholung-an-der-nordsee'), {
+  section: 'blog_page',
+  entryId: 'erholung-an-der-nordsee',
+  hub: '/cms/blog',
+});
+assert.deepEqual(cmsDetailFromPath('/cms/angebote/feiertage'), {
+  section: 'offers_page',
+  entryId: 'feiertage',
+  hub: '/cms/angebote',
+});
+assert.deepEqual(cmsDetailFromPath('/cms/wellness/auramaris'), {
+  section: 'wellness_page',
+  entryId: 'auramaris',
+  hub: '/cms/wellness',
+});
+assert.equal(cmsDetailFromPath('/cms/blog'), null);
+assert.equal(cmsEntryHref('blog_page', { id: 'erholung-nordsee', slug: 'erholung-an-der-nordsee' }), '/cms/blog/erholung-an-der-nordsee');
+assert.equal(cmsEntryHref('offers_page', { id: 'feiertage' }), '/cms/angebote/feiertage');
+assert.equal(cmsEntryHref('wellness_page', { id: 'auramaris' }), '/cms/wellness/auramaris');
 assert.equal(toCmsHref('/schriften'), '/schriften');
 assert.equal(toCmsHref('/kulinarik#grill'), '/cms/kulinarik#grill');
 

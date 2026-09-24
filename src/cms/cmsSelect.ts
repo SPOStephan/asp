@@ -66,6 +66,9 @@ export function describeSelection(selection: CmsSelection | null): string {
   if (selection.focus.startsWith('room:')) {
     return `${label} · gewähltes Zimmer`;
   }
+  if (selection.focus.startsWith('item:')) {
+    return `${label} · dieser Eintrag`;
+  }
   if (selection.focus.startsWith('faq:')) {
     return `${label} · Frage`;
   }

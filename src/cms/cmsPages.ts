@@ -53,6 +53,18 @@ export const CMS_SECTION_FALLBACKS: Record<string, Record<string, unknown>> = {
   footer: FOOTER_FALLBACK,
 };
 
+export const CMS_DETAIL_LABELS: Record<string, string> = {
+  blog_page: 'Beitrag',
+  offers_page: 'Angebot',
+  wellness_page: 'Wellness-Seite',
+};
+
+export type CmsDetail = {
+  section: 'blog_page' | 'offers_page' | 'wellness_page';
+  entryId: string;
+  hub: string;
+};
+
 function splitHref(href: string) {
   try {
     const url = href.startsWith('http') ? new URL(href) : new URL(href, 'https://local.test');
@@ -72,10 +84,40 @@ export function toCmsHref(href: string) {
   if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return href;
   const { pathname, search, hash } = splitHref(href);
   if (pathname === '/' || pathname === '') return `/cms${search}${hash}`;
-  const match = CMS_EDITOR_PAGES.find(
-    (page) => page.publicPath !== '/' && (pathname === page.publicPath || pathname.startsWith(`${page.publicPath}/`)),
-  );
-  return `${match?.to ?? pathname}${search}${hash}`;
+  const match = [...CMS_EDITOR_PAGES]
+    .filter((page) => page.publicPath !== '/' && (pathname === page.publicPath || pathname.startsWith(`${page.publicPath}/`)))
+    .sort((a, b) => b.publicPath.length - a.publicPath.length)[0];
+  if (!match) return `${pathname}${search}${hash}`;
+  return `${match.to}${pathname.slice(match.publicPath.length)}${search}${hash}`;
+}
+
+export function cmsDetailFromPath(pathname: string): CmsDetail | null {
+  const patterns: Array<{ section: CmsDetail['section']; hub: string; re: RegExp }> = [
+    { section: 'blog_page', hub: '/cms/blog', re: /^\/cms\/blog\/([^/]+)$/ },
+    { section: 'offers_page', hub: '/cms/angebote', re: /^\/cms\/angebote\/([^/]+)$/ },
+    { section: 'wellness_page', hub: '/cms/wellness', re: /^\/cms\/wellness\/([^/]+)$/ },
+  ];
+  for (const pattern of patterns) {
+    const match = pathname.match(pattern.re);
+    if (match) {
+      return { section: pattern.section, entryId: decodeURIComponent(match[1]), hub: pattern.hub };
+    }
+  }
+  return null;
+}
+
+export function cmsEntryHref(section: string, item: Record<string, unknown>): string | null {
+  const id = typeof item.id === 'string' ? item.id : '';
+  const slug = typeof item.slug === 'string' && item.slug ? item.slug : id;
+  if (!id && !slug) return null;
+  if (section === 'blog_page') return `/cms/blog/${slug}`;
+  if (section === 'offers_page') return `/cms/angebote/${id || slug}`;
+  if (section === 'wellness_page') return `/cms/wellness/${id || slug}`;
+  return null;
+}
+
+export function matchesCmsEntry(item: Record<string, unknown>, entryId: string) {
+  return item.id === entryId || item.slug === entryId;
 }
 
 export function sectionDraft(sectionKey: string, data?: Record<string, unknown> | null) {

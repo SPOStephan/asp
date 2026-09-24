@@ -39,6 +39,18 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+.cms-dock__nav a[aria-current='page'] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.cms-entry-open {
+  display: inline-block;
+  margin-top: 8px;
+  color: #133b5c;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .cms-dock__hit {
   margin: 12px 0 0;
   color: #957640;
