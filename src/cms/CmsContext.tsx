@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase, type HotelFAQ } from '../lib/supabase';
 import { useHotel, useHotelContent } from '../context/HotelContext';
 import { setPath } from './cmsDraft';
@@ -36,6 +37,9 @@ const CmsContext = createContext<CmsValue | null>(null);
 
 export function CmsProvider({ children }: { children: ReactNode }) {
   const hotel = useHotel();
+  const navigate = useNavigate();
+  const navigateRef = useRef(navigate);
+  navigateRef.current = navigate;
   const { patchSection, patchFaqs, content } = useHotelContent();
   const contentRef = useRef(content);
   contentRef.current = content;
@@ -116,6 +120,20 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       if (inlineRef.current && target instanceof Element && !target.closest('[data-cms-editing]')) {
         const el = document.querySelector(`.cms-stage [data-cms-path="${CSS.escape(inlineRef.current.path)}"]`);
         commitInline(el instanceof HTMLElement ? el.innerText : inlineRef.current.original);
+      }
+
+      if (target instanceof Element) {
+        const navEl = target.closest('[data-cms-nav]');
+        if (navEl instanceof HTMLAnchorElement) {
+          const href = navEl.getAttribute('href');
+          if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+            event.preventDefault();
+            event.stopPropagation();
+            const url = new URL(href, window.location.origin);
+            navigateRef.current(`${url.pathname}${url.search}${url.hash}`);
+            return;
+          }
+        }
       }
 
       const next = selectionFromEvent(event);

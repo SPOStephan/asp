@@ -64,6 +64,6 @@ export function shouldPublishPreview(serial: string, lastSerial: string | null) 
 
 export function isLongText(value: string, key = '') {
   const name = key.split('.').pop() ?? key;
-  if (/text|intro|note|desc|copy|paragraph|amenities/i.test(name)) return true;
+  if (/text|intro|note|desc|copy|paragraph|amenities|excerpt|summary|caption/i.test(name)) return true;
   return value.length > 72 || value.includes('\n');
 }

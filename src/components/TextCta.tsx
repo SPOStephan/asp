@@ -33,8 +33,11 @@ export function TextCta({
   );
 
   if (resolved) {
+    const cmsNav = Boolean(
+      cms && resolved && !resolved.startsWith('#') && !resolved.startsWith('mailto:') && !resolved.startsWith('tel:'),
+    );
     return (
-      <a className={classes} href={resolved} onClick={onClick}>
+      <a className={classes} href={resolved} onClick={onClick} {...(cmsNav ? { 'data-cms-nav': '' } : {})}>
         {inner}
       </a>
     );

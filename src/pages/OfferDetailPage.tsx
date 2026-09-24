@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
+import { useCms } from '../cms/CmsContext';
+import { CmsSection } from '../cms/CmsSection';
 import { IncludeList } from '../components/IncludeList';
 import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
@@ -16,6 +18,7 @@ const PAIR_FALLBACK = {
 
 export function OfferDetailPage() {
   const { offerId } = useParams();
+  const cms = useCms();
   const hotel = useHotel();
   const page = useSection('offers_page');
   const homeOffers = useSection('offers');
@@ -34,9 +37,10 @@ export function OfferDetailPage() {
   }, [offer, hotel?.name]);
 
   if (!offer) {
-    return <Navigate to="/angebote" replace />;
+    return <Navigate to={cms ? '/cms/angebote' : '/angebote'} replace />;
   }
 
+  const prefix = `items.${offer.id}`;
   const stayLabel = offer.details[0] ?? 'Aufenthalt';
   const stayValue = offer.details.slice(1).join(' · ') || offer.details[0];
   const pairLeft = discover?.feature_image_left ?? PAIR_FALLBACK.left;
@@ -45,6 +49,7 @@ export function OfferDetailPage() {
   const pairRightAlt = discover?.feature_image_right_alt || PAIR_FALLBACK.rightAlt;
 
   return (
+    <CmsSection sectionKey="offers_page" label="Angebot">
     <main>
       <SubpageHero
         image={offer.hero_image}
@@ -52,21 +57,26 @@ export function OfferDetailPage() {
         eyebrow={offer.title}
         title={offer.subtitle}
         subtitle={offer.details.join(' · ')}
+        cms={{
+          image: `${prefix}.hero_image`,
+          eyebrow: `${prefix}.title`,
+          title: `${prefix}.subtitle`,
+        }}
       >
         <div className="offer-detail">
           <div className="offer-detail__copy">
-            {offer.detail_text.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+            {offer.detail_text.map((paragraph, index) => (
+              <p key={`${paragraph}-${index}`} data-cms-path={`${prefix}.detail_text.${index}`}>{paragraph}</p>
             ))}
-            <IncludeList items={offer.includes} />
+            <IncludeList items={offer.includes} pathPrefix={`${prefix}.includes`} />
             <div className="offer-detail__facts">
               <div className="offer-detail__fact">
-                <p className="offer-detail__fact-label">{stayLabel}</p>
-                <p className="offer-detail__fact-value">{stayValue}</p>
+                <p className="offer-detail__fact-label" data-cms-path={`${prefix}.details.0`}>{stayLabel}</p>
+                <p className="offer-detail__fact-value" data-cms-path={`${prefix}.details.1`}>{stayValue}</p>
               </div>
               <div className="offer-detail__fact">
-                <p className="offer-detail__fact-label">{offer.travel_period_label}</p>
-                <p className="offer-detail__fact-value">{offer.travel_period}</p>
+                <p className="offer-detail__fact-label" data-cms-path={`${prefix}.travel_period_label`}>{offer.travel_period_label}</p>
+                <p className="offer-detail__fact-value" data-cms-path={`${prefix}.travel_period`}>{offer.travel_period}</p>
               </div>
             </div>
             <div className="offer-detail__links">
@@ -85,5 +95,6 @@ export function OfferDetailPage() {
         </div>
       </SubpageHero>
     </main>
+    </CmsSection>
   );
 }

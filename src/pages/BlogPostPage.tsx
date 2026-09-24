@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
+import { useCms } from '../cms/CmsContext';
+import { CmsSection } from '../cms/CmsSection';
 import { BlogBlocks } from '../components/BlogBlocks';
 import { BlogCard } from '../components/BlogCard';
 import { BlogPromo } from '../components/BlogPromo';
@@ -12,6 +14,7 @@ import { resolveOfferStories } from '../lib/offers';
 
 export function BlogPostPage() {
   const { postSlug } = useParams();
+  const cms = useCms();
   const hotel = useHotel();
   const page = useSection('blog_page');
   const offersPage = useSection('offers_page');
@@ -38,14 +41,16 @@ export function BlogPostPage() {
   }, [post, hotel?.name]);
 
   if (!post) {
-    return <Navigate to="/blog" replace />;
+    return <Navigate to={cms ? '/cms/blog' : '/blog'} replace />;
   }
 
+  const prefix = `items.${post.id}`;
   const promo = promoOffer ? <BlogPromo offer={promoOffer} /> : null;
   const inlinePromo = post.promo?.placement === 'inline' ? promo : null;
   const afterPromo = post.promo?.placement !== 'inline' ? promo : null;
 
   return (
+    <CmsSection sectionKey="blog_page" label="Beitrag">
     <main>
       <SubpageHero
         image={post.hero_image}
@@ -53,14 +58,18 @@ export function BlogPostPage() {
         eyebrow={BLOG_TOPIC_LABEL[post.topic]}
         title={post.title}
         subtitle={formatBlogDate(post.published_at)}
+        cms={{
+          image: `${prefix}.hero_image`,
+          title: `${prefix}.title`,
+        }}
       >
         <article className="blog-post">
-          <p className="blog-post__lead">{post.excerpt}</p>
+          <p className="blog-post__lead" data-cms-path={`${prefix}.excerpt`}>{post.excerpt}</p>
 
           <div className={`blog-post__layout${headings.length ? ' has-toc' : ''}`}>
             {headings.length ? <BlogToc blocks={post.blocks} /> : null}
             <div className="blog-post__body">
-              <BlogBlocks blocks={post.blocks} inlinePromo={inlinePromo} />
+              <BlogBlocks blocks={post.blocks} inlinePromo={inlinePromo} pathPrefix={`${prefix}.blocks`} />
               {afterPromo}
               <div className="blog-post__links">
                 <TextCta href="/blog">Alle Beiträge</TextCta>
@@ -82,5 +91,6 @@ export function BlogPostPage() {
         </article>
       </SubpageHero>
     </main>
+    </CmsSection>
   );
 }

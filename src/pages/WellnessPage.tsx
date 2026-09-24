@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { ArrowUpRight } from 'lucide-react';
+import { useCms } from '../cms/CmsContext';
+import { toCmsHref } from '../cms/cmsPages';
 import { CmsSection } from '../cms/CmsSection';
 import { OverlapStage } from '../components/OverlapStage';
 import { Reveal } from '../components/Reveal';
@@ -15,6 +17,7 @@ import {
 } from '../lib/wellness';
 
 export function WellnessPage() {
+  const cms = useCms();
   const hotel = useHotel();
   const page = useSection('wellness_page');
   const data = page ?? WELLNESS_PAGE_FALLBACK;
@@ -63,7 +66,12 @@ export function WellnessPage() {
           <section className="wellness-hub__tiles" aria-label="Wellness-Bereiche">
             {topics.map((topic, index) => (
               <Reveal key={topic.id} delay={index * 50}>
-                <a className="wellness-tile" href={wellnessTopicHref(topic.id)} data-cms-focus={`items:${index}`}>
+                <a
+                  className="wellness-tile"
+                  href={cms ? toCmsHref(wellnessTopicHref(topic.id)) : wellnessTopicHref(topic.id)}
+                  data-cms-focus={`items:${index}`}
+                  {...(cms ? { 'data-cms-nav': '' } : {})}
+                >
                   <div className="wellness-tile__image" data-cms-path={`items.${topic.id}.image`} data-cms-kind="image">
                     <img src={topic.image} alt={topic.image_alt} />
                   </div>

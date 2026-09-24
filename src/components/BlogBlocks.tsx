@@ -5,24 +5,26 @@ import { headingAnchor, youtubeId } from '../lib/blog';
 interface BlogBlocksProps {
   blocks: BlogBlock[];
   inlinePromo?: ReactNode;
+  pathPrefix?: string;
 }
 
-export function BlogBlocks({ blocks, inlinePromo }: BlogBlocksProps) {
+export function BlogBlocks({ blocks, inlinePromo, pathPrefix }: BlogBlocksProps) {
   const firstHeading = blocks.findIndex((block) => block.type === 'heading');
   const promoAfter = firstHeading === -1 ? -1 : firstHeading + 1 < blocks.length ? firstHeading + 1 : firstHeading;
 
   return (
     <div className="blog-blocks">
       {blocks.map((block, index) => {
+        const base = pathPrefix ? `${pathPrefix}.${index}` : '';
         const node =
           block.type === 'heading' ? (
-            <h2 id={headingAnchor(block.text)} className="blog-blocks__heading heading-font">
+            <h2 id={headingAnchor(block.text)} className="blog-blocks__heading heading-font" {...(base ? { 'data-cms-path': `${base}.text` } : {})}>
               {block.text}
             </h2>
           ) : block.type === 'image' ? (
             <figure className="blog-blocks__figure">
-              <img src={block.src} alt={block.alt} />
-              {block.caption ? <figcaption>{block.caption}</figcaption> : null}
+              <img src={block.src} alt={block.alt} {...(base ? { 'data-cms-path': `${base}.src`, 'data-cms-kind': 'image' } : {})} />
+              {block.caption ? <figcaption {...(base ? { 'data-cms-path': `${base}.caption` } : {})}>{block.caption}</figcaption> : null}
             </figure>
           ) : block.type === 'video' ? (
             <figure className="blog-blocks__figure blog-blocks__video">
@@ -34,12 +36,12 @@ export function BlogBlocks({ blocks, inlinePromo }: BlogBlocksProps) {
                   allowFullScreen
                 />
               ) : (
-                <video src={block.src} poster={block.poster} controls playsInline />
+                <video src={block.src} poster={block.poster} controls playsInline {...(base ? { 'data-cms-path': `${base}.src`, 'data-cms-kind': 'image' } : {})} />
               )}
-              {block.caption ? <figcaption>{block.caption}</figcaption> : null}
+              {block.caption ? <figcaption {...(base ? { 'data-cms-path': `${base}.caption` } : {})}>{block.caption}</figcaption> : null}
             </figure>
           ) : (
-            <p className="blog-blocks__text">{block.text}</p>
+            <p className="blog-blocks__text" {...(base ? { 'data-cms-path': `${base}.text` } : {})}>{block.text}</p>
           );
 
         return (

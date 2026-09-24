@@ -1,11 +1,19 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
+interface SubpageHeroCms {
+  image?: string;
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+}
+
 interface SubpageHeroProps {
   image: string;
   imageAlt: string;
   eyebrow: string;
   title: string;
   subtitle?: string;
+  cms?: SubpageHeroCms;
   children?: ReactNode;
 }
 
@@ -15,6 +23,7 @@ export function SubpageHero({
   eyebrow,
   title,
   subtitle,
+  cms,
   children,
 }: SubpageHeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -52,17 +61,22 @@ export function SubpageHero({
     '--image-bottom': string;
   };
 
+  const imagePath = cms?.image ?? 'hero_image';
+  const eyebrowPath = cms?.eyebrow ?? 'eyebrow';
+  const titlePath = cms?.title ?? 'title';
+  const subtitlePath = cms?.subtitle ?? 'subtitle';
+
   const Headline = ({ editable = false }: { editable?: boolean }) => (
     <>
-      <p className="subpage-hero__eyebrow" {...(editable ? { 'data-cms-focus': 'head', 'data-cms-path': 'eyebrow' } : {})}>{eyebrow}</p>
-      <h1 className="subpage-hero__title" {...(editable ? { 'data-cms-focus': 'title', 'data-cms-path': 'title' } : {})}>{title}</h1>
-      {subtitle ? <p className="subpage-hero__subtitle" {...(editable ? { 'data-cms-focus': 'subtitle', 'data-cms-path': 'subtitle' } : {})}>{subtitle}</p> : null}
+      <p className="subpage-hero__eyebrow" {...(editable ? { 'data-cms-focus': 'head', 'data-cms-path': eyebrowPath } : {})}>{eyebrow}</p>
+      <h1 className="subpage-hero__title" {...(editable ? { 'data-cms-focus': 'title', 'data-cms-path': titlePath } : {})}>{title}</h1>
+      {subtitle ? <p className="subpage-hero__subtitle" {...(editable ? { 'data-cms-focus': 'subtitle', 'data-cms-path': subtitlePath } : {})}>{subtitle}</p> : null}
     </>
   );
 
   return (
     <div className="subpage-hero" style={cssVars}>
-      <div className="subpage-hero__image" ref={heroRef} data-cms-focus="image" data-cms-path="hero_image" data-cms-kind="image">
+      <div className="subpage-hero__image" ref={heroRef} data-cms-focus="image" data-cms-path={imagePath} data-cms-kind="image">
         <img
           src={image}
           alt={imageAlt}
