@@ -36,7 +36,7 @@ interface CmsValue {
   closeImage: () => void;
 }
 
-const CmsContext = createContext<CmsValue | null>(null);
+export const CmsContext = createContext<CmsValue | null>(null);
 
 export function CmsProvider({ children }: { children: ReactNode }) {
   const hotel = useHotel();
