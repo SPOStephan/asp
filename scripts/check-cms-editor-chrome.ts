@@ -21,6 +21,7 @@ const cmsValue = {
   applyField: () => undefined,
   focalPreview: 'desktop' as const,
   setFocalPreview: () => undefined,
+  setFrameWindow: () => undefined,
   saveSection: async () => true,
   saveFaqs: async () => true,
   setSaveAction: () => undefined,

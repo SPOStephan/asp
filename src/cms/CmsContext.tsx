@@ -2,6 +2,14 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { useNavigate } from 'react-router-dom';
 import { supabase, type HotelFAQ } from '../lib/supabase';
 import { useHotel, useHotelContent } from '../context/HotelContext';
+import {
+  CMS_FRAME_SOURCE,
+  cmsFrameDevice,
+  cmsShellPath,
+  isCmsFrame,
+  isCmsFrameMessage,
+  toCmsFrameHref,
+} from './cmsFrame';
 import { setPath } from './cmsDraft';
 import type { FocalDevice } from './cmsFocal';
 import {
@@ -28,6 +36,7 @@ interface CmsValue {
   applyField: (sectionKey: string, path: string, value: unknown, quiet?: boolean) => void;
   focalPreview: FocalDevice;
   setFocalPreview: (device: FocalDevice) => void;
+  setFrameWindow: (frame: Window | null) => void;
   saveSection: (sectionKey: string, data: Record<string, unknown>) => Promise<boolean>;
   saveFaqs: (faqs: HotelFAQ[]) => Promise<boolean>;
   canSave: boolean;
@@ -56,7 +65,21 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const [imageRequest, setImageRequest] = useState<CmsImageRequest | null>(null);
   const saveActionRef = useRef<(() => Promise<unknown>) | null>(null);
   const [canSave, setCanSave] = useState(false);
-  const [focalPreview, setFocalPreview] = useState<FocalDevice>('desktop');
+  const frameMode = isCmsFrame();
+  const [focalPreview, setFocalPreview] = useState<FocalDevice>(() => cmsFrameDevice());
+  const frameWindowRef = useRef<Window | null>(null);
+  const setFrameWindow = useCallback((frame: Window | null) => {
+    frameWindowRef.current = frame;
+  }, []);
+  const postPeer = useCallback((message: Record<string, unknown>) => {
+    const payload = { source: CMS_FRAME_SOURCE, ...message };
+    const origin = window.location.origin;
+    if (frameMode) {
+      window.parent?.postMessage(payload, origin);
+      return;
+    }
+    frameWindowRef.current?.postMessage(payload, origin);
+  }, [frameMode]);
   const setSaveAction = useCallback((action: (() => Promise<unknown>) | null) => {
     saveActionRef.current = action;
     setCanSave(Boolean(action));
@@ -66,15 +89,32 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const inlineRef = useRef(inline);
   inlineRef.current = inline;
+  const postPeerRef = useRef(postPeer);
+  postPeerRef.current = postPeer;
+  const frameModeRef = useRef(frameMode);
+  frameModeRef.current = frameMode;
+  const focalPreviewRef = useRef(focalPreview);
+  focalPreviewRef.current = focalPreview;
 
   useEffect(() => {
     document.body.classList.add('cms-on');
+    if (frameMode) {
+      document.body.classList.add('cms-frame');
+      if (focalPreview === 'mobile') document.body.classList.add('is-phone', 'has-mobile-dock');
+    }
     return () => {
-      document.body.classList.remove('cms-on', 'cms-view-mobile', 'cms-view-desktop');
+      document.body.classList.remove(
+        'cms-on',
+        'cms-view-mobile',
+        'cms-view-desktop',
+        'cms-frame',
+        'is-phone',
+        'has-mobile-dock',
+      );
       delete document.body.dataset.cmsSection;
       delete document.body.dataset.cmsFocus;
     };
-  }, []);
+  }, [frameMode, focalPreview]);
 
   useEffect(() => {
     document.body.classList.toggle('cms-view-mobile', focalPreview === 'mobile');
@@ -99,19 +139,21 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     }
   }, [selected]);
 
-  function preview(sectionKey: string, data: Record<string, unknown>) {
+  function preview(sectionKey: string, data: Record<string, unknown>, quiet = false, bridge = false) {
     patchSection(sectionKey, data);
     setDirty((current) => (current[sectionKey] ? current : { ...current, [sectionKey]: true }));
+    if (!bridge) postPeer({ type: 'preview', section: sectionKey, data, quiet });
   }
 
-  function previewFaqs(faqs: HotelFAQ[]) {
+  function previewFaqs(faqs: HotelFAQ[], bridge = false) {
     patchFaqs(faqs);
     setDirty((current) => (current.faq_page ? current : { ...current, faq_page: true }));
+    if (!bridge) postPeer({ type: 'preview-faqs', faqs });
   }
 
   function applyField(sectionKey: string, path: string, value: unknown, quiet = false) {
     const current = contentRef.current?.sections[sectionKey] ?? {};
-    preview(sectionKey, setPath(current, path, value));
+    preview(sectionKey, setPath(current, path, value), quiet);
     if (!quiet) setDraftTick((tick) => tick + 1);
   }
 
@@ -155,7 +197,13 @@ export function CmsProvider({ children }: { children: ReactNode }) {
             event.preventDefault();
             event.stopPropagation();
             const url = new URL(href, window.location.origin);
-            navigateRef.current(`${url.pathname}${url.search}${url.hash}`);
+            const next = frameModeRef.current
+              ? toCmsFrameHref(url.pathname, focalPreviewRef.current, url.search, url.hash)
+              : `${url.pathname}${url.search}${url.hash}`;
+            navigateRef.current(next);
+            if (frameModeRef.current) {
+              postPeerRef.current({ type: 'navigate', path: cmsShellPath(url.pathname, url.search, url.hash) });
+            }
             return;
           }
         }
@@ -166,6 +214,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       event.preventDefault();
       event.stopPropagation();
       setSelected(next);
+      postPeerRef.current({ type: 'select', section: next.section, focus: next.focus, path: next.path });
 
       const kind = hitKind(next, event.target);
       const path = next.path;
@@ -184,9 +233,50 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     return () => document.removeEventListener('click', onClick, true);
   }, []);
 
-  function select(section: string | null, focus?: string | null, path?: string | null) {
+  function select(section: string | null, focus?: string | null, path?: string | null, bridge = false) {
     setSelected(section ? { section, focus: focus || undefined, path: path || undefined } : null);
+    if (!bridge) postPeer({ type: 'select', section, focus, path });
   }
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin || !isCmsFrameMessage(event.data)) return;
+      const message = event.data;
+      if (message.type === 'ready' && !frameModeRef.current) {
+        const sections = contentRef.current?.sections ?? {};
+        postPeerRef.current({ type: 'hydrate', sections, faqs: contentRef.current?.faqs });
+        return;
+      }
+      if (message.type === 'hydrate') {
+        Object.entries(message.sections).forEach(([section, data]) => patchSection(section, data));
+        if (Array.isArray(message.faqs)) patchFaqs(message.faqs as HotelFAQ[]);
+        return;
+      }
+      if (message.type === 'preview') {
+        preview(message.section, message.data, Boolean(message.quiet), true);
+        if (!message.quiet) setDraftTick((tick) => tick + 1);
+        return;
+      }
+      if (message.type === 'preview-faqs') {
+        previewFaqs(message.faqs as HotelFAQ[], true);
+        return;
+      }
+      if (message.type === 'select') {
+        select(message.section, message.focus, message.path, true);
+        return;
+      }
+      if (message.type === 'navigate' && !frameModeRef.current) {
+        navigateRef.current(message.path);
+        return;
+      }
+      if (message.type === 'open-image' && !frameModeRef.current) {
+        setImageRequest(message.request as CmsImageRequest);
+      }
+    }
+    window.addEventListener('message', onMessage);
+    if (frameMode) postPeer({ type: 'ready' });
+    return () => window.removeEventListener('message', onMessage);
+  }, [frameMode, patchFaqs, patchSection, postPeer]);
 
   async function saveSection(sectionKey: string, data: Record<string, unknown>) {
     if (!hotel) return false;
@@ -276,6 +366,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         applyField,
         focalPreview,
         setFocalPreview,
+        setFrameWindow,
         saveSection,
         saveFaqs,
         canSave,
@@ -283,7 +374,10 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         runSave,
         commitInline,
         cancelInline,
-        openImage: setImageRequest,
+        openImage: (request) => {
+          if (frameMode) postPeer({ type: 'open-image', request });
+          else setImageRequest(request);
+        },
         closeImage: () => setImageRequest(null),
       }}
     >
