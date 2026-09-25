@@ -52,6 +52,8 @@ export function BlogPage() {
         eyebrow={page?.eyebrow ?? BLOG_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? BLOG_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? BLOG_PAGE_FALLBACK.subtitle}
+        focal={data.hero_focal}
+        cms={{ section: 'blog_page' }}
       >
         <div className="blog-page">
           <p className="blog-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro ?? BLOG_PAGE_FALLBACK.intro}</p>

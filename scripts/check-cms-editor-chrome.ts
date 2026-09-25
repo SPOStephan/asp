@@ -19,6 +19,8 @@ const cmsValue = {
   preview: () => undefined,
   previewFaqs: () => undefined,
   applyField: () => undefined,
+  focalPreview: 'desktop' as const,
+  setFocalPreview: () => undefined,
   saveSection: async () => true,
   saveFaqs: async () => true,
   setSaveAction: () => undefined,

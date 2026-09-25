@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase, type HotelFAQ } from '../lib/supabase';
 import { useHotel, useHotelContent } from '../context/HotelContext';
 import { setPath } from './cmsDraft';
+import type { FocalDevice } from './cmsFocal';
 import {
   hitKind,
   isPlainTextHost,
@@ -24,7 +25,9 @@ interface CmsValue {
   saveError: string | null;
   preview: (sectionKey: string, data: Record<string, unknown>) => void;
   previewFaqs: (faqs: HotelFAQ[]) => void;
-  applyField: (sectionKey: string, path: string, value: unknown) => void;
+  applyField: (sectionKey: string, path: string, value: unknown, quiet?: boolean) => void;
+  focalPreview: FocalDevice;
+  setFocalPreview: (device: FocalDevice) => void;
   saveSection: (sectionKey: string, data: Record<string, unknown>) => Promise<boolean>;
   saveFaqs: (faqs: HotelFAQ[]) => Promise<boolean>;
   canSave: boolean;
@@ -53,6 +56,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const [imageRequest, setImageRequest] = useState<CmsImageRequest | null>(null);
   const saveActionRef = useRef<(() => Promise<unknown>) | null>(null);
   const [canSave, setCanSave] = useState(false);
+  const [focalPreview, setFocalPreview] = useState<FocalDevice>('desktop');
   const setSaveAction = useCallback((action: (() => Promise<unknown>) | null) => {
     saveActionRef.current = action;
     setCanSave(Boolean(action));
@@ -100,10 +104,10 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     setDirty((current) => (current.faq_page ? current : { ...current, faq_page: true }));
   }
 
-  function applyField(sectionKey: string, path: string, value: unknown) {
+  function applyField(sectionKey: string, path: string, value: unknown, quiet = false) {
     const current = contentRef.current?.sections[sectionKey] ?? {};
     preview(sectionKey, setPath(current, path, value));
-    setDraftTick((tick) => tick + 1);
+    if (!quiet) setDraftTick((tick) => tick + 1);
   }
 
   function commitInline(value: string) {
@@ -259,6 +263,8 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         preview,
         previewFaqs,
         applyField,
+        focalPreview,
+        setFocalPreview,
         saveSection,
         saveFaqs,
         canSave,

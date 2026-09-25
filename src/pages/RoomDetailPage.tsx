@@ -5,6 +5,7 @@ import { RoomAmenityGrid } from '../components/RoomAmenityGrid';
 import { RoomPhotoGrid } from '../components/RoomPhotoGrid';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
+import { entryFocal } from '../cms/cmsFocal';
 import { useHotel, useSection } from '../context/HotelContext';
 import { expandRoomFeatures, formatRoomPriceDetail, resolveRooms } from '../lib/rooms';
 
@@ -39,6 +40,8 @@ export function RoomDetailPage() {
         eyebrow={room.kicker}
         title={room.name}
         subtitle={`${room.size} · ${room.view}`}
+        focal={entryFocal(page?.items, room.id)}
+        cms={{ section: 'rooms_page', focalPath: `items.${room.id}.hero_focal` }}
       >
         <div className="room-detail">
           <div className="room-detail__split">

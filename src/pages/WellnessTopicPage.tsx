@@ -7,6 +7,7 @@ import { OverlapStage } from '../components/OverlapStage';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { entryFocal } from '../cms/cmsFocal';
 import { resolveWellnessTopics } from '../lib/wellness';
 
 export function WellnessTopicPage() {
@@ -42,11 +43,14 @@ export function WellnessTopicPage() {
         eyebrow={topic.kicker}
         title={topic.name}
         subtitle={topic.summary}
+        focal={entryFocal(page?.items, topic.id)}
         cms={{
           image: `${prefix}.hero_image`,
           eyebrow: `${prefix}.kicker`,
           title: `${prefix}.name`,
           subtitle: `${prefix}.summary`,
+          section: 'wellness_page',
+          focalPath: `${prefix}.hero_focal`,
         }}
       >
         <div className="wellness-topic">

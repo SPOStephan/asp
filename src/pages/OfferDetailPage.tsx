@@ -7,6 +7,7 @@ import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { entryFocal } from '../cms/cmsFocal';
 import { resolveOfferStories } from '../lib/offers';
 
 const PAIR_FALLBACK = {
@@ -57,10 +58,13 @@ export function OfferDetailPage() {
         eyebrow={offer.title}
         title={offer.subtitle}
         subtitle={offer.details.join(' · ')}
+        focal={entryFocal(page?.items, offer.id)}
         cms={{
           image: `${prefix}.hero_image`,
           eyebrow: `${prefix}.title`,
           title: `${prefix}.subtitle`,
+          section: 'offers_page',
+          focalPath: `${prefix}.hero_focal`,
         }}
       >
         <div className="offer-detail">

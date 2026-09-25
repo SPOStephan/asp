@@ -117,7 +117,7 @@ export function CmsImageDialog() {
       <div className="cms-modal__card">
         <header>
           <strong>Bild nach Bunny</strong>
-          <p>Wird als WebP gespeichert, große Dateien werden verkleinert. Zuschnitt per Ziehen verschieben.</p>
+          <p>Wird als WebP gespeichert, große Dateien werden verkleinert. Optionaler Zuschnitt hier, Header-Ausschnitt danach direkt auf der Seite ziehen.</p>
         </header>
         <input
           ref={inputRef}

@@ -52,6 +52,8 @@ export function CulinaryPage() {
         eyebrow={page?.eyebrow ?? CULINARY_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? CULINARY_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? CULINARY_PAGE_FALLBACK.subtitle}
+        focal={data.hero_focal}
+        cms={{ section: 'culinary_page' }}
       >
         <div className="culinary-page">
           <p className="culinary-page__intro" data-cms-focus="intro" data-cms-path="intro">

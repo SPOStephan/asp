@@ -52,6 +52,8 @@ export function RoomsCardsPage() {
         eyebrow={page?.eyebrow ?? ROOMS_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? ROOMS_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? ROOMS_PAGE_FALLBACK.subtitle}
+        focal={data.hero_focal}
+        cms={{ section: 'rooms_page' }}
       >
         <div className="rooms-cards">
           {data.intro ? <p className="rooms-cards__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}

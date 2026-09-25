@@ -110,5 +110,7 @@ assert.match(chrome, /body\.cms-on \.navbar/);
 assert.match(chrome, /body\.cms-on \.availability-bar\.is-stuck/);
 assert.match(chrome, /body\.cms-on \.subpage-hero__fixed/);
 assert.match(chrome, /\.cms-dock__save/);
+assert.match(chrome, /\.cms-stage\.is-phone-preview/);
+assert.match(editor, /Telefon/);
 
 console.log('cms page helpers ok');
