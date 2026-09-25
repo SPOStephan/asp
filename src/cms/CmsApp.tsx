@@ -55,6 +55,7 @@ function CmsShell() {
       <div className="cms-shell">
         <CmsViewportBar />
         <div className={`cms-preview${phone ? ' is-phone' : ' is-desktop'}`}>
+          <div className="cms-device">
           <div className="cms-stage">
             <Navbar />
             <Routes>
@@ -72,6 +73,7 @@ function CmsShell() {
               <Route path="*" element={<Navigate to="/cms" replace />} />
             </Routes>
             <Footer />
+          </div>
           </div>
         </div>
         <CmsEditor />

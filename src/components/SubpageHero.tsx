@@ -43,7 +43,7 @@ export function SubpageHero({
       const hero = heroRef.current;
       if (!hero) return;
       const bottom = hero.getBoundingClientRect().bottom;
-      const stage = hero.closest('.cms-stage');
+      const stage = hero.closest('.cms-device') || hero.closest('.cms-stage');
       const frame = stage instanceof HTMLElement ? stage : null;
       const vh = frame?.clientHeight || window.innerHeight;
       const frameWidth = frame?.clientWidth || window.innerWidth;
@@ -58,7 +58,7 @@ export function SubpageHero({
 
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
-    const stage = heroRef.current?.closest('.cms-stage');
+    const stage = heroRef.current?.closest('.cms-device') || heroRef.current?.closest('.cms-stage');
     const preview = heroRef.current?.closest('.cms-preview');
     const observer = stage instanceof HTMLElement ? new ResizeObserver(onScroll) : null;
     if (stage instanceof HTMLElement) observer?.observe(stage);

@@ -21,12 +21,11 @@ export function Hero() {
             <img src={data.hero_image} alt={data.hero_image_alt || ''} draggable={false} />
             <div className="hero__overlay" />
           </div>
+          <div className="hero__content">
+            <h1 className="hero__title" data-cms-focus="title" data-cms-path="title">{data.title}</h1>
+            <p className="hero__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{data.subtitle}</p>
+          </div>
         </CmsHeroPan>
-
-        <div className="hero__content">
-          <h1 className="hero__title" data-cms-focus="title" data-cms-path="title">{data.title}</h1>
-          <p className="hero__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{data.subtitle}</p>
-        </div>
       </div>
 
       <AvailabilityBar />

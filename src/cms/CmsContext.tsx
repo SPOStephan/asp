@@ -70,15 +70,15 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.body.classList.add('cms-on');
     return () => {
-      document.body.classList.remove('cms-on', 'cms-phone', 'cms-desktop');
+      document.body.classList.remove('cms-on', 'cms-view-mobile', 'cms-view-desktop');
       delete document.body.dataset.cmsSection;
       delete document.body.dataset.cmsFocus;
     };
   }, []);
 
   useEffect(() => {
-    document.body.classList.toggle('cms-phone', focalPreview === 'mobile');
-    document.body.classList.toggle('cms-desktop', focalPreview === 'desktop');
+    document.body.classList.toggle('cms-view-mobile', focalPreview === 'mobile');
+    document.body.classList.toggle('cms-view-desktop', focalPreview === 'desktop');
   }, [focalPreview]);
 
   useEffect(() => {

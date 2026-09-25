@@ -47,25 +47,36 @@
   background: #d9d2c5;
   container-type: normal;
 }
+.cms-device {
+  min-width: 0;
+  min-height: 100%;
+}
 .cms-stage {
   min-width: 0;
   position: relative;
   z-index: 0;
 }
+.cms-preview.is-desktop .cms-device,
 .cms-preview.is-desktop .cms-stage {
   min-height: 100%;
 }
-.cms-preview.is-phone .cms-stage {
+.cms-preview.is-phone .cms-device {
+  flex: 0 0 auto;
   width: 390px;
-  height: 844px;
-  max-height: calc(100dvh - 92px);
-  max-width: calc((100dvh - 92px) * 390 / 844);
-  overflow: auto;
-  overflow-x: hidden;
-  container-type: size;
+  min-width: 390px;
+  height: min(844px, calc(100dvh - 92px));
+  overflow: hidden;
   border-radius: 28px;
   box-shadow: 0 16px 48px rgba(19, 59, 92, 0.22);
   background: #fff;
+  container-type: size;
+}
+.cms-preview.is-phone .cms-stage {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  overflow: auto;
+  overflow-x: hidden;
 }
 .cms-preview .hero {
   min-height: 100cqh;
@@ -93,6 +104,8 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  display: flex;
+  flex-direction: column;
 }
 .cms-hero-pan:active,
 .cms-hero-pan.is-panned {
@@ -103,8 +116,10 @@
 }
 .cms-hero-pan__hint {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: auto;
+  bottom: 72px;
+  left: 12px;
+  right: auto;
   z-index: 7;
   padding: 4px 8px;
   background: #957640;
@@ -118,6 +133,7 @@
   position: relative;
   z-index: 2000;
   height: 100%;
+  min-width: 0;
   min-height: 0;
   overflow: hidden;
   display: flex;
@@ -237,18 +253,6 @@
   gap: 8px;
   color: #133b5c;
 }
-.cms-phone {
-  width: 160px;
-  height: 284px;
-  overflow: hidden;
-  border: 1px solid #133b5c;
-  background: #111;
-}
-.cms-phone img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 .cms-btn {
   padding: 12px 16px;
   background: #133b5c;
@@ -306,9 +310,10 @@ body.cms-on .cms-block__label {
   }
   .cms-dock { height: auto; max-height: 42vh; position: relative; }
   .cms-dock__body { max-height: 28vh; }
-  .cms-preview.is-phone .cms-stage {
-    max-height: calc(52dvh - 16px);
-    max-width: calc((52dvh - 16px) * 390 / 844);
+  .cms-preview.is-phone .cms-device {
+    width: min(390px, 100%);
+    min-width: 0;
+    height: calc(52dvh - 16px);
   }
 }
 
@@ -347,9 +352,6 @@ body.cms-on .subpage-hero__fixed {
 }
 body.cms-on .hero__content {
   pointer-events: none;
-}
-body.cms-on .hero__content [data-cms-focus] {
-  pointer-events: auto;
 }
 body.cms-on [data-cms-editing] {
   outline: 2px solid #957640;

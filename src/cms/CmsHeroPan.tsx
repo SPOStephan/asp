@@ -35,9 +35,6 @@ export function CmsHeroPan({
 
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return;
-    if (event.target instanceof Element && event.target.closest('[data-cms-focus]:not([data-cms-kind="image"])')) {
-      return;
-    }
     const focal = readHeroFocal(value)[device];
     drag.current = { x: event.clientX, y: event.clientY, start: focal, moved: false };
     event.currentTarget.classList.remove('is-panned');
