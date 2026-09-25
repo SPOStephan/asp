@@ -20,6 +20,7 @@ import { CmsErrorBoundary } from './CmsErrorBoundary';
 import { CmsImageDialog } from './CmsImageDialog';
 import { CmsInlineEdit } from './CmsInlineEdit';
 import { CmsProvider, useCms } from './CmsContext';
+import { CmsViewportBar } from './CmsViewportBar';
 import './cms.css';
 
 function CmsGate() {
@@ -49,25 +50,31 @@ function CmsGate() {
 
 function CmsShell() {
   const cms = useCms();
+  const phone = cms?.focalPreview === 'mobile';
   return (
       <div className="cms-shell">
-        <div className={`cms-stage${cms?.focalPreview === 'mobile' ? ' is-phone-preview' : ''}`}>
-          <Navbar />
-          <Routes>
-            <Route path="/cms" element={<HomePage />} />
-            <Route path="/cms/zimmer" element={<RoomsCardsPage />} />
-            <Route path="/cms/wellness/:topicId" element={<WellnessTopicPage />} />
-            <Route path="/cms/wellness" element={<WellnessPage />} />
-            <Route path="/cms/kulinarik" element={<CulinaryPage />} />
-            <Route path="/cms/angebote/:offerId" element={<OfferDetailPage />} />
-            <Route path="/cms/angebote" element={<OffersPage />} />
-            <Route path="/cms/blog/:postSlug" element={<BlogPostPage />} />
-            <Route path="/cms/blog" element={<BlogPage />} />
-            <Route path="/cms/impressionen" element={<ImpressionsPage />} />
-            <Route path="/cms/faqs" element={<FAQPage />} />
-            <Route path="*" element={<Navigate to="/cms" replace />} />
-          </Routes>
-          <Footer />
+        <CmsViewportBar />
+        <div className={`cms-preview${phone ? ' is-phone' : ' is-desktop'}`}>
+          <div className="cms-device">
+          <div className="cms-stage">
+            <Navbar />
+            <Routes>
+              <Route path="/cms" element={<HomePage />} />
+              <Route path="/cms/zimmer" element={<RoomsCardsPage />} />
+              <Route path="/cms/wellness/:topicId" element={<WellnessTopicPage />} />
+              <Route path="/cms/wellness" element={<WellnessPage />} />
+              <Route path="/cms/kulinarik" element={<CulinaryPage />} />
+              <Route path="/cms/angebote/:offerId" element={<OfferDetailPage />} />
+              <Route path="/cms/angebote" element={<OffersPage />} />
+              <Route path="/cms/blog/:postSlug" element={<BlogPostPage />} />
+              <Route path="/cms/blog" element={<BlogPage />} />
+              <Route path="/cms/impressionen" element={<ImpressionsPage />} />
+              <Route path="/cms/faqs" element={<FAQPage />} />
+              <Route path="*" element={<Navigate to="/cms" replace />} />
+            </Routes>
+            <Footer />
+          </div>
+          </div>
         </div>
         <CmsEditor />
         <CmsInlineEdit />

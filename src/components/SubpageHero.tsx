@@ -43,8 +43,11 @@ export function SubpageHero({
       const hero = heroRef.current;
       if (!hero) return;
       const bottom = hero.getBoundingClientRect().bottom;
-      const vh = window.innerHeight;
-      const flowTopPadding = window.innerWidth <= 768 ? 80 : 120;
+      const stage = hero.closest('.cms-device') || hero.closest('.cms-stage');
+      const frame = stage instanceof HTMLElement ? stage : null;
+      const vh = frame?.clientHeight || window.innerHeight;
+      const frameWidth = frame?.clientWidth || window.innerWidth;
+      const flowTopPadding = frameWidth <= 768 ? 80 : 120;
       setImageBottom(Math.max(0, Math.min(vh, bottom)));
       setDocked(bottom <= vh * 0.45 - flowTopPadding);
     };
@@ -55,10 +58,19 @@ export function SubpageHero({
 
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    const stage = heroRef.current?.closest('.cms-device') || heroRef.current?.closest('.cms-stage');
+    const preview = heroRef.current?.closest('.cms-preview');
+    const observer = stage instanceof HTMLElement ? new ResizeObserver(onScroll) : null;
+    if (stage instanceof HTMLElement) observer?.observe(stage);
+    preview?.addEventListener('scroll', onScroll, { passive: true });
+    stage?.addEventListener('scroll', onScroll, { passive: true });
     update();
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      preview?.removeEventListener('scroll', onScroll);
+      stage?.removeEventListener('scroll', onScroll);
+      observer?.disconnect();
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);
