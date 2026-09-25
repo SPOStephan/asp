@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { cmsFrameDevice, cmsShellPath, isCmsFrameSearch, toCmsFrameHref } from '../src/cms/cmsFrame';
 import { entryFocal, heroFocalStyle, keepLiveFocals, panFocal, readHeroFocal, writeHeroFocal } from '../src/cms/cmsFocal';
 
 assert.deepEqual(readHeroFocal(undefined).desktop, { x: 50, y: 50 });
@@ -27,5 +28,12 @@ const kept = keepLiveFocals(
 );
 assert.deepEqual(kept.hero_focal, { desktop: { x: 80, y: 20 }, mobile: { x: 15, y: 90 } });
 assert.equal((kept.items as { hero_focal: { x: number } }[])[0].hero_focal.x, 33);
+
+assert.equal(isCmsFrameSearch('?cms-frame=1&cms-device=mobile'), true);
+assert.equal(isCmsFrameSearch(''), false);
+assert.equal(cmsFrameDevice('?cms-device=mobile'), 'mobile');
+assert.equal(cmsFrameDevice(''), 'desktop');
+assert.equal(toCmsFrameHref('/cms/wellness', 'mobile'), '/cms/wellness?cms-frame=1&cms-device=mobile');
+assert.equal(cmsShellPath('/cms/wellness', '?cms-frame=1&cms-device=mobile&x=1'), '/cms/wellness?x=1');
 
 console.log('cms focal helpers ok');

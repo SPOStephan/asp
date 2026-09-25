@@ -106,9 +106,9 @@ assert.match(editor, /cms\.runSave/);
 assert.match(editor, /'Speichern'/);
 
 const chrome = readFileSync(new URL('../src/cms/cms.css', import.meta.url), 'utf8');
-assert.match(chrome, /body\.cms-on \.navbar/);
-assert.match(chrome, /body\.cms-on \.availability-bar\.is-stuck/);
-assert.match(chrome, /body\.cms-on \.subpage-hero__fixed/);
+assert.match(chrome, /body\.cms-on:not\(\.cms-frame\) \.navbar/);
+assert.match(chrome, /body\.cms-on:not\(\.cms-frame\) \.availability-bar\.is-stuck/);
+assert.match(chrome, /body\.cms-on:not\(\.cms-frame\) \.subpage-hero__fixed/);
 assert.match(chrome, /\.cms-dock__save/);
 assert.match(chrome, /\.cms-viewport/);
 assert.match(chrome, /\.cms-preview\.is-phone/);
