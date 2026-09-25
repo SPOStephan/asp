@@ -30,6 +30,10 @@
   outline: 2px solid #957640;
   background: #faf6ee;
 }
+.cms-viewport__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
 .cms-preview {
   min-width: 0;
   min-height: 0;

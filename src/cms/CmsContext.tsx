@@ -12,6 +12,7 @@ import {
 } from './cmsFrame';
 import { setPath } from './cmsDraft';
 import type { FocalDevice } from './cmsFocal';
+import { createUndoStack } from './cmsUndo';
 import {
   hitKind,
   isPlainTextHost,
@@ -37,6 +38,8 @@ interface CmsValue {
   focalPreview: FocalDevice;
   setFocalPreview: (device: FocalDevice) => void;
   setFrameWindow: (frame: Window | null) => void;
+  canUndo: boolean;
+  undo: () => void;
   saveSection: (sectionKey: string, data: Record<string, unknown>) => Promise<boolean>;
   saveFaqs: (faqs: HotelFAQ[]) => Promise<boolean>;
   canSave: boolean;
@@ -87,6 +90,8 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const runSave = useCallback(() => saveActionRef.current?.() ?? Promise.resolve(), []);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const undoStack = useRef(createUndoStack());
+  const [canUndo, setCanUndo] = useState(false);
   const inlineRef = useRef(inline);
   inlineRef.current = inline;
   const postPeerRef = useRef(postPeer);
@@ -139,16 +144,50 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     }
   }, [selected]);
 
+  function rememberSection(sectionKey: string, key: string) {
+    if (frameMode) return;
+    const before = structuredClone(contentRef.current?.sections[sectionKey] ?? {});
+    const size = undoStack.current.push({ kind: 'section', section: sectionKey, before }, key);
+    setCanUndo(size > 0);
+  }
+
+  function rememberFaqs(key: string) {
+    if (frameMode) return;
+    const before = structuredClone(contentRef.current?.faqs ?? []);
+    const size = undoStack.current.push({ kind: 'faqs', before }, key);
+    setCanUndo(size > 0);
+  }
+
   function preview(sectionKey: string, data: Record<string, unknown>, quiet = false, bridge = false) {
+    const current = contentRef.current?.sections[sectionKey] ?? {};
+    if (JSON.stringify(current) !== JSON.stringify(data)) {
+      rememberSection(sectionKey, quiet ? `${sectionKey}:quiet` : `${sectionKey}:edit`);
+    }
     patchSection(sectionKey, data);
     setDirty((current) => (current[sectionKey] ? current : { ...current, [sectionKey]: true }));
     if (!bridge) postPeer({ type: 'preview', section: sectionKey, data, quiet });
   }
 
   function previewFaqs(faqs: HotelFAQ[], bridge = false) {
+    rememberFaqs('faqs:edit');
     patchFaqs(faqs);
     setDirty((current) => (current.faq_page ? current : { ...current, faq_page: true }));
     if (!bridge) postPeer({ type: 'preview-faqs', faqs });
+  }
+
+  function undo() {
+    const entry = undoStack.current.pop();
+    setCanUndo(undoStack.current.size > 0);
+    if (!entry) return;
+    if (entry.kind === 'faqs') {
+      const faqs = (entry.before as HotelFAQ[]) ?? [];
+      patchFaqs(faqs);
+      postPeer({ type: 'preview-faqs', faqs });
+    } else {
+      patchSection(entry.section, entry.before);
+      postPeer({ type: 'preview', section: entry.section, data: entry.before, quiet: false });
+    }
+    setDraftTick((tick) => tick + 1);
   }
 
   function applyField(sectionKey: string, path: string, value: unknown, quiet = false) {
@@ -367,6 +406,8 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         focalPreview,
         setFocalPreview,
         setFrameWindow,
+        canUndo,
+        undo,
         saveSection,
         saveFaqs,
         canSave,

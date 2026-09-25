@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { cmsFrameDevice, cmsShellPath, isCmsFrameSearch, toCmsFrameHref } from '../src/cms/cmsFrame';
+import { createUndoStack } from '../src/cms/cmsUndo';
 import { entryFocal, heroFocalStyle, keepLiveFocals, panFocal, readHeroFocal, writeHeroFocal } from '../src/cms/cmsFocal';
 
 assert.deepEqual(readHeroFocal(undefined).desktop, { x: 50, y: 50 });
@@ -35,5 +36,13 @@ assert.equal(cmsFrameDevice('?cms-device=mobile'), 'mobile');
 assert.equal(cmsFrameDevice(''), 'desktop');
 assert.equal(toCmsFrameHref('/cms/wellness', 'mobile'), '/cms/wellness?cms-frame=1&cms-device=mobile');
 assert.equal(cmsShellPath('/cms/wellness', '?cms-frame=1&cms-device=mobile&x=1'), '/cms/wellness?x=1');
+
+const undo = createUndoStack(10, 200);
+assert.equal(undo.push({ kind: 'section', section: 'hero', before: { title: 'A' } }, 'hero:edit', 1000), 1);
+assert.equal(undo.push({ kind: 'section', section: 'hero', before: { title: 'B' } }, 'hero:edit', 1100), 1);
+assert.equal(undo.push({ kind: 'section', section: 'hero', before: { title: 'C' } }, 'hero:edit', 1400), 2);
+const last = undo.pop();
+assert.equal(last && last.kind === 'section' ? last.before.title : null, 'C');
+assert.equal(undo.size, 1);
 
 console.log('cms focal helpers ok');

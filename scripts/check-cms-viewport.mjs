@@ -17,8 +17,11 @@ assert.match(frame, /setFrameWindow/);
 const bar = readFileSync(new URL('../src/cms/CmsViewportBar.tsx', import.meta.url), 'utf8');
 assert.match(bar, /Desktop-Ansicht/);
 assert.match(bar, /Mobil-Ansicht/);
+assert.match(bar, /Rückgängig/);
+assert.match(bar, /<Undo2/);
 assert.match(bar, /<Monitor/);
 assert.match(bar, /<Smartphone/);
+assert.match(bar, /cms\.undo/);
 
 const editor = readFileSync(new URL('../src/cms/CmsEditor.tsx', import.meta.url), 'utf8');
 assert.doesNotMatch(editor, /cms-dock__preview/);
@@ -33,6 +36,8 @@ assert.match(context, /cms-frame/);
 assert.match(context, /is-phone/);
 assert.match(context, /postMessage/);
 assert.match(context, /setFrameWindow/);
+assert.match(context, /canUndo/);
+assert.match(context, /createUndoStack/);
 
 const css = readFileSync(new URL('../src/cms/cms.css', import.meta.url), 'utf8');
 assert.match(css, /\.cms-viewport/);
