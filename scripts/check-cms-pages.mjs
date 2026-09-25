@@ -110,7 +110,8 @@ assert.match(chrome, /body\.cms-on \.navbar/);
 assert.match(chrome, /body\.cms-on \.availability-bar\.is-stuck/);
 assert.match(chrome, /body\.cms-on \.subpage-hero__fixed/);
 assert.match(chrome, /\.cms-dock__save/);
-assert.match(chrome, /\.cms-stage\.is-phone-preview/);
-assert.match(editor, /Telefon/);
+assert.match(chrome, /\.cms-viewport/);
+assert.match(chrome, /\.cms-preview\.is-phone/);
+assert.match(editor, /Ausschnitt: oben Desktop oder Mobil/);
 
 console.log('cms page helpers ok');

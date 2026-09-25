@@ -4,7 +4,7 @@ import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, shouldPublishPreview } from './cmsDraft';
-import { readHeroFocal, writeHeroFocal } from './cmsFocal';
+import { keepLiveFocals } from './cmsFocal';
 import {
   CMS_DETAIL_LABELS,
   CMS_EDITOR_PAGES,
@@ -136,22 +136,6 @@ export function CmsEditor() {
         <p>Text direkt auf der Seite ändern und übernehmen. Rechts dasselbe, mit Live-Vorschau. Speichern schreibt den ganzen Block.</p>
         {selected ? <p className="cms-dock__hit">{describeSelection(selected)}</p> : null}
         {dirty ? <p className="cms-dock__hit">Vorschau — noch nicht gespeichert</p> : null}
-        <div className="cms-dock__preview">
-          <button
-            type="button"
-            className={`cms-chip${cms.focalPreview === 'desktop' ? ' is-on' : ''}`}
-            onClick={() => cms.setFocalPreview('desktop')}
-          >
-            Desktop
-          </button>
-          <button
-            type="button"
-            className={`cms-chip${cms.focalPreview === 'mobile' ? ' is-on' : ''}`}
-            onClick={() => cms.setFocalPreview('mobile')}
-          >
-            Telefon
-          </button>
-        </div>
         <nav className="cms-dock__nav">
           {CMS_EDITOR_PAGES.map((page) => (
             <Link key={page.to} to={page.to} aria-current={currentHub?.to === page.to ? 'page' : undefined}>
@@ -202,9 +186,6 @@ function SaveBar({ sectionKey, onSave }: { sectionKey: string; onSave: () => Pro
 function HeroFields() {
   const cms = useCms();
   const data = useSection('hero') ?? {};
-  const focal = readHeroFocal(data.hero_focal);
-  const device = cms?.focalPreview ?? 'desktop';
-  const active = focal[device];
   const [draft, setDraft] = useState({
     title: String(data.title ?? ''),
     subtitle: String(data.subtitle ?? ''),
@@ -221,19 +202,17 @@ function HeroFields() {
     });
   }, [cms?.draftTick]);
 
-  const payload = {
-    ...data,
-    title: draft.title,
-    subtitle: draft.subtitle,
-    hero_image: draft.hero_image,
-    hero_image_alt: draft.hero_image_alt,
-    hero_focal: focal,
-  };
+  const payload = keepLiveFocals(
+    {
+      ...data,
+      title: draft.title,
+      subtitle: draft.subtitle,
+      hero_image: draft.hero_image,
+      hero_image_alt: draft.hero_image_alt,
+    },
+    data,
+  );
   useLivePreview('hero', payload);
-
-  function setFocal(nextX: number, nextY: number) {
-    cms?.applyField('hero', 'hero_focal', writeHeroFocal(data.hero_focal, device, { x: nextX, y: nextY }), true);
-  }
 
   return (
     <form className="cms-form" onSubmit={(event: FormEvent) => event.preventDefault()}>
@@ -242,15 +221,7 @@ function HeroFields() {
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <CmsImageField focus="image" label="Bild" value={draft.hero_image} section="hero" path="hero_image" />
       <Field label="Alt-Text" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
-      <p className="cms-muted">Ausschnitt {device === 'mobile' ? 'Telefon' : 'Desktop'}: im Header ziehen oder hier feinjustieren.</p>
-      <label className="cms-field" data-cms-panel-focus="image">
-        Horizontal {Math.round(active.x)}%
-        <input type="range" min={0} max={100} value={active.x} onChange={(event) => setFocal(Number(event.target.value), active.y)} />
-      </label>
-      <label className="cms-field">
-        Vertikal {Math.round(active.y)}%
-        <input type="range" min={0} max={100} value={active.y} onChange={(event) => setFocal(active.x, Number(event.target.value))} />
-      </label>
+      <p className="cms-muted">Ausschnitt: oben Desktop oder Mobil wählen, dann das Bild in der Vorschau ziehen.</p>
       <SaveBar sectionKey="hero" onSave={() => cms!.saveSection('hero', payload)} />
     </form>
   );
@@ -445,7 +416,7 @@ function RoomsFields() {
     });
   }, [cms?.draftTick]);
 
-  const payload = {
+  const payload = keepLiveFocals({
     ...base,
     ...draft,
     hotel_email: hotel?.email ?? null,
@@ -465,7 +436,7 @@ function RoomsFields() {
             amenities: roomDraft.amenities.split('\n').map((line) => line.trim()).filter(Boolean),
           },
     ),
-  };
+  }, base);
   useLivePreview('rooms_page', payload);
 
   return (
@@ -621,7 +592,7 @@ function EntryFields({ sectionKey, entryId, hub }: { sectionKey: string; entryId
     setDraft(sectionDraft(sectionKey, data));
   }, [cms?.draftTick, sectionKey]);
 
-  const payload = { ...base, ...draft };
+  const payload = keepLiveFocals({ ...base, ...draft }, data);
   useLivePreview(sectionKey, payload);
 
   const items = Array.isArray(draft.items) ? (draft.items as Record<string, unknown>[]) : [];
@@ -672,7 +643,7 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
     setDraft(sectionDraft(sectionKey, data));
   }, [cms?.draftTick, sectionKey]);
 
-  const payload = { ...base, ...draft };
+  const payload = keepLiveFocals({ ...base, ...draft }, data);
   useLivePreview(sectionKey, payload);
   const entries = Object.entries(draft);
 
@@ -708,6 +679,8 @@ function GenericValue({
   value: unknown;
   onChange: (value: unknown) => void;
 }) {
+  if (path === 'hero_focal' || path.endsWith('.hero_focal')) return null;
+
   if (typeof value === 'boolean') {
     return (
       <label className="cms-choice" data-cms-panel-focus={path}>

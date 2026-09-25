@@ -70,11 +70,16 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.body.classList.add('cms-on');
     return () => {
-      document.body.classList.remove('cms-on');
+      document.body.classList.remove('cms-on', 'cms-phone', 'cms-desktop');
       delete document.body.dataset.cmsSection;
       delete document.body.dataset.cmsFocus;
     };
   }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('cms-phone', focalPreview === 'mobile');
+    document.body.classList.toggle('cms-desktop', focalPreview === 'desktop');
+  }, [focalPreview]);
 
   useEffect(() => {
     if (selected) {
@@ -130,6 +135,12 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     function onClick(event: MouseEvent) {
       const target = event.target;
       if (target instanceof Element && target.closest('.cms-inline')) return;
+      if (target instanceof Element && target.closest('[data-cms-pan].is-panned')) {
+        event.preventDefault();
+        event.stopPropagation();
+        target.closest('[data-cms-pan]')?.classList.remove('is-panned');
+        return;
+      }
 
       if (inlineRef.current && target instanceof Element && !target.closest('[data-cms-editing]')) {
         const el = document.querySelector(`.cms-stage [data-cms-path="${CSS.escape(inlineRef.current.path)}"]`);

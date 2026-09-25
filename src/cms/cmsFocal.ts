@@ -79,3 +79,35 @@ export function writeHeroFocal(current: unknown, device: FocalDevice, point: Foc
   next[device] = { x: clamp(point.x), y: clamp(point.y) };
   return next;
 }
+
+function sameEntry(item: Record<string, unknown>, live: Record<string, unknown>) {
+  return (
+    (typeof item.id === 'string' && item.id === live.id) ||
+    (typeof item.slug === 'string' && item.slug === live.slug)
+  );
+}
+
+export function keepLiveFocals(
+  published: Record<string, unknown>,
+  live: Record<string, unknown> | undefined | null,
+): Record<string, unknown> {
+  if (!live) return published;
+  const next = { ...published };
+  if ('hero_focal' in live) next.hero_focal = live.hero_focal;
+  if (Array.isArray(published.items) && Array.isArray(live.items)) {
+    next.items = published.items.map((item) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return item;
+      const record = item as Record<string, unknown>;
+      const liveItem = live.items.find(
+        (entry): entry is Record<string, unknown> =>
+          Boolean(entry) &&
+          typeof entry === 'object' &&
+          !Array.isArray(entry) &&
+          sameEntry(record, entry as Record<string, unknown>),
+      );
+      if (!liveItem || !('hero_focal' in liveItem)) return item;
+      return { ...record, hero_focal: liveItem.hero_focal };
+    });
+  }
+  return next;
+}
