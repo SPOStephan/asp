@@ -281,7 +281,7 @@ body.cms-on .cms-block__chrome {
   position: absolute;
   top: 8px;
   left: 8px;
-  z-index: 6;
+  z-index: 1200;
   align-items: stretch;
 }
 body.cms-on .cms-block__label {

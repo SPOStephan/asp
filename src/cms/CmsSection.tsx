@@ -36,6 +36,7 @@ export function CmsSection({
           <button
             type="button"
             className="cms-block__eye"
+            data-cms-ui="hide"
             aria-pressed={hidden}
             aria-label={hidden ? `${label} einblenden` : `${label} ausblenden`}
             title={hidden ? 'Für dieses Hotel einblenden' : 'Für dieses Hotel ausblenden'}

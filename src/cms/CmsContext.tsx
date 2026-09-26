@@ -216,7 +216,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     function onClick(event: MouseEvent) {
       const target = event.target;
-      if (target instanceof Element && target.closest('.cms-inline')) return;
+      if (target instanceof Element && target.closest('.cms-inline, [data-cms-ui], .cms-block__eye, .cms-item-delete')) return;
       if (target instanceof Element && target.closest('[data-cms-pan].is-panned')) {
         event.preventDefault();
         event.stopPropagation();

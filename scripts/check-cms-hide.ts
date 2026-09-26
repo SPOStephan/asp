@@ -50,5 +50,6 @@ assert.match(homeBlog, /hiddenKey="hidden_on_home"/);
 const context = readFileSync(new URL('../src/cms/CmsContext.tsx', import.meta.url), 'utf8');
 assert.match(context, /removedRecordIds/);
 assert.match(context, /\.delete\(\)\.eq\('hotel_id', hotel\.id\)\.in\('id', removed\)/);
+assert.match(context, /data-cms-ui/);
 
 console.log('cms hide delete ok');

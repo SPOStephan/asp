@@ -86,7 +86,7 @@ function Field({
 
 function ItemDeleteButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button type="button" className="cms-item-delete" onClick={onClick} aria-label={label}>
+    <button type="button" className="cms-item-delete" data-cms-ui="delete" onClick={onClick} aria-label={label}>
       <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" />
       Löschen
     </button>
