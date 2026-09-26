@@ -93,7 +93,7 @@ export function HotelProvider({ children }: { children: ReactNode }) {
         content,
         loading,
         error,
-        isPageEnabled: (key) => content?.pages[key] !== false,
+        isPageEnabled: (key) => key === 'home' || content?.pages[key] === true,
         patchSection: (sectionKey, data) => {
           setContent((current) =>
             current

@@ -41,6 +41,9 @@ export const CMS_SECTION_LABELS: Record<string, string> = {
   impressions_page: 'Impressionen',
   faq_page: 'FAQ',
   footer: 'Footer',
+  legal_impressum: 'Impressum',
+  legal_datenschutz: 'Datenschutz',
+  legal_agb: 'AGB',
 };
 
 const FOCUS_LABELS: Record<string, string> = {

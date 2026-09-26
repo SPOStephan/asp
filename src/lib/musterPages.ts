@@ -1,28 +1,19 @@
-export const MUSTER_PAGES = [
-  { key: 'zimmer', label: 'Zimmer & Suiten', pathPrefix: '/zimmer' },
-  { key: 'wellness', label: 'Wellness', pathPrefix: '/wellness' },
-  { key: 'angebote', label: 'Angebote', pathPrefix: '/angebote' },
-  { key: 'kulinarik', label: 'Kulinarik', pathPrefix: '/kulinarik' },
-  { key: 'blog', label: 'Blog', pathPrefix: '/blog' },
-  { key: 'impressionen', label: 'Impressionen', pathPrefix: '/impressionen' },
-  { key: 'faqs', label: 'FAQ', pathPrefix: '/faqs' },
-] as const;
+import { pageKeyFromHref as templatePageKeyFromHref, pageKeyFromPath as templatePageKeyFromPath, SYSTEM_TEMPLATES } from './pageTemplates';
 
-export type MusterPageKey = (typeof MUSTER_PAGES)[number]['key'];
+export const MUSTER_PAGES = SYSTEM_TEMPLATES.filter((item) => item.template_key !== 'home').map((item) => ({
+  key: item.template_key,
+  label: item.title,
+  pathPrefix: item.path_prefix,
+}));
+
+export type MusterPageKey = string;
 
 export function pageKeyFromPath(pathname: string): MusterPageKey | null {
-  const match = MUSTER_PAGES.find((page) => pathname === page.pathPrefix || pathname.startsWith(`${page.pathPrefix}/`));
-  return match?.key ?? null;
+  return templatePageKeyFromPath(pathname);
 }
 
 export function pageKeyFromHref(href: string): MusterPageKey | null {
-  if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return null;
-  try {
-    const path = href.startsWith('http') ? new URL(href).pathname : href.split('#')[0];
-    return pageKeyFromPath(path || '/');
-  } catch {
-    return pageKeyFromPath(href.split('#')[0] || '/');
-  }
+  return templatePageKeyFromHref(href);
 }
 
 export function filterMenuGroups<T extends { href?: string; title: string; links: Array<{ href: string; label: string }> }>(
@@ -32,12 +23,12 @@ export function filterMenuGroups<T extends { href?: string; title: string; links
   return groups
     .map((group) => {
       const groupKey = pageKeyFromHref(group.href || '');
-      if (groupKey && !enabled(groupKey)) return null;
+      if (groupKey && groupKey !== 'home' && !enabled(groupKey)) return null;
       const links = group.links.filter((link) => {
         const key = pageKeyFromHref(link.href);
-        return !key || enabled(key);
+        return !key || key === 'home' || enabled(key);
       });
-      if (groupKey && !links.length) return { ...group, links: [] };
+      if (groupKey && groupKey !== 'home' && !links.length) return { ...group, links: [] };
       if (!groupKey && !links.length) return null;
       return { ...group, links };
     })

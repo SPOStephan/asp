@@ -101,6 +101,7 @@ function useCmsDetail() {
 export function CmsEditor() {
   const cms = useCms();
   const location = useLocation();
+  const { content } = useHotelContent();
   const detail = useCmsDetail();
   const selectRef = useRef(cms?.select);
   selectRef.current = cms?.select;
@@ -153,6 +154,13 @@ export function CmsEditor() {
               {page.label}
             </Link>
           ))}
+          {Object.entries(content?.pages ?? {})
+            .filter(([key, on]) => on && key !== 'home' && !CMS_EDITOR_PAGES.some((page) => page.publicPath === `/${key}` || page.publicPath === key))
+            .map(([key]) => (
+              <Link key={key} to={`/cms/seite/${key}`} aria-current={location.pathname === `/cms/seite/${key}` ? 'page' : undefined}>
+                {key}
+              </Link>
+            ))}
           <a href="/">Öffentliche Seite</a>
         </nav>
       </header>

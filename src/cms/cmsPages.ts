@@ -13,6 +13,9 @@ export const CMS_EDITOR_PAGES = [
   { label: 'Blog', to: '/cms/blog', publicPath: '/blog' },
   { label: 'Impressionen', to: '/cms/impressionen', publicPath: '/impressionen' },
   { label: 'FAQ', to: '/cms/faqs', publicPath: '/faqs' },
+  { label: 'Impressum', to: '/cms/impressum', publicPath: '/impressum' },
+  { label: 'Datenschutz', to: '/cms/datenschutz', publicPath: '/datenschutz' },
+  { label: 'AGB', to: '/cms/agb', publicPath: '/agb' },
 ] as const;
 
 export const FAQ_PAGE_FALLBACK = {
@@ -84,6 +87,7 @@ export function toCmsHref(href: string) {
   if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return href;
   const { pathname, search, hash } = splitHref(href);
   if (pathname === '/' || pathname === '') return `/cms${search}${hash}`;
+  if (pathname === '/seite' || pathname.startsWith('/seite/')) return `/cms${pathname}${search}${hash}`;
   const match = [...CMS_EDITOR_PAGES]
     .filter((page) => page.publicPath !== '/' && (pathname === page.publicPath || pathname.startsWith(`${page.publicPath}/`)))
     .sort((a, b) => b.publicPath.length - a.publicPath.length)[0];
