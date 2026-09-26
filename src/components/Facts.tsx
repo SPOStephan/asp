@@ -1,11 +1,12 @@
 import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
-import { Clock, MapPin } from 'lucide-react';
-import { resolveCmsIcon } from '../cms/cmsIcons';
+import { MapPin } from 'lucide-react';
+import { CmsGlyph } from '../cms/CmsGlyph';
 import { useSection } from '../context/HotelContext';
 
 interface FactItem {
   icon: string;
+  icon_color?: string;
   label: string;
   value: string;
 }
@@ -30,10 +31,11 @@ export function Facts() {
         <Reveal delay={100}>
           <dl className="facts__grid">
             {items.map((fact, index) => {
-              const Icon = resolveCmsIcon(fact.icon, Clock);
               return (
                 <div key={fact.label} className="facts__item" data-cms-focus={`items:${index}`}>
-                  <Icon className="facts__icon" size={20} strokeWidth={1.25} aria-hidden="true" data-cms-path={`items.${index}.icon`} data-cms-kind="icon" />
+                  <span data-cms-path={`items.${index}.icon`} data-cms-kind="icon">
+                    <CmsGlyph className="facts__icon" name={fact.icon} color={fact.icon_color || data.icon_color} size={20} />
+                  </span>
                   <div>
                     <dt className="facts__label" data-cms-path={`items.${index}.label`}>{fact.label}</dt>
                     <dd className="facts__value" data-cms-path={`items.${index}.value`}>{fact.value}</dd>

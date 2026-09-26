@@ -5,6 +5,7 @@ import { AdminAdminsPage } from './pages/AdminAdminsPage';
 import { AdminHotelFormPage } from './pages/AdminHotelFormPage';
 import { AdminHotelsPage } from './pages/AdminHotelsPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
+import { AdminIconsPage } from './pages/AdminIconsPage';
 import { AdminMediaPage } from './pages/AdminMediaPage';
 import { AdminTemplatesPage } from './pages/AdminTemplatesPage';
 import './admin.css';
@@ -41,6 +42,9 @@ function AdminGate() {
           <NavLink to="/admin/vorlagen" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
             Bibliothek
           </NavLink>
+          <NavLink to="/admin/icons" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
+            Icons
+          </NavLink>
           <NavLink to="/admin/media" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
             Medien
           </NavLink>
@@ -59,6 +63,7 @@ function AdminGate() {
             <Route path="/admin/hotels/new" element={<AdminHotelFormPage />} />
             <Route path="/admin/hotels/:id" element={<AdminHotelFormPage />} />
             <Route path="/admin/vorlagen" element={<AdminTemplatesPage />} />
+            <Route path="/admin/icons" element={<AdminIconsPage />} />
             <Route path="/admin/media" element={<AdminMediaPage />} />
             <Route path="/admin/admins" element={<AdminAdminsPage />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
