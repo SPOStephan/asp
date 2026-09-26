@@ -13,7 +13,7 @@ export function HomeBlog() {
   if (!posts.length) return null;
 
   return (
-    <CmsSection sectionKey="blog_page" label="Journal">
+    <CmsSection sectionKey="blog_page" label="Journal" hideable hiddenKey="hidden_on_home">
     <section className="home-blog" id="blog" aria-label="Journal">
       <div className="home-blog__head" data-cms-focus="home_title">
         <p className="eyebrow">{data.home_eyebrow ?? BLOG_PAGE_FALLBACK.home_eyebrow}</p>

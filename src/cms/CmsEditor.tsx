@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { Trash2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
@@ -14,6 +15,7 @@ import {
   sectionDraft,
 } from './cmsPages';
 import { useCms } from './CmsContext';
+import { isHiddenMetaPath } from './cmsHidden';
 import { CmsIconPicker } from './CmsIconPicker';
 import { CmsImageField } from './CmsImageField';
 import { CmsTextarea } from './CmsTextarea';
@@ -79,6 +81,15 @@ function Field({
         <input value={value} onChange={(event) => onChange(event.target.value)} />
       )}
     </label>
+  );
+}
+
+function ItemDeleteButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button type="button" className="cms-item-delete" onClick={onClick} aria-label={label}>
+      <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" />
+      Löschen
+    </button>
   );
 }
 
@@ -319,6 +330,15 @@ function DiscoverFields() {
       {draft.tiles.map((tile: Record<string, string>, index: number) => (
         <fieldset key={index} className="cms-tile" data-cms-panel-focus={`tiles:${index}`}>
           <legend>Kachel {index + 1}</legend>
+          <ItemDeleteButton
+            label={`Kachel ${index + 1} löschen`}
+            onClick={() =>
+              setDraft({
+                ...draft,
+                tiles: draft.tiles.filter((_: Record<string, string>, tileIndex: number) => tileIndex !== index),
+              })
+            }
+          />
           <Field label="Titel" value={tile.title ?? ''} onChange={(value) => updateTile(index, 'title', value)} path={`tiles.${index}.title`} />
           <Field label="Eyebrow" value={tile.eyebrow ?? ''} onChange={(value) => updateTile(index, 'eyebrow', value)} />
           <CmsImageField label="Bild" value={tile.image ?? ''} section="discover" path={`tiles.${index}.image`} />
@@ -544,6 +564,10 @@ function FaqFields() {
       {faqs.map((faq, index) => (
         <fieldset key={faq.id} className="cms-tile" data-cms-panel-focus={`faq:${faq.id}`}>
           <legend>Frage {index + 1}</legend>
+          <ItemDeleteButton
+            label={`Frage ${index + 1} löschen`}
+            onClick={() => setFaqs(faqs.filter((_, faqIndex) => faqIndex !== index))}
+          />
           <Field label="Kategorie" value={faq.category} onChange={(category) => updateFaq(index, 'category', category)} />
           <Field label="Frage" value={faq.question} onChange={(question) => updateFaq(index, 'question', question)} multiline />
           <Field label="Antwort" value={faq.answer} onChange={(answer) => updateFaq(index, 'answer', answer)} multiline />
@@ -679,7 +703,7 @@ function GenericValue({
   value: unknown;
   onChange: (value: unknown) => void;
 }) {
-  if (path === 'hero_focal' || path.endsWith('.hero_focal')) return null;
+  if (path === 'hero_focal' || path.endsWith('.hero_focal') || isHiddenMetaPath(path)) return null;
 
   if (typeof value === 'boolean') {
     return (
@@ -725,6 +749,10 @@ function GenericValue({
               <legend>
                 {label} {index + 1}
               </legend>
+              <ItemDeleteButton
+                label={`${label} ${index + 1} löschen`}
+                onClick={() => onChange(value.filter((_, itemIndex) => itemIndex !== index))}
+              />
               {openTo ? (
                 <Link className="cms-entry-open" to={openTo}>
                   Seite öffnen

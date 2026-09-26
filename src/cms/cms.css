@@ -272,21 +272,57 @@ body.cms-on [data-cms-focus].is-on {
   outline-offset: 2px;
   cursor: pointer;
 }
+.cms-block__chrome,
 .cms-block__label {
   display: none;
 }
-body.cms-on .cms-block__label {
-  display: block;
+body.cms-on .cms-block__chrome {
+  display: flex;
   position: absolute;
   top: 8px;
   left: 8px;
   z-index: 6;
+  align-items: stretch;
+}
+body.cms-on .cms-block__label {
+  display: block;
+  position: static;
   padding: 4px 8px;
   background: #957640;
   color: #fff;
   font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+body.cms-on .cms-block__eye {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  border: 0;
+  background: #7d6334;
+  color: #fff;
+  cursor: pointer;
+}
+body.cms-on .cms-block.is-hidden {
+  outline: 2px dashed #957640;
+  outline-offset: -2px;
+}
+body.cms-on .cms-block.is-hidden > :not(.cms-block__chrome) {
+  opacity: 0.42;
+}
+.cms-item-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  padding: 6px 10px;
+  border: 1px solid #d7d0c4;
+  background: #fff;
+  color: #8a1f2b;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 .cms-missing {
   min-height: 50vh;
