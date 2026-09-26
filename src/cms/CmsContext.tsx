@@ -11,6 +11,7 @@ import {
   toCmsFrameHref,
 } from './cmsFrame';
 import { setPath } from './cmsDraft';
+import { removedRecordIds } from './cmsHidden';
 import type { FocalDevice } from './cmsFocal';
 import { createUndoStack } from './cmsUndo';
 import {
@@ -215,7 +216,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     function onClick(event: MouseEvent) {
       const target = event.target;
-      if (target instanceof Element && target.closest('.cms-inline')) return;
+      if (target instanceof Element && target.closest('.cms-inline, [data-cms-ui], .cms-block__eye, .cms-item-delete')) return;
       if (target instanceof Element && target.closest('[data-cms-pan].is-panned')) {
         event.preventDefault();
         event.stopPropagation();
@@ -355,6 +356,18 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       .map((faq, index) => ({ faq, index }))
       .filter(({ faq }) => faq.id.startsWith('new-'))
       .map(({ faq, index }) => toRow(faq, index));
+    const removed = removedRecordIds(
+      (contentRef.current?.faqs ?? []).map((faq) => faq.id).filter((id) => !id.startsWith('new-')),
+      existing.map((faq) => faq.id),
+    );
+    if (removed.length) {
+      const result = await supabase.from('hotel_faqs').delete().eq('hotel_id', hotel.id).in('id', removed);
+      if (result.error) {
+        setSaving(false);
+        setSaveError(result.error.message);
+        return false;
+      }
+    }
 
     if (existing.length) {
       const result = await supabase.from('hotel_faqs').upsert(existing);
