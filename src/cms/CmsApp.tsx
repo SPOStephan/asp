@@ -10,6 +10,8 @@ import { BlogPage } from '../pages/BlogPage';
 import { BlogPostPage } from '../pages/BlogPostPage';
 import { CulinaryPage } from '../pages/CulinaryPage';
 import { FAQPage } from '../pages/FAQPage';
+import { GenericHotelPage } from '../pages/GenericHotelPage';
+import { LegalPage } from '../pages/LegalPage';
 import { HomePage } from '../pages/HomePage';
 import { ImpressionsPage } from '../pages/ImpressionsPage';
 import { OfferDetailPage } from '../pages/OfferDetailPage';
@@ -45,6 +47,10 @@ function CmsStage() {
         <Route path="/cms/blog" element={<BlogPage />} />
         <Route path="/cms/impressionen" element={<ImpressionsPage />} />
         <Route path="/cms/faqs" element={<FAQPage />} />
+        <Route path="/cms/impressum" element={<LegalPage pageKey="impressum" />} />
+        <Route path="/cms/datenschutz" element={<LegalPage pageKey="datenschutz" />} />
+        <Route path="/cms/agb" element={<LegalPage pageKey="agb" />} />
+        <Route path="/cms/seite/:slug" element={<GenericHotelPage />} />
         <Route
           path="*"
           element={<Navigate to={isCmsFrame() ? toCmsFrameHref('/cms', cmsFrameDevice()) : '/cms'} replace />}

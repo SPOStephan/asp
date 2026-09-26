@@ -5,6 +5,8 @@ import { isAdminHost, isAdminPath } from './admin/adminHost';
 import { CmsApp } from './cms/CmsApp';
 import { isCmsPath } from './cms/cmsHost';
 import { FAQPage } from './pages/FAQPage';
+import { GenericHotelPage } from './pages/GenericHotelPage';
+import { LegalPage } from './pages/LegalPage';
 import { Footer } from './components/Footer';
 import { FixedAvailabilityBar } from './components/FixedAvailabilityBar';
 import { LoadingScreen, ErrorScreen } from './components/Loading';
@@ -112,6 +114,10 @@ function App() {
           <Route path="/blog/:postSlug" element={<BlogPostPage />} />
           <Route path="/impressionen" element={<ImpressionsPage />} />
           <Route path="/faqs" element={<FAQPage />} />
+          <Route path="/impressum" element={<LegalPage pageKey="impressum" />} />
+          <Route path="/datenschutz" element={<LegalPage pageKey="datenschutz" />} />
+          <Route path="/agb" element={<LegalPage pageKey="agb" />} />
+          <Route path="/seite/:slug" element={<GenericHotelPage />} />
           <Route path="/schriften" element={<FontsPage />} />
           <Route path="/menue-mobil" element={<MobileMenuLab />} />
           <Route path="/mobil-leiste" element={<MobileChromeLab />} />

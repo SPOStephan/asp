@@ -1,7 +1,7 @@
 import { MapPin, Phone, Mail, Send, Share2 } from 'lucide-react';
 import { CmsSection } from '../cms/CmsSection';
 import { FOOTER_FALLBACK } from '../cms/cmsPages';
-import { useSection, useHotel } from '../context/HotelContext';
+import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { remapSiteHref } from '../lib/links';
 
 interface FooterLink {
@@ -12,6 +12,7 @@ interface FooterLink {
 export function Footer() {
   const stored = useSection('footer');
   const hotel = useHotel();
+  const { isPageEnabled } = useHotelContent();
   const data = { ...FOOTER_FALLBACK, ...stored };
 
   if (!hotel) return null;
@@ -62,9 +63,9 @@ export function Footer() {
         <div className="footer__bottom">
           <p>&copy; {new Date().getFullYear()} {hotel.name}. Alle Rechte vorbehalten.</p>
           <div className="footer__legal">
-            <a href="#" className="link-underline">Impressum</a>
-            <a href="#" className="link-underline">Datenschutz</a>
-            <a href="#" className="link-underline">AGB</a>
+            {isPageEnabled('impressum') ? <a href="/impressum" className="link-underline">Impressum</a> : null}
+            {isPageEnabled('datenschutz') ? <a href="/datenschutz" className="link-underline">Datenschutz</a> : null}
+            {isPageEnabled('agb') ? <a href="/agb" className="link-underline">AGB</a> : null}
           </div>
         </div>
       </div>

@@ -4210,3 +4210,16 @@ body.room-lightbox-open .availability-bar__slot {
 .subpage-hero__eyebrow {
   font-weight: 400;
 }
+
+.legal-page__body {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 8vw 96px;
+  color: var(--color-text, #2a2a2a);
+  line-height: 1.7;
+}
+.legal-page__items {
+  display: grid;
+  gap: 24px;
+  margin-top: 36px;
+}
