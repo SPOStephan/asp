@@ -1,12 +1,12 @@
 import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
-import { Star } from 'lucide-react';
-import { resolveCmsIcon } from '../cms/cmsIcons';
+import { CmsGlyph } from '../cms/CmsGlyph';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
 
 interface BenefitItem {
   icon: string;
+  icon_color?: string;
   title: string;
   text?: string;
 }
@@ -52,10 +52,11 @@ export function DirectBooking() {
         <Reveal delay={80}>
           <ul className="direct-booking__list">
             {items.map((item, index) => {
-              const Icon = resolveCmsIcon(item.icon, Star);
               return (
                 <li key={item.title} className="direct-booking__item" data-cms-focus={`items:${index}`}>
-                  <Icon className="direct-booking__icon" size={22} strokeWidth={1.25} aria-hidden="true" data-cms-path={`items.${index}.icon`} data-cms-kind="icon" />
+                  <span data-cms-path={`items.${index}.icon`} data-cms-kind="icon">
+                    <CmsGlyph className="direct-booking__icon" name={item.icon} color={item.icon_color || data.icon_color} size={22} />
+                  </span>
                   <div>
                     <p className="direct-booking__item-title" data-cms-path={`items.${index}.title`}>{item.title}</p>
                     {item.text ? <p className="direct-booking__item-text">{item.text}</p> : null}

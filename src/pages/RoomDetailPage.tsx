@@ -72,7 +72,7 @@ export function RoomDetailPage() {
                 </div>
               </div>
             </div>
-            <RoomAmenityGrid items={features} />
+            <RoomAmenityGrid items={features} color={typeof page?.icon_color === 'string' ? page.icon_color : undefined} />
           </div>
 
           <RoomPhotoGrid room={room} />

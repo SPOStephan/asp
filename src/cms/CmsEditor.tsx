@@ -47,6 +47,8 @@ function Field({
   multiline,
   focus,
   kind,
+  color,
+  onColorChange,
   section,
   path,
 }: {
@@ -55,7 +57,9 @@ function Field({
   onChange: (value: string) => void;
   multiline?: boolean;
   focus?: string;
-  kind?: 'text' | 'image' | 'icon';
+  kind?: 'text' | 'image' | 'icon' | 'color';
+  color?: string;
+  onColorChange?: (color: string) => void;
   section?: string;
   path?: string;
 }) {
@@ -64,8 +68,17 @@ function Field({
     return (
       <div className="cms-field" data-cms-panel-focus={focus ?? path}>
         {label}
-        <CmsIconPicker value={value} onChange={onChange} />
+        <CmsIconPicker value={value} onChange={onChange} color={color} onColorChange={onColorChange} />
       </div>
+    );
+  }
+  if (resolved === 'color') {
+    return (
+      <label className="cms-field cms-icon-color" data-cms-panel-focus={focus ?? path}>
+        {label}
+        <input type="color" value={value || '#957640'} onChange={(event) => onChange(event.target.value)} />
+        <input value={value} onChange={(event) => onChange(event.target.value)} placeholder="#957640" />
+      </label>
     );
   }
   if (resolved === 'image' && section && path) {
@@ -378,6 +391,7 @@ function RoomsFields() {
     note_title: String(base.note_title ?? ''),
     note_text: String(base.note_text ?? ''),
     note_cta: String(base.note_cta ?? ''),
+    icon_color: String((base as { icon_color?: string }).icon_color ?? ''),
   });
   const current = rooms.find((room) => room.id === roomId) ?? rooms[0];
   const [roomDraft, setRoomDraft] = useState({
@@ -441,6 +455,7 @@ function RoomsFields() {
       note_title: String(base.note_title ?? ''),
       note_text: String(base.note_text ?? ''),
       note_cta: String(base.note_cta ?? ''),
+      icon_color: String((base as { icon_color?: string }).icon_color ?? ''),
     });
   }, [cms?.draftTick]);
 
@@ -483,6 +498,7 @@ function RoomsFields() {
       <Field focus="note" path="note_title" label="Hinweis Titel" value={draft.note_title} onChange={(note_title) => setDraft({ ...draft, note_title })} />
       <Field focus="note" path="note_text" label="Hinweis Text" value={draft.note_text} onChange={(note_text) => setDraft({ ...draft, note_text })} multiline />
       <Field focus="note" path="note_cta" label="Hinweis CTA" value={draft.note_cta} onChange={(note_cta) => setDraft({ ...draft, note_cta })} />
+      <Field kind="color" label="Icon-Farbe" value={draft.icon_color} onChange={(icon_color) => setDraft({ ...draft, icon_color })} />
       <div className="cms-room" data-cms-panel-focus={focusRoomId ? `room:${focusRoomId}` : current ? `room:${current.id}` : undefined}>
         <label className="cms-field">
           Zimmer
@@ -681,18 +697,29 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
 
   return (
     <form className="cms-form" onSubmit={(event) => event.preventDefault()}>
-      <h3>{CMS_SECTION_LABELS[sectionKey] ?? sectionKey}</h3>
-      {entries.length === 0 ? <p className="cms-muted">Dieser Block hat noch keine CMS-Felder.</p> : null}
-      {entries.map(([key, value]) => (
-        <GenericValue
-          key={key}
-          section={sectionKey}
-          path={key}
-          label={key}
-          value={value}
-          onChange={(next) => setDraft({ ...draft, [key]: next })}
+      <h3>{String(draft.cms_label || CMS_SECTION_LABELS[sectionKey] || sectionKey)}</h3>
+      {Array.isArray(draft.items) &&
+      (draft.items as unknown[]).some((item) => item && typeof item === 'object' && 'icon' in item) ? (
+        <Field
+          kind="color"
+          label="Icon-Farbe"
+          value={String(draft.icon_color ?? '')}
+          onChange={(icon_color) => setDraft({ ...draft, icon_color })}
         />
-      ))}
+      ) : null}
+      {entries.length === 0 ? <p className="cms-muted">Dieser Block hat noch keine CMS-Felder.</p> : null}
+      {entries.map(([key, value]) =>
+        key === 'icon_color' ? null : (
+          <GenericValue
+            key={key}
+            section={sectionKey}
+            path={key}
+            label={key}
+            value={value}
+            onChange={(next) => setDraft({ ...draft, [key]: next })}
+          />
+        ),
+      )}
       <SaveBar sectionKey={sectionKey} onSave={() => cms!.saveSection(sectionKey, payload)} />
     </form>
   );
@@ -768,7 +795,26 @@ function GenericValue({
               ) : null}
               {isPlainObject(item) ? (
                 Object.entries(item).map(([childKey, childValue]) =>
-                  typeof childValue === 'string' || typeof childValue === 'number' || typeof childValue === 'boolean' ? (
+                  childKey === 'icon_color' && typeof item.icon === 'string' ? null : childKey === 'icon' && typeof childValue === 'string' ? (
+                    <Field
+                      key={childKey}
+                      label="Icon"
+                      value={childValue}
+                      path={`${itemPath}.icon`}
+                      kind="icon"
+                      color={typeof item.icon_color === 'string' ? item.icon_color : ''}
+                      onColorChange={(next) => {
+                        const copy = value.slice();
+                        copy[index] = { ...item, icon_color: next };
+                        onChange(copy);
+                      }}
+                      onChange={(next) => {
+                        const copy = value.slice();
+                        copy[index] = { ...item, icon: next };
+                        onChange(copy);
+                      }}
+                    />
+                  ) : typeof childValue === 'string' || typeof childValue === 'number' || typeof childValue === 'boolean' ? (
                     <GenericValue
                       key={childKey}
                       section={section}
@@ -830,16 +876,29 @@ function GenericValue({
     return (
       <fieldset className="cms-tile" data-cms-panel-focus={path}>
         <legend>{label}</legend>
-        {Object.entries(value).map(([childKey, childValue]) => (
-          <GenericValue
-            key={childKey}
-            section={section}
-            path={`${path}.${childKey}`}
-            label={childKey}
-            value={childValue}
-            onChange={(next) => onChange({ ...value, [childKey]: next })}
-          />
-        ))}
+        {Object.entries(value).map(([childKey, childValue]) =>
+          childKey === 'icon_color' && typeof value.icon === 'string' ? null : childKey === 'icon' && typeof childValue === 'string' ? (
+            <Field
+              key={childKey}
+              label="Icon"
+              value={childValue}
+              path={`${path}.icon`}
+              kind="icon"
+              color={typeof value.icon_color === 'string' ? value.icon_color : ''}
+              onColorChange={(next) => onChange({ ...value, icon_color: next })}
+              onChange={(next) => onChange({ ...value, icon: next })}
+            />
+          ) : (
+            <GenericValue
+              key={childKey}
+              section={section}
+              path={`${path}.${childKey}`}
+              label={childKey}
+              value={childValue}
+              onChange={(next) => onChange({ ...value, [childKey]: next })}
+            />
+          ),
+        )}
       </fieldset>
     );
   }

@@ -41,9 +41,10 @@ export function setPath(data: Record<string, unknown>, path: string, value: unkn
   return write(root, 0) as Record<string, unknown>;
 }
 
-export function fieldKind(key: string, value?: unknown): 'icon' | 'image' | 'text' | 'other' {
+export function fieldKind(key: string, value?: unknown): 'icon' | 'image' | 'color' | 'text' | 'other' {
   const name = key.split('.').pop() ?? key;
-  if (name === 'icon' || name.endsWith('_icon')) return 'icon';
+  if (name === 'icon_color' || name.endsWith('_icon_color')) return 'color';
+  if ((name === 'icon' || name.endsWith('_icon')) && name !== 'icon_color') return 'icon';
   if (
     name === 'src' ||
     name === 'image' ||

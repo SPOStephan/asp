@@ -32,9 +32,10 @@ const ICONS: Record<AmenityIcon, LucideIcon> = {
 
 interface RoomAmenityGridProps {
   items: RoomFeature[];
+  color?: string;
 }
 
-export function RoomAmenityGrid({ items }: RoomAmenityGridProps) {
+export function RoomAmenityGrid({ items, color }: RoomAmenityGridProps) {
   if (!items.length) return null;
 
   return (
@@ -42,7 +43,7 @@ export function RoomAmenityGrid({ items }: RoomAmenityGridProps) {
       {items.map((item) => {
         const Icon = ICONS[item.icon];
         return (
-          <li key={item.label} className="room-amenities__item">
+          <li key={item.label} className="room-amenities__item" style={color ? { color } : undefined}>
             <Icon size={22} strokeWidth={1.4} aria-hidden="true" />
             <span>{item.label}</span>
           </li>
