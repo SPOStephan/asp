@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { uploadToBunny } from '../../cms/cmsUpload';
 import { supabase } from '../../lib/supabase';
 
 type MediaRow = {
@@ -42,24 +43,13 @@ export function AdminMediaPage() {
     if (!file) return;
     setBusy(true);
     setError(null);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const body = new FormData();
-    body.append('file', file);
-    body.append('alt', alt);
-    if (hotelId) body.append('hotelId', hotelId);
-    const response = await fetch('/api/bunny-upload', {
-      method: 'POST',
-      headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {},
-      body,
-    });
-    const json = (await response.json()) as { error?: string };
-    if (!response.ok) setError(json.error || 'Upload fehlgeschlagen. Bunny-Zugang fehlt noch?');
-    else {
+    try {
+      await uploadToBunny(file, hotelId, alt);
       setFile(null);
       setAlt('');
       await reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload fehlgeschlagen. Bunny-Zugang fehlt noch?');
     }
     setBusy(false);
   }

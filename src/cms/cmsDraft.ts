@@ -59,6 +59,38 @@ export function fieldKind(key: string, value?: unknown): 'icon' | 'image' | 'col
   return 'other';
 }
 
+export function keepLiveMedia(
+  published: Record<string, unknown>,
+  live?: Record<string, unknown> | null,
+): Record<string, unknown> {
+  if (!live) return published;
+  const next = { ...published };
+  for (const [key, value] of Object.entries(live)) {
+    if (typeof value === 'string' && fieldKind(key, value) === 'image') {
+      if (value.trim()) next[key] = value;
+      continue;
+    }
+    if (Array.isArray(value) && Array.isArray(next[key])) {
+      next[key] = (next[key] as unknown[]).map((item, index) => {
+        const liveItem = value.find(
+          (entry) =>
+            isPlainObject(entry) &&
+            isPlainObject(item) &&
+            ((typeof entry.id === 'string' && entry.id === item.id) ||
+              (typeof entry.slug === 'string' && entry.slug === item.slug)),
+        );
+        const source = liveItem ?? value[index];
+        return isPlainObject(item) && isPlainObject(source) ? keepLiveMedia(item, source) : item;
+      });
+      continue;
+    }
+    if (isPlainObject(value) && isPlainObject(next[key])) {
+      next[key] = keepLiveMedia(next[key] as Record<string, unknown>, value);
+    }
+  }
+  return next;
+}
+
 export function shouldPublishPreview(serial: string, lastSerial: string | null) {
   if (lastSerial === null) return false;
   return lastSerial !== serial;

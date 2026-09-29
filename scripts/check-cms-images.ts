@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { fitRect, zoomRect } from '../src/cms/cmsImage';
+import { fitRect, rejectUnsupportedImage, zoomRect } from '../src/cms/cmsImage';
 import { formatImageHint, imageHint } from '../src/cms/cmsImageHints';
+import { explainUploadFailure } from '../src/cms/cmsUploadMessage';
 
 assert.equal(imageHint('hero', 'hero_image').width, 1920);
 assert.equal(imageHint('hero', 'hero_image').height, 1080);
@@ -25,7 +26,22 @@ assert.match(field, /formatImageHint/);
 const dialog = readFileSync(new URL('../src/cms/CmsImageDialog.tsx', import.meta.url), 'utf8');
 assert.match(dialog, /\+ Näher/);
 assert.match(dialog, /zoomRect/);
+assert.match(dialog, /readFileAsDataURL|Hochladen und übernehmen/);
+assert.doesNotMatch(dialog, /revokeObjectURL/);
+const imageSource = readFileSync(new URL('../src/cms/cmsImage.ts', import.meta.url), 'utf8');
+assert.match(imageSource, /readAsDataURL/);
+assert.match(imageSource, /image\/jpeg/);
+assert.match(imageSource, /HEIC/);
 const pan = readFileSync(new URL('../src/cms/CmsHeroPan.tsx', import.meta.url), 'utf8');
 assert.match(pan, /zoomHeroFocal/);
+
+assert.throws(
+  () => rejectUnsupportedImage({ name: 'IMG_0001.HEIC', type: 'image/heic' } as File),
+  /HEIC/,
+);
+assert.doesNotThrow(() => rejectUnsupportedImage({ name: 'meer.jpg', type: 'image/jpeg' } as File));
+assert.equal(explainUploadFailure(503, '{"error":"Bunny ist nicht konfiguriert."}'), 'Bunny ist nicht konfiguriert.');
+assert.match(explainUploadFailure(404, '<!DOCTYPE html><html><body>Not Found</body></html>'), /Vercel-Projekt asp/);
+assert.match(explainUploadFailure(404, '<!DOCTYPE html><html><body>Not Found</body></html>'), /keine neue Subdomain/);
 
 console.log('cms image hints ok');
