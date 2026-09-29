@@ -41,6 +41,53 @@ export async function applyHotelPageSelection(
   return {};
 }
 
+export async function cloneHotelContent(
+  sourceHotelId: string,
+  targetHotelId: string,
+): Promise<{ error?: string }> {
+  if (!sourceHotelId || sourceHotelId === targetHotelId) return {};
+
+  const [sections, faqs] = await Promise.all([
+    supabase.from('hotel_sections').select('section_key, data').eq('hotel_id', sourceHotelId),
+    supabase
+      .from('hotel_faqs')
+      .select('category, question, answer, sort_order, show_on_home')
+      .eq('hotel_id', sourceHotelId),
+  ]);
+  if (sections.error) return { error: sections.error.message };
+  if (faqs.error) return { error: faqs.error.message };
+
+  if (sections.data?.length) {
+    const sectionResult = await supabase.from('hotel_sections').upsert(
+      sections.data.map((row) => ({
+        hotel_id: targetHotelId,
+        section_key: row.section_key,
+        data: row.data,
+      })),
+      { onConflict: 'hotel_id,section_key' },
+    );
+    if (sectionResult.error) return { error: sectionResult.error.message };
+  }
+
+  const existingFaqs = await supabase.from('hotel_faqs').select('id').eq('hotel_id', targetHotelId).limit(1);
+  if (existingFaqs.error) return { error: existingFaqs.error.message };
+  if (!existingFaqs.data?.length && faqs.data?.length) {
+    const faqResult = await supabase.from('hotel_faqs').insert(
+      faqs.data.map((row) => ({
+        hotel_id: targetHotelId,
+        category: row.category,
+        question: row.question,
+        answer: row.answer,
+        sort_order: row.sort_order,
+        show_on_home: row.show_on_home,
+      })),
+    );
+    if (faqResult.error) return { error: faqResult.error.message };
+  }
+
+  return {};
+}
+
 export async function saveLibraryTemplate(template: PageTemplate): Promise<{ error?: string; template?: PageTemplate }> {
   const payload = {
     template_key: template.template_key,

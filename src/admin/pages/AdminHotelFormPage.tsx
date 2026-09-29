@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { COLOR_WORLDS, hotelColorsFromWorld, type ColorWorld } from '../../lib/colorWorlds';
-import { applyHotelPageSelection, loadPageTemplates } from '../../lib/applyHotelPages';
+import { applyHotelPageSelection, cloneHotelContent, loadPageTemplates } from '../../lib/applyHotelPages';
 import { defaultSelectedKeys, type PageTemplate } from '../../lib/pageTemplates';
 import { publicHotelOrigin } from '../../lib/musterPages';
 
@@ -35,6 +35,23 @@ export function AdminHotelFormPage() {
   const [busy, setBusy] = useState(false);
   const [templates, setTemplates] = useState<PageTemplate[]>([]);
   const [pages, setPages] = useState<Record<string, boolean>>({});
+  const [hotels, setHotels] = useState<Array<{ id: string; name: string; slug: string }>>([]);
+  const [cloneFromId, setCloneFromId] = useState('');
+  const [cloneContent, setCloneContent] = useState(true);
+
+  useEffect(() => {
+    if (!isNew) return;
+    void supabase
+      .from('hotels')
+      .select('id, name, slug')
+      .order('name')
+      .then(({ data }) => {
+        const list = (data ?? []) as Array<{ id: string; name: string; slug: string }>;
+        setHotels(list);
+        const ambassador = list.find((hotel) => hotel.slug === 'ambassador-hotel-spa');
+        setCloneFromId(ambassador?.id ?? list[0]?.id ?? '');
+      });
+  }, [isNew]);
 
   useEffect(() => {
     void loadPageTemplates().then((list) => {
@@ -125,6 +142,14 @@ export function AdminHotelFormPage() {
       setBusy(false);
       return;
     }
+    if (isNew && cloneContent && cloneFromId) {
+      const cloned = await cloneHotelContent(cloneFromId, hotelId);
+      if (cloned.error) {
+        setError(cloned.error);
+        setBusy(false);
+        return;
+      }
+    }
     navigate('/admin');
     setBusy(false);
   }
@@ -139,8 +164,8 @@ export function AdminHotelFormPage() {
       </p>
       <h2>{isNew ? 'Neues Hotel' : 'Hotel bearbeiten'}</h2>
       <p className="lead">
-        Stammdaten und die Seiten, die dieses Haus bekommt. Standards sind vorausgewählt. Weitere Vorlagen liegen in der
-        Bibliothek.
+        Stammdaten und die Seiten, die dieses Haus bekommt. Für einen neuen Piloten Inhalte vom Ambassador kopieren —
+        dann stehen Texte, Bilder und FAQ sofort. Weitere Vorlagen liegen in der Bibliothek.
       </p>
       {!isNew && publicHotelOrigin(parseDomains(form.domains)) ? (
         <p className="admin-actions">
@@ -166,7 +191,7 @@ export function AdminHotelFormPage() {
           <input
             value={form.domains}
             onChange={(event) => setForm({ ...form, domains: event.target.value })}
-            placeholder="asp.lohbeckhotels.de, hotel-ambassador.de"
+            placeholder="neues-hotel.lohbeckhotels.de"
           />
         </label>
         <label>
@@ -200,10 +225,35 @@ export function AdminHotelFormPage() {
             </label>
           ))}
         </fieldset>
+        {isNew ? (
+          <fieldset>
+            <legend>Startinhalt</legend>
+            <label className="admin-choice">
+              <input type="checkbox" checked={cloneContent} onChange={(event) => setCloneContent(event.target.checked)} />
+              Inhalte eines bestehenden Hotels kopieren (Blöcke, Texte, Bilder, FAQ)
+            </label>
+            {cloneContent ? (
+              <label>
+                Quelle
+                <select value={cloneFromId} onChange={(event) => setCloneFromId(event.target.value)} required>
+                  {hotels.map((hotel) => (
+                    <option key={hotel.id} value={hotel.id}>
+                      {hotel.name} ({hotel.slug})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <p className="admin-muted">Ohne Kopie entstehen leere Seiten-Container.</p>
+            )}
+          </fieldset>
+        ) : null}
         <fieldset>
           <legend>Seiten für dieses Hotel</legend>
           <p className="admin-muted">
-            Haken = leerer Container aus dem Ambassador-Layout. Inhalte füllt ihr später im Editor.
+            {cloneContent && isNew
+              ? 'Haken steuert, welche Seiten erreichbar sind. Die kopierten Inhalte bleiben erhalten.'
+              : 'Haken = leerer Container aus dem Ambassador-Layout. Inhalte füllt ihr später im Editor.'}
           </p>
           {[...system, ...library].map((page) => (
             <label key={page.template_key} className="admin-choice">
