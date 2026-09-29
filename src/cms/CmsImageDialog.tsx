@@ -14,6 +14,8 @@ const ASPECTS: Array<{ label: string; value?: number }> = [
   { label: '9:16', value: 9 / 16 },
 ];
 
+const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif';
+
 export function CmsImageDialog() {
   const cms = useCms();
   const hotel = useHotel();
@@ -21,6 +23,7 @@ export function CmsImageDialog() {
   const inputRef = useRef<HTMLInputElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [crop, setCrop] = useState<CropRect>({ x: 0, y: 0, width: 1, height: 1 });
   const [aspect, setAspect] = useState<number | undefined>(undefined);
   const [alt, setAlt] = useState('');
@@ -32,6 +35,7 @@ export function CmsImageDialog() {
   useEffect(() => {
     if (!request) {
       setImage(null);
+      setFileName(null);
       setError(null);
       setAlt('');
       return;
@@ -39,12 +43,6 @@ export function CmsImageDialog() {
     setAlt('');
     setAspect(imageHint(request.section, request.path).aspect);
   }, [request]);
-
-  useEffect(() => {
-    return () => {
-      if (image?.src.startsWith('blob:')) URL.revokeObjectURL(image.src);
-    };
-  }, [image]);
 
   useLayoutEffect(() => {
     const stage = stageRef.current;
@@ -71,10 +69,14 @@ export function CmsImageDialog() {
     try {
       const next = await loadImage(file);
       setImage(next);
+      setFileName(file.name);
       setCrop(fitRect(next.naturalWidth, next.naturalHeight, aspect));
     } catch (err) {
+      setImage(null);
+      setFileName(null);
       setError(err instanceof Error ? err.message : 'Datei unlesbar.');
     }
+    if (inputRef.current) inputRef.current.value = '';
   }
 
   function applyAspect(next?: number) {
@@ -131,14 +133,14 @@ export function CmsImageDialog() {
         <header>
           <strong>Bild nach Bunny</strong>
           <p>
-            {formatImageHint(hint)}. Wird als WebP gespeichert. Ausschnitt ziehen, mit + / − den Rahmen
-            einpassen.
+            {formatImageHint(hint)}. Datei wählen, Ausschnitt ziehen, dann Hochladen und übernehmen. Bunny ist der
+            gemeinsame Medienspeicher — die Hotel-Subdomain muss dort nicht extra eingetragen werden.
           </p>
         </header>
         <input
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept={ACCEPT}
           hidden
           onChange={(event) => void onFile(event.target.files?.[0])}
         />
@@ -188,9 +190,10 @@ export function CmsImageDialog() {
           </div>
         ) : (
           <button type="button" className="cms-drop" onClick={() => inputRef.current?.click()}>
-            Bild hierher oder Datei wählen
+            JPG, PNG oder WebP hierher oder Datei wählen
           </button>
         )}
+        {fileName ? <p className="cms-muted">Gewählt: {fileName}. Als Nächstes Hochladen und übernehmen, dann Speichern.</p> : null}
         <label className="cms-field">
           Alt-Text
           <input value={alt} onChange={(event) => setAlt(event.target.value)} />

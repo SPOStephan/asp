@@ -67,7 +67,7 @@ export function keepLiveMedia(
   const next = { ...published };
   for (const [key, value] of Object.entries(live)) {
     if (typeof value === 'string' && fieldKind(key, value) === 'image') {
-      next[key] = value;
+      if (value.trim()) next[key] = value;
       continue;
     }
     if (Array.isArray(value) && Array.isArray(next[key])) {

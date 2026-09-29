@@ -3,18 +3,49 @@ export const IMAGE_WEBP_QUALITY = 0.82;
 
 export type CropRect = { x: number; y: number; width: number; height: number };
 
+const HEIC_NAME = /\.(heic|heif)$/i;
+const HEIC_TYPE = /image\/hei[cf]/i;
+
+export function rejectUnsupportedImage(file: Blob & { name?: string; type?: string }) {
+  const name = file.name ?? '';
+  const type = file.type ?? '';
+  if (HEIC_NAME.test(name) || HEIC_TYPE.test(type)) {
+    throw new Error('HEIC/HEIF vom iPhone wird im Browser nicht gelesen. Bitte als JPG oder PNG sichern.');
+  }
+}
+
+function readFileAsDataUrl(file: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') resolve(reader.result);
+      else reject(new Error('Datei unlesbar.'));
+    };
+    reader.onerror = () => reject(new Error('Datei unlesbar.'));
+    reader.readAsDataURL(file);
+  });
+}
+
 export async function loadImage(file: Blob): Promise<HTMLImageElement> {
-  const url = URL.createObjectURL(file);
+  rejectUnsupportedImage(file);
+  const src = await readFileAsDataUrl(file);
   const image = new Image();
   image.decoding = 'async';
   await new Promise<void>((resolve, reject) => {
     image.onload = () => resolve();
-    image.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Bild konnte nicht gelesen werden.'));
-    };
-    image.src = url;
+    image.onerror = () => reject(new Error('Bild konnte nicht gelesen werden. Bitte JPG, PNG oder WebP verwenden.'));
+    image.src = src;
   });
+  if (typeof image.decode === 'function') {
+    try {
+      await image.decode();
+    } catch {
+      /* onload is enough when decode() is missing or rejects after a successful load */
+    }
+  }
+  if (!image.naturalWidth || !image.naturalHeight) {
+    throw new Error('Bild hat keine erkennbare Größe.');
+  }
   return image;
 }
 
@@ -66,7 +97,23 @@ export function zoomRect(
   return { x, y, width, height };
 }
 
+function blobFromCanvas(canvas: HTMLCanvasElement, type: string, quality: number): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    canvas.toBlob((next) => resolve(next), type, quality);
+  });
+}
+
 export async function exportWebp(image: HTMLImageElement, crop: CropRect, quality = IMAGE_WEBP_QUALITY): Promise<File> {
+  if (typeof image.decode === 'function') {
+    try {
+      await image.decode();
+    } catch {
+      /* already loaded */
+    }
+  }
+  if (!image.naturalWidth || !image.naturalHeight) {
+    throw new Error('Bild ist nicht geladen. Bitte die Datei erneut wählen.');
+  }
   const scale = Math.min(1, IMAGE_MAX_EDGE / Math.max(crop.width, crop.height));
   const width = Math.max(1, Math.round(crop.width * scale));
   const height = Math.max(1, Math.round(crop.height * scale));
@@ -76,13 +123,11 @@ export async function exportWebp(image: HTMLImageElement, crop: CropRect, qualit
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Bildverarbeitung nicht verfügbar.');
   context.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, width, height);
-  const blob = await new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (next) => (next ? resolve(next) : reject(new Error('WebP-Export fehlgeschlagen.'))),
-      'image/webp',
-      quality,
-    );
-  });
-  const name = `bild-${Date.now()}.webp`;
-  return new File([blob], name, { type: 'image/webp' });
+  const blob =
+    (await blobFromCanvas(canvas, 'image/webp', quality)) ??
+    (await blobFromCanvas(canvas, 'image/jpeg', 0.88));
+  if (!blob) throw new Error('Bild-Export fehlgeschlagen.');
+  const type = blob.type || 'image/jpeg';
+  const ext = type === 'image/webp' ? 'webp' : 'jpg';
+  return new File([blob], `bild-${Date.now()}.${ext}`, { type });
 }

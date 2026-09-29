@@ -25,6 +25,10 @@ assert.equal(
   '/bunny/neu.webp',
 );
 assert.equal(keepLiveMedia({ hero_image: '/old.jpg', title: 'Neu' }, { hero_image: '/bunny/neu.webp', title: 'Alt' }).title, 'Neu');
+assert.equal(
+  keepLiveMedia({ hero_image: '/bunny/frisch.webp', title: 'Neu' }, { hero_image: '', title: 'Alt' }).hero_image,
+  '/bunny/frisch.webp',
+);
 
 assert.equal(matchIconFromDescription('Hundewiese für Hunde'), 'Dog');
 assert.equal(matchIconFromDescription('kostenloses WLAN im ganzen Haus'), 'Wifi');
