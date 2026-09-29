@@ -69,9 +69,9 @@ export async function cloneHotelContent(
     if (sectionResult.error) return { error: sectionResult.error.message };
   }
 
-  const existingFaqs = await supabase.from('hotel_faqs').select('id').eq('hotel_id', targetHotelId).limit(1);
-  if (existingFaqs.error) return { error: existingFaqs.error.message };
-  if (!existingFaqs.data?.length && faqs.data?.length) {
+  if (faqs.data?.length) {
+    const cleared = await supabase.from('hotel_faqs').delete().eq('hotel_id', targetHotelId);
+    if (cleared.error) return { error: cleared.error.message };
     const faqResult = await supabase.from('hotel_faqs').insert(
       faqs.data.map((row) => ({
         hotel_id: targetHotelId,
