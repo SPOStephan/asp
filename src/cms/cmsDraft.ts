@@ -48,6 +48,7 @@ export function fieldKind(key: string, value?: unknown): 'icon' | 'image' | 'col
   if (
     name === 'src' ||
     name === 'image' ||
+    name.startsWith('logo_') ||
     name.endsWith('_image') ||
     name.endsWith('_src') ||
     (name.includes('image_') && !name.endsWith('_alt') && !name.endsWith('_href'))

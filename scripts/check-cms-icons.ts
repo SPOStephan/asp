@@ -17,6 +17,8 @@ assert.equal(isHiddenMetaPath('cms_label'), true);
 assert.equal(fieldKind('icon'), 'icon');
 assert.equal(fieldKind('icon_color'), 'color');
 assert.equal(fieldKind('items.0.icon_color'), 'color');
+assert.equal(fieldKind('logo_normal'), 'image');
+assert.equal(fieldKind('logo_white'), 'image');
 
 assert.equal(matchIconFromDescription('Hundewiese für Hunde'), 'Dog');
 assert.equal(matchIconFromDescription('kostenloses WLAN im ganzen Haus'), 'Wifi');

@@ -21,7 +21,7 @@ import { CmsImageField } from './CmsImageField';
 import { CmsTextarea } from './CmsTextarea';
 import { CMS_SECTION_LABELS, describeSelection } from './cmsSelect';
 
-const CUSTOM_SECTIONS = new Set(['hero', 'welcome', 'discover', 'rooms_page', 'faq_page']);
+const CUSTOM_SECTIONS = new Set(['navbar', 'hero', 'welcome', 'discover', 'rooms_page', 'faq_page']);
 
 function useLivePreview(sectionKey: string, payload: Record<string, unknown>) {
   const cms = useCms();
@@ -179,6 +179,7 @@ export function CmsEditor() {
       </header>
       <div className="cms-dock__body">
         {!section ? <p className="cms-muted">Noch kein Block gewählt.</p> : null}
+        {section === 'navbar' ? <NavbarFields /> : null}
         {section === 'hero' ? <HeroFields /> : null}
         {section === 'welcome' ? <WelcomeFields /> : null}
         {section === 'discover' ? <DiscoverFields /> : null}
@@ -213,6 +214,38 @@ function SaveBar({ sectionKey, onSave }: { sectionKey: string; onSave: () => Pro
   }, [sectionKey, setSaveAction]);
 
   return null;
+}
+
+function NavbarFields() {
+  const cms = useCms();
+  const data = useSection('navbar') ?? {};
+  const [draft, setDraft] = useState({
+    logo_white: String(data.logo_white ?? ''),
+    logo_normal: String(data.logo_normal ?? ''),
+  });
+
+  useEffect(() => {
+    setDraft({
+      logo_white: String(data.logo_white ?? ''),
+      logo_normal: String(data.logo_normal ?? ''),
+    });
+  }, [cms?.draftTick]);
+
+  const payload = { ...data, ...draft };
+  useLivePreview('navbar', payload);
+
+  return (
+    <form className="cms-form" onSubmit={(event: FormEvent) => event.preventDefault()}>
+      <h3>Logo & Leiste</h3>
+      <p className="cms-muted">
+        Zwei Dateien: weiß auf dem Headerbild, farbig auf der hellen Leiste nach dem Scrollen. Klick auf das Logo
+        in der Vorschau öffnet diese Felder.
+      </p>
+      <CmsImageField focus="logo" label="Logo weiß (auf dem Header)" value={draft.logo_white} section="navbar" path="logo_white" />
+      <CmsImageField focus="logo" label="Logo farbig (helle Leiste)" value={draft.logo_normal} section="navbar" path="logo_normal" />
+      <SaveBar sectionKey="navbar" onSave={() => cms!.saveSection('navbar', payload)} />
+    </form>
+  );
 }
 
 function HeroFields() {

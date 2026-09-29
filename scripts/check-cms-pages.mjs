@@ -113,5 +113,7 @@ assert.match(chrome, /\.cms-dock__save/);
 assert.match(chrome, /\.cms-viewport/);
 assert.match(chrome, /\.cms-preview\.is-phone/);
 assert.match(editor, /Ausschnitt: oben Desktop oder Mobil wählen/);
+assert.match(editor, /function NavbarFields/);
+assert.match(editor, /Logo weiß \(auf dem Header\)/);
 
 console.log('cms page helpers ok');
