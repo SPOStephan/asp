@@ -2,7 +2,8 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { COLOR_WORLDS, hotelColorsFromWorld, type ColorWorld } from '../../lib/colorWorlds';
-import { applyHotelPageSelection, cloneHotelContent, loadPageTemplates } from '../../lib/applyHotelPages';
+import { applyHotelPageSelection, cloneHotelContent, loadPageTemplates, saveHotelRecord } from '../../lib/applyHotelPages';
+import { canResumeHotelSlug, findHotelBySlug } from '../../lib/hotelSave';
 import { defaultSelectedKeys, type PageTemplate } from '../../lib/pageTemplates';
 import { publicHotelOrigin } from '../../lib/musterPages';
 
@@ -21,7 +22,10 @@ const EMPTY = {
 function explainHotelSaveError(message?: string | null) {
   if (!message) return 'Hotel konnte nicht gespeichert werden.';
   if (/hotel_pages_page_key_check/i.test(message)) {
-    return 'Supabase blockiert neue Seiten-Keys (home, impressum, …). In SQL Editor ausführen: ALTER TABLE hotel_pages DROP CONSTRAINT IF EXISTS hotel_pages_page_key_check; Danach Hotel erneut speichern.';
+    return 'Supabase blockiert neue Seiten-Keys (home, impressum, …). In SQL Editor ausführen: ALTER TABLE hotel_pages DROP CONSTRAINT IF EXISTS hotel_pages_page_key_check; Danach das vorhandene Hotel öffnen und speichern — nicht noch einmal anlegen.';
+  }
+  if (/hotels_slug_key/i.test(message)) {
+    return 'Dieses Hotel existiert schon (gleicher Slug) vom ersten Versuch. Zurück zur Hotel-Liste, das Haus öffnen und dort speichern — nicht noch einmal unter + Hotel anlegen.';
   }
   return message;
 }
@@ -45,21 +49,22 @@ export function AdminHotelFormPage() {
   const [pages, setPages] = useState<Record<string, boolean>>({});
   const [hotels, setHotels] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [cloneFromId, setCloneFromId] = useState('');
-  const [cloneContent, setCloneContent] = useState(true);
+  const [cloneContent, setCloneContent] = useState(isNew);
 
   useEffect(() => {
-    if (!isNew) return;
     void supabase
       .from('hotels')
       .select('id, name, slug')
       .order('name')
       .then(({ data }) => {
-        const list = (data ?? []) as Array<{ id: string; name: string; slug: string }>;
+        const list = ((data ?? []) as Array<{ id: string; name: string; slug: string }>).filter(
+          (hotel) => hotel.id !== id,
+        );
         setHotels(list);
         const ambassador = list.find((hotel) => hotel.slug === 'ambassador-hotel-spa');
         setCloneFromId(ambassador?.id ?? list[0]?.id ?? '');
       });
-  }, [isNew]);
+  }, [id]);
 
   useEffect(() => {
     void loadPageTemplates().then((list) => {
@@ -132,15 +137,16 @@ export function AdminHotelFormPage() {
       payload.heading_font = 'Newsreader';
       payload.body_font = 'Inter';
     }
-    const result = isNew
-      ? await supabase.from('hotels').insert(payload).select('id').single()
-      : await supabase.from('hotels').update(payload).eq('id', id).select('id').single();
-    if (result.error || !result.data) {
-      setError(explainHotelSaveError(result.error?.message) ?? 'Hotel konnte nicht gespeichert werden.');
+    const result = await saveHotelRecord(
+      { ...payload, slug: String(payload.slug) },
+      isNew ? undefined : id,
+    );
+    if (result.error || !result.id) {
+      setError(explainHotelSaveError(result.error) ?? 'Hotel konnte nicht gespeichert werden.');
       setBusy(false);
       return;
     }
-    const hotelId = result.data.id as string;
+    const hotelId = result.id;
     const selected = Object.entries(pages)
       .filter(([, on]) => on)
       .map(([key]) => key);
@@ -150,7 +156,7 @@ export function AdminHotelFormPage() {
       setBusy(false);
       return;
     }
-    if (isNew && cloneContent && cloneFromId) {
+    if (cloneContent && cloneFromId) {
       const cloned = await cloneHotelContent(cloneFromId, hotelId);
       if (cloned.error) {
         setError(explainHotelSaveError(cloned.error));
@@ -164,6 +170,7 @@ export function AdminHotelFormPage() {
 
   const system = templates.filter((item) => item.kind === 'system');
   const library = templates.filter((item) => item.kind === 'library');
+  const slugOwner = isNew ? findHotelBySlug(hotels, form.slug) : undefined;
 
   return (
     <>
@@ -194,6 +201,21 @@ export function AdminHotelFormPage() {
           Slug
           <input value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} required />
         </label>
+        {isNew && slugOwner ? (
+          <p className={canResumeHotelSlug(form.slug) ? 'admin-muted' : 'admin-error'}>
+            {canResumeHotelSlug(form.slug) ? (
+              <>
+                Dieser Slug gehört schon zu {slugOwner.name}. Speichern führt das vorhandene Haus weiter — oder{' '}
+                <Link to={`/admin/hotels/${slugOwner.id}`}>jetzt öffnen</Link>.
+              </>
+            ) : (
+              <>
+                Dieser Slug ist der Ambassador. Bitte einen eigenen Slug für das neue Haus wählen — oder{' '}
+                <Link to={`/admin/hotels/${slugOwner.id}`}>Ambassador öffnen</Link>.
+              </>
+            )}
+          </p>
+        ) : null}
         <label>
           Domains
           <input
@@ -233,12 +255,14 @@ export function AdminHotelFormPage() {
             </label>
           ))}
         </fieldset>
-        {isNew ? (
+        {hotels.length ? (
           <fieldset>
             <legend>Startinhalt</legend>
             <label className="admin-choice">
               <input type="checkbox" checked={cloneContent} onChange={(event) => setCloneContent(event.target.checked)} />
-              Inhalte eines bestehenden Hotels kopieren (Blöcke, Texte, Bilder, FAQ)
+              {isNew
+                ? 'Inhalte eines bestehenden Hotels kopieren (Blöcke, Texte, Bilder, FAQ)'
+                : 'Inhalte jetzt von einem bestehenden Hotel übernehmen (überschreibt die Blöcke dieses Hauses)'}
             </label>
             {cloneContent ? (
               <label>
@@ -259,7 +283,7 @@ export function AdminHotelFormPage() {
         <fieldset>
           <legend>Seiten für dieses Hotel</legend>
           <p className="admin-muted">
-            {cloneContent && isNew
+            {cloneContent
               ? 'Haken steuert, welche Seiten erreichbar sind. Die kopierten Inhalte bleiben erhalten.'
               : 'Haken = leerer Container aus dem Ambassador-Layout. Inhalte füllt ihr später im Editor.'}
           </p>
