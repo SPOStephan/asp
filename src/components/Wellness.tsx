@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { CmsSection } from '../cms/CmsSection';
 import { TextCta } from './TextCta';
+import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { useSection } from '../context/HotelContext';
 
 interface CollageItem {
@@ -80,7 +81,7 @@ export function Wellness() {
             />
           ))}
           <div className={`wellness-scene__hero${expanded ? ' is-expanded' : ''}`} data-cms-focus="hero_image">
-            <img src={data.hero_image} alt={data.hero_image_alt || ''} />
+            <img src={resolveMedia(data.hero_image, MUSTER_MEDIA.wellness)} alt={data.hero_image_alt || ''} />
           </div>
         </div>
 

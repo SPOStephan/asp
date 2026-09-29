@@ -9,6 +9,7 @@ import { filterMenuGroups, pageKeyFromHref } from '../lib/musterPages';
 import { useMobileChrome } from '../context/MobileChromeContext';
 import { remapSiteHref } from '../lib/links';
 import { isBookingHash, usePhoneChrome } from '../lib/phoneChrome';
+import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { menuGroupHref } from '../lib/wellness';
 
 interface NavLink {
@@ -283,7 +284,7 @@ export function Navbar() {
   const barRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const cms = useCms();
-  const data = useSection('navbar');
+  const data = useSection('navbar') ?? {};
   const hotel = useHotel();
   const chrome = useMobileChrome();
   const isPhone = usePhoneChrome();
@@ -386,8 +387,6 @@ export function Navbar() {
     }
   };
 
-  if (!data) return null;
-
   const { isPageEnabled } = useHotelContent();
   const navLinks: NavLink[] = ((data.links ?? []) as NavLink[]).filter((link) => {
     const key = pageKeyFromHref(remapSiteHref(link.href, link.label));
@@ -457,12 +456,12 @@ export function Navbar() {
         >
           <img
             className="navbar__logo-image navbar__logo-image--white"
-            src={data.logo_white}
+            src={resolveMedia(data.logo_white, MUSTER_MEDIA.logoWhite)}
             alt={hotel?.name || ''}
           />
           <img
             className="navbar__logo-image navbar__logo-image--normal"
-            src={data.logo_normal}
+            src={resolveMedia(data.logo_normal, MUSTER_MEDIA.logoNormal)}
             alt={hotel?.name || ''}
           />
         </a>

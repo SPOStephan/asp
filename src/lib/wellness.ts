@@ -313,10 +313,10 @@ export function resolveWellnessTopics(items?: RawTopic[]): WellnessTopic[] {
       includes: item.includes?.length ? item.includes : fallback.includes,
       prices: item.prices?.length ? item.prices : fallback.prices,
       price_note: item.price_note ?? fallback.price_note,
-      image: item.image ?? fallback.image,
-      image_alt: item.image_alt ?? fallback.image_alt,
-      hero_image: item.hero_image ?? item.image ?? fallback.hero_image,
-      hero_image_alt: item.hero_image_alt ?? item.image_alt ?? fallback.hero_image_alt,
+      image: resolveWellnessMedia(item.image, fallback.image),
+      image_alt: item.image_alt || fallback.image_alt,
+      hero_image: resolveWellnessMedia(item.hero_image, resolveWellnessMedia(item.image, fallback.hero_image)),
+      hero_image_alt: item.hero_image_alt || item.image_alt || fallback.hero_image_alt,
       pair_image: item.pair_image ?? fallback.pair_image,
       pair_image_alt: item.pair_image_alt ?? fallback.pair_image_alt,
     };
@@ -334,8 +334,8 @@ export function resolveWellnessChapters(items?: RawChapter[]): WellnessChapter[]
       text: item.text ?? fallback.text,
       href: item.href ?? fallback.href,
       cta: item.cta ?? fallback.cta,
-      image: item.image ?? fallback.image,
-      image_alt: item.image_alt ?? fallback.image_alt,
+      image: resolveWellnessMedia(item.image, fallback.image),
+      image_alt: item.image_alt || fallback.image_alt,
     };
   });
 }

@@ -1,3 +1,4 @@
+import { fillEmptyMedia } from './media';
 import { supabase } from './supabase';
 import { canResumeHotelSlug, isHotelSlugConflict } from './hotelSave';
 import {
@@ -66,13 +67,25 @@ export async function applyHotelPageSelection(
   const pageResult = await supabase.from('hotel_pages').upsert(rows, { onConflict: 'hotel_id,page_key' });
   if (pageResult.error) return { error: pageResult.error.message };
 
-  const existing = await supabase.from('hotel_sections').select('section_key').eq('hotel_id', hotelId);
+  const existing = await supabase.from('hotel_sections').select('section_key, data').eq('hotel_id', hotelId);
   if (existing.error) return { error: existing.error.message };
-  const missing = sectionsToSeed(
-    catalog,
-    selectedKeys,
-    (existing.data ?? []).map((row) => String(row.section_key)),
-  ).map((row) => ({ hotel_id: hotelId, ...row }));
+  const have = (existing.data ?? []).map((row) => String(row.section_key));
+  const patched = (existing.data ?? [])
+    .map((row) => {
+      const current = (row.data ?? {}) as Record<string, unknown>;
+      const data = fillEmptyMedia(String(row.section_key), current);
+      return data === current ? null : { hotel_id: hotelId, section_key: String(row.section_key), data };
+    })
+    .filter((row): row is { hotel_id: string; section_key: string; data: Record<string, unknown> } => Boolean(row));
+  if (patched.length) {
+    const filled = await supabase.from('hotel_sections').upsert(patched, { onConflict: 'hotel_id,section_key' });
+    if (filled.error) return { error: filled.error.message };
+  }
+  const missing = sectionsToSeed(catalog, selectedKeys, have).map((row) => ({
+    hotel_id: hotelId,
+    section_key: row.section_key,
+    data: fillEmptyMedia(row.section_key, row.data),
+  }));
   if (missing.length) {
     const sectionResult = await supabase.from('hotel_sections').insert(missing);
     if (sectionResult.error) return { error: sectionResult.error.message };

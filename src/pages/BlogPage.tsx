@@ -6,6 +6,7 @@ import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { resolveMedia } from '../lib/media';
 import {
   BLOG_PAGE_FALLBACK,
   BLOG_TOPICS,
@@ -47,8 +48,8 @@ export function BlogPage() {
     <CmsSection sectionKey="blog_page" label="Journal">
     <main>
       <SubpageHero
-        image={data.hero_image ?? BLOG_PAGE_FALLBACK.hero_image}
-        imageAlt={data.hero_image_alt ?? BLOG_PAGE_FALLBACK.hero_image_alt}
+        image={resolveMedia(data.hero_image, BLOG_PAGE_FALLBACK.hero_image)}
+        imageAlt={data.hero_image_alt || BLOG_PAGE_FALLBACK.hero_image_alt}
         eyebrow={page?.eyebrow ?? BLOG_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? BLOG_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? BLOG_PAGE_FALLBACK.subtitle}
