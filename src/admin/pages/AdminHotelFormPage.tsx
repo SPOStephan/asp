@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { COLOR_WORLDS, hotelColorsFromWorld, type ColorWorld } from '../../lib/colorWorlds';
 import { applyHotelPageSelection, cloneHotelContent, loadPageTemplates, saveHotelRecord } from '../../lib/applyHotelPages';
-import { findHotelBySlug } from '../../lib/hotelSave';
+import { canResumeHotelSlug, findHotelBySlug } from '../../lib/hotelSave';
 import { defaultSelectedKeys, type PageTemplate } from '../../lib/pageTemplates';
 import { publicHotelOrigin } from '../../lib/musterPages';
 
@@ -202,9 +202,18 @@ export function AdminHotelFormPage() {
           <input value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} required />
         </label>
         {isNew && slugOwner ? (
-          <p className="admin-muted">
-            Dieser Slug gehört schon zu {slugOwner.name}. Speichern führt das vorhandene Haus weiter — oder{' '}
-            <Link to={`/admin/hotels/${slugOwner.id}`}>jetzt öffnen</Link>.
+          <p className={canResumeHotelSlug(form.slug) ? 'admin-muted' : 'admin-error'}>
+            {canResumeHotelSlug(form.slug) ? (
+              <>
+                Dieser Slug gehört schon zu {slugOwner.name}. Speichern führt das vorhandene Haus weiter — oder{' '}
+                <Link to={`/admin/hotels/${slugOwner.id}`}>jetzt öffnen</Link>.
+              </>
+            ) : (
+              <>
+                Dieser Slug ist der Ambassador. Bitte einen eigenen Slug für das neue Haus wählen — oder{' '}
+                <Link to={`/admin/hotels/${slugOwner.id}`}>Ambassador öffnen</Link>.
+              </>
+            )}
           </p>
         ) : null}
         <label>

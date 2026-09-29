@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { isHotelSlugConflict } from './hotelSave';
+import { canResumeHotelSlug, isHotelSlugConflict } from './hotelSave';
 import {
   pageRowsForHotel,
   rowToTemplate,
@@ -27,7 +27,7 @@ export async function saveHotelRecord(
     return { id: String(inserted.data.id) };
   }
 
-  if (isHotelSlugConflict(inserted.error?.message)) {
+  if (isHotelSlugConflict(inserted.error?.message) && canResumeHotelSlug(payload.slug)) {
     const existing = await supabase.from('hotels').select('id').eq('slug', payload.slug).maybeSingle();
     if (existing.data?.id) {
       const updated = await supabase

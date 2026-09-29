@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { findHotelBySlug, isHotelSlugConflict } from '../src/lib/hotelSave';
+import { canResumeHotelSlug, findHotelBySlug, isHotelSlugConflict } from '../src/lib/hotelSave';
 import {
   defaultSelectedKeys,
   emptyContainer,
@@ -72,6 +72,8 @@ assert.equal(
 assert.equal(isHotelSlugConflict('hotel_pages_page_key_check'), false);
 assert.equal(findHotelBySlug([{ id: '1', slug: 'pilot-x' }], 'Pilot-X')?.id, '1');
 assert.equal(findHotelBySlug([{ id: '1', slug: 'pilot-x' }], ''), undefined);
+assert.equal(canResumeHotelSlug('pilot-x'), true);
+assert.equal(canResumeHotelSlug('ambassador-hotel-spa'), false);
 
 const form = readFileSync(new URL('../src/admin/pages/AdminHotelFormPage.tsx', import.meta.url), 'utf8');
 assert.match(form, /applyHotelPageSelection/);
