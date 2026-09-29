@@ -19,6 +19,7 @@ export type CmsInline = {
 };
 
 export const CMS_SECTION_LABELS: Record<string, string> = {
+  navbar: 'Logo & Leiste',
   hero: 'Hero',
   welcome: 'Welcome',
   highlight_strip: 'Highlight-Leiste',
@@ -57,6 +58,7 @@ const FOCUS_LABELS: Record<string, string> = {
   eyebrow: 'Eyebrow',
   feature_left: 'Bild links',
   feature_right: 'Bild rechts',
+  logo: 'Logo',
 };
 
 export function describeSelection(selection: CmsSelection | null): string {

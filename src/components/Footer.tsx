@@ -2,6 +2,7 @@ import { MapPin, Phone, Mail, Send, Share2 } from 'lucide-react';
 import { CmsSection } from '../cms/CmsSection';
 import { FOOTER_FALLBACK } from '../cms/cmsPages';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
+import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { remapSiteHref } from '../lib/links';
 
 interface FooterLink {
@@ -11,6 +12,7 @@ interface FooterLink {
 
 export function Footer() {
   const stored = useSection('footer');
+  const navbar = useSection('navbar');
   const hotel = useHotel();
   const { isPageEnabled } = useHotelContent();
   const data = { ...FOOTER_FALLBACK, ...stored };
@@ -27,7 +29,7 @@ export function Footer() {
         <div className="footer__top">
           <div className="footer__brand">
             <div className="footer__logo">
-              <img src="/ASP_Logo-weiss.png" alt={hotel.name} />
+              <img src={resolveMedia(navbar?.logo_white, MUSTER_MEDIA.logoWhite)} alt={hotel.name} />
             </div>
             <p className="footer__tagline" data-cms-focus="tagline" data-cms-path="tagline">{data.tagline}</p>
             <div className="footer__social">

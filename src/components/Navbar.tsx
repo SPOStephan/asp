@@ -409,6 +409,7 @@ export function Navbar() {
       className={`navbar${!isPhone && scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}${isPhone ? ' navbar--phone' : ''}${isPhone && scrolled && !menuOpen ? ' navbar--away' : ''}`}
       aria-label="Hauptnavigation"
       ref={barRef}
+      data-cms-section="navbar"
     >
       <div className="navbar__inner">
         <div className="navbar__left">
@@ -451,10 +452,14 @@ export function Navbar() {
         <a
           href={cms ? '/cms' : '/'}
           className="navbar__logo"
+          data-cms-focus="logo"
+          data-cms-path={lightBar ? 'logo_normal' : 'logo_white'}
+          data-cms-kind="image"
           onClick={(e) => {
             e.preventDefault();
+            if (cms) return;
             setMenuOpen(false);
-            navigate(cms ? '/cms' : '/');
+            navigate('/');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
