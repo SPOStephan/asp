@@ -18,6 +18,14 @@ const EMPTY = {
   is_active: true,
 };
 
+function explainHotelSaveError(message?: string | null) {
+  if (!message) return 'Hotel konnte nicht gespeichert werden.';
+  if (/hotel_pages_page_key_check/i.test(message)) {
+    return 'Supabase blockiert neue Seiten-Keys (home, impressum, …). In SQL Editor ausführen: ALTER TABLE hotel_pages DROP CONSTRAINT IF EXISTS hotel_pages_page_key_check; Danach Hotel erneut speichern.';
+  }
+  return message;
+}
+
 function parseDomains(value: string) {
   return value
     .split(/[, \n]+/)
@@ -128,7 +136,7 @@ export function AdminHotelFormPage() {
       ? await supabase.from('hotels').insert(payload).select('id').single()
       : await supabase.from('hotels').update(payload).eq('id', id).select('id').single();
     if (result.error || !result.data) {
-      setError(result.error?.message ?? 'Hotel konnte nicht gespeichert werden.');
+      setError(explainHotelSaveError(result.error?.message) ?? 'Hotel konnte nicht gespeichert werden.');
       setBusy(false);
       return;
     }
@@ -138,14 +146,14 @@ export function AdminHotelFormPage() {
       .map(([key]) => key);
     const applied = await applyHotelPageSelection(hotelId, selected, templates);
     if (applied.error) {
-      setError(applied.error);
+      setError(explainHotelSaveError(applied.error));
       setBusy(false);
       return;
     }
     if (isNew && cloneContent && cloneFromId) {
       const cloned = await cloneHotelContent(cloneFromId, hotelId);
       if (cloned.error) {
-        setError(cloned.error);
+        setError(explainHotelSaveError(cloned.error));
         setBusy(false);
         return;
       }
