@@ -73,9 +73,17 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const frameMode = isCmsFrame();
   const [focalPreview, setFocalPreview] = useState<FocalDevice>(() => cmsFrameDevice());
   const frameWindowRef = useRef<Window | null>(null);
+  const pendingPeer = useRef<Array<{ source: string } & Record<string, unknown>>>([]);
+  const flushPeer = useCallback((frame: Window) => {
+    const queued = pendingPeer.current;
+    pendingPeer.current = [];
+    const origin = window.location.origin;
+    queued.forEach((payload) => frame.postMessage(payload, origin));
+  }, []);
   const setFrameWindow = useCallback((frame: Window | null) => {
     frameWindowRef.current = frame;
-  }, []);
+    if (frame) flushPeer(frame);
+  }, [flushPeer]);
   const postPeer = useCallback((message: Record<string, unknown>) => {
     const payload = { source: CMS_FRAME_SOURCE, ...message };
     const origin = window.location.origin;
@@ -83,7 +91,12 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       window.parent?.postMessage(payload, origin);
       return;
     }
-    frameWindowRef.current?.postMessage(payload, origin);
+    const frame = frameWindowRef.current;
+    if (!frame) {
+      pendingPeer.current.push(payload);
+      return;
+    }
+    frame.postMessage(payload, origin);
   }, [frameMode]);
   const setSaveAction = useCallback((action: (() => Promise<unknown>) | null) => {
     saveActionRef.current = action;

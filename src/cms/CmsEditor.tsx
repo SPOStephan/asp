@@ -234,7 +234,15 @@ function NavbarFields() {
     });
   }, [cms?.draftTick]);
 
-  const payload = { ...data, ...draft };
+  const payload = keepLiveMedia(
+    {
+      ...data,
+      ...draft,
+      logo_white: String(data.logo_white || draft.logo_white),
+      logo_normal: String(data.logo_normal || draft.logo_normal),
+    },
+    data,
+  );
   useLivePreview('navbar', payload);
 
   return (
@@ -275,7 +283,7 @@ function HeroFields() {
       ...data,
       title: draft.title,
       subtitle: draft.subtitle,
-      hero_image: draft.hero_image,
+      hero_image: String(data.hero_image || draft.hero_image),
       hero_image_alt: draft.hero_image_alt,
     },
     data,
@@ -364,7 +372,15 @@ function DiscoverFields() {
     });
   }, [cms?.draftTick]);
 
-  const payload = { ...data, ...draft };
+  const payload = keepLiveMedia(
+    {
+      ...data,
+      ...draft,
+      feature_image_left: String(data.feature_image_left || draft.feature_image_left),
+      feature_image_right: String(data.feature_image_right || draft.feature_image_right),
+    },
+    data,
+  );
   useLivePreview('discover', payload);
 
   function updateTile(index: number, key: string, value: string) {
@@ -400,7 +416,12 @@ function DiscoverFields() {
           />
           <Field label="Titel" value={tile.title ?? ''} onChange={(value) => updateTile(index, 'title', value)} path={`tiles.${index}.title`} />
           <Field label="Eyebrow" value={tile.eyebrow ?? ''} onChange={(value) => updateTile(index, 'eyebrow', value)} />
-          <CmsImageField label="Bild" value={tile.image ?? ''} section="discover" path={`tiles.${index}.image`} />
+          <CmsImageField
+            label="Bild"
+            value={String((Array.isArray(data.tiles) ? data.tiles[index] : null)?.image || tile.image || '')}
+            section="discover"
+            path={`tiles.${index}.image`}
+          />
           <Field label="Link" value={tile.href ?? ''} onChange={(value) => updateTile(index, 'href', value)} />
         </fieldset>
       ))}
@@ -500,6 +521,7 @@ function RoomsFields() {
   const payload = keepLiveFocals({
     ...base,
     ...draft,
+    hero_image: String(base.hero_image || draft.hero_image),
     hotel_email: hotel?.email ?? null,
     items: rooms.map((room) =>
       room.id !== (current?.id ?? roomId)

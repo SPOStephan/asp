@@ -20,7 +20,7 @@ export function CmsImageField({
   return (
     <div className="cms-image" data-cms-panel-focus={focus ?? path}>
       <span>{label}</span>
-      {value ? <img src={value} alt="" /> : <p className="cms-muted">Noch kein Bild.</p>}
+      {value ? <img src={value} alt="" /> : <p className="cms-muted">Noch kein Bild — Datei wählen lädt es als WebP.</p>}
       <p className="cms-muted">{formatImageHint(hint)}</p>
       <button
         type="button"

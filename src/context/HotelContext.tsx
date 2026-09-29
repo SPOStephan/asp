@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { isAdminHost, isAdminPath } from '../admin/adminHost';
 import { loadHotelContent, type HotelContent } from '../lib/hotelData';
+import { mergeHotelLoad } from '../lib/hotelMerge';
 import type { HotelFAQ } from '../lib/supabase';
 import type { MusterPageKey } from '../lib/musterPages';
 
@@ -31,10 +32,17 @@ export function HotelProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<HotelContent | null>(null);
   const [loading, setLoading] = useState(!skipHotel);
   const [error, setError] = useState<string | null>(null);
+  const pendingSections = useRef<Record<string, Record<string, unknown>>>({});
+  const pendingFaqs = useRef<HotelFAQ[] | null>(null);
 
   async function load() {
     const data = await loadHotelContent();
-    setContent(data);
+    setContent((current) => {
+      const next = mergeHotelLoad(data, current, pendingSections.current, pendingFaqs.current);
+      pendingSections.current = {};
+      pendingFaqs.current = null;
+      return next;
+    });
   }
 
   useEffect(() => {
@@ -49,7 +57,12 @@ export function HotelProvider({ children }: { children: ReactNode }) {
       try {
         const data = await loadHotelContent();
         if (!cancelled) {
-          setContent(data);
+          setContent((current) => {
+            const next = mergeHotelLoad(data, current, pendingSections.current, pendingFaqs.current);
+            pendingSections.current = {};
+            pendingFaqs.current = null;
+            return next;
+          });
           setLoading(false);
         }
       } catch (err) {
@@ -95,14 +108,22 @@ export function HotelProvider({ children }: { children: ReactNode }) {
         error,
         isPageEnabled: (key) => key === 'home' || content?.pages[key] === true,
         patchSection: (sectionKey, data) => {
-          setContent((current) =>
-            current
-              ? { ...current, sections: { ...current.sections, [sectionKey]: data } }
-              : current,
-          );
+          setContent((current) => {
+            if (!current) {
+              pendingSections.current[sectionKey] = data;
+              return current;
+            }
+            return { ...current, sections: { ...current.sections, [sectionKey]: data } };
+          });
         },
         patchFaqs: (faqs) => {
-          setContent((current) => (current ? { ...current, faqs } : current));
+          setContent((current) => {
+            if (!current) {
+              pendingFaqs.current = faqs;
+              return current;
+            }
+            return { ...current, faqs };
+          });
         },
         reload: async () => {
           await load();
