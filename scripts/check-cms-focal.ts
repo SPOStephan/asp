@@ -1,20 +1,21 @@
 import assert from 'node:assert/strict';
 import { cmsFrameDevice, cmsShellPath, isCmsFrameSearch, toCmsFrameHref } from '../src/cms/cmsFrame';
 import { createUndoStack } from '../src/cms/cmsUndo';
-import { entryFocal, heroFocalStyle, keepLiveFocals, panFocal, readHeroFocal, writeHeroFocal } from '../src/cms/cmsFocal';
+import { entryFocal, heroFocalStyle, keepLiveFocals, panFocal, readHeroFocal, writeHeroFocal, zoomHeroFocal } from '../src/cms/cmsFocal';
 
-assert.deepEqual(readHeroFocal(undefined).desktop, { x: 50, y: 50 });
-assert.deepEqual(readHeroFocal({ x: 68, y: 40 }).mobile, { x: 68, y: 40 });
-assert.deepEqual(readHeroFocal({ x: 68, y: 40 }).desktop, { x: 50, y: 50 });
-assert.deepEqual(readHeroFocal({ desktop: { x: 20, y: 80 }, mobile: { x: 10, y: 90 } }).desktop, { x: 20, y: 80 });
+assert.deepEqual(readHeroFocal(undefined).desktop, { x: 50, y: 50, z: 1 });
+assert.deepEqual(readHeroFocal({ x: 68, y: 40 }).mobile, { x: 68, y: 40, z: 1 });
+assert.deepEqual(readHeroFocal({ x: 68, y: 40 }).desktop, { x: 50, y: 50, z: 1 });
+assert.deepEqual(readHeroFocal({ desktop: { x: 20, y: 80 }, mobile: { x: 10, y: 90 } }).desktop, { x: 20, y: 80, z: 1 });
 
 const panned = panFocal({ x: 50, y: 50 }, 100, 0, 200, 200);
 assert.equal(panned.x, 0);
 assert.equal(panned.y, 50);
 
 const written = writeHeroFocal({ x: 68, y: 50 }, 'desktop', { x: 12, y: 88 });
-assert.deepEqual(written.desktop, { x: 12, y: 88 });
-assert.deepEqual(written.mobile, { x: 68, y: 50 });
+assert.deepEqual(written.desktop, { x: 12, y: 88, z: 1 });
+assert.deepEqual(written.mobile, { x: 68, y: 50, z: 1 });
+assert.equal(zoomHeroFocal(written, 'desktop', 1.2).desktop.z, 1.2);
 
 const style = heroFocalStyle(written);
 assert.equal(style['--hero-focal-desktop'], '12% 88%');

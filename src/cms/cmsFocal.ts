@@ -1,4 +1,7 @@
-export type FocalPoint = { x: number; y: number };
+export type FocalPoint = { x: number; y: number; z?: number };
+
+export const FOCAL_ZOOM_MIN = 1;
+export const FOCAL_ZOOM_MAX = 2.6;
 
 export type HeroFocal = {
   desktop: FocalPoint;
@@ -7,12 +10,21 @@ export type HeroFocal = {
 
 export type FocalDevice = 'desktop' | 'mobile';
 
-const DEFAULT_DESKTOP: FocalPoint = { x: 50, y: 50 };
-const DEFAULT_MOBILE: FocalPoint = { x: 68, y: 50 };
+const DEFAULT_DESKTOP: FocalPoint = { x: 50, y: 50, z: 1 };
+const DEFAULT_MOBILE: FocalPoint = { x: 68, y: 50, z: 1 };
 
 function clamp(value: number) {
   if (!Number.isFinite(value)) return 50;
   return Math.min(100, Math.max(0, value));
+}
+
+export function clampZoom(value: number) {
+  if (!Number.isFinite(value)) return 1;
+  return Math.min(FOCAL_ZOOM_MAX, Math.max(FOCAL_ZOOM_MIN, Math.round(value * 100) / 100));
+}
+
+export function readZoom(point: FocalPoint) {
+  return clampZoom(point.z ?? 1);
 }
 
 function asPoint(value: unknown, fallback: FocalPoint): FocalPoint {
@@ -23,6 +35,7 @@ function asPoint(value: unknown, fallback: FocalPoint): FocalPoint {
   return {
     x: Number.isFinite(x) ? clamp(x) : fallback.x,
     y: Number.isFinite(y) ? clamp(y) : fallback.y,
+    z: clampZoom(Number(record.z) || fallback.z || 1),
   };
 }
 
@@ -50,6 +63,8 @@ export function heroFocalStyle(value: unknown, mobileFallback?: FocalPoint) {
     '--hero-focal': `${focal.mobile.x}% ${focal.mobile.y}%`,
     '--hero-focal-desktop': `${focal.desktop.x}% ${focal.desktop.y}%`,
     '--hero-focal-mobile': `${focal.mobile.x}% ${focal.mobile.y}%`,
+    '--hero-zoom-desktop': String(readZoom(focal.desktop)),
+    '--hero-zoom-mobile': String(readZoom(focal.mobile)),
   } as Record<string, string>;
 }
 
@@ -76,8 +91,18 @@ export function entryFocal(items: unknown, entryId: string) {
 
 export function writeHeroFocal(current: unknown, device: FocalDevice, point: FocalPoint): HeroFocal {
   const next = readHeroFocal(current);
-  next[device] = { x: clamp(point.x), y: clamp(point.y) };
+  next[device] = {
+    x: clamp(point.x),
+    y: clamp(point.y),
+    z: clampZoom(point.z ?? next[device].z ?? 1),
+  };
   return next;
+}
+
+export function zoomHeroFocal(current: unknown, device: FocalDevice, factor: number): HeroFocal {
+  const next = readHeroFocal(current);
+  const point = next[device];
+  return writeHeroFocal(current, device, { ...point, z: readZoom(point) * factor });
 }
 
 function sameEntry(item: Record<string, unknown>, live: Record<string, unknown>) {

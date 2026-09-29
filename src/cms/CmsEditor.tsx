@@ -253,7 +253,9 @@ function HeroFields() {
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <CmsImageField focus="image" label="Bild" value={draft.hero_image} section="hero" path="hero_image" />
       <Field label="Alt-Text" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
-      <p className="cms-muted">Ausschnitt: oben Desktop oder Mobil wählen, dann das Bild in der Vorschau ziehen.</p>
+      <p className="cms-muted">
+        Ausschnitt: oben Desktop oder Mobil wählen, dann das Bild ziehen. Mit + / − den Ausschnitt zoomen.
+      </p>
       <SaveBar sectionKey="hero" onSave={() => cms!.saveSection('hero', payload)} />
     </form>
   );

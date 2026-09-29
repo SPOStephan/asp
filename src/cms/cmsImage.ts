@@ -29,6 +29,43 @@ export function fitRect(width: number, height: number, aspect?: number): CropRec
   return { x: 0, y: (height - nextHeight) / 2, width, height: nextHeight };
 }
 
+export function zoomRect(
+  crop: CropRect,
+  imageWidth: number,
+  imageHeight: number,
+  factor: number,
+  aspect?: number,
+): CropRect {
+  const centerX = crop.x + crop.width / 2;
+  const centerY = crop.y + crop.height / 2;
+  let width = crop.width * factor;
+  let height = crop.height * factor;
+  if (aspect) {
+    height = width / aspect;
+    if (width > imageWidth) {
+      width = imageWidth;
+      height = width / aspect;
+    }
+    if (height > imageHeight) {
+      height = imageHeight;
+      width = height * aspect;
+    }
+  } else {
+    width = Math.min(width, imageWidth);
+    height = Math.min(height, imageHeight);
+  }
+  const minEdge = 80;
+  width = Math.max(minEdge, Math.min(width, imageWidth));
+  height = Math.max(minEdge, Math.min(height, imageHeight));
+  if (aspect) {
+    if (width / height > aspect) width = Math.min(imageWidth, height * aspect);
+    else height = Math.min(imageHeight, width / aspect);
+  }
+  const x = Math.min(Math.max(0, centerX - width / 2), Math.max(0, imageWidth - width));
+  const y = Math.min(Math.max(0, centerY - height / 2), Math.max(0, imageHeight - height));
+  return { x, y, width, height };
+}
+
 export async function exportWebp(image: HTMLImageElement, crop: CropRect, quality = IMAGE_WEBP_QUALITY): Promise<File> {
   const scale = Math.min(1, IMAGE_MAX_EDGE / Math.max(crop.width, crop.height));
   const width = Math.max(1, Math.round(crop.width * scale));
