@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import { fitRect, rejectUnsupportedImage, zoomRect } from '../src/cms/cmsImage';
 import { formatImageHint, imageHint } from '../src/cms/cmsImageHints';
 import { explainUploadFailure } from '../src/cms/cmsUploadMessage';
+import type { HotelContent } from '../src/lib/hotelData';
+import { mergeHotelLoad } from '../src/lib/hotelMerge';
 
 assert.equal(imageHint('hero', 'hero_image').width, 1920);
 assert.equal(imageHint('hero', 'hero_image').height, 1080);
@@ -26,8 +28,28 @@ assert.match(field, /formatImageHint/);
 const dialog = readFileSync(new URL('../src/cms/CmsImageDialog.tsx', import.meta.url), 'utf8');
 assert.match(dialog, /\+ Näher/);
 assert.match(dialog, /zoomRect/);
-assert.match(dialog, /readFileAsDataURL|Hochladen und übernehmen/);
+assert.match(dialog, /pushUpload/);
+assert.match(dialog, /Datei wählen lädt automatisch/);
 assert.doesNotMatch(dialog, /revokeObjectURL/);
+const hotel = readFileSync(new URL('../src/context/HotelContext.tsx', import.meta.url), 'utf8');
+assert.match(hotel, /mergeHotelLoad/);
+assert.match(hotel, /pendingSections/);
+const frame = readFileSync(new URL('../src/cms/CmsContext.tsx', import.meta.url), 'utf8');
+assert.match(frame, /pendingPeer/);
+
+function hotelContent(sections: Record<string, Record<string, unknown>>): HotelContent {
+  return { hotel: { id: 'h1' } as HotelContent['hotel'], sections, faqs: [], pages: {} };
+}
+assert.equal(
+  mergeHotelLoad(hotelContent({ hero: { hero_image: '', title: 'Server' } }), hotelContent({ hero: { hero_image: 'https://cdn.example/neu.webp', title: 'Live' } }))
+    .sections.hero.hero_image,
+  'https://cdn.example/neu.webp',
+);
+assert.equal(
+  mergeHotelLoad(hotelContent({ hero: { hero_image: '' } }), null, { hero: { hero_image: 'https://cdn.example/pending.webp' } })
+    .sections.hero.hero_image,
+  'https://cdn.example/pending.webp',
+);
 const imageSource = readFileSync(new URL('../src/cms/cmsImage.ts', import.meta.url), 'utf8');
 assert.match(imageSource, /readAsDataURL/);
 assert.match(imageSource, /image\/jpeg/);

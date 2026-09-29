@@ -29,6 +29,7 @@ export function CmsImageDialog() {
   const [alt, setAlt] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [appliedUrl, setAppliedUrl] = useState<string | null>(null);
   const [stageWidth, setStageWidth] = useState(0);
   const drag = useRef<{ startX: number; startY: number; crop: CropRect } | null>(null);
 
@@ -38,9 +39,12 @@ export function CmsImageDialog() {
       setFileName(null);
       setError(null);
       setAlt('');
+      setAppliedUrl(null);
+      setBusy(false);
       return;
     }
     setAlt('');
+    setAppliedUrl(null);
     setAspect(imageHint(request.section, request.path).aspect);
   }, [request]);
 
@@ -63,14 +67,37 @@ export function CmsImageDialog() {
     setCrop(zoomRect(crop, image.naturalWidth, image.naturalHeight, factor, aspect));
   }
 
+  async function pushUpload(source: HTMLImageElement, sourceCrop: CropRect) {
+    if (!hotel) {
+      setError('Hotel noch nicht geladen. Bitte kurz warten und die Datei noch einmal wählen.');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setAppliedUrl(null);
+    try {
+      const file = await exportWebp(source, sourceCrop);
+      const url = await uploadToBunny(file, hotel.id, alt);
+      cms.applyField(request.section, request.path, url);
+      if (request.altPath && alt) cms.applyField(request.section, request.altPath, alt);
+      setAppliedUrl(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload fehlgeschlagen.');
+    }
+    setBusy(false);
+  }
+
   async function onFile(file: File | undefined) {
     if (!file) return;
     setError(null);
+    setAppliedUrl(null);
     try {
       const next = await loadImage(file);
+      const nextCrop = fitRect(next.naturalWidth, next.naturalHeight, aspect);
       setImage(next);
       setFileName(file.name);
-      setCrop(fitRect(next.naturalWidth, next.naturalHeight, aspect));
+      setCrop(nextCrop);
+      await pushUpload(next, nextCrop);
     } catch (err) {
       setImage(null);
       setFileName(null);
@@ -107,22 +134,7 @@ export function CmsImageDialog() {
 
   async function upload() {
     if (!image) return;
-    if (!hotel) {
-      setError('Hotel noch nicht geladen. Bitte kurz warten und noch einmal auf Hochladen klicken.');
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    try {
-      const file = await exportWebp(image, crop);
-      const url = await uploadToBunny(file, hotel.id, alt);
-      cms.applyField(request.section, request.path, url);
-      if (request.altPath && alt) cms.applyField(request.section, request.altPath, alt);
-      cms.closeImage();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload fehlgeschlagen.');
-    }
-    setBusy(false);
+    await pushUpload(image, crop);
   }
 
   const scale = image && stageWidth ? stageWidth / image.naturalWidth : 0;
@@ -133,8 +145,8 @@ export function CmsImageDialog() {
         <header>
           <strong>Bild nach Bunny</strong>
           <p>
-            {formatImageHint(hint)}. Datei wählen, Ausschnitt ziehen, dann Hochladen und übernehmen. Bunny ist der
-            gemeinsame Medienspeicher — die Hotel-Subdomain muss dort nicht extra eingetragen werden.
+            {formatImageHint(hint)}. Datei wählen lädt automatisch als WebP nach Bunny und setzt das Bild in der
+            Vorschau. Danach Speichern.
           </p>
         </header>
         <input
@@ -193,7 +205,13 @@ export function CmsImageDialog() {
             JPG, PNG oder WebP hierher oder Datei wählen
           </button>
         )}
-        {fileName ? <p className="cms-muted">Gewählt: {fileName}. Als Nächstes Hochladen und übernehmen, dann Speichern.</p> : null}
+        {fileName ? <p className="cms-muted">Gewählt: {fileName}</p> : null}
+        {busy ? <p className="cms-muted">Wird als WebP optimiert und nach Bunny gelegt…</p> : null}
+        {appliedUrl ? (
+          <p className="cms-muted">
+            WebP übernommen — das Bild steht in der Vorschau. Zuschnitt ändern und erneut übernehmen, dann Speichern.
+          </p>
+        ) : null}
         <label className="cms-field">
           Alt-Text
           <input value={alt} onChange={(event) => setAlt(event.target.value)} />
@@ -201,10 +219,10 @@ export function CmsImageDialog() {
         {error ? <p className="cms-error">{error}</p> : null}
         <div className="cms-modal__actions">
           <button type="button" className="cms-btn" disabled={!image || busy} onClick={() => void upload()}>
-            {busy ? 'Lädt…' : 'Hochladen und übernehmen'}
+            {busy ? 'Lädt…' : appliedUrl ? 'Zuschnitt erneut übernehmen' : 'Hochladen und übernehmen'}
           </button>
           <button type="button" className="cms-btn cms-btn--ghost" onClick={() => cms.closeImage()}>
-            Abbrechen
+            {appliedUrl ? 'Fertig' : 'Abbrechen'}
           </button>
         </div>
       </div>

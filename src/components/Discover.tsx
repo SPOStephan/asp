@@ -51,7 +51,7 @@ export function Discover() {
           <Reveal key={tile.title} delay={i * 70}>
             <a className="discover__tile" href={remapSiteHref(tile.href, tile.title)} data-cms-focus={`tiles:${i}`}>
               <div className="discover__tile-image" data-cms-path={`tiles.${i}.image`} data-cms-kind="image">
-                <img src={tile.image} alt={tile.title} loading="lazy" />
+                <img src={resolveMedia(tile.image, MUSTER_MEDIA.discoverLeft)} alt={tile.title} loading="lazy" />
               </div>
               <div className="discover__tile-overlay" />
               <div className="discover__tile-content">
