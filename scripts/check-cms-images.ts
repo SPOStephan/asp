@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fitRect, rejectUnsupportedImage, zoomRect } from '../src/cms/cmsImage';
 import { formatImageHint, imageHint } from '../src/cms/cmsImageHints';
+import { applyLiveMediaMap } from '../src/cms/cmsLiveMedia';
 import { explainUploadFailure } from '../src/cms/cmsUploadMessage';
 import type { HotelContent } from '../src/lib/hotelData';
 import { mergeHotelLoad } from '../src/lib/hotelMerge';
@@ -29,7 +30,7 @@ const dialog = readFileSync(new URL('../src/cms/CmsImageDialog.tsx', import.meta
 assert.match(dialog, /\+ Näher/);
 assert.match(dialog, /zoomRect/);
 assert.match(dialog, /pushUpload/);
-assert.match(dialog, /Datei wählen lädt automatisch/);
+assert.match(dialog, /schreibt es direkt ins Layout/);
 assert.doesNotMatch(dialog, /revokeObjectURL/);
 const hotel = readFileSync(new URL('../src/context/HotelContext.tsx', import.meta.url), 'utf8');
 assert.match(hotel, /mergeHotelLoad/);
@@ -65,5 +66,17 @@ assert.doesNotThrow(() => rejectUnsupportedImage({ name: 'meer.jpg', type: 'imag
 assert.equal(explainUploadFailure(503, '{"error":"Bunny ist nicht konfiguriert."}'), 'Bunny ist nicht konfiguriert.');
 assert.match(explainUploadFailure(404, '<!DOCTYPE html><html><body>Not Found</body></html>'), /Vercel-Projekt asp/);
 assert.match(explainUploadFailure(404, '<!DOCTYPE html><html><body>Not Found</body></html>'), /keine neue Subdomain/);
+assert.equal(
+  applyLiveMediaMap('hero', { hero_image: '', title: 'X' }, { 'hero::hero_image': 'https://cdn.example/a.webp' })?.hero_image,
+  'https://cdn.example/a.webp',
+);
+assert.equal(
+  (applyLiveMediaMap('discover', { tiles: [{ image: '' }] }, { 'discover::tiles.0.image': 'https://cdn.example/t.webp' })?.tiles as Array<{ image: string }>)[0]
+    .image,
+  'https://cdn.example/t.webp',
+);
+const context = readFileSync(new URL('../src/cms/CmsContext.tsx', import.meta.url), 'utf8');
+assert.match(context, /writeLiveMedia/);
+assert.match(context, /persistLiveSection/);
 
 console.log('cms image hints ok');

@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { isAdminHost, isAdminPath } from '../admin/adminHost';
+import { applyLiveMedia, useLiveMediaTick } from '../cms/cmsLiveMedia';
+import { isCmsPath } from '../cms/cmsHost';
 import { loadHotelContent, type HotelContent } from '../lib/hotelData';
 import { mergeHotelLoad } from '../lib/hotelMerge';
 import type { HotelFAQ } from '../lib/supabase';
@@ -141,7 +143,13 @@ export function useHotelContent(): HotelContextValue {
 
 export function useSection(sectionKey: string): Record<string, any> | null {
   const { content } = useContext(HotelContext);
-  return content?.sections[sectionKey] ?? null;
+  useLiveMediaTick();
+  const raw = content?.sections[sectionKey] ?? null;
+  if (!raw) return null;
+  if (typeof window !== 'undefined' && isCmsPath(window.location.pathname)) {
+    return applyLiveMedia(sectionKey, raw);
+  }
+  return raw;
 }
 
 export function useHotel() {
