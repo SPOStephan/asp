@@ -1,3 +1,5 @@
+import { resolveMedia } from './media';
+
 export type BlogTopicId = 'erholung' | 'familie' | 'hund';
 
 export type BlogSource = 'human' | 'ai';
@@ -252,8 +254,8 @@ export function resolveBlogPosts(items?: RawPost[]): BlogPost[] {
         title: item.title ?? fallback.title,
         excerpt: item.excerpt ?? fallback.excerpt,
         topic: item.topic ?? fallback.topic,
-        hero_image: item.hero_image ?? fallback.hero_image,
-        hero_image_alt: item.hero_image_alt ?? fallback.hero_image_alt,
+        hero_image: resolveMedia(item.hero_image, fallback.hero_image),
+        hero_image_alt: item.hero_image_alt || fallback.hero_image_alt,
         published_at: item.published_at ?? fallback.published_at,
         source: item.source ?? fallback.source,
         promo: resolvePromo(item.promo, item.topic ?? fallback.topic, fallback.promo),

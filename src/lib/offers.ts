@@ -1,3 +1,5 @@
+import { resolveMedia } from './media';
+
 export interface OfferLink {
   label: string;
   href: string;
@@ -117,10 +119,10 @@ export function resolveOfferStories(
       travel_period_label: item.travel_period_label ?? fallback.travel_period_label,
       travel_period: item.travel_period ?? fallback.travel_period,
       includes: item.includes ?? fallback.includes,
-      image: item.image ?? item.image_primary ?? fallback.image,
-      image_alt: item.image_alt ?? item.image_primary_alt ?? fallback.image_alt,
-      hero_image: item.hero_image ?? item.image ?? item.image_primary ?? fallback.hero_image,
-      hero_image_alt: item.hero_image_alt ?? item.image_alt ?? fallback.hero_image_alt,
+      image: resolveMedia(item.image || item.image_primary, fallback.image),
+      image_alt: item.image_alt || item.image_primary_alt || fallback.image_alt,
+      hero_image: resolveMedia(item.hero_image || item.image || item.image_primary, fallback.hero_image),
+      hero_image_alt: item.hero_image_alt || item.image_alt || fallback.hero_image_alt,
     };
   });
 }

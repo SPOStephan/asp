@@ -4,6 +4,7 @@ import { Reveal } from './Reveal';
 import { Plus, Minus } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { culinaryVenueHref } from '../lib/culinary';
+import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { useSection } from '../context/HotelContext';
 
 interface Restaurant {
@@ -32,7 +33,7 @@ export function Culinary() {
     <section className="culinary" id="kulinarik">
       <Reveal>
         <div className="culinary__hero" data-cms-focus="title_line1">
-          <img src={data.hero_image} alt={data.hero_image_alt || ''} />
+          <img src={resolveMedia(data.hero_image, MUSTER_MEDIA.culinary)} alt={data.hero_image_alt || ''} />
           <div className="culinary__hero-overlay" />
           <div className="culinary__hero-content">
             <p className="eyebrow">{data.eyebrow}</p>

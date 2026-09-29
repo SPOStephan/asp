@@ -1,3 +1,5 @@
+import { resolveMedia } from './media';
+
 export interface CulinaryFact {
   label: string;
   value: string;
@@ -126,8 +128,8 @@ export function resolveCulinaryVenues(items?: RawVenue[]): CulinaryVenue[] {
       text: item.text ?? fallback.text,
       details: resolveFacts(item.details, fallback.details),
       includes: item.includes?.length ? item.includes : fallback.includes,
-      image: item.image ?? fallback.image,
-      image_alt: item.image_alt ?? item.alt ?? fallback.image_alt,
+      image: resolveMedia(item.image, fallback.image),
+      image_alt: item.image_alt || item.alt || fallback.image_alt,
     };
   });
 }

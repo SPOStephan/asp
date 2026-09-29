@@ -6,6 +6,7 @@ import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { resolveMedia } from '../lib/media';
 import {
   CULINARY_PAGE_FALLBACK,
   resolveCulinaryRhythm,
@@ -47,8 +48,8 @@ export function CulinaryPage() {
     <CmsSection sectionKey="culinary_page" label="Kulinarik">
     <main>
       <SubpageHero
-        image={data.hero_image ?? CULINARY_PAGE_FALLBACK.hero_image}
-        imageAlt={data.hero_image_alt ?? home?.hero_image_alt ?? CULINARY_PAGE_FALLBACK.hero_image_alt}
+        image={resolveMedia(data.hero_image, CULINARY_PAGE_FALLBACK.hero_image)}
+        imageAlt={data.hero_image_alt || home?.hero_image_alt || CULINARY_PAGE_FALLBACK.hero_image_alt}
         eyebrow={page?.eyebrow ?? CULINARY_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? CULINARY_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? CULINARY_PAGE_FALLBACK.subtitle}

@@ -179,8 +179,8 @@ export function AdminHotelFormPage() {
       </p>
       <h2>{isNew ? 'Neues Hotel' : 'Hotel bearbeiten'}</h2>
       <p className="lead">
-        Stammdaten und die Seiten, die dieses Haus bekommt. Für einen neuen Piloten Inhalte vom Ambassador kopieren —
-        dann stehen Texte, Bilder und FAQ sofort. Weitere Vorlagen liegen in der Bibliothek.
+        Stammdaten und die Seiten, die dieses Haus bekommt. Bilder (Logo, Header, Galerie) sitzen im CMS — ohne Kopie
+        bleiben sie leer, die Seite zeigt dann Muster-Platzhalter. Für einen Piloten Inhalte vom Ambassador kopieren.
       </p>
       {!isNew && publicHotelOrigin(parseDomains(form.domains)) ? (
         <p className="admin-actions">
@@ -285,7 +285,7 @@ export function AdminHotelFormPage() {
           <p className="admin-muted">
             {cloneContent
               ? 'Haken steuert, welche Seiten erreichbar sind. Die kopierten Inhalte bleiben erhalten.'
-              : 'Haken = leerer Container aus dem Ambassador-Layout. Inhalte füllt ihr später im Editor.'}
+              : 'Haken = leerer Container. Logo und Header bekommen Muster-Platzhalter, den Rest füllt ihr im Editor oder per Kopie.'}
           </p>
           {[...system, ...library].map((page) => (
             <label key={page.template_key} className="admin-choice">

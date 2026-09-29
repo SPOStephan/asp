@@ -5,6 +5,7 @@ import { GalleryViewer } from '../components/GalleryViewer';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { resolveMedia } from '../lib/media';
 import {
   classifyImpressionShape,
   filterImpressions,
@@ -72,8 +73,8 @@ export function ImpressionsPage() {
     <CmsSection sectionKey="impressions_page" label="Impressionen">
     <main>
       <SubpageHero
-        image={data.hero_image ?? IMPRESSIONS_PAGE_FALLBACK.hero_image}
-        imageAlt={data.hero_image_alt ?? IMPRESSIONS_PAGE_FALLBACK.hero_image_alt}
+        image={resolveMedia(data.hero_image, IMPRESSIONS_PAGE_FALLBACK.hero_image)}
+        imageAlt={data.hero_image_alt || IMPRESSIONS_PAGE_FALLBACK.hero_image_alt}
         eyebrow={page?.eyebrow ?? IMPRESSIONS_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? IMPRESSIONS_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? IMPRESSIONS_PAGE_FALLBACK.subtitle}
