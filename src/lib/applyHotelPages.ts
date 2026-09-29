@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { isHotelSlugConflict } from './hotelSave';
 import {
   pageRowsForHotel,
   rowToTemplate,
@@ -6,6 +7,44 @@ import {
   SYSTEM_TEMPLATES,
   type PageTemplate,
 } from './pageTemplates';
+
+export { findHotelBySlug, isHotelSlugConflict } from './hotelSave';
+
+export async function saveHotelRecord(
+  payload: Record<string, unknown> & { slug: string },
+  existingId?: string,
+): Promise<{ id?: string; error?: string; recovered?: boolean }> {
+  if (existingId) {
+    const result = await supabase.from('hotels').update(payload).eq('id', existingId).select('id').single();
+    if (result.error || !result.data) {
+      return { error: result.error?.message ?? 'Hotel konnte nicht gespeichert werden.' };
+    }
+    return { id: String(result.data.id) };
+  }
+
+  const inserted = await supabase.from('hotels').insert(payload).select('id').single();
+  if (!inserted.error && inserted.data) {
+    return { id: String(inserted.data.id) };
+  }
+
+  if (isHotelSlugConflict(inserted.error?.message)) {
+    const existing = await supabase.from('hotels').select('id').eq('slug', payload.slug).maybeSingle();
+    if (existing.data?.id) {
+      const updated = await supabase
+        .from('hotels')
+        .update(payload)
+        .eq('id', existing.data.id)
+        .select('id')
+        .single();
+      if (updated.error || !updated.data) {
+        return { error: updated.error?.message ?? 'Hotel konnte nicht gespeichert werden.' };
+      }
+      return { id: String(updated.data.id), recovered: true };
+    }
+  }
+
+  return { error: inserted.error?.message ?? 'Hotel konnte nicht gespeichert werden.' };
+}
 
 export async function loadPageTemplates(): Promise<PageTemplate[]> {
   const { data, error } = await supabase
