@@ -21,7 +21,10 @@ const EMPTY = {
 function explainHotelSaveError(message?: string | null) {
   if (!message) return 'Hotel konnte nicht gespeichert werden.';
   if (/hotel_pages_page_key_check/i.test(message)) {
-    return 'Supabase blockiert neue Seiten-Keys (home, impressum, …). In SQL Editor ausführen: ALTER TABLE hotel_pages DROP CONSTRAINT IF EXISTS hotel_pages_page_key_check; Danach Hotel erneut speichern.';
+    return 'Supabase blockiert neue Seiten-Keys (home, impressum, …). In SQL Editor ausführen: ALTER TABLE hotel_pages DROP CONSTRAINT IF EXISTS hotel_pages_page_key_check; Danach das vorhandene Hotel öffnen und speichern — nicht noch einmal anlegen.';
+  }
+  if (/hotels_slug_key/i.test(message)) {
+    return 'Dieses Hotel existiert schon (gleicher Slug) vom ersten Versuch. Zurück zur Hotel-Liste, das Haus öffnen, Inhalte kopieren anhaken und speichern.';
   }
   return message;
 }
@@ -45,21 +48,22 @@ export function AdminHotelFormPage() {
   const [pages, setPages] = useState<Record<string, boolean>>({});
   const [hotels, setHotels] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [cloneFromId, setCloneFromId] = useState('');
-  const [cloneContent, setCloneContent] = useState(true);
+  const [cloneContent, setCloneContent] = useState(isNew);
 
   useEffect(() => {
-    if (!isNew) return;
     void supabase
       .from('hotels')
       .select('id, name, slug')
       .order('name')
       .then(({ data }) => {
-        const list = (data ?? []) as Array<{ id: string; name: string; slug: string }>;
+        const list = ((data ?? []) as Array<{ id: string; name: string; slug: string }>).filter(
+          (hotel) => hotel.id !== id,
+        );
         setHotels(list);
         const ambassador = list.find((hotel) => hotel.slug === 'ambassador-hotel-spa');
         setCloneFromId(ambassador?.id ?? list[0]?.id ?? '');
       });
-  }, [isNew]);
+  }, [id]);
 
   useEffect(() => {
     void loadPageTemplates().then((list) => {
@@ -150,7 +154,7 @@ export function AdminHotelFormPage() {
       setBusy(false);
       return;
     }
-    if (isNew && cloneContent && cloneFromId) {
+    if (cloneContent && cloneFromId) {
       const cloned = await cloneHotelContent(cloneFromId, hotelId);
       if (cloned.error) {
         setError(explainHotelSaveError(cloned.error));
@@ -233,12 +237,14 @@ export function AdminHotelFormPage() {
             </label>
           ))}
         </fieldset>
-        {isNew ? (
+        {hotels.length ? (
           <fieldset>
             <legend>Startinhalt</legend>
             <label className="admin-choice">
               <input type="checkbox" checked={cloneContent} onChange={(event) => setCloneContent(event.target.checked)} />
-              Inhalte eines bestehenden Hotels kopieren (Blöcke, Texte, Bilder, FAQ)
+              {isNew
+                ? 'Inhalte eines bestehenden Hotels kopieren (Blöcke, Texte, Bilder, FAQ)'
+                : 'Inhalte jetzt von einem bestehenden Hotel übernehmen (überschreibt die Blöcke dieses Hauses)'}
             </label>
             {cloneContent ? (
               <label>
@@ -259,7 +265,7 @@ export function AdminHotelFormPage() {
         <fieldset>
           <legend>Seiten für dieses Hotel</legend>
           <p className="admin-muted">
-            {cloneContent && isNew
+            {cloneContent
               ? 'Haken steuert, welche Seiten erreichbar sind. Die kopierten Inhalte bleiben erhalten.'
               : 'Haken = leerer Container aus dem Ambassador-Layout. Inhalte füllt ihr später im Editor.'}
           </p>
