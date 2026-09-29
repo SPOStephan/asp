@@ -32,7 +32,11 @@ export function AdminHotelsPage() {
       <div className="admin-row">
         <div>
           <h2>Hotels</h2>
-          <p className="lead">Ambassador bleibt der Live-Pilot. Plus legt ein weiteres Haus an — Inhalte können vom Ambassador kopiert werden.</p>
+          <p className="lead">
+            Ambassador bleibt der Live-Pilot. Plus legt ein weiteres Haus an — Inhalte können vom Ambassador
+            kopiert werden. Ein fehlgeschlagener erster Versuch legt das Haus trotzdem an: dann das vorhandene
+            öffnen, nicht noch einmal + Hotel.
+          </p>
         </div>
         <Link className="admin-btn" to="/admin/hotels/new">
           + Hotel

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { findHotelBySlug, isHotelSlugConflict } from '../src/lib/hotelSave';
 import {
   defaultSelectedKeys,
   emptyContainer,
@@ -64,10 +65,20 @@ assert.deepEqual(draft.section_keys, ['page_hochzeit']);
 assert.equal(matchesTemplateQuery(draft, 'events'), true);
 assert.equal(matchesTemplateQuery(draft, 'wellness'), false);
 
+assert.equal(
+  isHotelSlugConflict('duplicate key value violates unique constraint "hotels_slug_key"'),
+  true,
+);
+assert.equal(isHotelSlugConflict('hotel_pages_page_key_check'), false);
+assert.equal(findHotelBySlug([{ id: '1', slug: 'pilot-x' }], 'Pilot-X')?.id, '1');
+assert.equal(findHotelBySlug([{ id: '1', slug: 'pilot-x' }], ''), undefined);
+
 const form = readFileSync(new URL('../src/admin/pages/AdminHotelFormPage.tsx', import.meta.url), 'utf8');
 assert.match(form, /applyHotelPageSelection/);
+assert.match(form, /saveHotelRecord/);
 assert.match(form, /defaultSelectedKeys/);
 assert.match(form, /Seiten für dieses Hotel/);
+assert.match(form, /findHotelBySlug/);
 
 const library = readFileSync(new URL('../src/admin/pages/AdminTemplatesPage.tsx', import.meta.url), 'utf8');
 assert.match(library, /Seiten-Bibliothek/);
