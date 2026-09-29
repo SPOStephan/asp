@@ -10,7 +10,8 @@ import {
   isCmsFrameMessage,
   toCmsFrameHref,
 } from './cmsFrame';
-import { keepLiveMedia, setPath } from './cmsDraft';
+import { fieldKind, keepLiveMedia, setPath } from './cmsDraft';
+import { writeLiveMedia } from './cmsLiveMedia';
 import { removedRecordIds } from './cmsHidden';
 import type { FocalDevice } from './cmsFocal';
 import { createUndoStack } from './cmsUndo';
@@ -205,9 +206,24 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     setDraftTick((tick) => tick + 1);
   }
 
+  async function persistLiveSection(sectionKey: string, data: Record<string, unknown>) {
+    if (!hotel) return;
+    const merged = keepLiveMedia(data, contentRef.current?.sections[sectionKey]);
+    const result = await supabase.from('hotel_sections').upsert(
+      { hotel_id: hotel.id, section_key: sectionKey, data: merged },
+      { onConflict: 'hotel_id,section_key' },
+    );
+    if (result.error) setSaveError(result.error.message);
+  }
+
   function applyField(sectionKey: string, path: string, value: unknown, quiet = false) {
     const current = contentRef.current?.sections[sectionKey] ?? {};
-    preview(sectionKey, setPath(current, path, value), quiet);
+    const next = setPath(current, path, value);
+    if (typeof value === 'string' && fieldKind(path, value) === 'image' && value.trim()) {
+      writeLiveMedia(sectionKey, path, value);
+      void persistLiveSection(sectionKey, next);
+    }
+    preview(sectionKey, next, quiet);
     if (!quiet) setDraftTick((tick) => tick + 1);
   }
 

@@ -145,8 +145,7 @@ export function CmsImageDialog() {
         <header>
           <strong>Bild nach Bunny</strong>
           <p>
-            {formatImageHint(hint)}. Datei wählen lädt automatisch als WebP nach Bunny und setzt das Bild in der
-            Vorschau. Danach Speichern.
+            {formatImageHint(hint)}. Datei wählen legt das WebP nach Bunny und schreibt es direkt ins Layout.
           </p>
         </header>
         <input
@@ -209,7 +208,7 @@ export function CmsImageDialog() {
         {busy ? <p className="cms-muted">Wird als WebP optimiert und nach Bunny gelegt…</p> : null}
         {appliedUrl ? (
           <p className="cms-muted">
-            WebP übernommen — das Bild steht in der Vorschau. Zuschnitt ändern und erneut übernehmen, dann Speichern.
+            WebP ist im Layout. Zuschnitt ändern und erneut übernehmen, wenn der Ausschnitt noch nicht stimmt.
           </p>
         ) : null}
         <label className="cms-field">
