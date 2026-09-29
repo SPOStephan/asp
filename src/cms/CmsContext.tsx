@@ -10,12 +10,13 @@ import {
   isCmsFrameMessage,
   toCmsFrameHref,
 } from './cmsFrame';
-import { setPath } from './cmsDraft';
+import { keepLiveMedia, setPath } from './cmsDraft';
 import { removedRecordIds } from './cmsHidden';
 import type { FocalDevice } from './cmsFocal';
 import { createUndoStack } from './cmsUndo';
 import {
   hitKind,
+  inferAltPath,
   isPlainTextHost,
   selectionFromEvent,
   type CmsImageRequest,
@@ -259,6 +260,11 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       const kind = hitKind(next, event.target);
       const path = next.path;
       if (kind === 'image') {
+        if (path) {
+          const request = { section: next.section, path, altPath: inferAltPath(path) };
+          if (frameModeRef.current) postPeerRef.current({ type: 'open-image', request });
+          else setImageRequest(request);
+        }
         return;
       }
       if (kind === 'text' && path && isPlainTextHost(event.target instanceof Element ? event.target.closest('[data-cms-path]') : null)) {
@@ -320,10 +326,11 @@ export function CmsProvider({ children }: { children: ReactNode }) {
 
   async function saveSection(sectionKey: string, data: Record<string, unknown>) {
     if (!hotel) return false;
+    const merged = keepLiveMedia(data, contentRef.current?.sections[sectionKey]);
     setSaving(true);
     setSaveError(null);
     const result = await supabase.from('hotel_sections').upsert(
-      { hotel_id: hotel.id, section_key: sectionKey, data },
+      { hotel_id: hotel.id, section_key: sectionKey, data: merged },
       { onConflict: 'hotel_id,section_key' },
     );
     setSaving(false);
@@ -331,7 +338,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       setSaveError(result.error.message);
       return false;
     }
-    patchSection(sectionKey, data);
+    patchSection(sectionKey, merged);
     setDirty((current) => ({ ...current, [sectionKey]: false }));
     return true;
   }

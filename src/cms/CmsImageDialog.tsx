@@ -104,7 +104,11 @@ export function CmsImageDialog() {
   }
 
   async function upload() {
-    if (!image || !hotel) return;
+    if (!image) return;
+    if (!hotel) {
+      setError('Hotel noch nicht geladen. Bitte kurz warten und noch einmal auf Hochladen klicken.');
+      return;
+    }
     setBusy(true);
     setError(null);
     try {

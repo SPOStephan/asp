@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
-import { fieldKind, isLongText, isPlainObject, shouldPublishPreview } from './cmsDraft';
+import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
 import { keepLiveFocals } from './cmsFocal';
 import {
   CMS_DETAIL_LABELS,
@@ -25,10 +25,12 @@ const CUSTOM_SECTIONS = new Set(['navbar', 'hero', 'welcome', 'discover', 'rooms
 
 function useLivePreview(sectionKey: string, payload: Record<string, unknown>) {
   const cms = useCms();
+  const live = useSection(sectionKey);
+  const merged = keepLiveMedia(payload, live);
   const preview = cms?.preview;
   const previewRef = useRef(preview);
   previewRef.current = preview;
-  const serial = JSON.stringify(payload);
+  const serial = JSON.stringify(merged);
   const lastSerial = useRef<string | null>(null);
   useEffect(() => {
     if (!shouldPublishPreview(serial, lastSerial.current)) {
@@ -38,6 +40,7 @@ function useLivePreview(sectionKey: string, payload: Record<string, unknown>) {
     lastSerial.current = serial;
     previewRef.current?.(sectionKey, JSON.parse(serial) as Record<string, unknown>);
   }, [sectionKey, serial]);
+  return merged;
 }
 
 function Field({
@@ -241,8 +244,8 @@ function NavbarFields() {
         Zwei Dateien: weiß auf dem Headerbild, farbig auf der hellen Leiste nach dem Scrollen. Klick auf das Logo
         in der Vorschau öffnet diese Felder.
       </p>
-      <CmsImageField focus="logo" label="Logo weiß (auf dem Header)" value={draft.logo_white} section="navbar" path="logo_white" />
-      <CmsImageField focus="logo" label="Logo farbig (helle Leiste)" value={draft.logo_normal} section="navbar" path="logo_normal" />
+      <CmsImageField focus="logo" label="Logo weiß (auf dem Header)" value={String(data.logo_white || draft.logo_white)} section="navbar" path="logo_white" />
+      <CmsImageField focus="logo" label="Logo farbig (helle Leiste)" value={String(data.logo_normal || draft.logo_normal)} section="navbar" path="logo_normal" />
       <SaveBar sectionKey="navbar" onSave={() => cms!.saveSection('navbar', payload)} />
     </form>
   );
@@ -284,7 +287,7 @@ function HeroFields() {
       <h3>Hero</h3>
       <Field focus="title" path="title" label="Titel" value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
-      <CmsImageField focus="image" label="Bild" value={draft.hero_image} section="hero" path="hero_image" />
+      <CmsImageField focus="image" label="Bild" value={String(data.hero_image || draft.hero_image)} section="hero" path="hero_image" />
       <Field label="Alt-Text" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
       <p className="cms-muted">
         Ausschnitt: oben Desktop oder Mobil wählen, dann das Bild ziehen. Mit + / − den Ausschnitt zoomen.
@@ -379,9 +382,9 @@ function DiscoverFields() {
       <Field focus="head" path="eyebrow" label="Eyebrow" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
       <Field focus="head" path="title" label="Titel" value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
       <Field focus="head" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
-      <CmsImageField focus="feature_left" label="Bild links" value={draft.feature_image_left} section="discover" path="feature_image_left" />
+      <CmsImageField focus="feature_left" label="Bild links" value={String(data.feature_image_left || draft.feature_image_left)} section="discover" path="feature_image_left" />
       <Field label="Alt links" value={draft.feature_image_left_alt} onChange={(feature_image_left_alt) => setDraft({ ...draft, feature_image_left_alt })} />
-      <CmsImageField focus="feature_right" label="Bild rechts" value={draft.feature_image_right} section="discover" path="feature_image_right" />
+      <CmsImageField focus="feature_right" label="Bild rechts" value={String(data.feature_image_right || draft.feature_image_right)} section="discover" path="feature_image_right" />
       <Field label="Alt rechts" value={draft.feature_image_right_alt} onChange={(feature_image_right_alt) => setDraft({ ...draft, feature_image_right_alt })} />
       {draft.tiles.map((tile: Record<string, string>, index: number) => (
         <fieldset key={index} className="cms-tile" data-cms-panel-focus={`tiles:${index}`}>
@@ -524,7 +527,7 @@ function RoomsFields() {
       <Field focus="title" path="title" label="Titel" value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <Field focus="intro" path="intro" label="Intro" value={draft.intro} onChange={(intro) => setDraft({ ...draft, intro })} multiline />
-      <CmsImageField focus="image" label="Hero-Bild" value={draft.hero_image} section="rooms_page" path="hero_image" />
+      <CmsImageField focus="image" label="Hero-Bild" value={String(base.hero_image || draft.hero_image)} section="rooms_page" path="hero_image" />
       <Field label="Hero-Alt" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
       <label className="cms-choice">
         <input type="checkbox" checked={draft.show_filters} onChange={(event) => setDraft({ ...draft, show_filters: event.target.checked })} />

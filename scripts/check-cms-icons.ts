@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { fieldKind } from '../src/cms/cmsDraft';
+import { fieldKind, keepLiveMedia } from '../src/cms/cmsDraft';
 import { isHiddenMetaPath, sectionDisplayName } from '../src/cms/cmsHidden';
 import {
   generateLucideMark,
@@ -19,6 +19,12 @@ assert.equal(fieldKind('icon_color'), 'color');
 assert.equal(fieldKind('items.0.icon_color'), 'color');
 assert.equal(fieldKind('logo_normal'), 'image');
 assert.equal(fieldKind('logo_white'), 'image');
+
+assert.equal(
+  keepLiveMedia({ hero_image: '/old.jpg', title: 'Neu' }, { hero_image: '/bunny/neu.webp', title: 'Alt' }).hero_image,
+  '/bunny/neu.webp',
+);
+assert.equal(keepLiveMedia({ hero_image: '/old.jpg', title: 'Neu' }, { hero_image: '/bunny/neu.webp', title: 'Alt' }).title, 'Neu');
 
 assert.equal(matchIconFromDescription('Hundewiese für Hunde'), 'Dog');
 assert.equal(matchIconFromDescription('kostenloses WLAN im ganzen Haus'), 'Wifi');
