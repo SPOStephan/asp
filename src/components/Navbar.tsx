@@ -9,7 +9,7 @@ import { filterMenuGroups, pageKeyFromHref } from '../lib/musterPages';
 import { useMobileChrome } from '../context/MobileChromeContext';
 import { remapSiteHref } from '../lib/links';
 import { isBookingHash, usePhoneChrome } from '../lib/phoneChrome';
-import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
+import { MUSTER_MEDIA, NAVBAR_CTA, resolveMedia } from '../lib/media';
 import { menuGroupHref } from '../lib/wellness';
 
 interface NavLink {
@@ -399,6 +399,10 @@ export function Navbar() {
   const languages: LanguageOption[] = data.languages?.length ? data.languages : FALLBACK_LANGUAGES;
   const currentLang = languages.find((item) => item.code === lang) ?? languages[0];
   const lightBar = (!isPhone && scrolled) || menuOpen;
+  const inquireLabel = resolveMedia(data.cta_text, NAVBAR_CTA.inquire);
+  const bookLabel = resolveMedia(data.cta_solid_text, NAVBAR_CTA.book);
+  const bookHref = resolveMedia(data.cta_solid_href, NAVBAR_CTA.bookHref);
+  const inquireHref = resolveMedia(data.cta_href, bookHref);
 
   return (
     <nav
@@ -511,18 +515,18 @@ export function Navbar() {
                 )}
               </div>
               <div className="navbar__actions">
-                <button className="navbar__cta" onClick={() => handleNavClick(data.cta_solid_href)}>
-                  {data.cta_text}
+                <button className="navbar__cta" onClick={() => handleNavClick(inquireHref)}>
+                  {inquireLabel}
                 </button>
                 <a
                   className="navbar__cta navbar__cta--solid"
-                  href={data.cta_solid_href}
+                  href={bookHref}
                   onClick={(e) => {
                     e.preventDefault();
-                    handleNavClick(data.cta_solid_href);
+                    handleNavClick(bookHref);
                   }}
                 >
-                  {data.cta_solid_text}
+                  {bookLabel}
                 </a>
               </div>
             </>
@@ -555,11 +559,11 @@ export function Navbar() {
                 openGroup={openGroup}
                 onOpenGroup={setOpenGroup}
                 onNavigate={handleNavClick}
-                inquireLabel={data.cta_text}
-                inquireHref={data.cta_solid_href}
+                inquireLabel={inquireLabel}
+                inquireHref={inquireHref}
                 showInquire={data.show_inquire === true}
-                bookLabel={data.cta_solid_text}
-                bookHref={data.cta_solid_href}
+                bookLabel={bookLabel}
+                bookHref={bookHref}
                 onBook={
                   isPhone
                     ? () => {
