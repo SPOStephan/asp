@@ -97,6 +97,7 @@ export function CmsImageDialog() {
       setImage(next);
       setFileName(file.name);
       setCrop(nextCrop);
+      cms.applyField(request.section, request.path, next.src);
       await pushUpload(next, nextCrop);
     } catch (err) {
       setImage(null);
@@ -145,7 +146,7 @@ export function CmsImageDialog() {
         <header>
           <strong>Bild nach Bunny</strong>
           <p>
-            {formatImageHint(hint)}. Datei wählen legt das WebP nach Bunny und schreibt es direkt ins Layout.
+            {formatImageHint(hint)}. Datei wählen setzt das Bild sofort ins Layout und legt das WebP nach Bunny.
           </p>
         </header>
         <input

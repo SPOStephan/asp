@@ -1,18 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { CMS_PHONE_HEIGHT, CMS_PHONE_WIDTH, toCmsFrameHref } from './cmsFrame';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { CMS_PHONE_HEIGHT, CMS_PHONE_WIDTH } from './cmsFrame';
 import { useCms } from './CmsContext';
 
-export function CmsPreviewFrame() {
+export function CmsPreviewFrame({ children }: { children: ReactNode }) {
   const cms = useCms();
-  const location = useLocation();
   const phone = cms?.focalPreview === 'mobile';
-  const device = phone ? 'mobile' : 'desktop';
-  const src = toCmsFrameHref(location.pathname, device, location.search, location.hash);
   const previewRef = useRef<HTMLDivElement>(null);
-  const frameRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState(1);
-  const setFrameWindow = cms?.setFrameWindow;
 
   useEffect(() => {
     const preview = previewRef.current;
@@ -31,10 +25,6 @@ export function CmsPreviewFrame() {
     return () => observer.disconnect();
   }, [phone]);
 
-  useEffect(() => {
-    return () => setFrameWindow?.(null);
-  }, [setFrameWindow]);
-
   return (
     <div ref={previewRef} className={`cms-preview${phone ? ' is-phone' : ' is-desktop'}`}>
       <div
@@ -45,18 +35,8 @@ export function CmsPreviewFrame() {
             : undefined
         }
       >
-        <div
-          className="cms-device"
-          style={phone ? { transform: `scale(${scale})` } : undefined}
-        >
-          <iframe
-            key={device}
-            ref={frameRef}
-            className="cms-frame"
-            title="Seitenvorschau"
-            src={src}
-            onLoad={() => setFrameWindow?.(frameRef.current?.contentWindow ?? null)}
-          />
+        <div className="cms-device" style={phone ? { transform: `scale(${scale})` } : undefined}>
+          <div className="cms-frame">{children}</div>
         </div>
       </div>
     </div>

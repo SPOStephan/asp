@@ -74,6 +74,8 @@
   display: block;
   border: 0;
   background: #fff;
+  overflow: auto;
+  height: 100%;
 }
 .cms-preview.is-phone .cms-frame {
   width: 390px;
@@ -365,6 +367,9 @@ body.cms-on:not(.cms-frame) .navbar {
   left: 0;
   right: 0;
 }
+.cms-preview .navbar {
+  position: relative;
+}
 body.cms-on:not(.cms-frame) .navbar__backdrop,
 body.cms-on:not(.cms-frame) .navbar__panel {
   left: 0;
@@ -391,6 +396,14 @@ body.cms-on:not(.cms-frame) .subpage-hero__fixed {
   right: 0;
   bottom: auto;
   height: 100vh;
+}
+.cms-preview .subpage-hero {
+  position: relative;
+}
+.cms-preview .subpage-hero__fixed {
+  position: relative;
+  inset: auto;
+  height: min(80vh, 720px);
 }
 body.cms-on .hero__content {
   pointer-events: none;
