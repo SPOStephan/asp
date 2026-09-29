@@ -1,3 +1,5 @@
+import { resolveMedia } from './media';
+
 export type RoomTag = 'zimmer' | 'suite' | 'meerblick' | 'familie';
 
 export type RoomFilterId = 'alle' | RoomTag;
@@ -296,10 +298,10 @@ export function resolveRooms(pageItems?: RawRoom[]): RoomStory[] {
       price_unit: item.price_unit ?? fallback.price_unit,
       tags: asTags(item.tags, fallback.tags),
       amenities: item.amenities?.length ? item.amenities : fallback.amenities,
-      image: item.image ?? item.image_primary ?? fallback.image,
-      image_alt: item.image_alt ?? item.image_primary_alt ?? fallback.image_alt,
-      hero_image: item.hero_image ?? item.image ?? item.image_primary ?? fallback.hero_image,
-      hero_image_alt: item.hero_image_alt ?? item.image_alt ?? fallback.hero_image_alt,
+      image: resolveMedia(item.image || item.image_primary, fallback.image),
+      image_alt: item.image_alt || item.image_primary_alt || fallback.image_alt,
+      hero_image: resolveMedia(item.hero_image || item.image || item.image_primary, fallback.hero_image),
+      hero_image_alt: item.hero_image_alt || item.image_alt || fallback.hero_image_alt,
       gallery: asGallery(item.gallery, fallback.gallery),
     };
   });

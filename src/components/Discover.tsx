@@ -1,6 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import { CmsSection } from '../cms/CmsSection';
 import { useHotelContent, useSection } from '../context/HotelContext';
+import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { remapSiteHref } from '../lib/links';
 import { pageKeyFromHref } from '../lib/musterPages';
 import { Reveal } from './Reveal';
@@ -23,10 +24,10 @@ export function Discover() {
     <section className="discover" id="discover">
       <Reveal className="discover__feature-pair">
         <div className="discover__feature-image discover__feature-image--left" data-cms-focus="feature_left" data-cms-path="feature_image_left" data-cms-kind="image">
-          <img src={data.feature_image_left} alt={data.feature_image_left_alt || ''} />
+          <img src={resolveMedia(data.feature_image_left, MUSTER_MEDIA.discoverLeft)} alt={data.feature_image_left_alt || ''} />
         </div>
         <div className="discover__feature-image discover__feature-image--right" data-cms-focus="feature_right" data-cms-path="feature_image_right" data-cms-kind="image">
-          <img src={data.feature_image_right} alt={data.feature_image_right_alt || ''} />
+          <img src={resolveMedia(data.feature_image_right, MUSTER_MEDIA.discoverRight)} alt={data.feature_image_right_alt || ''} />
         </div>
       </Reveal>
 

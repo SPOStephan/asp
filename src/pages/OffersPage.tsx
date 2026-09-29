@@ -5,6 +5,7 @@ import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { resolveMedia } from '../lib/media';
 import { OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
 
 export function OffersPage() {
@@ -29,8 +30,8 @@ export function OffersPage() {
     <CmsSection sectionKey="offers_page" label="Angebote">
     <main>
       <SubpageHero
-        image={data.hero_image ?? OFFERS_PAGE_FALLBACK.hero_image}
-        imageAlt={data.hero_image_alt ?? OFFERS_PAGE_FALLBACK.hero_image_alt}
+        image={resolveMedia(data.hero_image, OFFERS_PAGE_FALLBACK.hero_image)}
+        imageAlt={data.hero_image_alt || OFFERS_PAGE_FALLBACK.hero_image_alt}
         eyebrow={page?.eyebrow ?? OFFERS_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? page?.title_line1 ?? OFFERS_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? page?.title_script ?? OFFERS_PAGE_FALLBACK.subtitle}

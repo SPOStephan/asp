@@ -6,6 +6,7 @@ import { RoomOverlapCard } from '../components/RoomOverlapCard';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { resolveMedia } from '../lib/media';
 import {
   filterRooms,
   isRoomFilter,
@@ -47,8 +48,8 @@ export function RoomsCardsPage() {
     <CmsSection sectionKey="rooms_page" label="Zimmer">
     <main>
       <SubpageHero
-        image={data.hero_image ?? ROOMS_PAGE_FALLBACK.hero_image}
-        imageAlt={data.hero_image_alt ?? ROOMS_PAGE_FALLBACK.hero_image_alt}
+        image={resolveMedia(data.hero_image, ROOMS_PAGE_FALLBACK.hero_image)}
+        imageAlt={data.hero_image_alt || ROOMS_PAGE_FALLBACK.hero_image_alt}
         eyebrow={page?.eyebrow ?? ROOMS_PAGE_FALLBACK.eyebrow}
         title={page?.title ?? ROOMS_PAGE_FALLBACK.title}
         subtitle={page?.subtitle ?? ROOMS_PAGE_FALLBACK.subtitle}
