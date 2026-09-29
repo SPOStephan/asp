@@ -112,6 +112,6 @@ assert.match(chrome, /body\.cms-on:not\(\.cms-frame\) \.subpage-hero__fixed/);
 assert.match(chrome, /\.cms-dock__save/);
 assert.match(chrome, /\.cms-viewport/);
 assert.match(chrome, /\.cms-preview\.is-phone/);
-assert.match(editor, /Ausschnitt: oben Desktop oder Mobil/);
+assert.match(editor, /Ausschnitt: oben Desktop oder Mobil wählen/);
 
 console.log('cms page helpers ok');

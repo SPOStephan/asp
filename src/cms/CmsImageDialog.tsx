@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react';
 import { useHotel } from '../context/HotelContext';
-import { type CropRect, exportWebp, fitRect, loadImage } from './cmsImage';
+import { type CropRect, exportWebp, fitRect, loadImage, zoomRect } from './cmsImage';
+import { formatImageHint, imageHint } from './cmsImageHints';
 import { uploadToBunny } from './cmsUpload';
 import { useCms } from './CmsContext';
 
@@ -36,6 +37,7 @@ export function CmsImageDialog() {
       return;
     }
     setAlt('');
+    setAspect(imageHint(request.section, request.path).aspect);
   }, [request]);
 
   useEffect(() => {
@@ -55,6 +57,13 @@ export function CmsImageDialog() {
   }, [image]);
 
   if (!cms || !request) return null;
+
+  const hint = imageHint(request.section, request.path);
+
+  function nudgeZoom(factor: number) {
+    if (!image) return;
+    setCrop(zoomRect(crop, image.naturalWidth, image.naturalHeight, factor, aspect));
+  }
 
   async function onFile(file: File | undefined) {
     if (!file) return;
@@ -117,7 +126,10 @@ export function CmsImageDialog() {
       <div className="cms-modal__card">
         <header>
           <strong>Bild nach Bunny</strong>
-          <p>Wird als WebP gespeichert, große Dateien werden verkleinert. Optionaler Zuschnitt hier, Header-Ausschnitt danach direkt auf der Seite ziehen.</p>
+          <p>
+            {formatImageHint(hint)}. Wird als WebP gespeichert. Ausschnitt ziehen, mit + / − den Rahmen
+            einpassen.
+          </p>
         </header>
         <input
           ref={inputRef}
@@ -129,6 +141,12 @@ export function CmsImageDialog() {
         <div className="cms-modal__actions">
           <button type="button" className="cms-btn cms-btn--ghost" onClick={() => inputRef.current?.click()}>
             Datei wählen
+          </button>
+          <button type="button" className="cms-btn cms-btn--ghost" disabled={!image} onClick={() => nudgeZoom(0.9)}>
+            + Näher
+          </button>
+          <button type="button" className="cms-btn cms-btn--ghost" disabled={!image} onClick={() => nudgeZoom(1.12)}>
+            − Weiter
           </button>
           {ASPECTS.map((item) => (
             <button
