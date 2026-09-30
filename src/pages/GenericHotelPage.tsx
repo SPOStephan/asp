@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom';
+import { useCms } from '../cms/CmsContext';
 import { CmsSection } from '../cms/CmsSection';
 import { SubpageHero } from '../components/SubpageHero';
 import { usePageEnabled, useSection } from '../context/HotelContext';
 import { genericSectionKey } from '../lib/pageTemplates';
 
 export function GenericHotelPage() {
+  const editing = Boolean(useCms());
   const { slug = '' } = useParams();
   const enabled = usePageEnabled(slug);
   const sectionKey = genericSectionKey(slug);
@@ -42,7 +44,7 @@ export function GenericHotelPage() {
             <div className="container">
               <p className="eyebrow" data-cms-focus="head" data-cms-path="eyebrow">{String(data.eyebrow || '')}</p>
               <h1 className="faq-page__title heading-font" data-cms-focus="title" data-cms-path="title">{title}</h1>
-              {data.subtitle ? <p className="faq-page__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{String(data.subtitle)}</p> : null}
+              {data.subtitle || editing ? <p className="faq-page__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{String(data.subtitle)}</p> : null}
             </div>
           </div>
         )}

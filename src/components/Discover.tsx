@@ -1,21 +1,12 @@
 import { ArrowUpRight } from 'lucide-react';
 import { CmsSection } from '../cms/CmsSection';
-import { useHotelContent, useSection } from '../context/HotelContext';
+import { useSection } from '../context/HotelContext';
 import { MUSTER_MEDIA, resolveDiscoverTiles, resolveMedia } from '../lib/media';
 import { remapSiteHref } from '../lib/links';
-import { pageKeyFromHref } from '../lib/musterPages';
 import { Reveal } from './Reveal';
-
-interface DiscoverTile {
-  image: string;
-  eyebrow: string;
-  title: string;
-  href: string;
-}
 
 export function Discover() {
   const data = useSection('discover');
-  const { isPageEnabled } = useHotelContent();
 
   if (!data) return null;
 
@@ -44,11 +35,8 @@ export function Discover() {
       </div>
 
       <div className="discover__grid">
-        {resolveDiscoverTiles(data.tiles).map((tile: DiscoverTile, i: number) => {
-          const key = pageKeyFromHref(remapSiteHref(tile.href, tile.title));
-          if (key && !isPageEnabled(key)) return null;
-          return (
-          <Reveal key={tile.title} delay={i * 70}>
+        {resolveDiscoverTiles(data.tiles).map((tile, i) => (
+          <Reveal key={tile.id} delay={i * 70}>
             <a className="discover__tile" href={remapSiteHref(tile.href, tile.title)} data-cms-focus={`tiles:${i}`}>
               <div className="discover__tile-image" data-cms-path={`tiles.${i}.image`} data-cms-kind="image">
                 <img src={resolveMedia(tile.image, MUSTER_MEDIA.discoverLeft)} alt={tile.title} loading="lazy" />
@@ -63,8 +51,7 @@ export function Discover() {
               </div>
             </a>
           </Reveal>
-          );
-        })}
+        ))}
       </div>
     </section>
     </CmsSection>

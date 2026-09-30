@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useCms } from '../cms/CmsContext';
 import { useSearchParams } from 'react-router-dom';
 import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from '../components/Reveal';
@@ -17,6 +18,7 @@ import {
 } from '../lib/rooms';
 
 export function RoomsCardsPage() {
+  const editing = Boolean(useCms());
   const hotel = useHotel();
   const page = useSection('rooms_page');
   const data = page ?? ROOMS_PAGE_FALLBACK;
@@ -57,7 +59,7 @@ export function RoomsCardsPage() {
         cms={{ section: 'rooms_page' }}
       >
         <div className="rooms-cards">
-          {data.intro ? <p className="rooms-cards__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
+          {data.intro || editing ? <p className="rooms-cards__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
 
           {data.show_filters !== false ? (
             <div className="rooms-page__filters" role="tablist" aria-label="Zimmer filtern">

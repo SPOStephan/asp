@@ -1,4 +1,5 @@
 import { CmsSection } from '../cms/CmsSection';
+import { useCms } from '../cms/CmsContext';
 import { SubpageHero } from '../components/SubpageHero';
 import { usePageEnabled, useSection } from '../context/HotelContext';
 
@@ -9,6 +10,7 @@ const SECTIONS: Record<string, { label: string; fallbackTitle: string }> = {
 };
 
 export function LegalPage({ pageKey }: { pageKey: 'impressum' | 'datenschutz' | 'agb' }) {
+  const editing = Boolean(useCms());
   const enabled = usePageEnabled(pageKey);
   const meta = SECTIONS[pageKey];
   const sectionKey = `legal_${pageKey}`;
@@ -45,7 +47,7 @@ export function LegalPage({ pageKey }: { pageKey: 'impressum' | 'datenschutz' | 
             <div className="container">
               <p className="eyebrow" data-cms-focus="head" data-cms-path="eyebrow">{String(data.eyebrow || 'Rechtliches')}</p>
               <h1 className="faq-page__title heading-font" data-cms-focus="title" data-cms-path="title">{title}</h1>
-              {data.subtitle ? <p className="faq-page__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{String(data.subtitle)}</p> : null}
+              {data.subtitle || editing ? <p className="faq-page__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{String(data.subtitle)}</p> : null}
             </div>
           </div>
         )}

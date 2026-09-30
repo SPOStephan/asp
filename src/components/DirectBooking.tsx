@@ -1,4 +1,5 @@
 import { CmsSection } from '../cms/CmsSection';
+import { useCms } from '../cms/CmsContext';
 import { Reveal } from './Reveal';
 import { CmsGlyph } from '../cms/CmsGlyph';
 import { TextCta } from './TextCta';
@@ -28,6 +29,7 @@ const FALLBACK = {
 };
 
 export function DirectBooking() {
+  const editing = Boolean(useCms());
   const cms = useSection('direct_booking');
   const data = cms ?? FALLBACK;
   const items: BenefitItem[] = data.items ?? FALLBACK.items;
@@ -40,7 +42,7 @@ export function DirectBooking() {
           <div className="direct-booking__intro" data-cms-focus="title">
             <p className="eyebrow" data-cms-path="eyebrow">{data.eyebrow}</p>
             <h2 className="direct-booking__title heading-font" data-cms-path="title">{data.title}</h2>
-            {data.subtitle ? <p className="direct-booking__subtitle" data-cms-path="subtitle">{data.subtitle}</p> : null}
+            {data.subtitle || editing ? <p className="direct-booking__subtitle" data-cms-path="subtitle">{data.subtitle}</p> : null}
             {data.cta_text ? (
               <TextCta className="direct-booking__link" href={data.cta_href || '#buchung'}>
                 {data.cta_text}

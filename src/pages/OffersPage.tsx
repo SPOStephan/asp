@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useCms } from '../cms/CmsContext';
 import { CmsSection } from '../cms/CmsSection';
 import { IncludeList } from '../components/IncludeList';
 import { Reveal } from '../components/Reveal';
@@ -9,6 +10,7 @@ import { resolveMedia } from '../lib/media';
 import { OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
 
 export function OffersPage() {
+  const editing = Boolean(useCms());
   const hotel = useHotel();
   const page = useSection('offers_page');
   const homeOffers = useSection('offers');
@@ -39,7 +41,7 @@ export function OffersPage() {
         cms={{ section: 'offers_page' }}
       >
         <div className="offers-page">
-          {data.intro ? <p className="offers-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
+          {data.intro || editing ? <p className="offers-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
 
           <section className="offers-page__pair" aria-label="Aktuelle Angebote">
             {items.map((item, index) => (

@@ -25,8 +25,29 @@ export const MUSTER_DISCOVER_TILES = [
   { image: '/yoga-outdoor.webp', eyebrow: 'Balance', title: 'Yoga & Retreats', href: '#wellness' },
 ];
 
-export function resolveDiscoverTiles(tiles: unknown) {
-  return Array.isArray(tiles) && tiles.length ? tiles : MUSTER_DISCOVER_TILES.map((tile) => ({ ...tile }));
+export type DiscoverTile = { id: string; image: string; eyebrow: string; title: string; href: string };
+
+// Every tile carries an id so reordering in the editor keeps its image with it.
+export function resolveDiscoverTiles(tiles: unknown): DiscoverTile[] {
+  const list: Array<Record<string, unknown>> = Array.isArray(tiles) && tiles.length ? tiles : MUSTER_DISCOVER_TILES;
+  const seen = new Set<string>();
+  return list.map((tile, index) => {
+    let id = typeof tile.id === 'string' && tile.id ? tile.id : `tile-${index + 1}`;
+    while (seen.has(id)) id = `${id}-${index + 1}`;
+    seen.add(id);
+    return {
+      ...tile,
+      id,
+      image: String(tile.image ?? ''),
+      eyebrow: String(tile.eyebrow ?? ''),
+      title: String(tile.title ?? ''),
+      href: String(tile.href ?? ''),
+    };
+  });
+}
+
+export function newDiscoverTile(): DiscoverTile {
+  return { id: `tile-${Date.now()}`, image: '', eyebrow: '', title: 'Neue Kachel', href: '' };
 }
 
 export const NAVBAR_CTA = {

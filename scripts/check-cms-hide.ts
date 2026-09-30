@@ -41,7 +41,7 @@ const editor = readFileSync(new URL('../src/cms/CmsEditor.tsx', import.meta.url)
 assert.match(editor, /function ItemDeleteButton/);
 assert.match(editor, /cms-item-delete/);
 assert.match(editor, /isHiddenMetaPath\(path\)/);
-assert.match(editor, /tiles: draft\.tiles\.filter/);
+assert.match(editor, /setTiles\(draft\.tiles\.filter/);
 assert.match(editor, /setFaqs\(faqs\.filter/);
 
 const homeBlog = readFileSync(new URL('../src/components/HomeBlog.tsx', import.meta.url), 'utf8');
