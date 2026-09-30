@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { fillEmptyMedia, MUSTER_MEDIA, NAVBAR_CTA, resolveMedia } from '../src/lib/media';
+import { absoluteMediaUrl, fillEmptyMedia, MUSTER_MEDIA, NAVBAR_CTA, repairMediaUrls, resolveMedia } from '../src/lib/media';
 
 assert.equal(resolveMedia('', MUSTER_MEDIA.hero), MUSTER_MEDIA.hero);
 assert.equal(resolveMedia('   ', MUSTER_MEDIA.logoNormal), MUSTER_MEDIA.logoNormal);
@@ -32,5 +32,13 @@ const nav = readFileSync(new URL('../src/components/Navbar.tsx', import.meta.url
 assert.match(nav, /resolveMedia\(data\.logo_normal/);
 assert.match(nav, /resolveMedia\(data\.cta_text, NAVBAR_CTA\.inquire\)/);
 assert.match(nav, /resolveMedia\(data\.cta_solid_text, NAVBAR_CTA\.book\)/);
+
+assert.equal(absoluteMediaUrl('lohbeck.b-cdn.net/hotels/a/b.webp'), 'https://lohbeck.b-cdn.net/hotels/a/b.webp');
+assert.equal(absoluteMediaUrl('https://lohbeck.b-cdn.net/x.webp'), 'https://lohbeck.b-cdn.net/x.webp');
+assert.equal(absoluteMediaUrl('/asp-start01.jpg'), '/asp-start01.jpg');
+assert.deepEqual(repairMediaUrls({ hero_image: 'lohbeck.b-cdn.net/x.webp', items: [{ image: 'lohbeck.b-cdn.net/y.webp', title: 'Suite' }] }), {
+  hero_image: 'https://lohbeck.b-cdn.net/x.webp',
+  items: [{ image: 'https://lohbeck.b-cdn.net/y.webp', title: 'Suite' }],
+});
 
 console.log('media placeholders ok');

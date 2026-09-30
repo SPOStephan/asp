@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { uploadToBunny } from '../../cms/cmsUpload';
+import { absoluteMediaUrl } from '../../lib/media';
 import { supabase } from '../../lib/supabase';
 
 type MediaRow = {
@@ -90,11 +91,11 @@ export function AdminMediaPage() {
       <div className="admin-media-grid">
         {items.map((item) => (
           <figure key={item.id} className="admin-media-card">
-            <img src={item.bunny_url} alt={item.alt_text ?? ''} />
+            <img src={absoluteMediaUrl(item.bunny_url)} alt={item.alt_text ?? ''} />
             <figcaption>
               {item.alt_text || item.bunny_path}
               <br />
-              <span className="admin-muted">{item.bunny_url}</span>
+              <span className="admin-muted">{absoluteMediaUrl(item.bunny_url)}</span>
             </figcaption>
           </figure>
         ))}
