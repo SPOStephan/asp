@@ -59,6 +59,23 @@ const SECTION_IMAGE_DEFAULTS: Record<string, Record<string, string>> = {
   },
 };
 
+// Uploads saved while BUNNY_CDN_URL lacked https:// hold "zone.b-cdn.net/…",
+// which the browser would resolve as a path on this site.
+const SCHEMELESS_CDN = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.b-cdn\.net\//i;
+
+export function absoluteMediaUrl(value: string) {
+  return SCHEMELESS_CDN.test(value) ? `https://${value}` : value;
+}
+
+export function repairMediaUrls<T>(value: T): T {
+  if (typeof value === 'string') return absoluteMediaUrl(value) as T;
+  if (Array.isArray(value)) return value.map(repairMediaUrls) as T;
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairMediaUrls(item)])) as T;
+  }
+  return value;
+}
+
 export function resolveMedia(value?: string | null, fallback = '') {
   const raw = value?.trim();
   return raw || fallback;

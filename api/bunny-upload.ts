@@ -41,7 +41,8 @@ export default async function handler(request: Request) {
 
   const zone = env('BUNNY_STORAGE_ZONE');
   const accessKey = env('BUNNY_STORAGE_API_KEY');
-  const cdn = env('BUNNY_CDN_URL').replace(/\/$/, '');
+  // Without a scheme the browser reads the CDN host as a path on this site.
+  const cdn = env('BUNNY_CDN_URL').replace(/\/$/, '').replace(/^(?!https?:\/\/)(?=.)/i, 'https://');
   const storageHost = env('BUNNY_STORAGE_HOST') || 'storage.bunnycdn.com';
   const supabaseUrl = env('VITE_SUPABASE_URL');
   const supabaseAnon = env('VITE_SUPABASE_ANON_KEY');

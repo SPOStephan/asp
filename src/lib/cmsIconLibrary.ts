@@ -1,4 +1,5 @@
 import { CMS_ICON_NAMES } from '../cms/cmsIcons';
+import { absoluteMediaUrl } from './media';
 
 export type CmsIconKind = 'lucide' | 'svg' | 'image';
 
@@ -156,7 +157,7 @@ export function rowToIcon(row: Record<string, unknown>): CmsIconRecord {
     name: String(row.name ?? ''),
     kind,
     svg: typeof row.svg === 'string' ? row.svg : null,
-    image_url: typeof row.image_url === 'string' ? row.image_url : null,
+    image_url: typeof row.image_url === 'string' ? absoluteMediaUrl(row.image_url) : null,
     tags: Array.isArray(row.tags) ? row.tags.map((tag) => String(tag)) : [],
     description: String(row.description ?? ''),
   };

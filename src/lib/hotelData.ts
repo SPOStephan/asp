@@ -1,3 +1,4 @@
+import { repairMediaUrls } from './media';
 import { supabase, type Hotel, type HotelSection, type HotelFAQ } from './supabase';
 
 export type HotelContent = {
@@ -54,7 +55,7 @@ export async function loadHotelContent(): Promise<HotelContent> {
 
   const sectionsMap: Record<string, Record<string, any>> = {};
   for (const s of (sectionsResult.data as HotelSection[] | null) ?? []) {
-    sectionsMap[s.section_key] = s.data;
+    sectionsMap[s.section_key] = repairMediaUrls(s.data);
   }
 
   const pages: Record<string, boolean> = {};
