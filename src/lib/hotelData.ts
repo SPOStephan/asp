@@ -1,4 +1,4 @@
-import { repairMediaUrls } from './media';
+import { repairMediaUrls, resolveDiscoverTiles } from './media';
 import { supabase, type Hotel, type HotelSection, type HotelFAQ } from './supabase';
 
 export type HotelContent = {
@@ -56,6 +56,11 @@ export async function loadHotelContent(): Promise<HotelContent> {
   const sectionsMap: Record<string, Record<string, any>> = {};
   for (const s of (sectionsResult.data as HotelSection[] | null) ?? []) {
     sectionsMap[s.section_key] = repairMediaUrls(s.data);
+  }
+  // Hotels created without copying the pilot have an empty Discover grid. Load the
+  // Muster tiles into it so the page, the editor and image uploads share one list.
+  if (sectionsMap.discover) {
+    sectionsMap.discover = { ...sectionsMap.discover, tiles: resolveDiscoverTiles(sectionsMap.discover.tiles) };
   }
 
   const pages: Record<string, boolean> = {};
