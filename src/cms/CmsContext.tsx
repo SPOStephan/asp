@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ensureDiscoverPages } from '../lib/applyHotelPages';
 import { supabase, type HotelFAQ } from '../lib/supabase';
 import { useHotel, useHotelContent } from '../context/HotelContext';
 import {
@@ -61,9 +62,12 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const navigateRef = useRef(navigate);
   navigateRef.current = navigate;
-  const { patchSection, patchFaqs, content } = useHotelContent();
+  const { patchSection, patchFaqs, content, enablePages } = useHotelContent();
   const contentRef = useRef(content);
   contentRef.current = content;
+  const enablePagesRef = useRef(enablePages);
+  enablePagesRef.current = enablePages;
+  const discoverPagesChecked = useRef<string | null>(null);
   const [selected, setSelected] = useState<CmsSelection | null>(null);
   const [dirty, setDirty] = useState<Record<string, boolean>>({});
   const [draftTick, setDraftTick] = useState(0);
@@ -116,6 +120,20 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   frameModeRef.current = frameMode;
   const focalPreviewRef = useRef(focalPreview);
   focalPreviewRef.current = focalPreview;
+
+  const syncDiscoverPages = useCallback(async (tiles: unknown) => {
+    const current = contentRef.current;
+    if (!current) return;
+    const result = await ensureDiscoverPages(current.hotel.id, current.pages, tiles);
+    if (result.error) setSaveError(result.error);
+    else enablePagesRef.current(result.added);
+  }, []);
+
+  useEffect(() => {
+    if (frameMode || !content || discoverPagesChecked.current === content.hotel.id) return;
+    discoverPagesChecked.current = content.hotel.id;
+    void syncDiscoverPages(content.sections.discover?.tiles);
+  }, [content, frameMode, syncDiscoverPages]);
 
   useEffect(() => {
     document.body.classList.add('cms-on');
@@ -370,6 +388,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     }
     patchSection(sectionKey, merged);
     setDirty((current) => ({ ...current, [sectionKey]: false }));
+    if (sectionKey === 'discover') await syncDiscoverPages(merged.tiles);
     return true;
   }
 

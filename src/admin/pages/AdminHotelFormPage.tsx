@@ -163,6 +163,13 @@ export function AdminHotelFormPage() {
         setBusy(false);
         return;
       }
+      // The copied Discover tiles may link to pages the selection left out.
+      const relinked = await applyHotelPageSelection(hotelId, selected, templates);
+      if (relinked.error) {
+        setError(explainHotelSaveError(relinked.error));
+        setBusy(false);
+        return;
+      }
     }
     navigate('/admin');
     setBusy(false);

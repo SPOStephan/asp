@@ -15,6 +15,7 @@ interface HotelContextValue {
   isPageEnabled: (key: MusterPageKey) => boolean;
   patchSection: (sectionKey: string, data: Record<string, unknown>) => void;
   patchFaqs: (faqs: HotelFAQ[]) => void;
+  enablePages: (keys: string[]) => void;
   reload: () => Promise<void>;
 }
 
@@ -25,6 +26,7 @@ const HotelContext = createContext<HotelContextValue>({
   isPageEnabled: () => true,
   patchSection: () => undefined,
   patchFaqs: () => undefined,
+  enablePages: () => undefined,
   reload: async () => undefined,
 });
 
@@ -125,6 +127,16 @@ export function HotelProvider({ children }: { children: ReactNode }) {
               return current;
             }
             return { ...current, faqs };
+          });
+        },
+        enablePages: (keys) => {
+          setContent((current) => {
+            if (!current || !keys.length) return current;
+            const pages = { ...current.pages };
+            keys.forEach((key) => {
+              pages[key] = true;
+            });
+            return { ...current, pages };
           });
         },
         reload: async () => {

@@ -1,3 +1,4 @@
+import { discoverPageKeys, missingDiscoverPages } from './discoverPages';
 import { fillEmptyMedia } from './media';
 import { supabase } from './supabase';
 import { canResumeHotelSlug, isHotelSlugConflict } from './hotelSave';
@@ -63,7 +64,15 @@ export async function applyHotelPageSelection(
   templates?: PageTemplate[],
 ): Promise<{ error?: string }> {
   const catalog = templates ?? (await loadPageTemplates());
-  const rows = pageRowsForHotel(hotelId, catalog, selectedKeys);
+  const discover = await supabase
+    .from('hotel_sections')
+    .select('data')
+    .eq('hotel_id', hotelId)
+    .eq('section_key', 'discover')
+    .maybeSingle();
+  if (discover.error) return { error: discover.error.message };
+  const tiles = (discover.data?.data as Record<string, unknown> | undefined)?.tiles;
+  const rows = pageRowsForHotel(hotelId, catalog, [...selectedKeys, ...discoverPageKeys(tiles)]);
   const pageResult = await supabase.from('hotel_pages').upsert(rows, { onConflict: 'hotel_id,page_key' });
   if (pageResult.error) return { error: pageResult.error.message };
 
@@ -81,7 +90,7 @@ export async function applyHotelPageSelection(
     const filled = await supabase.from('hotel_sections').upsert(patched, { onConflict: 'hotel_id,section_key' });
     if (filled.error) return { error: filled.error.message };
   }
-  const missing = sectionsToSeed(catalog, selectedKeys, have).map((row) => ({
+  const missing = sectionsToSeed(catalog, [...selectedKeys, ...discoverPageKeys(tiles)], have).map((row) => ({
     hotel_id: hotelId,
     section_key: row.section_key,
     data: fillEmptyMedia(row.section_key, row.data),
@@ -91,6 +100,19 @@ export async function applyHotelPageSelection(
     if (sectionResult.error) return { error: sectionResult.error.message };
   }
   return {};
+}
+
+// Switch on every page a Discover tile links to that the hotel does not have yet.
+export async function ensureDiscoverPages(
+  hotelId: string,
+  pages: Record<string, boolean>,
+  tiles: unknown,
+): Promise<{ added: string[]; error?: string }> {
+  const added = missingDiscoverPages(tiles, pages);
+  if (!added.length) return { added };
+  const enabled = Object.keys(pages).filter((key) => pages[key]);
+  const result = await applyHotelPageSelection(hotelId, [...enabled, ...added]);
+  return result.error ? { added: [], error: result.error } : { added };
 }
 
 export async function cloneHotelContent(

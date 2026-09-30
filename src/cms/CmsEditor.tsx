@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
-import { resolveDiscoverTiles } from '../lib/media';
+import { type DiscoverTile, newDiscoverTile, resolveDiscoverTiles } from '../lib/media';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
@@ -384,13 +384,22 @@ function DiscoverFields() {
   );
   useLivePreview('discover', payload);
 
-  function updateTile(index: number, key: string, value: string) {
-    setDraft({
-      ...draft,
-      tiles: draft.tiles.map((tile: Record<string, string>, tileIndex: number) =>
-        tileIndex === index ? { ...tile, [key]: value } : tile,
-      ),
-    });
+  const liveTiles = resolveDiscoverTiles(data.tiles);
+
+  function setTiles(tiles: DiscoverTile[]) {
+    setDraft({ ...draft, tiles });
+  }
+
+  function updateTile(index: number, key: keyof DiscoverTile, value: string) {
+    setTiles(draft.tiles.map((tile, tileIndex) => (tileIndex === index ? { ...tile, [key]: value } : tile)));
+  }
+
+  function moveTile(index: number, step: number) {
+    const target = index + step;
+    if (target < 0 || target >= draft.tiles.length) return;
+    const tiles = draft.tiles.slice();
+    [tiles[index], tiles[target]] = [tiles[target], tiles[index]];
+    setTiles(tiles);
   }
 
   return (
@@ -403,29 +412,41 @@ function DiscoverFields() {
       <Field label="Alt links" value={draft.feature_image_left_alt} onChange={(feature_image_left_alt) => setDraft({ ...draft, feature_image_left_alt })} />
       <CmsImageField focus="feature_right" label="Bild rechts" value={String(data.feature_image_right || draft.feature_image_right)} section="discover" path="feature_image_right" />
       <Field label="Alt rechts" value={draft.feature_image_right_alt} onChange={(feature_image_right_alt) => setDraft({ ...draft, feature_image_right_alt })} />
-      {draft.tiles.map((tile: Record<string, string>, index: number) => (
-        <fieldset key={index} className="cms-tile" data-cms-panel-focus={`tiles:${index}`}>
+      {draft.tiles.map((tile, index) => (
+        <fieldset key={tile.id} className="cms-tile" data-cms-panel-focus={`tiles:${index}`}>
           <legend>Kachel {index + 1}</legend>
-          <ItemDeleteButton
-            label={`Kachel ${index + 1} löschen`}
-            onClick={() =>
-              setDraft({
-                ...draft,
-                tiles: draft.tiles.filter((_: Record<string, string>, tileIndex: number) => tileIndex !== index),
-              })
-            }
-          />
-          <Field label="Titel" value={tile.title ?? ''} onChange={(value) => updateTile(index, 'title', value)} path={`tiles.${index}.title`} />
-          <Field label="Eyebrow" value={tile.eyebrow ?? ''} onChange={(value) => updateTile(index, 'eyebrow', value)} />
+          <div className="cms-tile__actions">
+            <button type="button" className="cms-item-move" disabled={index === 0} onClick={() => moveTile(index, -1)}>
+              ↑ Nach vorn
+            </button>
+            <button
+              type="button"
+              className="cms-item-move"
+              disabled={index === draft.tiles.length - 1}
+              onClick={() => moveTile(index, 1)}
+            >
+              ↓ Nach hinten
+            </button>
+            <ItemDeleteButton
+              label={`Kachel ${index + 1} löschen`}
+              onClick={() => setTiles(draft.tiles.filter((_, tileIndex) => tileIndex !== index))}
+            />
+          </div>
+          <Field label="Titel" value={tile.title} onChange={(value) => updateTile(index, 'title', value)} path={`tiles.${index}.title`} />
+          <Field label="Eyebrow" value={tile.eyebrow} onChange={(value) => updateTile(index, 'eyebrow', value)} />
           <CmsImageField
             label="Bild"
-            value={String(resolveDiscoverTiles(data.tiles)[index]?.image || tile.image || '')}
+            value={String(liveTiles.find((item) => item.id === tile.id)?.image || tile.image)}
             section="discover"
-            path={`tiles.${index}.image`}
+            path={`tiles.${tile.id}.image`}
           />
-          <Field label="Link" value={tile.href ?? ''} onChange={(value) => updateTile(index, 'href', value)} />
+          <Field label="Link" value={tile.href} onChange={(value) => updateTile(index, 'href', value)} />
+          <p className="cms-muted">Zeigt der Link auf eine Seite, die das Hotel noch nicht hat, wird sie beim Speichern angelegt.</p>
         </fieldset>
       ))}
+      <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setTiles([...draft.tiles, newDiscoverTile()])}>
+        Kachel hinzufügen
+      </button>
       <SaveBar sectionKey="discover" onSave={() => cms!.saveSection('discover', payload)} />
     </form>
   );

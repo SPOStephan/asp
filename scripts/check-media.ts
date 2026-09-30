@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { discoverPageKeys, missingDiscoverPages } from '../src/lib/discoverPages';
 import { absoluteMediaUrl, fillEmptyMedia, MUSTER_DISCOVER_TILES, MUSTER_MEDIA, NAVBAR_CTA, repairMediaUrls, resolveDiscoverTiles, resolveMedia } from '../src/lib/media';
 
 assert.equal(resolveMedia('', MUSTER_MEDIA.hero), MUSTER_MEDIA.hero);
@@ -44,7 +45,13 @@ assert.deepEqual(repairMediaUrls({ hero_image: 'lohbeck.b-cdn.net/x.webp', items
 assert.equal(MUSTER_DISCOVER_TILES.length, 9);
 assert.equal(resolveDiscoverTiles(undefined).length, 9);
 assert.equal(resolveDiscoverTiles([]).length, 9);
-assert.deepEqual(resolveDiscoverTiles([{ title: 'Eigene' }]), [{ title: 'Eigene' }]);
+assert.deepEqual(resolveDiscoverTiles([{ title: 'Eigene' }]), [{ id: 'tile-1', image: '', eyebrow: '', title: 'Eigene', href: '' }]);
+assert.deepEqual(resolveDiscoverTiles(undefined).map((tile) => tile.id), MUSTER_DISCOVER_TILES.map((_, index) => `tile-${index + 1}`));
+assert.deepEqual(resolveDiscoverTiles([{ id: 'a' }, { id: 'a' }]).map((tile) => tile.id), ['a', 'a-2']);
+assert.deepEqual(discoverPageKeys(undefined).sort(), ['kulinarik', 'wellness', 'zimmer']);
+assert.deepEqual(missingDiscoverPages([{ title: 'X', href: '/impressionen' }, { title: 'Y', href: '/zimmer' }], { zimmer: true }), ['impressionen']);
+const discover = readFileSync(new URL('../src/components/Discover.tsx', import.meta.url), 'utf8');
+assert.doesNotMatch(discover, /isPageEnabled/, 'Discover tiles are never hidden for disabled pages');
 assert.equal((fillEmptyMedia('discover', {}).tiles as unknown[]).length, 9);
 
 console.log('media placeholders ok');

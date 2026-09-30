@@ -537,3 +537,22 @@ body.cms-on [data-cms-editing] {
   -webkit-mask-size: contain;
   mask-size: contain;
 }
+.cms-tile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cms-item-move {
+  padding: 6px 10px;
+  border: 1px solid #d7d0c4;
+  background: #fff;
+  color: #133b5c;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.cms-item-move:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
