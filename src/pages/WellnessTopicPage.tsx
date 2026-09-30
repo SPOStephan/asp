@@ -93,7 +93,7 @@ export function WellnessTopicPage() {
               </section>
             ))}
 
-            {topic.price_note ? <p className="wellness-topic__price-note" data-cms-path={`${prefix}.price_note`}>{topic.price_note}</p> : null}
+            {topic.price_note || cms ? <p className="wellness-topic__price-note" data-cms-path={`${prefix}.price_note`}>{topic.price_note}</p> : null}
 
             <div className="wellness-topic__links">
               <TextCta href="/wellness/termin">Termin anfragen</TextCta>

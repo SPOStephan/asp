@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useCms as useCmsContext } from '../cms/CmsContext';
 import { CmsHeroPan } from '../cms/CmsHeroPan';
 import { heroFocalStyle } from '../cms/cmsFocal';
 
@@ -33,6 +34,7 @@ export function SubpageHero({
   children,
 }: SubpageHeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
+  const editing = Boolean(useCmsContext());
   const [imageBottom, setImageBottom] = useState(0);
   const [docked, setDocked] = useState(false);
 
@@ -91,7 +93,7 @@ export function SubpageHero({
     <>
       <p className="subpage-hero__eyebrow" {...(editable ? { 'data-cms-focus': 'head', 'data-cms-path': eyebrowPath } : {})}>{eyebrow}</p>
       <h1 className="subpage-hero__title" {...(editable ? { 'data-cms-focus': 'title', 'data-cms-path': titlePath } : {})}>{title}</h1>
-      {subtitle ? <p className="subpage-hero__subtitle" {...(editable ? { 'data-cms-focus': 'subtitle', 'data-cms-path': subtitlePath } : {})}>{subtitle}</p> : null}
+      {subtitle || (editable && editing) ? <p className="subpage-hero__subtitle" {...(editable ? { 'data-cms-focus': 'subtitle', 'data-cms-path': subtitlePath } : {})}>{subtitle}</p> : null}
     </>
   );
 

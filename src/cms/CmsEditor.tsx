@@ -93,9 +93,9 @@ function Field({
     <label className="cms-field" data-cms-panel-focus={focus}>
       {label}
       {long ? (
-        <CmsTextarea value={value} onChange={onChange} minRows={value.length > 180 ? 8 : 5} />
+        <CmsTextarea value={value} onChange={onChange} minRows={value.length > 180 ? 8 : 5} placeholder={label} />
       ) : (
-        <input value={value} onChange={(event) => onChange(event.target.value)} />
+        <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={label} />
       )}
     </label>
   );

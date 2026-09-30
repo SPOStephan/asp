@@ -4,10 +4,12 @@ export function CmsTextarea({
   value,
   onChange,
   minRows = 5,
+  placeholder,
 }: {
   value: string;
   onChange: (value: string) => void;
   minRows?: number;
+  placeholder?: string;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -29,6 +31,7 @@ export function CmsTextarea({
       className="cms-textarea"
       rows={minRows}
       value={value}
+      placeholder={placeholder}
       onChange={(event) => onChange(event.target.value)}
     />
   );

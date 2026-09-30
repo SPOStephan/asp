@@ -556,3 +556,13 @@ body.cms-on [data-cms-editing] {
   opacity: 0.4;
   cursor: default;
 }
+body.cms-on [data-cms-placeholder]:empty::before {
+  content: attr(data-cms-placeholder);
+  display: inline-block;
+  min-width: 4em;
+  padding: 0.1em 0.4em;
+  outline: 1px dashed currentColor;
+  outline-offset: 2px;
+  opacity: 0.6;
+  font-style: italic;
+}

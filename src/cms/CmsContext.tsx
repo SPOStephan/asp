@@ -15,6 +15,7 @@ import { fieldKind, keepLiveMedia, setPath } from './cmsDraft';
 import { writeLiveMedia } from './cmsLiveMedia';
 import { removedRecordIds } from './cmsHidden';
 import type { FocalDevice } from './cmsFocal';
+import { useCmsPlaceholders } from './cmsPlaceholders';
 import { createUndoStack } from './cmsUndo';
 import {
   hitKind,
@@ -76,6 +77,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const saveActionRef = useRef<(() => Promise<unknown>) | null>(null);
   const [canSave, setCanSave] = useState(false);
   const frameMode = isCmsFrame();
+  useCmsPlaceholders();
   const [focalPreview, setFocalPreview] = useState<FocalDevice>(() => cmsFrameDevice());
   const frameWindowRef = useRef<Window | null>(null);
   const pendingPeer = useRef<Array<{ source: string } & Record<string, unknown>>>([]);
