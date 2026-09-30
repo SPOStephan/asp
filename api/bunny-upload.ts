@@ -19,6 +19,23 @@ function safeName(name: string) {
   return base.slice(0, 80) || 'image';
 }
 
+// A pull zone that is not linked to this storage zone answers 404, so the
+// upload looks fine but the image never shows. Check before handing the URL out.
+async function cdnServes(url: string): Promise<{ ok: boolean; status: string }> {
+  let status = 'keine Antwort';
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+      if (response.ok) return { ok: true, status: String(response.status) };
+      status = String(response.status);
+    } catch (err) {
+      status = err instanceof Error ? err.message : status;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 600));
+  }
+  return { ok: false, status };
+}
+
 export default async function handler(request: Request) {
   if (request.method !== 'POST') return json(405, { error: 'Nur POST.' });
 
@@ -76,6 +93,15 @@ export default async function handler(request: Request) {
   }
 
   const bunnyUrl = `${cdn}/${bunnyPath}`;
+  const served = await cdnServes(bunnyUrl);
+  if (!served.ok) {
+    return json(502, {
+      error:
+        `Bunny hat die Datei gespeichert, aber ${bunnyUrl} liefert sie nicht aus (${served.status}). ` +
+        'BUNNY_CDN_URL muss die Pull-Zone sein, die an die Storage-Zone ' + zone + ' hängt (z. B. https://name.b-cdn.net).',
+      bunny_path: bunnyPath,
+    });
+  }
   const { data, error } = await supabase
     .from('media')
     .insert({
