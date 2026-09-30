@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useCms } from '../cms/CmsContext';
 import { useSearchParams } from 'react-router-dom';
-import { CmsSection } from '../cms/CmsSection';
+import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { Reveal } from '../components/Reveal';
 import { RoomOverlapCard } from '../components/RoomOverlapCard';
 import { SubpageHero } from '../components/SubpageHero';
@@ -59,7 +59,9 @@ export function RoomsCardsPage() {
         cms={{ section: 'rooms_page' }}
       >
         <div className="rooms-cards">
-          {data.intro || editing ? <p className="rooms-cards__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
+          <CmsPart sectionKey="rooms_page" part="intro" label="Einleitung">
+            {data.intro || editing ? <p className="rooms-cards__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
+          </CmsPart>
 
           {data.show_filters !== false ? (
             <div className="rooms-page__filters" role="tablist" aria-label="Zimmer filtern">
@@ -78,33 +80,39 @@ export function RoomsCardsPage() {
             </div>
           ) : null}
 
-          <section className="rooms-cards__list" aria-label="Zimmer und Suiten">
-            {visible.length ? (
-              visible.map((room, index) => (
-                <Reveal key={room.id} delay={index * 50}>
-                  <RoomOverlapCard room={room} reverse={index % 2 === 1} />
-                </Reveal>
-              ))
-            ) : (
-              <p className="rooms-cards__empty">Keine Zimmer in dieser Auswahl.</p>
-            )}
-          </section>
+          <CmsPart sectionKey="rooms_page" part="list" label="Zimmerliste">
+            <section className="rooms-cards__list" aria-label="Zimmer und Suiten">
+              {visible.length ? (
+                visible.map((room, index) => (
+                  <Reveal key={room.id} delay={index * 50}>
+                    <RoomOverlapCard room={room} reverse={index % 2 === 1} />
+                  </Reveal>
+                ))
+              ) : (
+                <p className="rooms-cards__empty">Keine Zimmer in dieser Auswahl.</p>
+              )}
+            </section>
+          </CmsPart>
 
-          <p className="rooms-cards__price-note">
-            {data.price_note ?? ROOMS_PAGE_FALLBACK.price_note}
-          </p>
-
-          <section className="rooms-cards__note" data-cms-focus="note">
-            <h2 className="rooms-cards__note-title heading-font">
-              {data.note_title ?? ROOMS_PAGE_FALLBACK.note_title}
-            </h2>
-            <p className="rooms-cards__note-text">
-              {data.note_text ?? ROOMS_PAGE_FALLBACK.note_text}
+          <CmsPart sectionKey="rooms_page" part="price_note" label="Preishinweis">
+            <p className="rooms-cards__price-note">
+              {data.price_note ?? ROOMS_PAGE_FALLBACK.price_note}
             </p>
-            <TextCta href={data.note_cta_href ?? adviceHref}>
-              {data.note_cta ?? ROOMS_PAGE_FALLBACK.note_cta}
-            </TextCta>
-          </section>
+          </CmsPart>
+
+          <CmsPart sectionKey="rooms_page" part="note" label="Hinweis">
+            <section className="rooms-cards__note" data-cms-focus="note">
+              <h2 className="rooms-cards__note-title heading-font">
+                {data.note_title ?? ROOMS_PAGE_FALLBACK.note_title}
+              </h2>
+              <p className="rooms-cards__note-text">
+                {data.note_text ?? ROOMS_PAGE_FALLBACK.note_text}
+              </p>
+              <TextCta href={data.note_cta_href ?? adviceHref}>
+                {data.note_cta ?? ROOMS_PAGE_FALLBACK.note_cta}
+              </TextCta>
+            </section>
+          </CmsPart>
         </div>
       </SubpageHero>
     </main>

@@ -19,6 +19,7 @@ import { useCms } from './CmsContext';
 import { isHiddenMetaPath } from './cmsHidden';
 import { CmsIconPicker } from './CmsIconPicker';
 import { CmsImageField } from './CmsImageField';
+import { CmsLinkPicker } from './CmsLinkPicker';
 import { CmsTextarea } from './CmsTextarea';
 import { CMS_SECTION_LABELS, describeSelection } from './cmsSelect';
 
@@ -390,7 +391,7 @@ function DiscoverFields() {
     setDraft({ ...draft, tiles });
   }
 
-  function updateTile(index: number, key: keyof DiscoverTile, value: string) {
+  function updateTile(index: number, key: 'title' | 'eyebrow' | 'href' | 'image', value: string) {
     setTiles(draft.tiles.map((tile, tileIndex) => (tileIndex === index ? { ...tile, [key]: value } : tile)));
   }
 
@@ -440,8 +441,13 @@ function DiscoverFields() {
             section="discover"
             path={`tiles.${tile.id}.image`}
           />
-          <Field label="Link" value={tile.href} onChange={(value) => updateTile(index, 'href', value)} />
-          <p className="cms-muted">Zeigt der Link auf eine Seite, die das Hotel noch nicht hat, wird sie beim Speichern angelegt.</p>
+          <CmsLinkPicker
+            value={tile.href}
+            context={tile.title}
+            newTab={tile.new_tab === true}
+            onChange={(href) => updateTile(index, 'href', href)}
+            onNewTabChange={(next) => setTiles(draft.tiles.map((item, tileIndex) => (tileIndex === index ? { ...item, new_tab: next } : item)))}
+          />
         </fieldset>
       ))}
       <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setTiles([...draft.tiles, newDiscoverTile()])}>

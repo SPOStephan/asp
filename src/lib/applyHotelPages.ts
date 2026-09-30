@@ -3,7 +3,10 @@ import { fillEmptyMedia } from './media';
 import { supabase } from './supabase';
 import { canResumeHotelSlug, isHotelSlugConflict } from './hotelSave';
 import {
+  GENERIC_SKELETON,
+  genericSectionKey,
   pageRowsForHotel,
+  slugifyTemplateKey,
   rowToTemplate,
   sectionsToSeed,
   SYSTEM_TEMPLATES,
@@ -113,6 +116,28 @@ export async function ensureDiscoverPages(
   const enabled = Object.keys(pages).filter((key) => pages[key]);
   const result = await applyHotelPageSelection(hotelId, [...enabled, ...added]);
   return result.error ? { added: [], error: result.error } : { added };
+}
+
+// A new, still empty page of this hotel only, reachable at /seite/<key>.
+export async function createHotelPage(
+  hotelId: string,
+  title: string,
+  takenKeys: string[],
+): Promise<{ key?: string; error?: string }> {
+  const base = slugifyTemplateKey(title) || 'seite';
+  const taken = new Set([...takenKeys, ...SYSTEM_TEMPLATES.map((item) => item.template_key)]);
+  let key = base;
+  for (let index = 2; taken.has(key); index += 1) key = `${base}-${index}`;
+  const page = await supabase
+    .from('hotel_pages')
+    .upsert({ hotel_id: hotelId, page_key: key, enabled: true, muster_version: 'v1' }, { onConflict: 'hotel_id,page_key' });
+  if (page.error) return { error: page.error.message };
+  const section = await supabase.from('hotel_sections').upsert(
+    { hotel_id: hotelId, section_key: genericSectionKey(key), data: { ...GENERIC_SKELETON, title: title.trim() } },
+    { onConflict: 'hotel_id,section_key' },
+  );
+  if (section.error) return { error: section.error.message };
+  return { key };
 }
 
 export async function cloneHotelContent(

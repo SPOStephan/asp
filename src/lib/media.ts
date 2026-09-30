@@ -25,7 +25,7 @@ export const MUSTER_DISCOVER_TILES = [
   { image: '/yoga-outdoor.webp', eyebrow: 'Balance', title: 'Yoga & Retreats', href: '#wellness' },
 ];
 
-export type DiscoverTile = { id: string; image: string; eyebrow: string; title: string; href: string };
+export type DiscoverTile = { id: string; image: string; eyebrow: string; title: string; href: string; new_tab?: boolean };
 
 // Every tile carries an id so reordering in the editor keeps its image with it.
 export function resolveDiscoverTiles(tiles: unknown): DiscoverTile[] {

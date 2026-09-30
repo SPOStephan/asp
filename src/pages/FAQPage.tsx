@@ -1,4 +1,4 @@
-import { CmsSection } from '../cms/CmsSection';
+import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { FAQ_PAGE_FALLBACK } from '../cms/cmsPages';
 import { useHotelContent } from '../context/HotelContext';
 
@@ -39,64 +39,72 @@ export function FAQPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <div className="faq-page__hero">
-        <div className="container">
-          <p className="eyebrow" data-cms-focus="head" data-cms-path="eyebrow">{pageData.eyebrow}</p>
-          <h1 className="faq-page__title heading-font" data-cms-focus="title" data-cms-path="title">{pageData.title}</h1>
-          <p className="faq-page__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{pageData.subtitle}</p>
+      <CmsPart sectionKey="faq_page" part="head" label="Kopf">
+        <div className="faq-page__hero">
+          <div className="container">
+            <p className="eyebrow" data-cms-focus="head" data-cms-path="eyebrow">{pageData.eyebrow}</p>
+            <h1 className="faq-page__title heading-font" data-cms-focus="title" data-cms-path="title">{pageData.title}</h1>
+            <p className="faq-page__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{pageData.subtitle}</p>
+          </div>
         </div>
-      </div>
+      </CmsPart>
 
-      <div className="faq-page__nav">
-        <div className="container">
-          <nav className="faq-page__cats" aria-label="FAQ-Kategorien">
-            {categories.map((cat) => (
-              <a
-                key={cat}
-                href={`#${cat.replace(/\s+/g, '-').toLowerCase()}`}
-                className="faq-page__cat-link link-underline"
-              >
-                {cat}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      <div className="container">
-        {categories.map((cat) => (
-          <section
-            key={cat}
-            className="faq-page__section"
-            id={cat.replace(/\s+/g, '-').toLowerCase()}
-            aria-label={cat}
-          >
-            <h2 className="faq-page__cat-title heading-font">{cat}</h2>
-            <div className="faq__list">
-              {faqsByCategory[cat].map((item) => (
-                <details key={item.id} className="faq__item" data-cms-focus={`faq:${item.id}`}>
-                  <summary className="faq__question">
-                    <span>{item.question}</span>
-                    <span className="faq__icon" aria-hidden="true" />
-                  </summary>
-                  <div className="faq__answer">
-                    <p>{item.answer}</p>
-                  </div>
-                </details>
+      <CmsPart sectionKey="faq_page" part="nav" label="Kategorien">
+        <div className="faq-page__nav">
+          <div className="container">
+            <nav className="faq-page__cats" aria-label="FAQ-Kategorien">
+              {categories.map((cat) => (
+                <a
+                  key={cat}
+                  href={`#${cat.replace(/\s+/g, '-').toLowerCase()}`}
+                  className="faq-page__cat-link link-underline"
+                >
+                  {cat}
+                </a>
               ))}
-            </div>
-          </section>
-        ))}
-      </div>
-
-      <div className="faq-page__cta" data-cms-focus="cta">
-        <div className="container">
-          <p className="faq-page__cta-text" data-cms-path="cta_text">{pageData.cta_text}</p>
-          <a href={`mailto:${content.hotel.email}`} className="faq-page__cta-btn" data-cms-path="cta_button">
-            {pageData.cta_button}
-          </a>
+            </nav>
+          </div>
         </div>
-      </div>
+      </CmsPart>
+
+      <CmsPart sectionKey="faq_page" part="list" label="Fragen">
+        <div className="container">
+          {categories.map((cat) => (
+            <section
+              key={cat}
+              className="faq-page__section"
+              id={cat.replace(/\s+/g, '-').toLowerCase()}
+              aria-label={cat}
+            >
+              <h2 className="faq-page__cat-title heading-font">{cat}</h2>
+              <div className="faq__list">
+                {faqsByCategory[cat].map((item) => (
+                  <details key={item.id} className="faq__item" data-cms-focus={`faq:${item.id}`}>
+                    <summary className="faq__question">
+                      <span>{item.question}</span>
+                      <span className="faq__icon" aria-hidden="true" />
+                    </summary>
+                    <div className="faq__answer">
+                      <p>{item.answer}</p>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </CmsPart>
+
+      <CmsPart sectionKey="faq_page" part="cta" label="Kontakt">
+        <div className="faq-page__cta" data-cms-focus="cta">
+          <div className="container">
+            <p className="faq-page__cta-text" data-cms-path="cta_text">{pageData.cta_text}</p>
+            <a href={`mailto:${content.hotel.email}`} className="faq-page__cta-btn" data-cms-path="cta_button">
+              {pageData.cta_button}
+            </a>
+          </div>
+        </div>
+      </CmsPart>
     </main>
     </CmsSection>
   );

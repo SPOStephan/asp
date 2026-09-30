@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CmsSection } from '../cms/CmsSection';
+import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { useCms } from '../cms/CmsContext';
 import { GalleryViewer } from '../components/GalleryViewer';
 import { SubpageHero } from '../components/SubpageHero';
@@ -82,57 +82,65 @@ export function ImpressionsPage() {
         cms={{ section: 'impressions_page' }}
       >
         <article className="impressions-page">
-          <p className="impressions-page__intro" data-cms-focus="intro" data-cms-path="intro">
-            {data.intro ?? IMPRESSIONS_PAGE_FALLBACK.intro}
-          </p>
-
-          <div className="impressions-page__filters" role="tablist" aria-label="Motive">
-            {IMPRESSION_TOPICS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={topic === item.id}
-                className={`impressions-page__filter${topic === item.id ? ' is-active' : ''}`}
-                onClick={() => setTopic(item.id)}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="impressions-page__grid">
-            {packed.map((shot, index) => {
-              const itemIndex = shots.findIndex((item) => item.src === shot.src);
-              return (
-              <button
-                key={shot.src}
-                type="button"
-                className={`impressions-page__shot is-${shot.role}`}
-                aria-label={shot.alt}
-                data-cms-focus={itemIndex >= 0 ? `items:${itemIndex}` : undefined}
-                data-cms-path={itemIndex >= 0 ? `items.${itemIndex}.src` : undefined}
-                data-cms-kind="image"
-                onClick={() => setActive(index)}
-              >
-                <img src={shot.src} alt="" />
-                <span className="impressions-page__shot-label" data-cms-path={itemIndex >= 0 ? `items.${itemIndex}.alt` : undefined}>{shot.alt}</span>
-              </button>
-              );
-            })}
-          </div>
-
-          <div className="impressions-page__note" data-cms-focus="note">
-            <h2 className="impressions-page__note-title heading-font" data-cms-path="note_title">
-              {data.note_title ?? IMPRESSIONS_PAGE_FALLBACK.note_title}
-            </h2>
-            <p className="impressions-page__note-text" data-cms-path="note_text">
-              {data.note_text ?? IMPRESSIONS_PAGE_FALLBACK.note_text}
+          <CmsPart sectionKey="impressions_page" part="intro" label="Einleitung">
+            <p className="impressions-page__intro" data-cms-focus="intro" data-cms-path="intro">
+              {data.intro ?? IMPRESSIONS_PAGE_FALLBACK.intro}
             </p>
-            <TextCta href={data.note_cta_href ?? IMPRESSIONS_PAGE_FALLBACK.note_cta_href}>
-              {data.note_cta ?? IMPRESSIONS_PAGE_FALLBACK.note_cta}
-            </TextCta>
-          </div>
+          </CmsPart>
+
+          <CmsPart sectionKey="impressions_page" part="filters" label="Filter">
+            <div className="impressions-page__filters" role="tablist" aria-label="Motive">
+              {IMPRESSION_TOPICS.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={topic === item.id}
+                  className={`impressions-page__filter${topic === item.id ? ' is-active' : ''}`}
+                  onClick={() => setTopic(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </CmsPart>
+
+          <CmsPart sectionKey="impressions_page" part="grid" label="Galerie">
+            <div className="impressions-page__grid">
+              {packed.map((shot, index) => {
+                const itemIndex = shots.findIndex((item) => item.src === shot.src);
+                return (
+                <button
+                  key={shot.src}
+                  type="button"
+                  className={`impressions-page__shot is-${shot.role}`}
+                  aria-label={shot.alt}
+                  data-cms-focus={itemIndex >= 0 ? `items:${itemIndex}` : undefined}
+                  data-cms-path={itemIndex >= 0 ? `items.${itemIndex}.src` : undefined}
+                  data-cms-kind="image"
+                  onClick={() => setActive(index)}
+                >
+                  <img src={shot.src} alt="" />
+                  <span className="impressions-page__shot-label" data-cms-path={itemIndex >= 0 ? `items.${itemIndex}.alt` : undefined}>{shot.alt}</span>
+                </button>
+                );
+              })}
+            </div>
+          </CmsPart>
+
+          <CmsPart sectionKey="impressions_page" part="note" label="Hinweis">
+            <div className="impressions-page__note" data-cms-focus="note">
+              <h2 className="impressions-page__note-title heading-font" data-cms-path="note_title">
+                {data.note_title ?? IMPRESSIONS_PAGE_FALLBACK.note_title}
+              </h2>
+              <p className="impressions-page__note-text" data-cms-path="note_text">
+                {data.note_text ?? IMPRESSIONS_PAGE_FALLBACK.note_text}
+              </p>
+              <TextCta href={data.note_cta_href ?? IMPRESSIONS_PAGE_FALLBACK.note_cta_href}>
+                {data.note_cta ?? IMPRESSIONS_PAGE_FALLBACK.note_cta}
+              </TextCta>
+            </div>
+          </CmsPart>
         </article>
       </SubpageHero>
 

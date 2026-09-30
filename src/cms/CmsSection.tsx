@@ -2,7 +2,7 @@ import { Eye, EyeOff, Pencil } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useSection } from '../context/HotelContext';
 import { useCms } from './CmsContext';
-import { isLayoutHideable, isSectionHidden, sectionDisplayName } from './cmsHidden';
+import { isLayoutHideable, isSectionHidden, partHiddenKey, sectionDisplayName } from './cmsHidden';
 
 export function CmsSection({
   sectionKey,
@@ -83,23 +83,60 @@ export function CmsSection({
           <Pencil size={14} strokeWidth={1.75} />
         </button>
         {canHide ? (
-          <button
-            type="button"
-            className="cms-block__eye"
-            data-cms-ui="hide"
-            aria-pressed={hidden}
-            aria-label={hidden ? `${display} einblenden` : `${display} ausblenden`}
-            title={hidden ? 'Für dieses Hotel einblenden' : 'Für dieses Hotel ausblenden'}
-            onPointerDown={(event) => event.stopPropagation()}
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              cms.applyField(sectionKey, hiddenKey, !hidden);
-            }}
-          >
-            {hidden ? <EyeOff size={14} strokeWidth={1.75} /> : <Eye size={14} strokeWidth={1.75} />}
-          </button>
+          <HideButton label={display} hidden={hidden} onToggle={() => cms.applyField(sectionKey, hiddenKey, !hidden)} />
         ) : null}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function HideButton({ label, hidden, onToggle }: { label: string; hidden: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      className="cms-block__eye"
+      data-cms-ui="hide"
+      aria-pressed={hidden}
+      aria-label={hidden ? `${label} einblenden` : `${label} ausblenden`}
+      title={hidden ? 'Für dieses Hotel einblenden' : 'Für dieses Hotel ausblenden'}
+      onPointerDown={(event) => event.stopPropagation()}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onToggle();
+      }}
+    >
+      {hidden ? <EyeOff size={14} strokeWidth={1.75} /> : <Eye size={14} strokeWidth={1.75} />}
+    </button>
+  );
+}
+
+// One visible area inside a section (e.g. the Discover tiles) that a hotel can switch off on its own.
+export function CmsPart({
+  sectionKey,
+  part,
+  label,
+  children,
+}: {
+  sectionKey: string;
+  part: string;
+  label: string;
+  children: ReactNode;
+}) {
+  const cms = useCms();
+  const data = useSection(sectionKey);
+  const key = partHiddenKey(part);
+  const hidden = isSectionHidden(data, key);
+
+  if (hidden && !cms) return null;
+  if (!cms) return children;
+
+  return (
+    <div className={`cms-part${hidden ? ' is-hidden' : ''}`} data-cms-part={part}>
+      <div className="cms-block__chrome cms-part__chrome">
+        <span className="cms-block__label">{hidden ? `${label} · aus` : label}</span>
+        <HideButton label={label} hidden={hidden} onToggle={() => cms.applyField(sectionKey, key, !hidden)} />
       </div>
       {children}
     </div>
