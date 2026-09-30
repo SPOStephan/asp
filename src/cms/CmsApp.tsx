@@ -29,7 +29,7 @@ import { CmsProvider, useCms } from './CmsContext';
 import { CmsViewportBar } from './CmsViewportBar';
 import './cms.css';
 
-function CmsStage() {
+export function CmsStage() {
   const cms = useCms();
   const phone = cms?.focalPreview === 'mobile';
   return (
@@ -114,7 +114,9 @@ function CmsShell() {
   return (
     <div className="cms-shell">
       <CmsViewportBar />
-      <CmsPreviewFrame />
+      <CmsPreviewFrame>
+        <CmsStage />
+      </CmsPreviewFrame>
       <CmsEditor />
       <CmsInlineEdit />
       <CmsImageDialog />

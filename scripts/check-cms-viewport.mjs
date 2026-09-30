@@ -8,11 +8,11 @@ assert.match(app, /isCmsFrame\(\)/);
 assert.match(app, /MobileChromeDock/);
 
 const frame = readFileSync(new URL('../src/cms/CmsPreviewFrame.tsx', import.meta.url), 'utf8');
-assert.match(frame, /<iframe/);
-assert.match(frame, /toCmsFrameHref/);
+assert.doesNotMatch(frame, /<iframe/);
+assert.match(frame, /children/);
 assert.match(frame, /CMS_PHONE_WIDTH/);
 assert.match(frame, /CMS_PHONE_HEIGHT/);
-assert.match(frame, /setFrameWindow/);
+assert.match(app, /<CmsStage/);
 
 const bar = readFileSync(new URL('../src/cms/CmsViewportBar.tsx', import.meta.url), 'utf8');
 assert.match(bar, /Desktop-Ansicht/);

@@ -242,7 +242,9 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     const next = setPath(current, path, value);
     if (typeof value === 'string' && fieldKind(path, value) === 'image' && value.trim()) {
       writeLiveMedia(sectionKey, path, value);
-      void persistLiveSection(sectionKey, next);
+      if (!value.startsWith('data:') && !value.startsWith('blob:')) {
+        void persistLiveSection(sectionKey, next);
+      }
     }
     preview(sectionKey, next, quiet);
     if (!quiet) setDraftTick((tick) => tick + 1);

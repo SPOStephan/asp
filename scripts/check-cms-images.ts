@@ -30,7 +30,7 @@ const dialog = readFileSync(new URL('../src/cms/CmsImageDialog.tsx', import.meta
 assert.match(dialog, /\+ Näher/);
 assert.match(dialog, /zoomRect/);
 assert.match(dialog, /pushUpload/);
-assert.match(dialog, /schreibt es direkt ins Layout/);
+assert.match(dialog, /setzt das Bild sofort ins Layout/);
 assert.doesNotMatch(dialog, /revokeObjectURL/);
 const hotel = readFileSync(new URL('../src/context/HotelContext.tsx', import.meta.url), 'utf8');
 assert.match(hotel, /mergeHotelLoad/);
@@ -78,6 +78,9 @@ assert.equal(
 const context = readFileSync(new URL('../src/cms/CmsContext.tsx', import.meta.url), 'utf8');
 assert.match(context, /writeLiveMedia/);
 assert.match(context, /persistLiveSection/);
+const preview = readFileSync(new URL('../src/cms/CmsPreviewFrame.tsx', import.meta.url), 'utf8');
+assert.doesNotMatch(preview, /<iframe/);
+assert.match(preview, /children/);
 
 const persist = frame.slice(frame.indexOf('async function persistLiveSection'), frame.indexOf('function applyField'));
 assert.ok(persist.length > 0);
