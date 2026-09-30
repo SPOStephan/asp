@@ -79,4 +79,8 @@ const context = readFileSync(new URL('../src/cms/CmsContext.tsx', import.meta.ur
 assert.match(context, /writeLiveMedia/);
 assert.match(context, /persistLiveSection/);
 
+const persist = frame.slice(frame.indexOf('async function persistLiveSection'), frame.indexOf('function applyField'));
+assert.ok(persist.length > 0);
+assert.doesNotMatch(persist, /keepLiveMedia/, 'the upload autosave must not merge the old image back over the new one');
+
 console.log('cms image hints ok');

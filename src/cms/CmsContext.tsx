@@ -206,11 +206,12 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     setDraftTick((tick) => tick + 1);
   }
 
+  // `data` already derives from the live section, so write it as is: merging the
+  // live media back in here would let the old image overwrite the new upload.
   async function persistLiveSection(sectionKey: string, data: Record<string, unknown>) {
     if (!hotel) return;
-    const merged = keepLiveMedia(data, contentRef.current?.sections[sectionKey]);
     const result = await supabase.from('hotel_sections').upsert(
-      { hotel_id: hotel.id, section_key: sectionKey, data: merged },
+      { hotel_id: hotel.id, section_key: sectionKey, data },
       { onConflict: 'hotel_id,section_key' },
     );
     if (result.error) setSaveError(result.error.message);
