@@ -566,3 +566,50 @@ body.cms-on [data-cms-placeholder]:empty::before {
   opacity: 0.6;
   font-style: italic;
 }
+.cms-link__current,
+.cms-link__list button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d7d0c4;
+  background: #fff;
+  color: #133b5c;
+  text-align: left;
+  cursor: pointer;
+}
+.cms-link__current small,
+.cms-link__list small {
+  color: #7a7468;
+  font-size: 0.72rem;
+}
+.cms-link__panel {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #e4ddd0;
+  background: #faf8f4;
+}
+.cms-link__list {
+  display: grid;
+  gap: 4px;
+  max-height: 240px;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cms-link__list button[aria-current='true'] {
+  border-color: #957640;
+}
+body.cms-on .cms-part {
+  position: relative;
+}
+body.cms-on .cms-part__chrome {
+  left: auto;
+  right: 8px;
+  z-index: 1100;
+}
+body.cms-on .cms-part.is-hidden > :not(.cms-block__chrome) {
+  opacity: 0.42;
+}

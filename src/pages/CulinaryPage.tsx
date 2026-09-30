@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CmsSection } from '../cms/CmsSection';
+import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { IncludeList } from '../components/IncludeList';
 import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
@@ -57,9 +57,11 @@ export function CulinaryPage() {
         cms={{ section: 'culinary_page' }}
       >
         <div className="culinary-page">
-          <p className="culinary-page__intro" data-cms-focus="intro" data-cms-path="intro">
-            {data.intro ?? home?.text ?? CULINARY_PAGE_FALLBACK.intro}
-          </p>
+          <CmsPart sectionKey="culinary_page" part="intro" label="Einleitung">
+            <p className="culinary-page__intro" data-cms-focus="intro" data-cms-path="intro">
+              {data.intro ?? home?.text ?? CULINARY_PAGE_FALLBACK.intro}
+            </p>
+          </CmsPart>
 
           <nav className="culinary-page__jump" aria-label="Restaurants">
             {items.map((venue, index) => (
@@ -69,65 +71,73 @@ export function CulinaryPage() {
             ))}
           </nav>
 
-          <section className="culinary-page__venues" aria-label="Restaurants im Haus">
-            {items.map((venue, index) => (
-              <Reveal key={venue.id} delay={index * 60}>
-                <article
-                  className={`culinary-venue${index % 2 === 1 ? ' culinary-venue--reverse' : ''}`}
-                  id={venue.id}
-                  data-cms-focus={`items:${index}`}
-                >
-                  <figure className="culinary-venue__photo" data-cms-path={`items.${venue.id}.image`} data-cms-kind="image">
-                    <img src={venue.image} alt={venue.image_alt} />
-                  </figure>
-                  <div className="culinary-venue__copy">
-                    <p className="culinary-venue__kicker" data-cms-path={`items.${venue.id}.kicker`}>{venue.kicker}</p>
-                    <h2 className="culinary-venue__name heading-font" data-cms-path={`items.${venue.id}.name`}>{venue.name}</h2>
-                    <p className="culinary-venue__text" data-cms-path={`items.${venue.id}.text`}>{venue.text}</p>
-                    {venue.details.length ? (
-                      <dl className="culinary-venue__facts">
-                        {venue.details.map((fact) => (
-                          <div key={fact.label}>
-                            <dt>{fact.label}</dt>
-                            <dd>{fact.value}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                    ) : null}
-                    <IncludeList items={venue.includes} />
-                    <TextCta href={adviceHref}>Tisch reservieren</TextCta>
-                  </div>
+          <CmsPart sectionKey="culinary_page" part="venues" label="Restaurants">
+            <section className="culinary-page__venues" aria-label="Restaurants im Haus">
+              {items.map((venue, index) => (
+                <Reveal key={venue.id} delay={index * 60}>
+                  <article
+                    className={`culinary-venue${index % 2 === 1 ? ' culinary-venue--reverse' : ''}`}
+                    id={venue.id}
+                    data-cms-focus={`items:${index}`}
+                  >
+                    <figure className="culinary-venue__photo" data-cms-path={`items.${venue.id}.image`} data-cms-kind="image">
+                      <img src={venue.image} alt={venue.image_alt} />
+                    </figure>
+                    <div className="culinary-venue__copy">
+                      <p className="culinary-venue__kicker" data-cms-path={`items.${venue.id}.kicker`}>{venue.kicker}</p>
+                      <h2 className="culinary-venue__name heading-font" data-cms-path={`items.${venue.id}.name`}>{venue.name}</h2>
+                      <p className="culinary-venue__text" data-cms-path={`items.${venue.id}.text`}>{venue.text}</p>
+                      {venue.details.length ? (
+                        <dl className="culinary-venue__facts">
+                          {venue.details.map((fact) => (
+                            <div key={fact.label}>
+                              <dt>{fact.label}</dt>
+                              <dd>{fact.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      ) : null}
+                      <IncludeList items={venue.includes} />
+                      <TextCta href={adviceHref}>Tisch reservieren</TextCta>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </section>
+          </CmsPart>
+
+          <CmsPart sectionKey="culinary_page" part="rhythm" label="Tagesablauf">
+            <section className="culinary-page__rhythm" aria-label="Vom Morgen bis in die Nacht">
+              {rhythm.map((item, index) => (
+                <article key={item.title} className="culinary-page__beat" data-cms-focus={`rhythm:${index}`}>
+                  <p className="culinary-page__beat-kicker" data-cms-path={`rhythm.${index}.kicker`}>{item.kicker}</p>
+                  <h2 className="culinary-page__beat-title heading-font" data-cms-path={`rhythm.${index}.title`}>{item.title}</h2>
+                  <p className="culinary-page__beat-text" data-cms-path={`rhythm.${index}.text`}>{item.text}</p>
                 </article>
-              </Reveal>
-            ))}
-          </section>
+              ))}
+            </section>
+          </CmsPart>
 
-          <section className="culinary-page__rhythm" aria-label="Vom Morgen bis in die Nacht">
-            {rhythm.map((item, index) => (
-              <article key={item.title} className="culinary-page__beat" data-cms-focus={`rhythm:${index}`}>
-                <p className="culinary-page__beat-kicker" data-cms-path={`rhythm.${index}.kicker`}>{item.kicker}</p>
-                <h2 className="culinary-page__beat-title heading-font" data-cms-path={`rhythm.${index}.title`}>{item.title}</h2>
-                <p className="culinary-page__beat-text" data-cms-path={`rhythm.${index}.text`}>{item.text}</p>
-              </article>
-            ))}
-          </section>
-
-          <p className="culinary-page__aside" data-cms-focus="also">
-            <strong data-cms-path="also_title">{data.also_title ?? CULINARY_PAGE_FALLBACK.also_title}.</strong>{' '}
-            <span data-cms-path="also_text">{data.also_text ?? CULINARY_PAGE_FALLBACK.also_text}</span>
-          </p>
-
-          <section className="culinary-page__note" data-cms-focus="note">
-            <h2 className="culinary-page__note-title heading-font" data-cms-path="note_title">
-              {data.note_title ?? CULINARY_PAGE_FALLBACK.note_title}
-            </h2>
-            <p className="culinary-page__note-text" data-cms-path="note_text">
-              {data.note_text ?? CULINARY_PAGE_FALLBACK.note_text}
+          <CmsPart sectionKey="culinary_page" part="also" label="Zusatz">
+            <p className="culinary-page__aside" data-cms-focus="also">
+              <strong data-cms-path="also_title">{data.also_title ?? CULINARY_PAGE_FALLBACK.also_title}.</strong>{' '}
+              <span data-cms-path="also_text">{data.also_text ?? CULINARY_PAGE_FALLBACK.also_text}</span>
             </p>
-            <TextCta href={data.note_cta_href ?? adviceHref}>
-              {data.note_cta ?? CULINARY_PAGE_FALLBACK.note_cta}
-            </TextCta>
-          </section>
+          </CmsPart>
+
+          <CmsPart sectionKey="culinary_page" part="note" label="Hinweis">
+            <section className="culinary-page__note" data-cms-focus="note">
+              <h2 className="culinary-page__note-title heading-font" data-cms-path="note_title">
+                {data.note_title ?? CULINARY_PAGE_FALLBACK.note_title}
+              </h2>
+              <p className="culinary-page__note-text" data-cms-path="note_text">
+                {data.note_text ?? CULINARY_PAGE_FALLBACK.note_text}
+              </p>
+              <TextCta href={data.note_cta_href ?? adviceHref}>
+                {data.note_cta ?? CULINARY_PAGE_FALLBACK.note_cta}
+              </TextCta>
+            </section>
+          </CmsPart>
         </div>
       </SubpageHero>
     </main>

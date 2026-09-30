@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { useCms } from '../cms/CmsContext';
 import { toCmsHref } from '../cms/cmsPages';
-import { CmsSection } from '../cms/CmsSection';
+import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { OverlapStage } from '../components/OverlapStage';
 import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
@@ -46,70 +46,78 @@ export function WellnessPage() {
         cms={{ section: 'wellness_page' }}
       >
         <div className="wellness-hub">
-          <p className="wellness-hub__intro" data-cms-focus="intro" data-cms-path="intro">
-            {data.intro ?? data.content_text ?? WELLNESS_PAGE_FALLBACK.intro}
-          </p>
-
-          <section className="wellness-hub__day" aria-label="Day Spa" data-cms-focus="day">
-            <p className="wellness-hub__day-kicker" data-cms-path="day_kicker">
-              {data.day_kicker ?? WELLNESS_PAGE_FALLBACK.day_kicker}
+          <CmsPart sectionKey="wellness_page" part="intro" label="Einleitung">
+            <p className="wellness-hub__intro" data-cms-focus="intro" data-cms-path="intro">
+              {data.intro ?? data.content_text ?? WELLNESS_PAGE_FALLBACK.intro}
             </p>
-            <h2 className="wellness-hub__day-title heading-font" data-cms-path="day_title">
-              {data.day_title ?? WELLNESS_PAGE_FALLBACK.day_title}
-            </h2>
-            <p className="wellness-hub__day-text" data-cms-path="day_text">
-              {data.day_text ?? WELLNESS_PAGE_FALLBACK.day_text}
-            </p>
-            <TextCta href={data.day_cta_href ?? WELLNESS_PAGE_FALLBACK.day_cta_href}>
-              {data.day_cta ?? WELLNESS_PAGE_FALLBACK.day_cta}
-            </TextCta>
-          </section>
+          </CmsPart>
 
-          <section className="wellness-hub__tiles" aria-label="Wellness-Bereiche">
-            {topics.map((topic, index) => (
-              <Reveal key={topic.id} delay={index * 50}>
-                <a
-                  className="wellness-tile"
-                  href={cms ? toCmsHref(wellnessTopicHref(topic.id)) : wellnessTopicHref(topic.id)}
-                  data-cms-focus={`items:${index}`}
-                  {...(cms ? { 'data-cms-nav': '' } : {})}
-                >
-                  <div className="wellness-tile__image" data-cms-path={`items.${topic.id}.image`} data-cms-kind="image">
-                    <img src={topic.image} alt={topic.image_alt} />
-                  </div>
-                  <div className="wellness-tile__overlay" />
-                  <div className="wellness-tile__content">
-                    <p className="wellness-tile__kicker" data-cms-path={`items.${topic.id}.kicker`}>{topic.kicker}</p>
-                    <h2 className="wellness-tile__name heading-font" data-cms-path={`items.${topic.id}.name`}>{topic.name}</h2>
-                  </div>
-                  <span className="wellness-tile__arrow" aria-hidden="true">
-                    <ArrowUpRight size={18} strokeWidth={1.5} />
-                  </span>
-                </a>
-              </Reveal>
-            ))}
-          </section>
+          <CmsPart sectionKey="wellness_page" part="day" label="Day Spa">
+            <section className="wellness-hub__day" aria-label="Day Spa" data-cms-focus="day">
+              <p className="wellness-hub__day-kicker" data-cms-path="day_kicker">
+                {data.day_kicker ?? WELLNESS_PAGE_FALLBACK.day_kicker}
+              </p>
+              <h2 className="wellness-hub__day-title heading-font" data-cms-path="day_title">
+                {data.day_title ?? WELLNESS_PAGE_FALLBACK.day_title}
+              </h2>
+              <p className="wellness-hub__day-text" data-cms-path="day_text">
+                {data.day_text ?? WELLNESS_PAGE_FALLBACK.day_text}
+              </p>
+              <TextCta href={data.day_cta_href ?? WELLNESS_PAGE_FALLBACK.day_cta_href}>
+                {data.day_cta ?? WELLNESS_PAGE_FALLBACK.day_cta}
+              </TextCta>
+            </section>
+          </CmsPart>
 
-          <section className="wellness-hub__chapters" aria-label="Aus dem Spa">
-            {chapters.map((chapter, index) => (
-              <Reveal key={chapter.id} delay={index * 60}>
-                <article
-                  className={`wellness-chapter${index % 2 === 1 ? ' wellness-chapter--reverse' : ''}`}
-                  data-cms-focus={`chapters:${index}`}
-                >
-                  <figure className="wellness-chapter__photo" data-cms-path={`chapters.${chapter.id}.image`} data-cms-kind="image">
-                    <img src={chapter.image} alt={chapter.image_alt} />
-                  </figure>
-                  <div className="wellness-chapter__copy">
-                    <p className="wellness-chapter__kicker" data-cms-path={`chapters.${chapter.id}.kicker`}>{chapter.kicker}</p>
-                    <h2 className="wellness-chapter__title heading-font" data-cms-path={`chapters.${chapter.id}.title`}>{chapter.title}</h2>
-                    <p className="wellness-chapter__text" data-cms-path={`chapters.${chapter.id}.text`}>{chapter.text}</p>
-                    <TextCta href={chapter.href}>{chapter.cta}</TextCta>
-                  </div>
-                </article>
-              </Reveal>
-            ))}
-          </section>
+          <CmsPart sectionKey="wellness_page" part="tiles" label="Bereiche">
+            <section className="wellness-hub__tiles" aria-label="Wellness-Bereiche">
+              {topics.map((topic, index) => (
+                <Reveal key={topic.id} delay={index * 50}>
+                  <a
+                    className="wellness-tile"
+                    href={cms ? toCmsHref(wellnessTopicHref(topic.id)) : wellnessTopicHref(topic.id)}
+                    data-cms-focus={`items:${index}`}
+                    {...(cms ? { 'data-cms-nav': '' } : {})}
+                  >
+                    <div className="wellness-tile__image" data-cms-path={`items.${topic.id}.image`} data-cms-kind="image">
+                      <img src={topic.image} alt={topic.image_alt} />
+                    </div>
+                    <div className="wellness-tile__overlay" />
+                    <div className="wellness-tile__content">
+                      <p className="wellness-tile__kicker" data-cms-path={`items.${topic.id}.kicker`}>{topic.kicker}</p>
+                      <h2 className="wellness-tile__name heading-font" data-cms-path={`items.${topic.id}.name`}>{topic.name}</h2>
+                    </div>
+                    <span className="wellness-tile__arrow" aria-hidden="true">
+                      <ArrowUpRight size={18} strokeWidth={1.5} />
+                    </span>
+                  </a>
+                </Reveal>
+              ))}
+            </section>
+          </CmsPart>
+
+          <CmsPart sectionKey="wellness_page" part="chapters" label="Kapitel">
+            <section className="wellness-hub__chapters" aria-label="Aus dem Spa">
+              {chapters.map((chapter, index) => (
+                <Reveal key={chapter.id} delay={index * 60}>
+                  <article
+                    className={`wellness-chapter${index % 2 === 1 ? ' wellness-chapter--reverse' : ''}`}
+                    data-cms-focus={`chapters:${index}`}
+                  >
+                    <figure className="wellness-chapter__photo" data-cms-path={`chapters.${chapter.id}.image`} data-cms-kind="image">
+                      <img src={chapter.image} alt={chapter.image_alt} />
+                    </figure>
+                    <div className="wellness-chapter__copy">
+                      <p className="wellness-chapter__kicker" data-cms-path={`chapters.${chapter.id}.kicker`}>{chapter.kicker}</p>
+                      <h2 className="wellness-chapter__title heading-font" data-cms-path={`chapters.${chapter.id}.title`}>{chapter.title}</h2>
+                      <p className="wellness-chapter__text" data-cms-path={`chapters.${chapter.id}.text`}>{chapter.text}</p>
+                      <TextCta href={chapter.href}>{chapter.cta}</TextCta>
+                    </div>
+                  </article>
+                </Reveal>
+              ))}
+            </section>
+          </CmsPart>
 
           <OverlapStage
             kicker={data.overlap_kicker ?? WELLNESS_PAGE_FALLBACK.overlap_kicker}
@@ -123,17 +131,19 @@ export function WellnessPage() {
             backAlt={data.overlap_back_alt ?? WELLNESS_PAGE_FALLBACK.overlap_back_alt}
           />
 
-          <section className="wellness-hub__note" data-cms-focus="note">
-            <h2 className="wellness-hub__note-title heading-font" data-cms-path="note_title">
-              {data.note_title ?? WELLNESS_PAGE_FALLBACK.note_title}
-            </h2>
-            <p className="wellness-hub__note-text" data-cms-path="note_text">
-              {data.note_text ?? WELLNESS_PAGE_FALLBACK.note_text}
-            </p>
-            <TextCta href={data.note_cta_href ?? WELLNESS_PAGE_FALLBACK.note_cta_href}>
-              {data.note_cta ?? WELLNESS_PAGE_FALLBACK.note_cta}
-            </TextCta>
-          </section>
+          <CmsPart sectionKey="wellness_page" part="note" label="Hinweis">
+            <section className="wellness-hub__note" data-cms-focus="note">
+              <h2 className="wellness-hub__note-title heading-font" data-cms-path="note_title">
+                {data.note_title ?? WELLNESS_PAGE_FALLBACK.note_title}
+              </h2>
+              <p className="wellness-hub__note-text" data-cms-path="note_text">
+                {data.note_text ?? WELLNESS_PAGE_FALLBACK.note_text}
+              </p>
+              <TextCta href={data.note_cta_href ?? WELLNESS_PAGE_FALLBACK.note_cta_href}>
+                {data.note_cta ?? WELLNESS_PAGE_FALLBACK.note_cta}
+              </TextCta>
+            </section>
+          </CmsPart>
         </div>
       </SubpageHero>
     </main>

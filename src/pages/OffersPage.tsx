@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useCms } from '../cms/CmsContext';
-import { CmsSection } from '../cms/CmsSection';
+import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { IncludeList } from '../components/IncludeList';
 import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
@@ -41,46 +41,52 @@ export function OffersPage() {
         cms={{ section: 'offers_page' }}
       >
         <div className="offers-page">
-          {data.intro || editing ? <p className="offers-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
+          <CmsPart sectionKey="offers_page" part="intro" label="Einleitung">
+            {data.intro || editing ? <p className="offers-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
+          </CmsPart>
 
-          <section className="offers-page__pair" aria-label="Aktuelle Angebote">
-            {items.map((item, index) => (
-              <Reveal key={item.id} delay={index * 80}>
-                <article className="offers-page__story" id={item.id} data-cms-focus={`items:${index}`}>
-                  <figure className="offers-page__photo" data-cms-path={`items.${item.id}.image`} data-cms-kind="image">
-                    <img src={item.image} alt={item.image_alt} />
-                  </figure>
-                  <p className="offers-page__kicker" data-cms-path={`items.${item.id}.title`}>{item.title}</p>
-                  <h2 className="offers-page__name heading-font" data-cms-path={`items.${item.id}.subtitle`}>{item.subtitle}</h2>
-                  <p className="offers-page__text" data-cms-path={`items.${item.id}.text`}>{item.text}</p>
-                  <IncludeList items={item.includes} />
-                  {item.details.length ? (
-                    <div className="offers-page__meta">
-                      {item.details.map((detail) => (
-                        <p key={detail}>{detail}</p>
-                      ))}
+          <CmsPart sectionKey="offers_page" part="list" label="Angebote">
+            <section className="offers-page__pair" aria-label="Aktuelle Angebote">
+              {items.map((item, index) => (
+                <Reveal key={item.id} delay={index * 80}>
+                  <article className="offers-page__story" id={item.id} data-cms-focus={`items:${index}`}>
+                    <figure className="offers-page__photo" data-cms-path={`items.${item.id}.image`} data-cms-kind="image">
+                      <img src={item.image} alt={item.image_alt} />
+                    </figure>
+                    <p className="offers-page__kicker" data-cms-path={`items.${item.id}.title`}>{item.title}</p>
+                    <h2 className="offers-page__name heading-font" data-cms-path={`items.${item.id}.subtitle`}>{item.subtitle}</h2>
+                    <p className="offers-page__text" data-cms-path={`items.${item.id}.text`}>{item.text}</p>
+                    <IncludeList items={item.includes} />
+                    {item.details.length ? (
+                      <div className="offers-page__meta">
+                        {item.details.map((detail) => (
+                          <p key={detail}>{detail}</p>
+                        ))}
+                      </div>
+                    ) : null}
+                    <div className="offers-page__links">
+                      <TextCta href={offerHref(item.id)}>Details</TextCta>
+                      <TextCta href="#buchung">Jetzt buchen</TextCta>
                     </div>
-                  ) : null}
-                  <div className="offers-page__links">
-                    <TextCta href={offerHref(item.id)}>Details</TextCta>
-                    <TextCta href="#buchung">Jetzt buchen</TextCta>
-                  </div>
-                </article>
-              </Reveal>
-            ))}
-          </section>
+                  </article>
+                </Reveal>
+              ))}
+            </section>
+          </CmsPart>
 
-          <section className="offers-page__note" data-cms-focus="note">
-            <h2 className="offers-page__note-title heading-font" data-cms-path="note_title">
-              {data.note_title ?? OFFERS_PAGE_FALLBACK.note_title}
-            </h2>
-            <p className="offers-page__note-text" data-cms-path="note_text">
-              {data.note_text ?? OFFERS_PAGE_FALLBACK.note_text}
-            </p>
-            <TextCta href={data.note_cta_href ?? adviceHref}>
-              {data.note_cta ?? OFFERS_PAGE_FALLBACK.note_cta}
-            </TextCta>
-          </section>
+          <CmsPart sectionKey="offers_page" part="note" label="Hinweis">
+            <section className="offers-page__note" data-cms-focus="note">
+              <h2 className="offers-page__note-title heading-font" data-cms-path="note_title">
+                {data.note_title ?? OFFERS_PAGE_FALLBACK.note_title}
+              </h2>
+              <p className="offers-page__note-text" data-cms-path="note_text">
+                {data.note_text ?? OFFERS_PAGE_FALLBACK.note_text}
+              </p>
+              <TextCta href={data.note_cta_href ?? adviceHref}>
+                {data.note_cta ?? OFFERS_PAGE_FALLBACK.note_cta}
+              </TextCta>
+            </section>
+          </CmsPart>
         </div>
       </SubpageHero>
     </main>

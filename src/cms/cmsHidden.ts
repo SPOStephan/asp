@@ -16,9 +16,14 @@ export function isLayoutHideable(sectionKey: string): boolean {
   return sectionKey !== 'footer' && !sectionKey.endsWith('_page');
 }
 
+// Switches for parts of a section, e.g. "hidden_tiles" for the Discover tiles.
+export function partHiddenKey(part: string) {
+  return `hidden_${part}`;
+}
+
 export function isHiddenMetaPath(path: string): boolean {
   const leaf = path.split('.').pop() ?? path;
-  return HIDDEN_META_KEYS.has(leaf);
+  return HIDDEN_META_KEYS.has(leaf) || leaf.startsWith('hidden_');
 }
 
 export function removedRecordIds(previousIds: string[], nextIds: string[]): string[] {

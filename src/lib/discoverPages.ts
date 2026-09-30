@@ -6,6 +6,7 @@ import { pageKeyFromHref } from './pageTemplates';
 // has to exist for the hotel, so these keys are always switched on.
 export function discoverPageKeys(tiles: unknown): string[] {
   const keys = resolveDiscoverTiles(tiles)
+    .filter((tile) => !/^(https?:)?\/\//i.test(tile.href.trim()))
     .map((tile) => pageKeyFromHref(remapSiteHref(tile.href, tile.title)))
     .filter((key): key is string => Boolean(key) && key !== 'home');
   return [...new Set(keys)];
