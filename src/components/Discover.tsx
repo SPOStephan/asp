@@ -1,7 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import { CmsSection } from '../cms/CmsSection';
 import { useHotelContent, useSection } from '../context/HotelContext';
-import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
+import { MUSTER_MEDIA, resolveDiscoverTiles, resolveMedia } from '../lib/media';
 import { remapSiteHref } from '../lib/links';
 import { pageKeyFromHref } from '../lib/musterPages';
 import { Reveal } from './Reveal';
@@ -44,7 +44,7 @@ export function Discover() {
       </div>
 
       <div className="discover__grid">
-        {(data.tiles ?? []).map((tile: DiscoverTile, i: number) => {
+        {resolveDiscoverTiles(data.tiles).map((tile: DiscoverTile, i: number) => {
           const key = pageKeyFromHref(remapSiteHref(tile.href, tile.title));
           if (key && !isPageEnabled(key)) return null;
           return (

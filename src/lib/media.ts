@@ -12,6 +12,23 @@ export const MUSTER_MEDIA = {
   discoverRight: '/hotel-stpeter-ording-Austernfischer-Suite05.jpg',
 } as const;
 
+// The nine Discover tiles from the Ambassador pilot, used while a hotel has none.
+export const MUSTER_DISCOVER_TILES = [
+  { image: '/suite-room.webp', eyebrow: 'Übernachten', title: 'Zimmer & Suiten', href: '#highlights' },
+  { image: '/teaser-autumn.webp', eyebrow: 'Saison', title: 'Angebote', href: '#newsletter' },
+  { image: '/spa-wellness.webp', eyebrow: 'Wohlbefinden', title: 'Wellness & Spa', href: '#wellness' },
+  { image: '/culinary-dining.webp', eyebrow: 'Genuss', title: 'Restaurant & Bar', href: '#culinary' },
+  { image: '/autumn-aerial.webp', eyebrow: 'Region', title: 'Urlaub an der Nordsee', href: '#generations' },
+  { image: '/collage-ski.webp', eyebrow: 'Winter', title: 'Strand & See', href: '#highlights' },
+  { image: '/teaser-family.webp', eyebrow: 'Familie', title: 'Familienurlaub', href: '#generations' },
+  { image: '/collage-mtb.webp', eyebrow: 'Aktiv', title: 'Erlebnisse', href: '#highlights' },
+  { image: '/yoga-outdoor.webp', eyebrow: 'Balance', title: 'Yoga & Retreats', href: '#wellness' },
+];
+
+export function resolveDiscoverTiles(tiles: unknown) {
+  return Array.isArray(tiles) && tiles.length ? tiles : MUSTER_DISCOVER_TILES.map((tile) => ({ ...tile }));
+}
+
 export const NAVBAR_CTA = {
   inquire: 'Anfragen',
   book: 'Buchen',
@@ -86,6 +103,10 @@ export function fillEmptyMedia(sectionKey: string, data: Record<string, unknown>
   if (!defaults) return data;
   const next = { ...data };
   let changed = false;
+  if (sectionKey === 'discover' && !(Array.isArray(next.tiles) && next.tiles.length)) {
+    next.tiles = resolveDiscoverTiles(next.tiles);
+    changed = true;
+  }
   for (const [key, fallback] of Object.entries(defaults)) {
     const filled = resolveMedia(typeof next[key] === 'string' ? next[key] : '', fallback);
     if (next[key] !== filled) {

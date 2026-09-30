@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Trash2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
+import { resolveDiscoverTiles } from '../lib/media';
 import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
@@ -356,7 +357,7 @@ function DiscoverFields() {
     feature_image_left_alt: String(data.feature_image_left_alt ?? ''),
     feature_image_right: String(data.feature_image_right ?? ''),
     feature_image_right_alt: String(data.feature_image_right_alt ?? ''),
-    tiles: Array.isArray(data.tiles) ? data.tiles : [],
+    tiles: resolveDiscoverTiles(data.tiles),
   });
 
   useEffect(() => {
@@ -368,7 +369,7 @@ function DiscoverFields() {
       feature_image_left_alt: String(data.feature_image_left_alt ?? ''),
       feature_image_right: String(data.feature_image_right ?? ''),
       feature_image_right_alt: String(data.feature_image_right_alt ?? ''),
-      tiles: Array.isArray(data.tiles) ? data.tiles : [],
+      tiles: resolveDiscoverTiles(data.tiles),
     });
   }, [cms?.draftTick]);
 
@@ -418,7 +419,7 @@ function DiscoverFields() {
           <Field label="Eyebrow" value={tile.eyebrow ?? ''} onChange={(value) => updateTile(index, 'eyebrow', value)} />
           <CmsImageField
             label="Bild"
-            value={String((Array.isArray(data.tiles) ? data.tiles[index] : null)?.image || tile.image || '')}
+            value={String(resolveDiscoverTiles(data.tiles)[index]?.image || tile.image || '')}
             section="discover"
             path={`tiles.${index}.image`}
           />
