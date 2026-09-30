@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react';
 import { useHotel } from '../context/HotelContext';
-import { type CropRect, exportWebp, fitRect, loadImage, zoomRect } from './cmsImage';
+import { type CropRect, exportWebp, fitRect, loadImage, waitForImage, zoomRect } from './cmsImage';
 import { formatImageHint, imageHint } from './cmsImageHints';
 import { uploadToBunny } from './cmsUpload';
 import { useCms } from './CmsContext';
@@ -78,6 +78,7 @@ export function CmsImageDialog() {
     try {
       const file = await exportWebp(source, sourceCrop);
       const url = await uploadToBunny(file, hotel.id, alt);
+      await waitForImage(url);
       cms.applyField(request.section, request.path, url);
       if (request.altPath && alt) cms.applyField(request.section, request.altPath, alt);
       setAppliedUrl(url);
@@ -209,6 +210,8 @@ export function CmsImageDialog() {
         {appliedUrl ? (
           <p className="cms-muted">
             WebP ist im Layout. Zuschnitt ändern und erneut übernehmen, wenn der Ausschnitt noch nicht stimmt.
+            <br />
+            <a href={appliedUrl} target="_blank" rel="noreferrer">{appliedUrl}</a>
           </p>
         ) : null}
         <label className="cms-field">

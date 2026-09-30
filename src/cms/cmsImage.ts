@@ -131,3 +131,20 @@ export async function exportWebp(image: HTMLImageElement, crop: CropRect, qualit
   const ext = type === 'image/webp' ? 'webp' : 'jpg';
   return new File([blob], `bild-${Date.now()}.${ext}`, { type });
 }
+
+export function waitForImage(url: string, timeoutMs = 20000): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const timer = window.setTimeout(() => fail('Zeitüberschreitung'), timeoutMs);
+    function fail(reason: string) {
+      window.clearTimeout(timer);
+      reject(new Error(`Das WebP ist hochgeladen, lädt aber nicht von ${url} (${reason}). Bunny-Pull-Zone prüfen.`));
+    }
+    image.onload = () => {
+      window.clearTimeout(timer);
+      resolve();
+    };
+    image.onerror = () => fail('Bild nicht erreichbar');
+    image.src = url;
+  });
+}
