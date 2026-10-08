@@ -4026,6 +4026,8 @@ body.room-lightbox-open .availability-bar__slot {
 .subpage-hero__image {
   position: relative;
   height: 100vh;
+  /* svh: the screen with the browser bars shown; 100vh on phones counts them as hidden. */
+  height: 100svh;
   min-height: 600px;
   overflow: hidden;
 }
@@ -4068,7 +4070,7 @@ body.room-lightbox-open .availability-bar__slot {
 }
 .subpage-hero__text {
   position: absolute;
-  top: var(--hero-text-top, 45vh);
+  top: var(--hero-text-top, 45svh);
   left: 0;
   width: 100%;
   text-align: center;
@@ -4076,7 +4078,7 @@ body.room-lightbox-open .availability-bar__slot {
   box-sizing: border-box;
 }
 .subpage-hero__clip--dark .subpage-hero__text {
-  top: calc(var(--hero-text-top, 45vh) - var(--image-bottom));
+  top: calc(var(--hero-text-top, 45svh) - var(--image-bottom));
 }
 .subpage-hero__text--white {
   color: var(--neutral-0);
@@ -4259,3 +4261,10 @@ body.room-lightbox-open .availability-bar__slot {
 .subpage-hero__script { font-family: var(--font-script); font-style: normal; font-weight: 400; font-size: 1.5em; line-height: 0.82; display: inline-block; vertical-align: baseline; margin-left: 0.06em; }
 .subpage-hero__text--dark .subpage-hero__script { color: var(--accent-400); }
 .welcome.welcome--after-hero { padding-top: 24px; }
+/* Phones: picture plus the bottom dock fill exactly one screen. */
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) {
+  body.has-mobile-dock .subpage-hero__image {
+    height: calc(100svh - 56px - env(safe-area-inset-bottom, 0px));
+    min-height: 420px;
+  }
+}

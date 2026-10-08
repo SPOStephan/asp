@@ -12,24 +12,32 @@ export function CmsPreviewFrame() {
   const previewRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState(1);
+  // Desktop: the page is laid out at the size of the editor's own browser window and scaled
+  // down to fit beside the panel, so the preview shows the real cut of every picture.
+  const [screen, setScreen] = useState(() => ({ width: window.innerWidth, height: window.innerHeight }));
   const setFrameWindow = cms?.setFrameWindow;
+  const deviceWidth = phone ? CMS_PHONE_WIDTH : screen.width;
+  const deviceHeight = phone ? CMS_PHONE_HEIGHT : screen.height;
+
+  useEffect(() => {
+    const onResize = () => setScreen({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     const preview = previewRef.current;
-    if (!preview || !phone) {
-      setScale(1);
-      return;
-    }
+    if (!preview) return;
     const update = () => {
       const width = preview.clientWidth - 32;
       const height = preview.clientHeight - 32;
-      setScale(Math.min(1, width / CMS_PHONE_WIDTH, height / CMS_PHONE_HEIGHT));
+      setScale(Math.min(1, width / deviceWidth, height / deviceHeight));
     };
     const observer = new ResizeObserver(update);
     observer.observe(preview);
     update();
     return () => observer.disconnect();
-  }, [phone]);
+  }, [deviceWidth, deviceHeight]);
 
   useEffect(() => {
     return () => setFrameWindow?.(null);
@@ -39,15 +47,11 @@ export function CmsPreviewFrame() {
     <div ref={previewRef} className={`cms-preview${phone ? ' is-phone' : ' is-desktop'}`}>
       <div
         className="cms-device-slot"
-        style={
-          phone
-            ? { width: CMS_PHONE_WIDTH * scale, height: CMS_PHONE_HEIGHT * scale }
-            : undefined
-        }
+        style={{ width: deviceWidth * scale, height: deviceHeight * scale }}
       >
         <div
           className="cms-device"
-          style={phone ? { transform: `scale(${scale})` } : undefined}
+          style={{ width: deviceWidth, height: deviceHeight, transform: `scale(${scale})` }}
         >
           <iframe
             key={device}
@@ -55,6 +59,7 @@ export function CmsPreviewFrame() {
             className="cms-frame"
             title="Seitenvorschau"
             src={src}
+            style={{ width: deviceWidth, height: deviceHeight }}
             onLoad={() => setFrameWindow?.(frameRef.current?.contentWindow ?? null)}
           />
         </div>

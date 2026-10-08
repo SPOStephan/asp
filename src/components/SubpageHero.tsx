@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { useCms as useCmsContext } from '../cms/CmsContext';
 import { CmsHeroPan } from '../cms/CmsHeroPan';
 import { heroFocalStyle } from '../cms/cmsFocal';
+import { isCmsFrame } from '../cms/cmsFrame';
 
 interface SubpageHeroCms {
   image?: string;
@@ -63,7 +64,9 @@ export function SubpageHero({
       const hero = heroRef.current;
       if (!hero) return;
       const bottom = hero.getBoundingClientRect().bottom;
-      const stage = hero.closest('.cms-device') || hero.closest('.cms-stage');
+      // Inside the CMS preview iframe the iframe itself is the screen; its .cms-stage is as
+      // tall as the whole page and must not count as one.
+      const stage = isCmsFrame() ? null : hero.closest('.cms-device') || hero.closest('.cms-stage');
       const frame = stage instanceof HTMLElement ? stage : null;
       const vh = frame?.clientHeight || window.innerHeight;
       const frameWidth = frame?.clientWidth || window.innerWidth;
@@ -97,7 +100,7 @@ export function SubpageHero({
 
   const cssVars = {
     '--image-bottom': `${imageBottom}px`,
-    '--hero-text-top': `${textTop * 100}vh`,
+    '--hero-text-top': `${textTop * 100}svh`,
     ...heroFocalStyle(focal),
     ...style,
   } as CSSProperties & {
