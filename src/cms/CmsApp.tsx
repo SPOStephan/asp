@@ -1,8 +1,10 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { AdminAuthProvider, useAdminAuth } from '../admin/AdminAuth';
 import '../admin/admin.css';
 import { AdminLoginPage } from '../admin/pages/AdminLoginPage';
+import { useHotel } from '../context/HotelContext';
+import { supabase } from '../lib/supabase';
 import { Footer } from '../components/Footer';
 import { MobileChromeDock } from '../components/MobileChromeDock';
 import { Navbar } from '../components/Navbar';
@@ -62,9 +64,29 @@ function CmsStage() {
   );
 }
 
+// Signed in is not enough: the person must be allowed to edit this hotel.
+function useHotelAccess(enabled: boolean) {
+  const hotel = useHotel();
+  const [state, setState] = useState<'checking' | 'yes' | 'no'>('checking');
+  useEffect(() => {
+    if (!enabled || !hotel) return;
+    let cancelled = false;
+    void supabase.rpc('can_edit_hotel', { hotel: hotel.id }).then(({ data, error }) => {
+      if (cancelled) return;
+      // Before migration 025 the function does not exist yet: every admin may edit, as before.
+      setState(error || data === true ? 'yes' : 'no');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled, hotel]);
+  return state;
+}
+
 function CmsGate() {
-  const { loading, admin } = useAdminAuth();
-  if (loading) {
+  const { loading, admin, signOut } = useAdminAuth();
+  const access = useHotelAccess(Boolean(admin));
+  if (loading || (admin && access === 'checking')) {
     return (
       <div className="cms-login">
         <p>Editor wird geladen…</p>
@@ -75,6 +97,16 @@ function CmsGate() {
     return (
       <div className="cms-login">
         <AdminLoginPage />
+      </div>
+    );
+  }
+  if (access === 'no') {
+    return (
+      <div className="cms-login">
+        <p>Mit diesem Konto kannst du dieses Hotel nicht bearbeiten.</p>
+        <button type="button" className="cms-btn cms-btn--ghost" onClick={() => void signOut()}>
+          Mit anderem Konto anmelden
+        </button>
       </div>
     );
   }

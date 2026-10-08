@@ -4,7 +4,7 @@ export const CMS_FRAME_QUERY = 'cms-frame';
 export const CMS_DEVICE_QUERY = 'cms-device';
 export const CMS_PHONE_WIDTH = 390;
 export const CMS_PHONE_HEIGHT = 844;
-export const CMS_FRAME_SOURCE = 'lohbeck-cms';
+export const CMS_FRAME_SOURCE = 'hotel-cms';
 
 export function isCmsFrameSearch(search: string) {
   return new URLSearchParams(search.startsWith('?') ? search.slice(1) : search).get(CMS_FRAME_QUERY) === '1';

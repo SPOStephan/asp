@@ -73,7 +73,8 @@ assert.equal(isHotelSlugConflict('hotel_pages_page_key_check'), false);
 assert.equal(findHotelBySlug([{ id: '1', slug: 'pilot-x' }], 'Pilot-X')?.id, '1');
 assert.equal(findHotelBySlug([{ id: '1', slug: 'pilot-x' }], ''), undefined);
 assert.equal(canResumeHotelSlug('pilot-x'), true);
-assert.equal(canResumeHotelSlug('ambassador-hotel-spa'), false);
+assert.equal(canResumeHotelSlug('referenz-hotel', 'referenz-hotel'), false);
+assert.equal(canResumeHotelSlug('referenz-hotel', ''), true);
 
 const form = readFileSync(new URL('../src/admin/pages/AdminHotelFormPage.tsx', import.meta.url), 'utf8');
 assert.match(form, /applyHotelPageSelection/);

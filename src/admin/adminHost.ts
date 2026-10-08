@@ -1,7 +1,8 @@
+import { ADMIN_HOST } from '../config/product';
 export function isAdminHost() {
   if (typeof window === 'undefined') return false;
   const host = window.location.hostname;
-  return host === 'admin.lohbeckhotels.de' || host.startsWith('admin.');
+  return (Boolean(ADMIN_HOST) && host === ADMIN_HOST) || host.startsWith('admin.');
 }
 
 export function isAdminPath(pathname: string) {

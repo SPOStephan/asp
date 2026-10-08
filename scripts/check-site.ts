@@ -8,7 +8,7 @@ const content = {
     id: 'h1',
     name: 'Strandhotel Test',
     slug: 'test',
-    domains: ['test.lohbeckhotels.de', 'www.strandhotel-test.de', 'localhost'],
+    domains: ['test.hotels.example.com', 'www.strandhotel-test.de', 'localhost'],
     phone: '+49 1',
     email: 'info@test.de',
     address: 'Deich 1, 25826 Ort',
@@ -27,8 +27,9 @@ const content = {
   pages: { zimmer: true, hunde: true, wellness: false },
 } as unknown as HotelContent;
 
-assert.equal(canonicalOrigin(content.hotel.domains, 'test.lohbeckhotels.de'), 'https://www.strandhotel-test.de');
-assert.equal(canonicalOrigin(['a.lohbeckhotels.de', 'admin.lohbeckhotels.de'], 'x'), 'https://a.lohbeckhotels.de');
+assert.equal(canonicalOrigin(content.hotel.domains, 'test.hotels.example.com', 'hotels.example.com'), 'https://www.strandhotel-test.de');
+assert.equal(canonicalOrigin(['a.hotels.example.com', 'admin.hotels.example.com'], 'x', 'hotels.example.com'), 'https://a.hotels.example.com');
+assert.equal(canonicalOrigin(['a.hotels.example.com', 'b.de'], 'x', ''), 'https://a.hotels.example.com', 'without a platform domain the first domain wins');
 
 const site = new SiteModel(content, 'https://www.strandhotel-test.de');
 const home = site.page('/');

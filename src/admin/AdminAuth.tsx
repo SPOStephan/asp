@@ -2,10 +2,25 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
+export type OrgAccess = { id: string; slug: string; name: string; role: 'owner' | 'admin' | 'editor' };
+
 export type AdminProfile = {
   user_id: string;
   email: string;
+  // Platform team: every organisation, the shared libraries and the platform admins.
+  platform: boolean;
+  organizations: OrgAccess[];
 };
+
+export function canManageOrg(admin: AdminProfile | null, organizationId: string | null | undefined) {
+  if (!admin) return false;
+  if (admin.platform) return true;
+  return admin.organizations.some((org) => org.id === organizationId && org.role !== 'editor');
+}
+
+export function managedOrgs(admin: AdminProfile | null) {
+  return admin?.organizations.filter((org) => admin.platform || org.role !== 'editor') ?? [];
+}
 
 interface AdminAuthValue {
   session: Session | null;
@@ -33,7 +48,15 @@ async function resolveAdmin(user: User | null): Promise<AdminProfile | null> {
   const { data, error } = await supabase.rpc('claim_admin');
   if (error) throw error;
   if (data !== true) return null;
-  return { user_id: user.id, email: user.email ?? '' };
+  const access = await supabase.rpc('my_access');
+  // Before migration 025 there are no organisations: every admin is platform team, as before.
+  const value = (access.error ? null : access.data) as { platform?: boolean; organizations?: OrgAccess[] } | null;
+  return {
+    user_id: user.id,
+    email: user.email ?? '',
+    platform: value ? value.platform === true : true,
+    organizations: value?.organizations ?? [],
+  };
 }
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
