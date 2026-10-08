@@ -20,8 +20,10 @@ export function AvailabilityBar() {
       if (!bar || !slot) return;
       const height = bar.offsetHeight;
       if (height) setSlotHeight(height);
+      // Pinned to the bottom of the screen as soon as it would move up from there, so it
+      // never travels across the page (and over the hero heading wandering down).
       const slotBottom = slot.getBoundingClientRect().bottom;
-      setStuck(slotBottom <= height + 1);
+      setStuck(slotBottom < window.innerHeight - 2);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);

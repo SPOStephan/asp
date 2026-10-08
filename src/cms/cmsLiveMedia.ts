@@ -32,6 +32,21 @@ export function writeLiveMedia(section: string, path: string, url: string) {
   }
 }
 
+// A removed picture must not come back from the session's list of fresh uploads.
+export function clearLiveMedia(section: string, path: string) {
+  const next = { ...readLiveMedia() };
+  delete next[overlayKey(section, path)];
+  sessionStorage.setItem(LIVE_MEDIA_KEY, JSON.stringify(next));
+  window.dispatchEvent(new Event('cms-live-media'));
+  try {
+    const bus = new BroadcastChannel(LIVE_MEDIA_CHANNEL);
+    bus.postMessage(next);
+    bus.close();
+  } catch {
+    /* BroadcastChannel missing */
+  }
+}
+
 export function applyLiveMediaMap(
   section: string,
   data: Record<string, unknown> | null,

@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react';
 import { useHotel, useHotelContent } from '../context/HotelContext';
 import { getPath } from './cmsDraft';
-import { type CropRect, exportWebp, fitRect, loadImage, ORIGINAL_MAX_EDGE, waitForImage, zoomRect } from './cmsImage';
+import { type CropRect, exportWebp, fitRect, loadImage, ORIGINAL_MAX_EDGE, ORIGINAL_WEBP_QUALITY, screenMaxEdge, waitForImage, zoomRect } from './cmsImage';
 import { clampCrop, editableImageUrl, readMediaSource } from './cmsMediaSource';
 import { formatImageHint, imageHint } from './cmsImageHints';
 import { focalPathFor, refitCrop, slotAspect } from './cmsSlot';
@@ -159,10 +159,11 @@ export function CmsImageDialog() {
       let original = knownSource;
       if (!original) {
         const full = { x: 0, y: 0, width: source.naturalWidth, height: source.naturalHeight };
-        original = await uploadToBunny(await exportWebp(source, full, undefined, ORIGINAL_MAX_EDGE), hotel.id, alt ? `${alt} (Original)` : 'Original');
+        original = await uploadToBunny(await exportWebp(source, full, ORIGINAL_WEBP_QUALITY, ORIGINAL_MAX_EDGE), hotel.id, alt ? `${alt} (Original)` : 'Original');
         setSourceUrl(original);
       }
-      const file = await exportWebp(source, sourceCrop);
+      // Full-screen pictures need more pixels than the rest to stay sharp on large and 3x screens.
+      const file = await exportWebp(source, sourceCrop, undefined, focalPathFor(request!.path) ? screenMaxEdge(sourceCrop) : undefined);
       const url = await uploadToBunny(file, hotel.id, alt);
       await waitForImage(url);
       // The crop now is what the page shows; an old drag/zoom position would shift it again.
