@@ -52,10 +52,31 @@ export function HotelProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    if (skipHotel || embedded) {
+    if (skipHotel) {
       setLoading(false);
       setError(null);
       return;
+    }
+    if (embedded) {
+      setLoading(false);
+      setError(null);
+      // The server's HTML may come from the CDN cache: check the live content once in the
+      // background so a fresh CMS save always shows, even before the cache is renewed.
+      let cancelled = false;
+      const timer = setTimeout(() => {
+        loadHotelContent()
+          .then((data) => {
+            if (cancelled || JSON.stringify(data) === JSON.stringify(embedded)) return;
+            setContent(data);
+          })
+          .catch(() => {
+            // Keep the server version.
+          });
+      }, 0);
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
     }
     let cancelled = false;
     setLoading(true);

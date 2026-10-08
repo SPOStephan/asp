@@ -9,6 +9,7 @@ import {
   robotsTxt,
   sitemapXml,
 } from '../src/site/renderSite';
+import { siteCacheTag } from '../src/site/cacheTag';
 import { loadSiteContent } from '../src/site/siteData';
 
 // Every page request and the crawler files (robots.txt, sitemap.xml, llms.txt) end up here,
@@ -35,8 +36,8 @@ async function loadTemplate(host: string) {
   return template.html;
 }
 
-function text(body: string, type: string, status = 200) {
-  return new Response(body, { status, headers: { 'Content-Type': `${type}; charset=utf-8`, 'Cache-Control': CACHE } });
+function text(body: string, type: string, tag: string, status = 200) {
+  return new Response(body, { status, headers: { 'Content-Type': `${type}; charset=utf-8`, 'Cache-Control': CACHE, 'Vercel-Cache-Tag': tag } });
 }
 
 export default async function handler(request: Request) {
@@ -61,17 +62,18 @@ export default async function handler(request: Request) {
     content = await loadSiteContent(client, host.split(':')[0]);
   } catch {
     // Without data the visitor still gets the app, which loads the content itself.
-    if (file) return text('Vorübergehend nicht verfügbar.', 'text/plain', 503);
+    if (file) return new Response('Vorübergehend nicht verfügbar.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
     return new Response(await loadTemplate(host), {
       headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
     });
   }
+  const tag = siteCacheTag(content.hotel.id);
   const site = new SiteModel(content, canonicalOrigin(content.hotel.domains, host), `https://${host}`);
 
-  if (file === 'robots') return text(robotsTxt(site), 'text/plain');
-  if (file === 'sitemap') return text(sitemapXml(site), 'application/xml');
-  if (file === 'llms') return text(llmsTxt(site), 'text/markdown');
-  if (file === 'llms-full') return text(llmsFullTxt(site), 'text/markdown');
+  if (file === 'robots') return text(robotsTxt(site), 'text/plain', tag);
+  if (file === 'sitemap') return text(sitemapXml(site), 'application/xml', tag);
+  if (file === 'llms') return text(llmsTxt(site), 'text/markdown', tag);
+  if (file === 'llms-full') return text(llmsFullTxt(site), 'text/markdown', tag);
 
   const model = site.page(path);
   const html = renderPage(await loadTemplate(host), model, site, content);
@@ -81,6 +83,7 @@ export default async function handler(request: Request) {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': model.status === 200 ? CACHE : 'public, max-age=0, s-maxage=60',
       Link: `<${site.url('/llms.txt')}>; rel="alternate"; type="text/markdown"`,
+      'Vercel-Cache-Tag': tag,
     },
   });
 }
