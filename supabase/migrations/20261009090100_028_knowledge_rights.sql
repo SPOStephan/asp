@@ -1,5 +1,6 @@
 -- AI knowledge, part 2 of 2: rights, search and ratings (tables are in 027).
--- Function bodies use $fn$ quoting, no blank lines and no SELECT ... INTO (Supabase SQL editor).
+-- Function bodies use $fn$ quoting, no blank lines, no SELECT ... INTO and no subquery starting
+-- on its own line inside PL/pgSQL (the Supabase SQL editor splits the script there).
 --
 -- Who may do what:
 --   read          every member of the organisation (and the platform team)
@@ -292,10 +293,7 @@ BEGIN
           || '. Richtig ist: ' || left(btrim(p_correct), 300)
     WHERE ks.organization_id = msg_org
       AND ks.kind <> 'correction'
-      AND ks.id IN (
-        SELECT (e->>'source_id')::uuid FROM jsonb_array_elements(coalesce(msg_sources, '[]'::jsonb)) AS e
-        WHERE e->>'cited' = 'true' AND e->>'source_id' IS NOT NULL
-      );
+      AND ks.id IN (SELECT (e->>'source_id')::uuid FROM jsonb_array_elements(coalesce(msg_sources, '[]'::jsonb)) AS e WHERE e->>'cited' = 'true' AND e->>'source_id' IS NOT NULL);
     UPDATE knowledge_sources ks SET enabled = false
     WHERE ks.organization_id = msg_org AND ks.kind = 'example' AND ks.meta->>'message_id' = p_message::text;
     INSERT INTO check_questions (organization_id, hotel_id, question, expected, wrong_text, feedback_id)
