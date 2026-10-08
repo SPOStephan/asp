@@ -35,6 +35,8 @@ export type PageModel = {
   eyebrow?: string;
   lead?: string;
   image?: string;
+  // Optional own picture for phones (home hero).
+  imageMobile?: string;
   blocks: ContentBlock[];
   breadcrumbs: SiteLink[];
   jsonLd: Record<string, unknown>[];
@@ -278,6 +280,7 @@ export class SiteModel {
       eyebrow: input.eyebrow,
       lead: input.lead,
       image: input.image ? this.media(input.image) : undefined,
+      imageMobile: input.imageMobile ? this.media(input.imageMobile) : undefined,
       blocks: [...input.blocks, this.contact()].filter((block) => block.heading || block.text?.length || block.items?.length),
       breadcrumbs,
       jsonLd,
@@ -408,6 +411,7 @@ export class SiteModel {
       h1: str(hero?.title) || this.hotel.name,
       lead: str(hero?.subtitle),
       image: hero?.hero_image,
+      imageMobile: str(hero?.hero_image_mobile) || undefined,
       blocks,
       jsonLd: homeFaqs.length ? [faqJsonLd(homeFaqs)] : [],
     });

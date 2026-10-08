@@ -492,6 +492,21 @@ body.nav-menu-open { overflow: hidden; }
   transform-origin: var(--hero-focal-desktop, 50% 50%);
 }
 .hero__overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(19,59,92,0.68) 0%, rgba(19,59,92,0.22) 34%, rgba(19,59,92,0.48) 100%); }
+/* Hotel colour rising from the bottom edge; strength per device from the CMS (0 = off). */
+.hero__fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60%;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--hero-fade-color, var(--primary-500)) 0%, var(--hero-fade-color, var(--primary-500)) 12%, transparent 100%);
+  opacity: var(--hero-fade-desktop, 0);
+  transition: opacity 0.2s ease;
+}
+@media (max-width: 600px) {
+  .hero__fade { height: 70%; opacity: var(--hero-fade-mobile, 0); }
+}
 .hero__content { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 48px; width: 100%; text-align: center; margin-top: auto; margin-bottom: 72px; }
 .hero__title { font-family: var(--font-heading); font-size: clamp(2.4rem, 5.5vw, 4.5rem); font-weight: 600; line-height: 1.1; color: var(--neutral-0); margin-bottom: 6px; animation: fadeUp 1s ease 0.3s both; text-shadow: 0 2px 20px rgba(0,0,0,0.4); }
 .hero__subtitle { font-size: 0.95rem; color: rgba(255,255,255,0.9); font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; animation: fadeUp 1s ease 0.5s both; text-shadow: 0 2px 12px rgba(0,0,0,0.4); }

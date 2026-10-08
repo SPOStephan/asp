@@ -79,6 +79,18 @@ export function contentCoreHtml(model: PageModel, site: SiteModel) {
   ].join('');
 }
 
+// Phones with their own hero picture must not download the desktop one first.
+const PHONE_MEDIA = '(max-width: 600px)';
+
+function imagePreloads(model: PageModel) {
+  if (!model.image) return [];
+  if (!model.imageMobile) return [`<link rel="preload" as="image" href="${escapeHtml(model.image)}">`];
+  return [
+    `<link rel="preload" as="image" href="${escapeHtml(model.imageMobile)}" media="${PHONE_MEDIA}">`,
+    `<link rel="preload" as="image" href="${escapeHtml(model.image)}" media="(min-width: 601px)">`,
+  ];
+}
+
 function headHtml(model: PageModel, site: SiteModel) {
   const url = site.url(model.path);
   const tags = [
@@ -94,7 +106,7 @@ function headHtml(model: PageModel, site: SiteModel) {
     `<meta property="og:description" content="${escapeHtml(model.description)}">`,
     `<meta property="og:url" content="${escapeHtml(url)}">`,
     model.image ? `<meta property="og:image" content="${escapeHtml(model.image)}">` : '',
-    model.image ? `<link rel="preload" as="image" href="${escapeHtml(model.image)}">` : '',
+    ...imagePreloads(model),
     `<meta name="twitter:card" content="${model.image ? 'summary_large_image' : 'summary'}">`,
     ...model.jsonLd.map((data) => `<script type="application/ld+json">${scriptJson(data)}</script>`),
   ];
