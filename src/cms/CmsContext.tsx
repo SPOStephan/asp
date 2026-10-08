@@ -14,8 +14,8 @@ import {
   toCmsFrameHref,
 } from './cmsFrame';
 import { fieldKind, keepLiveMedia, setPath } from './cmsDraft';
-import { writeLiveMedia } from './cmsLiveMedia';
-import { type MediaSource, withMediaSource } from './cmsMediaSource';
+import { clearLiveMedia, writeLiveMedia } from './cmsLiveMedia';
+import { type MediaSource, withMediaSource, withoutMediaSource } from './cmsMediaSource';
 import { removedRecordIds } from './cmsHidden';
 import type { FocalDevice } from './cmsFocal';
 import { useCmsPlaceholders } from './cmsPlaceholders';
@@ -45,6 +45,7 @@ interface CmsValue {
   applyField: (sectionKey: string, path: string, value: unknown, quiet?: boolean) => void;
   // A new picture together with its original and crop, written in one step.
   applyImage: (sectionKey: string, path: string, url: string, source: MediaSource, extra?: Record<string, unknown>) => void;
+  removeImage: (sectionKey: string, path: string, extra?: Record<string, unknown>) => void;
   focalPreview: FocalDevice;
   setFocalPreview: (device: FocalDevice) => void;
   setFrameWindow: (frame: Window | null) => void;
@@ -260,6 +261,17 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     let next: Record<string, unknown> = withMediaSource(setPath(current, path, url), path, source);
     for (const [extraPath, value] of Object.entries(extra)) next = setPath(next, extraPath, value);
     writeLiveMedia(sectionKey, path, url);
+    void persistLiveSection(sectionKey, next);
+    preview(sectionKey, next);
+    setDraftTick((tick) => tick + 1);
+  }
+
+  // Takes a picture out right away (saved like an upload), e.g. the optional phone hero.
+  function removeImage(sectionKey: string, path: string, extra: Record<string, unknown> = {}) {
+    const current = contentRef.current?.sections[sectionKey] ?? {};
+    let next: Record<string, unknown> = withoutMediaSource(setPath(current, path, ''), path);
+    for (const [extraPath, value] of Object.entries(extra)) next = setPath(next, extraPath, value);
+    clearLiveMedia(sectionKey, path);
     void persistLiveSection(sectionKey, next);
     preview(sectionKey, next);
     setDraftTick((tick) => tick + 1);
@@ -496,6 +508,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         previewFaqs,
         applyField,
         applyImage,
+        removeImage,
         focalPreview,
         setFocalPreview,
         setFrameWindow,

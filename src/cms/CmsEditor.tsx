@@ -8,7 +8,7 @@ import { readFilters } from '../lib/listFilters';
 import { ROOM_FILTERS, ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
-import { keepLiveFocals } from './cmsFocal';
+import { keepLiveFocals, readHeroFocal } from './cmsFocal';
 import {
   CMS_DETAIL_LABELS,
   CMS_EDITOR_PAGES,
@@ -351,7 +351,7 @@ function HeroFields() {
         Nur nötig, wenn sich das Hotel im Hochformat anders zeigen soll. Leer: Handys zeigen das Bild oben mit eigenem Ausschnitt.
       </p>
       {data.hero_image_mobile ? (
-        <button type="button" className="cms-btn cms-btn--ghost" onClick={() => cms?.applyField('hero', 'hero_image_mobile', '')}>
+        <button type="button" className="cms-btn cms-btn--ghost" onClick={() => cms?.removeImage('hero', 'hero_image_mobile', { hero_focal: { desktop: readHeroFocal(data.hero_focal).desktop } })}>
           Handy-Bild entfernen
         </button>
       ) : null}

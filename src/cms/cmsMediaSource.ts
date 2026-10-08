@@ -22,6 +22,12 @@ export function withMediaSource(section: Record<string, unknown>, path: string, 
   return { ...section, [MEDIA_SOURCES_KEY]: { ...all, [path]: source } };
 }
 
+export function withoutMediaSource(section: Record<string, unknown>, path: string) {
+  const all = section[MEDIA_SOURCES_KEY] && typeof section[MEDIA_SOURCES_KEY] === 'object' ? { ...(section[MEDIA_SOURCES_KEY] as Record<string, unknown>) } : {};
+  delete all[path];
+  return { ...section, [MEDIA_SOURCES_KEY]: all };
+}
+
 // A crop must lie inside the picture (the original may be smaller than when it was cut).
 export function clampCrop(crop: CropRect, width: number, height: number): CropRect {
   const w = Math.min(Math.max(1, crop.width), width);
