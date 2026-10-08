@@ -87,4 +87,8 @@ zeigt das Symbol E-Mail und Telefon. Gespräche der Gäste lassen sich dort lese
 
 Das Hotel ergibt sich immer aus der aufgerufenen Domain; IP-Adressen werden nicht gespeichert, nur ein täglich
 wechselnder Hashwert für die Limits.
+
+Gespräche bleiben dauerhaft gespeichert. Persönliche Daten darin (Namen, E-Mail, Telefon, Adressen, Buchungsnummern)
+entfernt ein nächtlicher Lauf (`/api/maintenance`, Vercel Cron) nach `AI_CHAT_ANONYMIZE_DAYS` Tagen (Standard 30);
+im Admin geht es pro Gespräch auch sofort. Der Lauf braucht `CRON_SECRET` (beliebige lange Zeichenfolge) in Vercel.
 Prüfungen ohne Datenbank und ohne Kosten: `npx tsx scripts/check-knowledge.ts`

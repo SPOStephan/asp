@@ -8,5 +8,6 @@
     { "source": "/llms.txt", "destination": "/api/site?file=llms" },
     { "source": "/llms-full.txt", "destination": "/api/site?file=llms-full" },
     { "source": "/:path((?!api/|assets/).*)", "destination": "/api/site?path=/:path" }
-  ]
+  ],
+  "crons": [{ "path": "/api/maintenance", "schedule": "30 2 * * *" }]
 }

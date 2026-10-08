@@ -17,6 +17,7 @@ import {
   type HotelBrief,
   type KnowledgeHit,
 } from './concierge';
+import { anonymize, type Keep } from './anonymize';
 import { complete, stream, type AiConfig, type AiUsage } from './provider';
 
 export type ModelRole = 'chat' | 'extract' | 'helper';
@@ -349,4 +350,54 @@ export async function runCheck(client: SupabaseClient, config: AiConfig, checkId
       .eq('id', check.id),
   );
   return { status, reason, answer: answer.answer, model: answer.model, cost: answer.cost };
+}
+
+// --- Anonymising stored conversations ----------------------------------------
+
+type StoredMessage = { id: string; hotel_id: string; question: string; answer: string };
+
+// Personal data out, conversation kept. A message is only marked as done when the model
+// step worked too; otherwise it is tried again next time.
+export async function anonymizeChat(client: SupabaseClient, config: AiConfig | null, defaults: AiDefaults, ids: string[]) {
+  if (!ids.length) return { done: 0, failed: 0, errors: [] as string[] };
+  const rows = must(
+    await client.from('chat_messages').select('id, hotel_id, question, answer').in('id', ids).is('anonymized_at', null),
+  ) as StoredMessage[];
+  const hotels = new Map<string, Promise<{ name: string; keep: Keep; model: string | null }>>();
+  const hotelInfo = (hotelId: string) => {
+    if (!hotels.has(hotelId)) {
+      hotels.set(
+        hotelId,
+        (async () => {
+          const hotel = await loadHotel(client, hotelId);
+          const settings = await resolveSettings(client, hotel.organization_id, hotel.id, defaults);
+          return { name: hotel.name, keep: { emails: [hotel.email ?? ''], phones: [hotel.phone ?? ''] }, model: settings.models.helper || null };
+        })(),
+      );
+    }
+    return hotels.get(hotelId)!;
+  };
+  let done = 0;
+  const errors: string[] = [];
+  const queue = [...rows];
+  const worker = async () => {
+    for (let row = queue.shift(); row; row = queue.shift()) {
+      try {
+        const hotel = await hotelInfo(row.hotel_id);
+        const result = await anonymize(config, hotel.model, { question: row.question, answer: row.answer, hotelName: hotel.name, keep: hotel.keep });
+        if (!result.ai) throw new Error('Kein KI-Modell für die Anonymisierung eingerichtet.');
+        must(
+          await client
+            .from('chat_messages')
+            .update({ question: result.question, answer: result.answer, anonymized_at: new Date().toISOString() })
+            .eq('id', row.id),
+        );
+        done += 1;
+      } catch (err) {
+        errors.push(err instanceof Error ? err.message : String(err));
+      }
+    }
+  };
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  return { done, failed: rows.length - done, errors: [...new Set(errors)].slice(0, 5) };
 }
