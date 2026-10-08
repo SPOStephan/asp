@@ -1,5 +1,6 @@
 -- Organisations, part 2 of 2: rights functions and policies (tables are in 025).
--- Function bodies use $fn$ quoting, no blank lines and no SELECT ... INTO: the
+-- Function bodies use $fn$ quoting, no blank lines, no SELECT ... INTO and no subquery
+-- starting on its own line inside PL/pgSQL (the editor splits the script there). The
 -- Supabase SQL editor reads SELECT ... INTO as creating a table and appends
 -- "ALTER TABLE <variable> ENABLE ROW LEVEL SECURITY", which then fails.
 
@@ -97,20 +98,9 @@ BEGIN
   END IF;
   claim_email := (SELECT u.email FROM auth.users u WHERE u.id = auth.uid());
   IF claim_email IS NOT NULL THEN
-    invite_found := EXISTS (
-      SELECT 1 FROM admin_invites i
-      WHERE lower(i.email) = lower(claim_email) AND i.accepted_at IS NULL
-    );
-    invite_org := (
-      SELECT i.organization_id FROM admin_invites i
-      WHERE lower(i.email) = lower(claim_email) AND i.accepted_at IS NULL
-      LIMIT 1
-    );
-    invite_role := (
-      SELECT i.role FROM admin_invites i
-      WHERE lower(i.email) = lower(claim_email) AND i.accepted_at IS NULL
-      LIMIT 1
-    );
+    invite_found := EXISTS (SELECT 1 FROM admin_invites i WHERE lower(i.email) = lower(claim_email) AND i.accepted_at IS NULL);
+    invite_org := (SELECT i.organization_id FROM admin_invites i WHERE lower(i.email) = lower(claim_email) AND i.accepted_at IS NULL LIMIT 1);
+    invite_role := (SELECT i.role FROM admin_invites i WHERE lower(i.email) = lower(claim_email) AND i.accepted_at IS NULL LIMIT 1);
     IF invite_found THEN
       IF invite_org IS NULL THEN
         INSERT INTO admins (user_id, email)
@@ -237,16 +227,7 @@ AS $fn$
 DECLARE
   taken text;
 BEGIN
-  taken := (
-    SELECT d
-    FROM unnest(NEW.domains) AS d
-    WHERE lower(d) NOT IN ('localhost', '127.0.0.1')
-      AND EXISTS (
-        SELECT 1 FROM hotels h, unnest(h.domains) AS other
-        WHERE h.id <> NEW.id AND lower(other) = lower(d)
-      )
-    LIMIT 1
-  );
+  taken := (SELECT d FROM unnest(NEW.domains) AS d WHERE lower(d) NOT IN ('localhost', '127.0.0.1') AND EXISTS (SELECT 1 FROM hotels h, unnest(h.domains) AS other WHERE h.id <> NEW.id AND lower(other) = lower(d)) LIMIT 1);
   IF taken IS NOT NULL THEN
     RAISE EXCEPTION 'Die Domain % gehört bereits zu einem anderen Hotel.', taken;
   END IF;
