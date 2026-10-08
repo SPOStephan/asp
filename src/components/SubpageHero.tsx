@@ -59,6 +59,8 @@ export function SubpageHero({
   children,
 }: SubpageHeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
+  const fixedTextRef = useRef<HTMLDivElement>(null);
+  const flowTextRef = useRef<HTMLDivElement>(null);
   const editing = Boolean(useCmsContext());
   const [imageBottom, setImageBottom] = useState(0);
   const [docked, setDocked] = useState(false);
@@ -78,6 +80,15 @@ export function SubpageHero({
       const frameWidth = frame?.clientWidth || window.innerWidth;
       const flowTopPadding = frameWidth <= 768 ? 80 : 120;
       setImageBottom(Math.max(0, Math.min(vh, bottom)));
+      // Hand over exactly when the heading in the page reaches the floating one. Both are
+      // measured: on phones the browser bars change the screen height while scrolling, so a
+      // position computed from the height drifts from the CSS one and the heading jumps.
+      const fixedTop = fixedTextRef.current?.getBoundingClientRect().top;
+      const flowTop = flowTextRef.current?.getBoundingClientRect().top;
+      if (fixedTop != null && flowTop != null && !frame) {
+        setDocked(flowTop <= fixedTop + 0.5);
+        return;
+      }
       const top = textTopMobile != null && window.matchMedia(HERO_PHONE_MEDIA).matches ? textTopMobile : textTop;
       setDocked(bottom <= vh * top - flowTopPadding);
     };
@@ -153,14 +164,14 @@ export function SubpageHero({
       </CmsHeroPan>
 
       <div className={`subpage-hero__flow${docked ? ' is-docked' : ''}`}>
-        <div className="subpage-hero__text subpage-hero__text--dark subpage-hero__text--flow">
+        <div ref={flowTextRef} className="subpage-hero__text subpage-hero__text--dark subpage-hero__text--flow">
           <Headline editable />
         </div>
       </div>
 
       <div className={`subpage-hero__fixed${docked ? ' is-hidden' : ''}`} aria-hidden={docked}>
         <div className="subpage-hero__clip subpage-hero__clip--white">
-          <div className="subpage-hero__text subpage-hero__text--white"><Headline /></div>
+          <div ref={fixedTextRef} className="subpage-hero__text subpage-hero__text--white"><Headline /></div>
         </div>
         <div className="subpage-hero__clip subpage-hero__clip--dark">
           <div className="subpage-hero__text subpage-hero__text--dark"><Headline /></div>
