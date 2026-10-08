@@ -4268,3 +4268,8 @@ body.room-lightbox-open .availability-bar__slot {
     min-height: 420px;
   }
 }
+/* Phones may place the hero heading differently (CMS: own position for phones). */
+@media (max-width: 600px) {
+  .subpage-hero__clip--white .subpage-hero__text { top: var(--hero-text-top-mobile, var(--hero-text-top, 45svh)); }
+  .subpage-hero__clip--dark .subpage-hero__text { top: calc(var(--hero-text-top-mobile, var(--hero-text-top, 45svh)) - var(--image-bottom)); }
+}
