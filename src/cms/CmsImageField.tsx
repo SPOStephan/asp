@@ -27,7 +27,7 @@ export function CmsImageField({
         className="cms-btn cms-btn--ghost"
         onClick={() => cms?.openImage({ section, path, altPath: inferAltPath(path) })}
       >
-        Bild wählen / hochladen
+        {value ? 'Ausschnitt ändern / neues Bild' : 'Bild wählen / hochladen'}
       </button>
     </div>
   );

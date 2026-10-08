@@ -1,4 +1,4 @@
-export const HIDDEN_META_KEYS = new Set(['hidden', 'hidden_on_home', 'cms_label']);
+export const HIDDEN_META_KEYS = new Set(['hidden', 'hidden_on_home', 'cms_label', 'media_sources']);
 
 export function sectionDisplayName(data: Record<string, unknown> | null | undefined, fallback: string) {
   const custom = typeof data?.cms_label === 'string' ? data.cms_label.trim() : '';
