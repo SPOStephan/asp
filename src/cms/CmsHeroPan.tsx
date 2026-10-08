@@ -96,7 +96,8 @@ export function CmsHeroPan({
       onClick={onClick}
     >
       {children}
-      <div className="cms-hero-pan__tools">
+      {/* data-cms-ui: the CMS click handler must leave these buttons alone. */}
+      <div className="cms-hero-pan__tools" data-cms-ui="">
         <span className="cms-hero-pan__hint">
           {device === 'mobile' ? 'Mobil ziehen' : 'Desktop ziehen'} · + / − zoomt
         </span>
