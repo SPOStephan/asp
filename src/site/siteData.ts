@@ -11,7 +11,7 @@ export type HotelContent = {
   pages: Record<string, boolean>;
 };
 
-export const FALLBACK_HOTEL_SLUG = 'ambassador-hotel-spa';
+import { REFERENCE_HOTEL_SLUG } from '../config/product';
 
 export function normalizeSections(rows: Array<Pick<HotelSection, 'section_key' | 'data'>>) {
   const sections: Record<string, Record<string, any>> = {};
@@ -35,11 +35,11 @@ export async function loadSiteContent(client: SupabaseClient, domain: string): P
     .maybeSingle();
 
   let resolvedHotel = hotel as Hotel | null;
-  if (!resolvedHotel) {
+  if (!resolvedHotel && REFERENCE_HOTEL_SLUG) {
     const { data: fallback } = await client
       .from('hotels')
       .select('*')
-      .eq('slug', FALLBACK_HOTEL_SLUG)
+      .eq('slug', REFERENCE_HOTEL_SLUG)
       .eq('is_active', true)
       .maybeSingle();
     resolvedHotel = fallback as Hotel | null;

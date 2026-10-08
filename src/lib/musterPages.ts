@@ -1,3 +1,4 @@
+import { onPlatformDomain } from '../config/product';
 import { pageKeyFromHref as templatePageKeyFromHref, pageKeyFromPath as templatePageKeyFromPath, SYSTEM_TEMPLATES } from './pageTemplates';
 
 export const MUSTER_PAGES = SYSTEM_TEMPLATES.filter((item) => item.template_key !== 'home').map((item) => ({
@@ -38,7 +39,7 @@ export function filterMenuGroups<T extends { href?: string; title: string; links
 export function publicHotelOrigin(domains: string[] | null | undefined) {
   const list = (domains ?? []).map((item) => item.trim().toLowerCase()).filter(Boolean);
   const preferred =
-    list.find((item) => item.includes('lohbeckhotels.de') && !item.startsWith('admin.')) ||
+    list.find((item) => onPlatformDomain(item) && !item.startsWith('admin.')) ||
     list.find((item) => item !== 'localhost' && item !== '127.0.0.1' && !item.endsWith('.local')) ||
     list[0];
   if (!preferred || preferred === 'localhost' || preferred === '127.0.0.1') return '';

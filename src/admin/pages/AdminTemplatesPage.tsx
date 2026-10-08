@@ -162,7 +162,7 @@ export function AdminTemplatesPage() {
         <div>
           <h2>Seiten-Bibliothek</h2>
           <p className="lead">
-            Leere Container aus dem Ambassador-Layout und jede später gesicherte Hotel-Seite. Suche über Titel oder Tags,
+            Leere Container aus dem Standard-Layout und jede später gesicherte Hotel-Seite. Suche über Titel oder Tags,
             Vorschau zeigt das Gerüst.
           </p>
         </div>

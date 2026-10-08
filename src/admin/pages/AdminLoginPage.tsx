@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { PRODUCT_NAME } from '../../config/product';
 import { useAdminAuth } from '../AdminAuth';
 
 export function AdminLoginPage() {
@@ -20,7 +21,7 @@ export function AdminLoginPage() {
   return (
     <div className="admin-login">
       <div className="admin-card">
-        <h1>Lohbeck CMS</h1>
+        <h1>{PRODUCT_NAME}</h1>
         <p className="lead">Nur eingeladene Admins. Kein öffentliches Konto.</p>
         <form className="admin-form" onSubmit={(event) => void onSubmit(event)}>
           <label>

@@ -1,11 +1,12 @@
-export const AMBASSADOR_SLUG = 'ambassador-hotel-spa';
+import { REFERENCE_HOTEL_SLUG } from '../config/product';
 
 export function isHotelSlugConflict(message?: string | null) {
   return Boolean(message && /hotels_slug_key/i.test(message));
 }
 
-export function canResumeHotelSlug(slug: string) {
-  return slug.trim().toLowerCase() !== AMBASSADOR_SLUG;
+export function canResumeHotelSlug(slug: string, reference = REFERENCE_HOTEL_SLUG) {
+  // Never take over the reference hotel by re-using its slug.
+  return !reference || slug.trim().toLowerCase() !== reference.toLowerCase();
 }
 
 export function findHotelBySlug<T extends { slug: string }>(hotels: T[], slug: string) {

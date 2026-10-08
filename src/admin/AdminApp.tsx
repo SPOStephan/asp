@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
-import { AdminAuthProvider, useAdminAuth } from './AdminAuth';
+import { PRODUCT_NAME } from '../config/product';
+import { AdminAuthProvider, managedOrgs, useAdminAuth } from './AdminAuth';
 import { AdminAdminsPage } from './pages/AdminAdminsPage';
 import { AdminHotelFormPage } from './pages/AdminHotelFormPage';
 import { AdminHotelsPage } from './pages/AdminHotelsPage';
@@ -35,22 +36,28 @@ function AdminGate() {
     <div className="admin-app">
       <div className="admin-shell">
         <aside className="admin-nav">
-          <h1>Lohbeck CMS</h1>
+          <h1>{PRODUCT_NAME}</h1>
           <NavLink to="/admin" end className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
             Hotels
           </NavLink>
-          <NavLink to="/admin/vorlagen" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
-            Bibliothek
-          </NavLink>
-          <NavLink to="/admin/icons" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
-            Icons
-          </NavLink>
+          {admin.platform ? (
+            <>
+              <NavLink to="/admin/vorlagen" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
+                Bibliothek
+              </NavLink>
+              <NavLink to="/admin/icons" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
+                Icons
+              </NavLink>
+            </>
+          ) : null}
           <NavLink to="/admin/media" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
             Medien
           </NavLink>
-          <NavLink to="/admin/admins" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
-            Admins
-          </NavLink>
+          {admin.platform || managedOrgs(admin).length ? (
+            <NavLink to="/admin/admins" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
+              Team
+            </NavLink>
+          ) : null}
           <p className="admin-nav__who">{admin.email}</p>
           <button type="button" onClick={() => void signOut()}>
             Abmelden
@@ -62,8 +69,8 @@ function AdminGate() {
             <Route path="/admin" element={<AdminHotelsPage />} />
             <Route path="/admin/hotels/new" element={<AdminHotelFormPage />} />
             <Route path="/admin/hotels/:id" element={<AdminHotelFormPage />} />
-            <Route path="/admin/vorlagen" element={<AdminTemplatesPage />} />
-            <Route path="/admin/icons" element={<AdminIconsPage />} />
+            {admin.platform ? <Route path="/admin/vorlagen" element={<AdminTemplatesPage />} /> : null}
+            {admin.platform ? <Route path="/admin/icons" element={<AdminIconsPage />} /> : null}
             <Route path="/admin/media" element={<AdminMediaPage />} />
             <Route path="/admin/admins" element={<AdminAdminsPage />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
@@ -76,7 +83,7 @@ function AdminGate() {
 
 export function AdminApp() {
   useEffect(() => {
-    document.title = 'Lohbeck CMS';
+    document.title = PRODUCT_NAME;
   }, []);
 
   return (

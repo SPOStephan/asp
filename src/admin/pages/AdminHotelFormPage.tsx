@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { PLATFORM_DOMAIN, REFERENCE_HOTEL_SLUG } from '../../config/product';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { managedOrgs, useAdminAuth } from '../AdminAuth';
 import { COLOR_WORLDS, hotelColorsFromWorld, type ColorWorld } from '../../lib/colorWorlds';
 import { applyHotelPageSelection, cloneHotelContent, loadPageTemplates, saveHotelRecord } from '../../lib/applyHotelPages';
 import { canResumeHotelSlug, findHotelBySlug } from '../../lib/hotelSave';
@@ -8,6 +10,7 @@ import { defaultSelectedKeys, type PageTemplate } from '../../lib/pageTemplates'
 import { publicHotelOrigin } from '../../lib/musterPages';
 
 const EMPTY = {
+  organization_id: '',
   name: '',
   slug: '',
   domains: '',
@@ -47,22 +50,43 @@ export function AdminHotelFormPage() {
   const [busy, setBusy] = useState(false);
   const [templates, setTemplates] = useState<PageTemplate[]>([]);
   const [pages, setPages] = useState<Record<string, boolean>>({});
-  const [hotels, setHotels] = useState<Array<{ id: string; name: string; slug: string }>>([]);
+  const [hotels, setHotels] = useState<Array<{ id: string; name: string; slug: string; organization_id: string | null }>>([]);
   const [cloneFromId, setCloneFromId] = useState('');
   const [cloneContent, setCloneContent] = useState(isNew);
+  const { admin } = useAdminAuth();
+  const [orgs, setOrgs] = useState<Array<{ id: string; name: string }>>([]);
+
+  useEffect(() => {
+    if (!admin) return;
+    if (!admin.platform) {
+      const own = managedOrgs(admin).map(({ id: orgId, name }) => ({ id: orgId, name }));
+      setOrgs(own);
+      setForm((current) => (current.organization_id ? current : { ...current, organization_id: own[0]?.id ?? '' }));
+      return;
+    }
+    void supabase
+      .from('organizations')
+      .select('id, name')
+      .order('name')
+      .then(({ data }) => {
+        const list = (data ?? []) as Array<{ id: string; name: string }>;
+        setOrgs(list);
+        setForm((current) => (current.organization_id ? current : { ...current, organization_id: list[0]?.id ?? '' }));
+      });
+  }, [admin]);
 
   useEffect(() => {
     void supabase
       .from('hotels')
-      .select('id, name, slug')
+      .select('id, name, slug, organization_id')
       .order('name')
       .then(({ data }) => {
-        const list = ((data ?? []) as Array<{ id: string; name: string; slug: string }>).filter(
+        const list = ((data ?? []) as Array<{ id: string; name: string; slug: string; organization_id: string | null }>).filter(
           (hotel) => hotel.id !== id,
         );
         setHotels(list);
-        const ambassador = list.find((hotel) => hotel.slug === 'ambassador-hotel-spa');
-        setCloneFromId(ambassador?.id ?? list[0]?.id ?? '');
+        const reference = list.find((hotel) => hotel.slug === REFERENCE_HOTEL_SLUG) ?? list.find((hotel) => hotel.organization_id);
+        setCloneFromId(reference?.id ?? list[0]?.id ?? '');
       });
   }, [id]);
 
@@ -80,7 +104,7 @@ export function AdminHotelFormPage() {
     if (!id) return;
     void supabase
       .from('hotels')
-      .select('name, slug, domains, booking_url, phone, email, address, color_world, is_active')
+      .select('organization_id, name, slug, domains, booking_url, phone, email, address, color_world, is_active')
       .eq('id', id)
       .maybeSingle()
       .then(({ data, error: queryError }) => {
@@ -89,6 +113,7 @@ export function AdminHotelFormPage() {
           const world = (data.color_world as ColorWorld) || 'blue';
           setInitialWorld(world);
           setForm({
+            organization_id: data.organization_id ?? '',
             name: data.name ?? '',
             slug: data.slug ?? '',
             domains: Array.isArray(data.domains) ? data.domains.join(', ') : '',
@@ -120,6 +145,7 @@ export function AdminHotelFormPage() {
     setBusy(true);
     setError(null);
     const payload: Record<string, unknown> = {
+      ...(form.organization_id ? { organization_id: form.organization_id } : {}),
       name: form.name.trim(),
       slug: form.slug.trim(),
       domains: parseDomains(form.domains),
@@ -187,7 +213,7 @@ export function AdminHotelFormPage() {
       <h2>{isNew ? 'Neues Hotel' : 'Hotel bearbeiten'}</h2>
       <p className="lead">
         Stammdaten und die Seiten, die dieses Haus bekommt. Bilder (Logo, Header, Galerie) sitzen im CMS — ohne Kopie
-        bleiben sie leer, die Seite zeigt dann Muster-Platzhalter. Für einen Piloten Inhalte vom Ambassador kopieren.
+        bleiben sie leer, die Seite zeigt dann Muster-Platzhalter. Für einen schnellen Start Inhalte von einem bestehenden Hotel kopieren.
       </p>
       {!isNew && publicHotelOrigin(parseDomains(form.domains)) ? (
         <p className="admin-actions">
@@ -200,6 +226,23 @@ export function AdminHotelFormPage() {
         </p>
       ) : null}
       <form className="admin-form admin-form--wide" onSubmit={(event) => void onSubmit(event)}>
+        {orgs.length ? (
+          <label>
+            Organisation
+            <select
+              value={form.organization_id}
+              onChange={(event) => setForm({ ...form, organization_id: event.target.value })}
+              disabled={orgs.length < 2}
+              required
+            >
+              {orgs.map((org) => (
+                <option key={org.id} value={org.id}>
+                  {org.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         <label>
           Name
           <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
@@ -217,8 +260,8 @@ export function AdminHotelFormPage() {
               </>
             ) : (
               <>
-                Dieser Slug ist der Ambassador. Bitte einen eigenen Slug für das neue Haus wählen — oder{' '}
-                <Link to={`/admin/hotels/${slugOwner.id}`}>Ambassador öffnen</Link>.
+                Dieser Slug gehört zum Referenzhotel. Bitte einen eigenen Slug für das neue Haus wählen — oder{' '}
+                <Link to={`/admin/hotels/${slugOwner.id}`}>Referenzhotel öffnen</Link>.
               </>
             )}
           </p>
@@ -228,7 +271,7 @@ export function AdminHotelFormPage() {
           <input
             value={form.domains}
             onChange={(event) => setForm({ ...form, domains: event.target.value })}
-            placeholder="neues-hotel.lohbeckhotels.de"
+            placeholder={`neues-hotel.${PLATFORM_DOMAIN || 'example.com'}`}
           />
         </label>
         <label>
@@ -275,7 +318,9 @@ export function AdminHotelFormPage() {
               <label>
                 Quelle
                 <select value={cloneFromId} onChange={(event) => setCloneFromId(event.target.value)} required>
-                  {hotels.map((hotel) => (
+                  {hotels
+                    .filter((hotel) => admin?.platform || admin?.organizations.some((org) => org.id === hotel.organization_id))
+                    .map((hotel) => (
                     <option key={hotel.id} value={hotel.id}>
                       {hotel.name} ({hotel.slug})
                     </option>

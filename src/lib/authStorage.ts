@@ -1,10 +1,12 @@
-const COOKIE_DOMAIN = '.lohbeckhotels.de';
+import { AUTH_COOKIE_DOMAIN, onPlatformDomain } from '../config/product';
+
+const COOKIE_DOMAIN = AUTH_COOKIE_DOMAIN ? `.${AUTH_COOKIE_DOMAIN.replace(/^\.+/, '')}` : '';
 const CHUNK = 2800;
 
-function onLohbeckHost() {
-  if (typeof window === 'undefined') return false;
-  const host = window.location.hostname;
-  return host === 'lohbeckhotels.de' || host.endsWith('.lohbeckhotels.de');
+// The login is shared through a cookie only on hosts below the configured cookie domain.
+function onSharedCookieHost() {
+  if (typeof window === 'undefined' || !COOKIE_DOMAIN) return false;
+  return onPlatformDomain(window.location.hostname, COOKIE_DOMAIN.slice(1));
 }
 
 function readCookie(name: string) {
@@ -58,7 +60,7 @@ function cookieStorage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
 
 export function authStorage() {
   if (typeof window === 'undefined') return undefined;
-  if (!onLohbeckHost()) return window.localStorage;
+  if (!onSharedCookieHost()) return window.localStorage;
 
   const cookies = cookieStorage();
   try {

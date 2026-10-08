@@ -1,3 +1,4 @@
+import { onPlatformDomain, PLATFORM_DOMAIN } from '../config/product';
 import type { ContentBlock, PageModel, SiteLink, SiteModel } from './pageModel';
 import type { HotelContent } from './siteData';
 
@@ -8,12 +9,12 @@ export function isPrivatePath(path: string) {
   return PRIVATE_PATHS.test(path);
 }
 
-// One address per hotel: its own domain wins over the shared lohbeckhotels.de one.
-export function canonicalOrigin(domains: string[] | null | undefined, requestHost: string) {
+// One address per hotel: its own domain wins over a subdomain of the platform domain.
+export function canonicalOrigin(domains: string[] | null | undefined, requestHost: string, platformDomain = PLATFORM_DOMAIN) {
   const list = (domains ?? []).map((item) => item.trim().toLowerCase()).filter(Boolean);
   const usable = list.filter((item) => !item.startsWith('admin.') && item !== 'localhost' && item !== '127.0.0.1');
-  const own = usable.find((item) => !item.endsWith('lohbeckhotels.de') && !item.endsWith('.vercel.app'));
-  const chosen = own || usable.find((item) => item.endsWith('lohbeckhotels.de')) || usable[0] || requestHost;
+  const own = usable.find((item) => !onPlatformDomain(item, platformDomain) && !item.endsWith('.vercel.app'));
+  const chosen = own || usable.find((item) => onPlatformDomain(item, platformDomain)) || usable[0] || requestHost;
   return `https://${chosen}`;
 }
 

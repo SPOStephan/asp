@@ -61,10 +61,6 @@ export default async function handler(request: Request) {
     global: { headers: { Authorization: `Bearer ${token}` } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin');
-  if (adminError) return json(500, { error: adminError.message });
-  if (isAdmin !== true) return json(403, { error: 'Nur Admins dürfen hochladen.' });
-
   const form = await request.formData();
   const file = form.get('file');
   if (!(file instanceof File)) return json(400, { error: 'Keine Datei.' });
@@ -72,6 +68,12 @@ export default async function handler(request: Request) {
   if (file.type && !ALLOWED.has(file.type)) return json(415, { error: 'Nur Bilddateien.' });
 
   const hotelId = String(form.get('hotelId') ?? '').trim() || null;
+  // Hotel media: whoever may edit that hotel. Shared media (icons): the platform team.
+  const { data: allowed, error: rightsError } = hotelId
+    ? await supabase.rpc('can_edit_hotel', { hotel: hotelId })
+    : await supabase.rpc('is_platform_admin');
+  if (rightsError) return json(500, { error: rightsError.message });
+  if (allowed !== true) return json(403, { error: 'Keine Berechtigung für dieses Hotel.' });
   const alt = String(form.get('alt') ?? '').trim() || null;
   const folder = hotelId ? `hotels/${hotelId}` : 'shared';
   const fileName = file.type === 'image/webp'
