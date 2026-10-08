@@ -2,7 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 
 import { useHotel, useHotelContent } from '../context/HotelContext';
 import { getPath } from './cmsDraft';
 import { type CropRect, exportWebp, fitRect, loadImage, ORIGINAL_MAX_EDGE, ORIGINAL_WEBP_QUALITY, screenMaxEdge, waitForImage, zoomRect } from './cmsImage';
-import { clampCrop, editableImageUrl, readMediaSource } from './cmsMediaSource';
+import { clampCrop, editableImageUrl, MEDIA_SOURCES_KEY, readMediaSource } from './cmsMediaSource';
+import { clearLiveMedia } from './cmsLiveMedia';
 import { formatImageHint, imageHint } from './cmsImageHints';
 import { focalPathFor, refitCrop, slotAspect } from './cmsSlot';
 import { readHeroFocal } from './cmsFocal';
@@ -34,6 +35,8 @@ function cropFrame(stageWidth: number, crop: CropRect) {
   return { width: Math.round(width), height: Math.round(height) };
 }
 
+type OpenSource = { src: string; crop?: CropRect; label: string };
+
 export function CmsImageDialog() {
   const cms = useCms();
   const hotel = useHotel();
@@ -55,6 +58,8 @@ export function CmsImageDialog() {
   // Address of the uncropped original of the picture in the dialog (null: new file, not stored yet).
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // Phone picture: the desktop original and an own picture from another photo, if both exist.
+  const [choices, setChoices] = useState<{ desktop: OpenSource; own: OpenSource } | null>(null);
   const drag = useRef<{ startX: number; startY: number; crop: CropRect; scale: number } | null>(null);
 
   useEffect(() => {
@@ -80,49 +85,58 @@ export function CmsImageDialog() {
     // A picture that is already there opens with its original and last crop, ready to adjust.
     const section = (content?.sections[request.section] ?? {}) as Record<string, unknown>;
     const current = getPath(section, request.path);
-    let stored = readMediaSource(section, request.path);
-    let src = stored?.src || (typeof current === 'string' ? current.trim() : '');
-    // No own phone picture yet: start from the original of the desktop picture, so the
-    // phone crop can use everything the photo has, not only the desktop cut.
-    let fromDesktop = false;
-    if (!src && request.path.endsWith('_mobile')) {
+    const own = readMediaSource(section, request.path);
+    const ownSrc = own?.src || (typeof current === 'string' ? current.trim() : '');
+    let pick: OpenSource | null = ownSrc ? { src: ownSrc, crop: own?.crop, label: 'Aktuelles Bild' } : null;
+    setChoices(null);
+    // Phone picture: it is cut from the same photo as the desktop picture. Unless it already
+    // is, the dialog starts from the desktop original (the full photo); a phone picture from
+    // another photo stays one click away.
+    if (request.path.endsWith('_mobile')) {
       const desktopPath = request.path.slice(0, -'_mobile'.length);
       const desktop = getPath(section, desktopPath);
-      stored = readMediaSource(section, desktopPath);
-      src = stored?.src || (typeof desktop === 'string' ? desktop.trim() : '');
-      fromDesktop = Boolean(src);
-    }
-    if (!src) return;
-    let cancelled = false;
-    setLoading(true);
-    void (async () => {
-      try {
-        const response = await fetch(editableImageUrl(src));
-        if (!response.ok) throw new Error(String(response.status));
-        const loaded = await loadImage(await response.blob());
-        if (cancelled) return;
-        setImage(loaded);
-        setFileName(fromDesktop ? 'Desktop-Original' : 'Aktuelles Bild');
-        setSourceUrl(src);
-        // The frame always has the shape the picture has on the page, so it shows what
-        // visitors see; the last crop is kept as far as that shape allows.
-        if (stored?.crop) {
-          const last = clampCrop(stored.crop, loaded.naturalWidth, loaded.naturalHeight);
-          setCrop(target ? refitCrop(last, target, loaded.naturalWidth, loaded.naturalHeight) : last);
-        } else {
-          setCrop(fitRect(loaded.naturalWidth, loaded.naturalHeight, target));
-        }
-      } catch {
-        if (!cancelled) setError('Das aktuelle Bild ließ sich nicht zum Bearbeiten laden. Eine neue Datei wählen geht immer.');
+      const desktopStored = readMediaSource(section, desktopPath);
+      const desktopSrc = desktopStored?.src || (typeof desktop === 'string' ? desktop.trim() : '');
+      if (desktopSrc && (!own?.src || own.src !== desktopSrc)) {
+        const desktopPick = { src: desktopSrc, crop: desktopStored?.crop, label: 'Desktop-Original' };
+        if (pick) setChoices({ desktop: desktopPick, own: pick });
+        pick = desktopPick;
       }
-      if (!cancelled) setLoading(false);
-    })();
+    }
+    if (!pick) return;
+    let cancelled = false;
+    void openSource(pick, target, () => cancelled);
     return () => {
       cancelled = true;
     };
     // The picture is read once when the dialog opens, not on every change of the content.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [request]);
+
+  async function openSource(pick: OpenSource, target: number | undefined, cancelled: () => boolean) {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(editableImageUrl(pick.src));
+      if (!response.ok) throw new Error(String(response.status));
+      const loaded = await loadImage(await response.blob());
+      if (cancelled()) return;
+      setImage(loaded);
+      setFileName(pick.label);
+      setSourceUrl(pick.src);
+      // The frame always has the shape the picture has on the page, so it shows what
+      // visitors see; the last crop is kept as far as that shape allows.
+      if (pick.crop) {
+        const last = clampCrop(pick.crop, loaded.naturalWidth, loaded.naturalHeight);
+        setCrop(target ? refitCrop(last, target, loaded.naturalWidth, loaded.naturalHeight) : last);
+      } else {
+        setCrop(fitRect(loaded.naturalWidth, loaded.naturalHeight, target));
+      }
+    } catch {
+      if (!cancelled()) setError('Das aktuelle Bild ließ sich nicht zum Bearbeiten laden. Eine neue Datei wählen geht immer.');
+    }
+    if (!cancelled()) setLoading(false);
+  }
 
   // Mouse wheel / trackpad zooms like the buttons (set below, after the early return).
   const wheelZoom = useRef<(factor: number) => void>(() => {});
@@ -183,6 +197,17 @@ export function CmsImageDialog() {
         const section = (content?.sections[request!.section] ?? {}) as Record<string, unknown>;
         const current = readHeroFocal(getPath(section, focal.path));
         extra[focal.path] = { ...current, [focal.device]: { x: 50, y: 50, z: 1 } };
+        // A new desktop photo: a phone picture cut from the previous photo would now show
+        // something else, so it goes and phones follow the new photo until cut again.
+        const phonePath = `${request!.path}_mobile`;
+        const previous = readMediaSource(section, request!.path)?.src;
+        const phone = readMediaSource(section, phonePath);
+        if (focal.device === 'desktop' && previous && previous !== original && phone?.src === previous) {
+          extra[phonePath] = '';
+          extra[`${MEDIA_SOURCES_KEY}.${phonePath}`] = null;
+          extra[focal.path] = { desktop: { x: 50, y: 50, z: 1 } };
+          clearLiveMedia(request!.section, phonePath);
+        }
       }
       cms!.applyImage(request!.section, request!.path, url, { src: original, crop: sourceCrop }, extra);
       if (request!.altPath && alt) cms!.applyField(request!.section, request!.altPath, alt);
@@ -328,6 +353,15 @@ export function CmsImageDialog() {
           </button>
         )}
         {loading ? <p className="cms-muted">Aktuelles Bild wird geladen…</p> : null}
+        {choices ? (
+          <button
+            type="button"
+            className="cms-btn cms-btn--ghost"
+            onClick={() => void openSource(fileName === 'Desktop-Original' ? choices.own : choices.desktop, aspect, () => false)}
+          >
+            {fileName === 'Desktop-Original' ? 'Bisheriges Handy-Bild (anderes Foto) bearbeiten' : 'Zurück zum Desktop-Original'}
+          </button>
+        ) : null}
         {fileName ? (
           <p className="cms-muted">
             {fileName === 'Aktuelles Bild'
