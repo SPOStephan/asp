@@ -137,3 +137,30 @@ export function fillEmptyMedia(sectionKey: string, data: Record<string, unknown>
   }
   return changed ? next : data;
 }
+
+// Bunny's optimizer shrinks pictures without a size request (1600 px desktop, 800 px phones),
+// far too little for a full-screen picture on Retina screens. A srcset with explicit widths
+// lets the browser pick what its screen needs; Bunny never enlarges beyond the file itself.
+const CDN_WIDTHS = [800, 1200, 1600, 2000, 2400, 3200, 3840];
+
+function isBunnyUrl(value: string) {
+  try {
+    return new URL(value).host.toLowerCase().endsWith('.b-cdn.net');
+  } catch {
+    return false;
+  }
+}
+
+export function cdnSrcSet(value?: string | null) {
+  const src = value?.trim();
+  if (!src || !isBunnyUrl(src)) return undefined;
+  return CDN_WIDTHS.map((width) => {
+    const url = new URL(src);
+    url.searchParams.set('width', String(width));
+    return `${url.toString()} ${width}w`;
+  }).join(', ');
+}
+
+// The hero fills the screen (object-fit: cover): on screens narrower than the picture its
+// shown width is the screen height times the picture ratio, not the screen width.
+export const HERO_SIZES = '(max-aspect-ratio: 16/9) 178vh, 100vw';
