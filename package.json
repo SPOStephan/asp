@@ -13,6 +13,7 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/supabase-js": "^2.112.3",
+    "@vercel/functions": "^3.9.11",
     "framer-motion": "^13.1.1",
     "lucide-react": "^1.33.0",
     "pdfjs-dist": "6.3.289",
