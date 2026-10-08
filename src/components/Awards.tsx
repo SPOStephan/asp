@@ -49,7 +49,7 @@ export function Awards() {
           <div className="awards__row">
             {items.map((a, i) => (
               <article key={i} className="awards__item" data-cms-focus={`items:${i}`}>
-                <img src={a.src} alt={a.label} />
+                <img loading="lazy" decoding="async" src={a.src} alt={a.label} />
                 <p>{a.label}</p>
               </article>
             ))}
@@ -67,7 +67,7 @@ export function Awards() {
           <div className="awards__shots">
             {impressions.map((shot, index) => (
               <figure key={shot.src} className="awards__shot" data-cms-focus={`impressions:${index}`}>
-                <img src={shot.src} alt={shot.alt} />
+                <img loading="lazy" decoding="async" src={shot.src} alt={shot.alt} />
               </figure>
             ))}
           </div>

@@ -45,7 +45,7 @@ export function RoomOverlapCard({ room, reverse = false }: RoomOverlapCardProps)
           }
         >
           {slides.map((slide, slideIndex) => (
-            <img
+            <img loading="lazy" decoding="async"
               key={slide.src}
               src={slide.src}
               alt={slide.alt || room.name}

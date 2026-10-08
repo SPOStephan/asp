@@ -71,7 +71,7 @@ export function Wellness() {
 
         <div className={`wellness-scene__collage${sideImagesVisible ? ' is-visible' : ''}`} aria-hidden="true">
           {collageItems.map((item, i) => (
-            <img
+            <img loading="lazy" decoding="async"
               key={item.src}
               className={`${item.className}${expanded ? ' is-pushed' : ''}`}
               src={item.src}
@@ -81,7 +81,7 @@ export function Wellness() {
             />
           ))}
           <div className={`wellness-scene__hero${expanded ? ' is-expanded' : ''}`} data-cms-focus="hero_image">
-            <img src={resolveMedia(data.hero_image, MUSTER_MEDIA.wellness)} alt={data.hero_image_alt || ''} />
+            <img loading="lazy" decoding="async" src={resolveMedia(data.hero_image, MUSTER_MEDIA.wellness)} alt={data.hero_image_alt || ''} />
           </div>
         </div>
 

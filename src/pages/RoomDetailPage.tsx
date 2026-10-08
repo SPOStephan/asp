@@ -80,10 +80,10 @@ export function RoomDetailPage() {
           {pair.length === 2 ? (
             <Reveal className="discover__feature-pair room-detail__pair">
               <div className="discover__feature-image discover__feature-image--left">
-                <img src={pair[0].src} alt={pair[0].alt || room.name} />
+                <img loading="lazy" decoding="async" src={pair[0].src} alt={pair[0].alt || room.name} />
               </div>
               <div className="discover__feature-image discover__feature-image--right">
-                <img src={pair[1].src} alt={pair[1].alt || room.name} />
+                <img loading="lazy" decoding="async" src={pair[1].src} alt={pair[1].alt || room.name} />
               </div>
             </Reveal>
           ) : null}

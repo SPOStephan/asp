@@ -9,5 +9,12 @@
     { "source": "/llms-full.txt", "destination": "/api/site?file=llms-full" },
     { "source": "/:path((?!api/|assets/).*)", "destination": "/api/site?path=/:path" }
   ],
+  "headers": [
+    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
+    {
+      "source": "/(.*)\\.(webp|jpg|jpeg|png|svg|avif|gif|ico|woff2)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }]
+    }
+  ],
   "crons": [{ "path": "/api/maintenance", "schedule": "30 2 * * *" }]
 }

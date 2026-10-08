@@ -23,7 +23,7 @@ export function BlogBlocks({ blocks, inlinePromo, pathPrefix }: BlogBlocksProps)
             </h2>
           ) : block.type === 'image' ? (
             <figure className="blog-blocks__figure">
-              <img src={block.src} alt={block.alt} {...(base ? { 'data-cms-path': `${base}.src`, 'data-cms-kind': 'image' } : {})} />
+              <img loading="lazy" decoding="async" src={block.src} alt={block.alt} {...(base ? { 'data-cms-path': `${base}.src`, 'data-cms-kind': 'image' } : {})} />
               {block.caption ? <figcaption {...(base ? { 'data-cms-path': `${base}.caption` } : {})}>{block.caption}</figcaption> : null}
             </figure>
           ) : block.type === 'video' ? (

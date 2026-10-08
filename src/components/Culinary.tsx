@@ -33,7 +33,7 @@ export function Culinary() {
     <section className="culinary" id="kulinarik">
       <Reveal>
         <div className="culinary__hero" data-cms-focus="title_line1">
-          <img src={resolveMedia(data.hero_image, MUSTER_MEDIA.culinary)} alt={data.hero_image_alt || ''} />
+          <img loading="lazy" decoding="async" src={resolveMedia(data.hero_image, MUSTER_MEDIA.culinary)} alt={data.hero_image_alt || ''} />
           <div className="culinary__hero-overlay" />
           <div className="culinary__hero-content">
             <p className="eyebrow">{data.eyebrow}</p>
@@ -77,7 +77,7 @@ export function Culinary() {
           <div className="culinary__images">
             {restaurants.map((r, index) => (
               <a className="culinary__img-block" key={r.name} href={venueHref(r.name)} data-cms-focus={`restaurants:${index}`}>
-                <img src={r.image} alt={r.alt} />
+                <img loading="lazy" decoding="async" src={r.image} alt={r.alt} />
                 <div className="culinary__img-label">
                   <p className="eyebrow">{r.eyebrow}</p>
                   <h3 className="heading-font">{r.name}</h3>

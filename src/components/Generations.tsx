@@ -37,7 +37,7 @@ export function Generations() {
         <div className="generations__masonry">
           {images.map((img, i) => (
             <article key={i} className="generations__item" data-cms-focus={`images:${i}`}>
-              <img src={img.src} alt={img.alt} />
+              <img loading="lazy" decoding="async" src={img.src} alt={img.alt} />
               <div className="generations__overlay">
                 <p className="generations__label">{img.label}</p>
                 <p className="generations__caption">{img.caption}</p>

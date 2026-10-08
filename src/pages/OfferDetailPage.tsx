@@ -90,10 +90,10 @@ export function OfferDetailPage() {
 
           <Reveal className="discover__feature-pair offer-detail__pair">
             <div className="discover__feature-image discover__feature-image--left">
-              <img src={pairLeft} alt={pairLeftAlt} />
+              <img loading="lazy" decoding="async" src={pairLeft} alt={pairLeftAlt} />
             </div>
             <div className="discover__feature-image discover__feature-image--right">
-              <img src={pairRight} alt={pairRightAlt} />
+              <img loading="lazy" decoding="async" src={pairRight} alt={pairRightAlt} />
             </div>
           </Reveal>
         </div>

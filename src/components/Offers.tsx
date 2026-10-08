@@ -106,10 +106,10 @@ function OfferVisual({
       className={`offers__visual offers__visual--${from}${visible ? ' is-in' : ''}`}
     >
       <figure className="offers__photo offers__photo--primary">
-        <img src={item.image_primary} alt={item.image_primary_alt} />
+        <img loading="lazy" decoding="async" src={item.image_primary} alt={item.image_primary_alt} />
       </figure>
       <figure className="offers__photo offers__photo--secondary">
-        <img src={item.image_secondary} alt={item.image_secondary_alt} />
+        <img loading="lazy" decoding="async" src={item.image_secondary} alt={item.image_secondary_alt} />
       </figure>
     </div>
   );
