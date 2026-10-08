@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { scheduleWebsiteSync } from '../lib/aiClient';
 import { ensureDiscoverPages } from '../lib/applyHotelPages';
 import { supabase, type HotelFAQ } from '../lib/supabase';
 import { useHotel, useHotelContent } from '../context/HotelContext';
@@ -391,6 +392,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     patchSection(sectionKey, merged);
     setDirty((current) => ({ ...current, [sectionKey]: false }));
     if (sectionKey === 'discover') await syncDiscoverPages(merged.tiles);
+    scheduleWebsiteSync(hotel.id);
     return true;
   }
 
@@ -456,6 +458,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     }
     patchFaqs((reload.data as HotelFAQ[] | null) ?? faqs);
     setDirty((current) => ({ ...current, faq_page: false }));
+    scheduleWebsiteSync(hotel.id);
     return true;
   }
 

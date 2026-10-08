@@ -51,3 +51,27 @@ Kundenspezifisches steht nicht im Code, sondern in Umgebungsvariablen (Vercel �
 - Schreibrechte prüft die Datenbank pro Hotel (`can_edit_hotel`), nicht die Oberfläche.
 
 Rechte-Test gegen ein lokales Postgres: `scripts/test-db.sh`
+
+## KI-Wissen und KI-Concierge
+
+Admin → **KI-Wissen**: pro Hotel und für die ganze Organisation (Gruppenwissen). Jede Organisation sieht nur ihr
+eigenes Wissen; Gruppenwissen gilt in allen Hotels der Organisation.
+
+- **Quellen**: eigene Website (automatisch aus dem CMS, nach jedem Speichern), Links/ganze Websites, PDFs (auch
+  Scans), Texte, Antworten aus E-Mails (anonymisiert, erst nach Freigabe aktiv).
+- **Testchat** mit Bewertung: 👍 wird Vorbild, 👎 wird Antwortregel, 🚩 (Red Flag) wird sofort eine Korrektur mit
+  Vorrang, markiert die zitierten Quellen zum Prüfen und wird Prüffrage.
+- **Prüffragen** laufen nach jeder Änderung am Wissen erneut; eine zweite KI vergleicht mit der richtigen Aussage.
+
+Die KI ist anbieteroffen: jede OpenAI-kompatible Schnittstelle (OpenRouter, Mistral, Azure, eigene Modelle).
+
+| Variable | Zweck | Beispiel |
+|---|---|---|
+| `AI_API_KEY` | Schlüssel des KI-Anbieters (nur Server) | `sk-or-…` |
+| `AI_BASE_URL` | Adresse der Schnittstelle | `https://openrouter.ai/api/v1` (Standard) |
+| `AI_CHAT_MODEL` | Standard-Modell für den Gästechat (optional, sonst im Admin wählen) | |
+| `AI_EXTRACT_MODEL` | Standard-Modell zum Lesen von Scans, muss Bilder können (optional) | |
+| `AI_HELPER_MODEL` | Standard-Modell für Hilfsaufgaben, darf günstig sein (optional) | |
+
+Modelle lassen sich je Organisation und je Hotel unter „Einstellungen“ überschreiben.
+Prüfungen ohne Datenbank und ohne Kosten: `npx tsx scripts/check-knowledge.ts`

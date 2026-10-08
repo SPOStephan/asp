@@ -14,7 +14,12 @@ PSQL=(psql -h "$DIR" -p "$PORT" -U "$(whoami)" -d postgres -q -v ON_ERROR_STOP=1
 for file in supabase/migrations/*.sql; do "${PSQL[@]}" -f "$file" >/dev/null; done
 "${PSQL[@]}" -c "GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated"
 "${PSQL[@]}" -f supabase/tests/10_organizations_fixture.sql >/dev/null
-RESULT=$(psql -h "$DIR" -p "$PORT" -U "$(whoami)" -d postgres -q -t -f supabase/tests/20_organizations_rights.sql 2>/dev/null | grep '|' )
+RESULT=""
+for file in supabase/tests/[2-9]*.sql; do
+  OUT=$(psql -h "$DIR" -p "$PORT" -U "$(whoami)" -d postgres -q -t -f "$file" 2>/dev/null | grep '|' || true)
+  RESULT="$RESULT$OUT"$'\n'
+done
+RESULT=$(echo "$RESULT" | sed '/^$/d')
 echo "$RESULT"
 if echo "$RESULT" | grep -q '| f'; then echo "Rechte-Test fehlgeschlagen"; exit 1; fi
 echo "Rechte-Test ok ($(echo "$RESULT" | wc -l) Szenarien)"

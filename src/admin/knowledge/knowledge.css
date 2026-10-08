@@ -1,0 +1,212 @@
+/* KI-Wissen: builds on admin.css (colours, buttons, cards, tables). */
+.kn-tabs,
+.kn-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 20px 0 24px;
+  border-bottom: 1px solid #e4ddd0;
+}
+.kn-tabs button,
+.kn-subtabs button {
+  padding: 10px 14px;
+  border-bottom: 2px solid transparent;
+  color: #5a6570;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.kn-tabs button.is-on,
+.kn-subtabs button.is-on {
+  color: #133b5c;
+  border-bottom-color: #957640;
+}
+.kn-subtabs { margin-top: 0; }
+.kn-banner {
+  padding: 10px 14px;
+  background: #fff;
+  border-left: 3px solid #957640;
+  font-size: 0.9rem;
+}
+.kn-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.kn-stats > div {
+  background: #fff;
+  border: 1px solid #e4ddd0;
+  padding: 16px;
+  display: grid;
+  gap: 4px;
+}
+.kn-stats strong { font-size: 1.6rem; font-weight: 500; font-family: Newsreader, Georgia, serif; }
+.kn-stats span { color: #5a6570; font-size: 0.82rem; }
+.kn-stats .is-red strong { color: #8a1f2b; }
+.kn-todo { list-style: none; padding: 0; display: grid; gap: 8px; max-width: 720px; }
+.kn-todo li button {
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #e4ddd0;
+  border-left: 3px solid #957640;
+  color: #133b5c;
+}
+.kn-todo li.is-red button { border-left-color: #8a1f2b; }
+.kn-link {
+  padding: 0;
+  color: #133b5c;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-align: left;
+  font: inherit;
+}
+.kn-link:disabled { opacity: 0.5; }
+.kn-danger { color: #8a1f2b !important; border-color: #8a1f2b !important; }
+.kn-flag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: #f6e3e5;
+  color: #8a1f2b;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.kn-website {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.kn-website > div { display: grid; gap: 4px; }
+.kn-add { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.kn-form { padding: 20px; margin-bottom: 20px; }
+.admin-form textarea,
+.kn-chunk textarea,
+.kn-chunk input,
+.kn-source-actions input,
+.kn-inline-input,
+.kn-ask input,
+.kn-chat-tools select,
+.kn-flag-card input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e4ddd0;
+  background: #fff;
+  color: #133b5c;
+  font: inherit;
+  font-size: 0.95rem;
+}
+.kn-sources tr.is-red td { background: #fbf1f2; }
+.kn-sources tr.is-review td { background: #fbf7ee; }
+.admin-table tr.is-red td { background: #fbf1f2; }
+.admin-table tr.is-off td { opacity: 0.55; }
+.kn-alert {
+  margin: 12px 0 20px;
+  padding: 16px 18px;
+  background: #fbf1f2;
+  border-left: 3px solid #8a1f2b;
+  max-width: 820px;
+}
+.kn-alert p { margin: 6px 0 12px; }
+.kn-alert--review { background: #fbf7ee; border-left-color: #957640; }
+.kn-source-actions { align-items: center; margin-bottom: 16px; }
+.kn-source-actions input { width: auto; min-width: 280px; }
+.kn-chunks { display: grid; gap: 12px; margin: 12px 0 20px; max-width: 960px; }
+.kn-chunk {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #e4ddd0;
+}
+.kn-chunk p { margin: 0; white-space: pre-wrap; font-size: 0.92rem; }
+.kn-chunk .admin-actions { align-items: center; }
+.kn-chunk .admin-actions a { margin-right: auto; word-break: break-all; }
+
+.kn-chat { max-width: 1100px; }
+.kn-chat-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.kn-chat-tools label { display: grid; gap: 4px; font-size: 0.78rem; color: #5a6570; }
+.kn-chat-tools select { width: auto; max-width: 360px; }
+.kn-turns { display: grid; gap: 14px; margin: 16px 0; }
+.kn-question {
+  justify-self: end;
+  max-width: 70%;
+  padding: 12px 16px;
+  background: #133b5c;
+  color: #fff;
+}
+.kn-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.kn-answer {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e4ddd0;
+}
+.kn-answer.is-red { border-color: #8a1f2b; }
+.kn-answer header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #5a6570;
+  font-size: 0.78rem;
+}
+.kn-answer-text { white-space: pre-wrap; line-height: 1.5; }
+.kn-cite { color: #957640; font-size: 0.7rem; cursor: help; }
+.kn-sources-used ol { margin: 8px 0 0; padding-left: 22px; font-size: 0.86rem; color: #5a6570; }
+.kn-sources-used li.is-cited { color: #133b5c; font-weight: 500; }
+.kn-rate { display: flex; flex-wrap: wrap; gap: 8px; }
+.kn-rate button {
+  padding: 8px 12px;
+  border: 1px solid #e4ddd0;
+  background: #fff;
+  color: #133b5c;
+  font-size: 0.86rem;
+}
+.kn-rate button.is-on,
+.kn-rate button:hover { border-color: #133b5c; }
+.kn-rate .kn-rate-wrong.is-on,
+.kn-rate .kn-rate-wrong:hover { border-color: #8a1f2b; color: #8a1f2b; }
+.kn-rated { margin: 0; color: #5a6570; font-size: 0.86rem; }
+.kn-rating { padding: 14px; background: #f8f6f1; max-width: none; }
+.kn-rating--wrong { background: #fbf1f2; }
+.kn-btn-red { background: #8a1f2b; }
+.kn-ask { display: flex; gap: 10px; position: sticky; bottom: 0; padding: 12px 0; background: #f4f1ea; }
+
+.kn-flag-card { padding: 16px 18px; margin-bottom: 14px; display: grid; gap: 10px; max-width: 960px; }
+.kn-flag-card.is-red { border-left: 3px solid #8a1f2b; }
+.kn-flag-card header { display: grid; gap: 4px; }
+.kn-flag-card dl { margin: 0; display: grid; grid-template-columns: 220px 1fr; gap: 6px 14px; font-size: 0.92rem; }
+.kn-flag-card dt { color: #5a6570; }
+.kn-flag-card dd { margin: 0; white-space: pre-wrap; }
+.kn-wrong { color: #8a1f2b; text-decoration: line-through; }
+.kn-right { color: #1f5e3a; }
+.kn-flag-card form { align-items: center; }
+.kn-flag-card form input { flex: 1; min-width: 240px; }
+.kn-gap { padding: 16px 18px; margin-bottom: 14px; }
+.kn-cell-long { max-width: 420px; font-size: 0.88rem; }
+.kn-row-actions { white-space: nowrap; }
+.kn-row-actions .kn-link { margin-right: 10px; }
+.kn-check-detail { margin-top: 8px; font-size: 0.88rem; color: #5a6570; }
+.kn-check-detail p { margin: 4px 0; }
+.kn-provider { padding: 16px 18px; margin-bottom: 20px; max-width: 760px; }
+.kn-provider p { margin: 6px 0 0; }
+
+@media (max-width: 900px) {
+  .kn-compare { grid-template-columns: 1fr; }
+  .kn-question { max-width: 90%; }
+  .kn-flag-card dl { grid-template-columns: 1fr; }
+}

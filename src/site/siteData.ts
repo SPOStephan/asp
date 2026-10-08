@@ -45,7 +45,18 @@ export async function loadSiteContent(client: SupabaseClient, domain: string): P
     resolvedHotel = fallback as Hotel | null;
   }
   if (!resolvedHotel) throw new Error('No hotel found for domain: ' + domain);
+  return loadHotelSiteContent(client, resolvedHotel);
+}
 
+// The same content for a hotel known by id (admin area, AI knowledge).
+export async function loadSiteContentById(client: SupabaseClient, hotelId: string): Promise<HotelContent> {
+  const { data: hotel, error } = await client.from('hotels').select('*').eq('id', hotelId).maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!hotel) throw new Error('Hotel nicht gefunden.');
+  return loadHotelSiteContent(client, hotel as Hotel);
+}
+
+async function loadHotelSiteContent(client: SupabaseClient, resolvedHotel: Hotel): Promise<HotelContent> {
   const hotelId = resolvedHotel.id;
   const [sectionsResult, faqsResult, pagesResult] = await Promise.all([
     client.from('hotel_sections').select('section_key, data').eq('hotel_id', hotelId),
