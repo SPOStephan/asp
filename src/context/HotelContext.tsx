@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { isAdminHost, isAdminPath } from '../admin/adminHost';
 import { applyLiveMedia, useLiveMediaTick } from '../cms/cmsLiveMedia';
 import { isCmsPath } from '../cms/cmsHost';
-import { loadHotelContent, type HotelContent } from '../lib/hotelData';
+import { loadHotelContent, takeEmbeddedContent, type HotelContent } from '../lib/hotelData';
 import { mergeHotelLoad } from '../lib/hotelMerge';
 import type { HotelFAQ } from '../lib/supabase';
 import type { MusterPageKey } from '../lib/musterPages';
@@ -33,8 +33,10 @@ const HotelContext = createContext<HotelContextValue>({
 export function HotelProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
   const skipHotel = isAdminHost() || isAdminPath(location.pathname);
-  const [content, setContent] = useState<HotelContent | null>(null);
-  const [loading, setLoading] = useState(!skipHotel);
+  // The CMS always loads live data; public pages start from what the server rendered.
+  const [embedded] = useState(() => (skipHotel || isCmsPath(location.pathname) ? null : takeEmbeddedContent()));
+  const [content, setContent] = useState<HotelContent | null>(embedded);
+  const [loading, setLoading] = useState(!skipHotel && !embedded);
   const [error, setError] = useState<string | null>(null);
   const pendingSections = useRef<Record<string, Record<string, unknown>>>({});
   const pendingFaqs = useRef<HotelFAQ[] | null>(null);
@@ -50,7 +52,7 @@ export function HotelProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    if (skipHotel) {
+    if (skipHotel || embedded) {
       setLoading(false);
       setError(null);
       return;
@@ -79,7 +81,7 @@ export function HotelProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [skipHotel]);
+  }, [skipHotel, embedded]);
 
   useEffect(() => {
     if (!content) return;
@@ -90,18 +92,6 @@ export function HotelProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--color-accent', hotel.accent_color);
     root.style.setProperty('--color-text', hotel.text_color);
     root.style.setProperty('--color-background', hotel.background_color);
-    if (hotel.seo_title) {
-      document.title = hotel.seo_title;
-    }
-    if (hotel.seo_description) {
-      let meta = document.querySelector('meta[name="description"]');
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.setAttribute('name', 'description');
-        document.head.appendChild(meta);
-      }
-      meta.setAttribute('content', hotel.seo_description);
-    }
   }, [content]);
 
   return (

@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import { useSiteHead } from './site/useSiteHead';
 import { Navigate, Routes, Route, useLocation, useParams } from 'react-router-dom';
 import { AdminApp } from './admin/AdminApp';
 import { isAdminHost, isAdminPath } from './admin/adminHost';
@@ -67,6 +68,7 @@ function App() {
   const showDock = !adminShell && !cmsShell && isPhone && !isFontLab && !isMenuLab && !isChromeLab;
   const showFixedBar = !adminShell && !cmsShell && !isHome && !isFontLab && !isMenuLab && !isChromeLab && !isPhone;
   const { loading, error } = useHotelContent();
+  useSiteHead(!adminShell && !cmsShell);
 
   useEffect(() => {
     document.body.classList.toggle('is-phone', !adminShell && !cmsShell && isPhone);
