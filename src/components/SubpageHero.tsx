@@ -4,6 +4,9 @@ import { CmsHeroPan } from '../cms/CmsHeroPan';
 import { heroFocalStyle } from '../cms/cmsFocal';
 import { isCmsFrame } from '../cms/cmsFrame';
 
+// Same breakpoint as the phone rules of the heading in index.css.
+const HERO_PHONE_MEDIA = '(max-width: 600px)';
+
 interface SubpageHeroCms {
   image?: string;
   eyebrow?: string;
@@ -33,6 +36,8 @@ interface SubpageHeroProps {
   imageOverlay?: ReactNode;
   // Where the heading stands, as a share of the screen height from the top.
   textTop?: number;
+  // Own heading position on phones (same share of the screen height); default: textTop.
+  textTopMobile?: number;
   children?: ReactNode;
 }
 
@@ -50,6 +55,7 @@ export function SubpageHero({
   imageFooter,
   imageOverlay,
   textTop = 0.45,
+  textTopMobile,
   children,
 }: SubpageHeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -72,7 +78,8 @@ export function SubpageHero({
       const frameWidth = frame?.clientWidth || window.innerWidth;
       const flowTopPadding = frameWidth <= 768 ? 80 : 120;
       setImageBottom(Math.max(0, Math.min(vh, bottom)));
-      setDocked(bottom <= vh * textTop - flowTopPadding);
+      const top = textTopMobile != null && window.matchMedia(HERO_PHONE_MEDIA).matches ? textTopMobile : textTop;
+      setDocked(bottom <= vh * top - flowTopPadding);
     };
 
     const onScroll = () => {
@@ -96,11 +103,12 @@ export function SubpageHero({
       observer?.disconnect();
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [textTop]);
+  }, [textTop, textTopMobile]);
 
   const cssVars = {
     '--image-bottom': `${imageBottom}px`,
     '--hero-text-top': `${textTop * 100}svh`,
+    '--hero-text-top-mobile': `${(textTopMobile ?? textTop) * 100}svh`,
     ...heroFocalStyle(focal),
     ...style,
   } as CSSProperties & {

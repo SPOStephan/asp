@@ -279,6 +279,7 @@ function HeroFields() {
     title_word_normal: String(data.title_word_normal ?? ''),
     title_word_script: String(data.title_word_script ?? ''),
     text_top: Math.round(heroTextTop(data.text_top) * 100),
+    text_top_mobile: data.text_top_mobile != null && data.text_top_mobile !== '' ? Math.round(heroTextTop(data.text_top_mobile) * 100) : null,
     layout: data.layout === 'classic' ? 'classic' : 'flow',
   });
 
@@ -294,6 +295,7 @@ function HeroFields() {
       title_word_normal: String(data.title_word_normal ?? ''),
       title_word_script: String(data.title_word_script ?? ''),
       text_top: Math.round(heroTextTop(data.text_top) * 100),
+      text_top_mobile: data.text_top_mobile != null && data.text_top_mobile !== '' ? Math.round(heroTextTop(data.text_top_mobile) * 100) : null,
       layout: data.layout === 'classic' ? 'classic' : 'flow',
     });
   }, [cms?.draftTick]);
@@ -312,6 +314,7 @@ function HeroFields() {
       title_word_script: draft.title_word_script,
       layout: draft.layout,
       text_top: draft.text_top,
+      text_top_mobile: draft.text_top_mobile,
     },
     data,
   );
@@ -331,9 +334,23 @@ function HeroFields() {
         <>
           <Field focus="head" path="eyebrow" label="Zeile über dem Titel in Schreibschrift (optional)" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
           <label className="cms-field">
-            Schrift-Position: {draft.text_top} % von oben
+            Schrift-Position{draft.text_top_mobile != null ? ' Desktop' : ''}: {draft.text_top} % von oben
             <input type="range" min={25} max={75} step={1} value={draft.text_top} onChange={(event) => setDraft({ ...draft, text_top: Number(event.target.value) })} />
           </label>
+          <label className="cms-choice">
+            <input
+              type="checkbox"
+              checked={draft.text_top_mobile != null}
+              onChange={(event) => setDraft({ ...draft, text_top_mobile: event.target.checked ? draft.text_top : null })}
+            />
+            Auf Handys eigene Position
+          </label>
+          {draft.text_top_mobile != null ? (
+            <label className="cms-field">
+              Schrift-Position Handy: {draft.text_top_mobile} % von oben
+              <input type="range" min={25} max={75} step={1} value={draft.text_top_mobile} onChange={(event) => setDraft({ ...draft, text_top_mobile: Number(event.target.value) })} />
+            </label>
+          ) : null}
         </>
       ) : null}
       <Field focus="title" path="title" label={draft.layout === 'flow' ? 'Titelzeile 1' : 'Titel'} value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
