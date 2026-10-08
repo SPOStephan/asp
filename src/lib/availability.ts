@@ -132,13 +132,38 @@ export function formatStaySummary(arrival: string | null, departure: string | nu
 }
 
 /** Placeholder mapping for the later IBE handoff. */
-export function toBookingParams(query: AvailabilityQuery): URLSearchParams {
-  const params = new URLSearchParams();
-  if (query.arrival) params.set('arrival', query.arrival);
-  if (query.departure) params.set('departure', query.departure);
-  params.set('adults', String(query.adults));
-  params.set('children', String(query.children));
-  return params;
+// Link into the hotel's booking engine (OPB: onepagebooking.com/<hotelcode> or the hotel's own
+// booking subdomain) with the stay the guest picked. OPB expects dates as DD.MM.YYYY.
+export function bookingUrl(base: string | null | undefined, query: AvailabilityQuery): string | null {
+  const raw = base?.trim();
+  if (!raw) return null;
+  let url: URL;
+  try {
+    url = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+  } catch {
+    return null;
+  }
+  if (query.arrival) url.searchParams.set('arrival', formatDateDe(query.arrival));
+  if (query.departure) url.searchParams.set('departure', formatDateDe(query.departure));
+  return url.toString();
+}
+
+// Without a booking engine the guest's choice still reaches the hotel, as an e-mail draft.
+export function inquiryMailHref(email: string, query: AvailabilityQuery): string {
+  const stay = query.arrival
+    ? `${formatDateDe(query.arrival)}${query.departure ? ` – ${formatDateDe(query.departure)}` : ''}`
+    : 'Termin noch offen';
+  const subject = `Anfrage ${stay}`;
+  const body = [
+    'Guten Tag,',
+    '',
+    'ich interessiere mich für einen Aufenthalt:',
+    `Zeitraum: ${stay}`,
+    `Gäste: ${formatGuestSummary(query.adults, query.children)}`,
+    '',
+    'Vielen Dank!',
+  ].join('\n');
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 export const GUEST_ROWS = [
