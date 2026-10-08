@@ -365,7 +365,8 @@ function HeroFields() {
       <Field label="Alt-Text" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
       <CmsImageField focus="image_mobile" label="Bild für Handys (optional)" value={String(data.hero_image_mobile ?? '')} section="hero" path="hero_image_mobile" />
       <p className="cms-muted">
-        Nur nötig, wenn sich das Hotel im Hochformat anders zeigen soll. Leer: Handys zeigen das Bild oben mit eigenem Ausschnitt.
+        Leer: Handys zeigen das Desktop-Bild (in der Handy-Ansicht ziehen und zoomen). Für einen eigenen Ausschnitt aus dem
+        Original: hier oder in der Handy-Ansicht aufs Bild klicken.
       </p>
       {data.hero_image_mobile ? (
         <button type="button" className="cms-btn cms-btn--ghost" onClick={() => cms?.removeImage('hero', 'hero_image_mobile', { hero_focal: { desktop: readHeroFocal(data.hero_focal).desktop } })}>

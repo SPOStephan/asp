@@ -80,8 +80,18 @@ export function CmsImageDialog() {
     // A picture that is already there opens with its original and last crop, ready to adjust.
     const section = (content?.sections[request.section] ?? {}) as Record<string, unknown>;
     const current = getPath(section, request.path);
-    const stored = readMediaSource(section, request.path);
-    const src = stored?.src || (typeof current === 'string' ? current.trim() : '');
+    let stored = readMediaSource(section, request.path);
+    let src = stored?.src || (typeof current === 'string' ? current.trim() : '');
+    // No own phone picture yet: start from the original of the desktop picture, so the
+    // phone crop can use everything the photo has, not only the desktop cut.
+    let fromDesktop = false;
+    if (!src && request.path.endsWith('_mobile')) {
+      const desktopPath = request.path.slice(0, -'_mobile'.length);
+      const desktop = getPath(section, desktopPath);
+      stored = readMediaSource(section, desktopPath);
+      src = stored?.src || (typeof desktop === 'string' ? desktop.trim() : '');
+      fromDesktop = Boolean(src);
+    }
     if (!src) return;
     let cancelled = false;
     setLoading(true);
@@ -92,7 +102,7 @@ export function CmsImageDialog() {
         const loaded = await loadImage(await response.blob());
         if (cancelled) return;
         setImage(loaded);
-        setFileName('Aktuelles Bild');
+        setFileName(fromDesktop ? 'Desktop-Original' : 'Aktuelles Bild');
         setSourceUrl(src);
         // The frame always has the shape the picture has on the page, so it shows what
         // visitors see; the last crop is kept as far as that shape allows.
@@ -322,7 +332,9 @@ export function CmsImageDialog() {
           <p className="cms-muted">
             {fileName === 'Aktuelles Bild'
               ? 'Aktuelles Bild: verschieben, zoomen und „Ausschnitt übernehmen“ – oder eine neue Datei wählen.'
-              : `Gewählt: ${fileName}`}
+              : fileName === 'Desktop-Original'
+                ? 'Original des Desktop-Bilds: Ausschnitt für Handys wählen und übernehmen – oder ein eigenes Bild wählen.'
+                : `Gewählt: ${fileName}`}
           </p>
         ) : null}
         {busy ? <p className="cms-muted">Wird als WebP optimiert und nach Bunny gelegt…</p> : null}

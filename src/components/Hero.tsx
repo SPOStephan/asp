@@ -40,7 +40,7 @@ function useHeroMedia(data: Record<string, unknown>) {
   return {
     image: resolveMedia(data.hero_image as string | undefined, MUSTER_MEDIA.hero),
     mobileImage,
-    editPath: mobileImage && cms?.focalPreview === 'mobile' ? 'hero_image_mobile' : 'hero_image',
+    editPath: cms?.focalPreview === 'mobile' ? 'hero_image_mobile' : 'hero_image',
     fadeVars: {
       '--hero-fade-color': hotel?.primary_color || 'var(--primary-500)',
       '--hero-fade-desktop': String(fadeStrength(data.fade_desktop)),
@@ -104,7 +104,7 @@ function HeroClassic() {
   // Optional own picture for phones (hotels that only work in portrait).
   const mobileImage = typeof data.hero_image_mobile === 'string' ? data.hero_image_mobile.trim() : '';
   const cms = useCms();
-  const editPath = mobileImage && cms?.focalPreview === 'mobile' ? 'hero_image_mobile' : 'hero_image';
+  const editPath = cms?.focalPreview === 'mobile' ? 'hero_image_mobile' : 'hero_image';
 
   return (
     <CmsSection sectionKey="hero" label="Hero">

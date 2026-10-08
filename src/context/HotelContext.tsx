@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { isAdminHost, isAdminPath } from '../admin/adminHost';
-import { applyLiveMedia, useLiveMediaTick } from '../cms/cmsLiveMedia';
+import { applyLiveMedia, pruneLiveMedia, useLiveMediaTick } from '../cms/cmsLiveMedia';
 import { isCmsPath } from '../cms/cmsHost';
 import { loadHotelContent, takeEmbeddedContent, type HotelContent } from '../lib/hotelData';
 import { mergeHotelLoad } from '../lib/hotelMerge';
@@ -42,7 +42,9 @@ export function HotelProvider({ children }: { children: ReactNode }) {
   const pendingFaqs = useRef<HotelFAQ[] | null>(null);
 
   async function load() {
+    const startedAt = Date.now();
     const data = await loadHotelContent();
+    if (isCmsPath(window.location.pathname)) pruneLiveMedia(data.sections, startedAt);
     setContent((current) => {
       const next = mergeHotelLoad(data, current, pendingSections.current, pendingFaqs.current);
       pendingSections.current = {};
@@ -82,7 +84,9 @@ export function HotelProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     (async () => {
       try {
+        const startedAt = Date.now();
         const data = await loadHotelContent();
+        if (isCmsPath(window.location.pathname)) pruneLiveMedia(data.sections, startedAt);
         if (!cancelled) {
           setContent((current) => {
             const next = mergeHotelLoad(data, current, pendingSections.current, pendingFaqs.current);
