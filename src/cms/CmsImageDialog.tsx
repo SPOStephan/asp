@@ -16,6 +16,20 @@ const ASPECTS: Array<{ label: string; value?: number }> = [
 
 const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png,.webp,.gif,.avif';
 
+const FRAME_MAX_HEIGHT = 420;
+
+// Size of the visible frame: as wide as the dialog, not taller than FRAME_MAX_HEIGHT.
+function cropFrame(stageWidth: number, crop: CropRect) {
+  const ratio = crop.width / crop.height || 1;
+  let width = stageWidth;
+  let height = width / ratio;
+  if (height > FRAME_MAX_HEIGHT) {
+    height = FRAME_MAX_HEIGHT;
+    width = height * ratio;
+  }
+  return { width: Math.round(width), height: Math.round(height) };
+}
+
 export function CmsImageDialog() {
   const cms = useCms();
   const hotel = useHotel();
@@ -31,7 +45,7 @@ export function CmsImageDialog() {
   const [busy, setBusy] = useState(false);
   const [appliedUrl, setAppliedUrl] = useState<string | null>(null);
   const [stageWidth, setStageWidth] = useState(0);
-  const drag = useRef<{ startX: number; startY: number; crop: CropRect } | null>(null);
+  const drag = useRef<{ startX: number; startY: number; crop: CropRect; scale: number } | null>(null);
 
   useEffect(() => {
     if (!request) {
@@ -47,6 +61,19 @@ export function CmsImageDialog() {
     setAppliedUrl(null);
     setAspect(imageHint(request.section, request.path).aspect);
   }, [request]);
+
+  // Mouse wheel / trackpad zooms like the buttons (set below, after the early return).
+  const wheelZoom = useRef<(factor: number) => void>(() => {});
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      wheelZoom.current(event.deltaY < 0 ? 0.93 : 1.07);
+    };
+    stage.addEventListener('wheel', onWheel, { passive: false });
+    return () => stage.removeEventListener('wheel', onWheel);
+  }, [image]);
 
   useLayoutEffect(() => {
     const stage = stageRef.current;
@@ -112,33 +139,36 @@ export function CmsImageDialog() {
     if (image) setCrop(fitRect(image.naturalWidth, image.naturalHeight, next));
   }
 
+  // The frame shows exactly what will be uploaded; the picture moves and scales inside it.
+  const frame = image && stageWidth ? cropFrame(stageWidth - 24, crop) : null;
+  const frameScale = frame ? frame.width / crop.width : 0;
+
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (!image) return;
+    if (!image || !frameScale) return;
     event.currentTarget.setPointerCapture(event.pointerId);
-    drag.current = { startX: event.clientX, startY: event.clientY, crop };
+    drag.current = { startX: event.clientX, startY: event.clientY, crop, scale: frameScale };
   }
 
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
-    if (!drag.current || !image || !stageRef.current) return;
-    const box = stageRef.current.getBoundingClientRect();
-    const scaleX = image.naturalWidth / box.width;
-    const scaleY = image.naturalHeight / box.height;
-    const dx = (event.clientX - drag.current.startX) * scaleX;
-    const dy = (event.clientY - drag.current.startY) * scaleY;
-    const next = {
+    if (!drag.current || !image) return;
+    // Dragging moves the picture with the pointer, so the visible part goes the other way.
+    const dx = (event.clientX - drag.current.startX) / drag.current.scale;
+    const dy = (event.clientY - drag.current.startY) / drag.current.scale;
+    setCrop({
       ...drag.current.crop,
-      x: Math.min(Math.max(0, drag.current.crop.x + dx), image.naturalWidth - drag.current.crop.width),
-      y: Math.min(Math.max(0, drag.current.crop.y + dy), image.naturalHeight - drag.current.crop.height),
-    };
-    setCrop(next);
+      x: Math.min(Math.max(0, drag.current.crop.x - dx), image.naturalWidth - drag.current.crop.width),
+      y: Math.min(Math.max(0, drag.current.crop.y - dy), image.naturalHeight - drag.current.crop.height),
+    });
   }
+
+  wheelZoom.current = nudgeZoom;
 
   async function upload() {
     if (!image) return;
     await pushUpload(image, crop);
   }
 
-  const scale = image && stageWidth ? stageWidth / image.naturalWidth : 0;
+  const zoomPercent = image ? Math.round((fitRect(image.naturalWidth, image.naturalHeight, aspect).width / crop.width) * 100) : 100;
 
   return (
     <div className="cms-modal" role="dialog" aria-label="Bild hochladen">
@@ -178,27 +208,30 @@ export function CmsImageDialog() {
           ))}
         </div>
         {image ? (
-          <div
-            ref={stageRef}
-            className="cms-crop"
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={() => {
-              drag.current = null;
-            }}
-          >
-            <img src={image.src} alt="" />
-            {scale ? (
+          <div ref={stageRef} className="cms-crop">
+            {frame ? (
               <div
-                className="cms-crop__box"
-                style={{
-                  left: crop.x * scale,
-                  top: crop.y * scale,
-                  width: crop.width * scale,
-                  height: crop.height * scale,
+                className="cms-crop__frame"
+                style={{ width: frame.width, height: frame.height }}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={() => {
+                  drag.current = null;
                 }}
-              />
+              >
+                <img
+                  src={image.src}
+                  alt=""
+                  style={{
+                    width: image.naturalWidth * frameScale,
+                    height: image.naturalHeight * frameScale,
+                    left: -crop.x * frameScale,
+                    top: -crop.y * frameScale,
+                  }}
+                />
+              </div>
             ) : null}
+            <p className="cms-crop__hint">Ziehen verschiebt · Mausrad oder +/− zoomt · {zoomPercent} %</p>
           </div>
         ) : (
           <button type="button" className="cms-drop" onClick={() => inputRef.current?.click()}>

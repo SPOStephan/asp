@@ -272,6 +272,8 @@ function HeroFields() {
     subtitle: String(data.subtitle ?? ''),
     hero_image: String(data.hero_image ?? ''),
     hero_image_alt: String(data.hero_image_alt ?? ''),
+    fade_desktop: Number(data.fade_desktop ?? 0) || 0,
+    fade_mobile: Number(data.fade_mobile ?? 0) || 0,
   });
 
   useEffect(() => {
@@ -280,6 +282,8 @@ function HeroFields() {
       subtitle: String(data.subtitle ?? ''),
       hero_image: String(data.hero_image ?? ''),
       hero_image_alt: String(data.hero_image_alt ?? ''),
+      fade_desktop: Number(data.fade_desktop ?? 0) || 0,
+      fade_mobile: Number(data.fade_mobile ?? 0) || 0,
     });
   }, [cms?.draftTick]);
 
@@ -290,6 +294,8 @@ function HeroFields() {
       subtitle: draft.subtitle,
       hero_image: String(data.hero_image || draft.hero_image),
       hero_image_alt: draft.hero_image_alt,
+      fade_desktop: draft.fade_desktop,
+      fade_mobile: draft.fade_mobile,
     },
     data,
   );
@@ -302,6 +308,28 @@ function HeroFields() {
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <CmsImageField focus="image" label="Bild" value={String(data.hero_image || draft.hero_image)} section="hero" path="hero_image" />
       <Field label="Alt-Text" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
+      <CmsImageField focus="image_mobile" label="Bild für Handys (optional)" value={String(data.hero_image_mobile ?? '')} section="hero" path="hero_image_mobile" />
+      <p className="cms-muted">
+        Nur nötig, wenn sich das Hotel im Hochformat anders zeigen soll. Leer: Handys zeigen das Bild oben mit eigenem Ausschnitt.
+      </p>
+      {data.hero_image_mobile ? (
+        <button type="button" className="cms-btn cms-btn--ghost" onClick={() => cms?.applyField('hero', 'hero_image_mobile', '')}>
+          Handy-Bild entfernen
+        </button>
+      ) : null}
+      <fieldset className="cms-fade" data-cms-panel-focus="fade">
+        <legend>Farbverlauf unten (Hotelfarbe)</legend>
+        <p className="cms-muted">Überdeckt einen unruhigen unteren Bildrand, damit die Schrift gut lesbar bleibt. 0 % = aus.</p>
+        <label className="cms-field">
+          Desktop: {draft.fade_desktop} %
+          <input type="range" min={0} max={100} step={5} value={draft.fade_desktop} onChange={(event) => setDraft({ ...draft, fade_desktop: Number(event.target.value) })} />
+        </label>
+        <label className="cms-field">
+          Handy: {draft.fade_mobile} %
+          <input type="range" min={0} max={100} step={5} value={draft.fade_mobile} onChange={(event) => setDraft({ ...draft, fade_mobile: Number(event.target.value) })} />
+        </label>
+        <p className="cms-muted">Die Handy-Wirkung siehst du, wenn oben die Mobil-Ansicht gewählt ist.</p>
+      </fieldset>
       <p className="cms-muted">
         Ausschnitt: oben Desktop oder Mobil wählen, dann das Bild ziehen. Mit + / − den Ausschnitt zoomen.
       </p>

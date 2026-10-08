@@ -10,6 +10,7 @@ const LAND_16_10: ImageHint = { width: 1600, height: 1000, aspect: 16 / 10, aspe
 const TILE: ImageHint = { width: 1600, height: 1200, aspect: 4 / 3, aspectLabel: '4:3' };
 const PHOTO: ImageHint = { width: 1400, height: 1120, aspect: 5 / 4, aspectLabel: '5:4' };
 const PORTRAIT: ImageHint = { width: 1200, height: 1600, aspect: 3 / 4, aspectLabel: '3:4' };
+const PHONE: ImageHint = { width: 1080, height: 1920, aspect: 9 / 16, aspectLabel: '9:16' };
 const LOGO: ImageHint = { width: 720, height: 300, aspect: 12 / 5, aspectLabel: 'ca. 12:5' };
 const BADGE: ImageHint = { width: 400, height: 400, aspect: 1, aspectLabel: '1:1' };
 
@@ -21,6 +22,7 @@ export function imageHint(section: string, path: string): ImageHint {
   const leaf = leafOf(path);
 
   if (leaf.startsWith('logo_') || leaf.includes('logo')) return LOGO;
+  if (leaf === 'hero_image_mobile') return PHONE;
   if (section === 'awards' && (leaf === 'src' || path.includes('items.')) && !path.includes('impressions')) {
     return BADGE;
   }
