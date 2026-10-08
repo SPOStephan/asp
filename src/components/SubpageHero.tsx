@@ -19,6 +19,8 @@ interface SubpageHeroProps {
   imageAlt: string;
   eyebrow: string;
   title: string;
+  // Rest of the heading after the title, e.g. a second line with a script word.
+  titleLine2?: ReactNode;
   subtitle?: string;
   focal?: unknown;
   cms?: SubpageHeroCms;
@@ -39,6 +41,7 @@ export function SubpageHero({
   imageAlt,
   eyebrow,
   title,
+  titleLine2,
   subtitle,
   focal,
   cms,
@@ -111,7 +114,7 @@ export function SubpageHero({
       {eyebrow || (editable && editing) ? (
         <p className="subpage-hero__eyebrow" {...(editable ? { 'data-cms-focus': 'head', 'data-cms-path': eyebrowPath } : {})}>{eyebrow}</p>
       ) : null}
-      <h1 className="subpage-hero__title" {...(editable ? { 'data-cms-focus': 'title', 'data-cms-path': titlePath } : {})}>{title}</h1>
+      <h1 className="subpage-hero__title" {...(editable ? { 'data-cms-focus': 'title', 'data-cms-path': titlePath } : {})}>{title}{titleLine2}</h1>
       {subtitle || (editable && editing) ? <p className="subpage-hero__subtitle" {...(editable ? { 'data-cms-focus': 'subtitle', 'data-cms-path': subtitlePath } : {})}>{subtitle}</p> : null}
     </>
   );

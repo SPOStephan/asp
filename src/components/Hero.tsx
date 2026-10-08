@@ -17,8 +17,6 @@ export function fadeStrength(value: unknown) {
   return Number.isFinite(number) ? Math.min(100, Math.max(0, number)) / 100 : 0;
 }
 
-// Script line above the home title until the hotel writes its own; cleared = no line.
-export const HOME_EYEBROW = 'Ankommen';
 // Heading position on the home picture, % of the screen height from the top.
 export const HOME_TEXT_TOP = 55;
 
@@ -61,8 +59,9 @@ function HeroFlow() {
           image={media.image}
           imageMobile={media.mobileImage}
           imageAlt={data.hero_image_alt || ''}
-          eyebrow={typeof data.eyebrow === 'string' ? data.eyebrow : HOME_EYEBROW}
+          eyebrow={data.eyebrow ?? ''}
           title={data.title ?? ''}
+          titleLine2={<HeroTitleLine2 normal={data.title_word_normal} script={data.title_word_script} />}
           subtitle={data.subtitle}
           focal={data.hero_focal}
           cms={{ section: 'hero', image: media.editPath }}
@@ -73,6 +72,19 @@ function HeroFlow() {
         />
       </section>
     </CmsSection>
+  );
+}
+
+// Optional second title line as in the welcome heading: a normal word, then a script word.
+function HeroTitleLine2({ normal, script }: { normal?: string; script?: string }) {
+  if (!normal && !script) return null;
+  return (
+    <>
+      <br />
+      {normal ? <span className="subpage-hero__normal-word">{normal}</span> : null}
+      {normal && script ? ' ' : null}
+      {script ? <span className="subpage-hero__script">{script}</span> : null}
+    </>
   );
 }
 

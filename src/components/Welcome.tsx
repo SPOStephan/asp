@@ -59,6 +59,9 @@ function WelcomeCopy({ paragraphs }: { paragraphs: Array<{ text: string; path: s
 
 export function Welcome() {
   const data = useSection('welcome');
+  // With the hero in sub-page style its heading lands here and becomes the page's first
+  // heading, so the welcome heading would repeat it.
+  const heroLeads = useSection('hero')?.layout !== 'classic';
 
   if (!data) return null;
 
@@ -69,8 +72,9 @@ export function Welcome() {
 
   return (
     <CmsSection sectionKey="welcome" label="Welcome">
-    <section className="welcome" id="welcome">
+    <section className={`welcome${heroLeads ? ' welcome--after-hero' : ''}`} id="welcome">
       <div className="container">
+        {heroLeads ? null : (
         <Reveal>
           <div className="welcome__head">
             <h2 className="welcome__title heading-font" data-cms-focus="title">
@@ -81,8 +85,9 @@ export function Welcome() {
             <p className="welcome__subtitle" data-cms-focus="subtitle" data-cms-path="subtitle">{data.subtitle}</p>
           </div>
         </Reveal>
+        )}
 
-        <Reveal delay={120}>
+        <Reveal delay={heroLeads ? 0 : 120}>
           <WelcomeCopy paragraphs={paragraphs} />
         </Reveal>
 

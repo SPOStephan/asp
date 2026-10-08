@@ -17,7 +17,7 @@ import {
   matchesCmsEntry,
   sectionDraft,
 } from './cmsPages';
-import { HOME_EYEBROW, heroTextTop } from '../components/Hero';
+import { heroTextTop } from '../components/Hero';
 import { useCms } from './CmsContext';
 import { isHiddenMetaPath } from './cmsHidden';
 import { CmsFilterEditor } from './CmsFilterEditor';
@@ -275,7 +275,9 @@ function HeroFields() {
     hero_image_alt: String(data.hero_image_alt ?? ''),
     fade_desktop: Number(data.fade_desktop ?? 0) || 0,
     fade_mobile: Number(data.fade_mobile ?? 0) || 0,
-    eyebrow: typeof data.eyebrow === 'string' ? data.eyebrow : HOME_EYEBROW,
+    eyebrow: String(data.eyebrow ?? ''),
+    title_word_normal: String(data.title_word_normal ?? ''),
+    title_word_script: String(data.title_word_script ?? ''),
     text_top: Math.round(heroTextTop(data.text_top) * 100),
     layout: data.layout === 'classic' ? 'classic' : 'flow',
   });
@@ -288,7 +290,9 @@ function HeroFields() {
       hero_image_alt: String(data.hero_image_alt ?? ''),
       fade_desktop: Number(data.fade_desktop ?? 0) || 0,
       fade_mobile: Number(data.fade_mobile ?? 0) || 0,
-      eyebrow: typeof data.eyebrow === 'string' ? data.eyebrow : HOME_EYEBROW,
+      eyebrow: String(data.eyebrow ?? ''),
+      title_word_normal: String(data.title_word_normal ?? ''),
+      title_word_script: String(data.title_word_script ?? ''),
       text_top: Math.round(heroTextTop(data.text_top) * 100),
       layout: data.layout === 'classic' ? 'classic' : 'flow',
     });
@@ -304,6 +308,8 @@ function HeroFields() {
       fade_desktop: draft.fade_desktop,
       fade_mobile: draft.fade_mobile,
       eyebrow: draft.eyebrow,
+      title_word_normal: draft.title_word_normal,
+      title_word_script: draft.title_word_script,
       layout: draft.layout,
       text_top: draft.text_top,
     },
@@ -323,14 +329,20 @@ function HeroFields() {
       </label>
       {draft.layout === 'flow' ? (
         <>
-          <Field focus="head" path="eyebrow" label="Schmuckzeile über dem Titel (Schreibschrift, leer = keine)" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
+          <Field focus="head" path="eyebrow" label="Zeile über dem Titel in Schreibschrift (optional)" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
           <label className="cms-field">
             Schrift-Position: {draft.text_top} % von oben
             <input type="range" min={25} max={75} step={1} value={draft.text_top} onChange={(event) => setDraft({ ...draft, text_top: Number(event.target.value) })} />
           </label>
         </>
       ) : null}
-      <Field focus="title" path="title" label="Titel" value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
+      <Field focus="title" path="title" label={draft.layout === 'flow' ? 'Titelzeile 1' : 'Titel'} value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
+      {draft.layout === 'flow' ? (
+        <>
+          <Field focus="title" path="title_word_normal" label="Titelzeile 2: normale Schrift (optional)" value={draft.title_word_normal} onChange={(title_word_normal) => setDraft({ ...draft, title_word_normal })} />
+          <Field focus="title" path="title_word_script" label="Titelzeile 2: Schreibschrift (optional)" value={draft.title_word_script} onChange={(title_word_script) => setDraft({ ...draft, title_word_script })} />
+        </>
+      ) : null}
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <CmsImageField focus="image" label="Bild" value={String(data.hero_image || draft.hero_image)} section="hero" path="hero_image" />
       <Field label="Alt-Text" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
