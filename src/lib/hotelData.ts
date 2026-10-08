@@ -1,77 +1,27 @@
-import { repairMediaUrls, resolveDiscoverTiles } from './media';
-import { supabase, type Hotel, type HotelSection, type HotelFAQ } from './supabase';
+import { loadSiteContent, type HotelContent } from '../site/siteData';
+import { supabase } from './supabase';
 
-export type HotelContent = {
-  hotel: Hotel;
-  sections: Record<string, Record<string, any>>;
-  faqs: HotelFAQ[];
-  pages: Record<string, boolean>;
-};
+export type { HotelContent } from '../site/siteData';
 
-const FALLBACK_SLUG = 'ambassador-hotel-spa';
+declare global {
+  interface Window {
+    __SITE_CONTENT__?: HotelContent;
+  }
+}
 
 function resolveDomain(): string {
   if (typeof window === 'undefined') return 'localhost';
   return window.location.hostname;
 }
 
+// Content the server already rendered into the page, so the first paint needs no extra request.
+export function takeEmbeddedContent(): HotelContent | null {
+  if (typeof window === 'undefined') return null;
+  const content = window.__SITE_CONTENT__ ?? null;
+  delete window.__SITE_CONTENT__;
+  return content;
+}
+
 export async function loadHotelContent(): Promise<HotelContent> {
-  const domain = resolveDomain();
-
-  const { data: hotel } = await supabase
-    .from('hotels')
-    .select('*')
-    .or(`domains.cs.{${domain}}`)
-    .eq('is_active', true)
-    .maybeSingle();
-
-  let resolvedHotel: Hotel | null = hotel as Hotel | null;
-
-  if (!resolvedHotel) {
-    const { data: fallback } = await supabase
-      .from('hotels')
-      .select('*')
-      .eq('slug', FALLBACK_SLUG)
-      .eq('is_active', true)
-      .maybeSingle();
-    resolvedHotel = fallback as Hotel | null;
-  }
-
-  if (!resolvedHotel) {
-    throw new Error('No hotel found for domain: ' + domain);
-  }
-
-  const hotelId = resolvedHotel.id;
-
-  const [sectionsResult, faqsResult, pagesResult] = await Promise.all([
-    supabase.from('hotel_sections').select('*').eq('hotel_id', hotelId),
-    supabase
-      .from('hotel_faqs')
-      .select('*')
-      .eq('hotel_id', hotelId)
-      .order('sort_order', { ascending: true }),
-    supabase.from('hotel_pages').select('page_key, enabled').eq('hotel_id', hotelId),
-  ]);
-
-  const sectionsMap: Record<string, Record<string, any>> = {};
-  for (const s of (sectionsResult.data as HotelSection[] | null) ?? []) {
-    sectionsMap[s.section_key] = repairMediaUrls(s.data);
-  }
-  // Hotels created without copying the pilot have an empty Discover grid. Load the
-  // Muster tiles into it so the page, the editor and image uploads share one list.
-  if (sectionsMap.discover) {
-    sectionsMap.discover = { ...sectionsMap.discover, tiles: resolveDiscoverTiles(sectionsMap.discover.tiles) };
-  }
-
-  const pages: Record<string, boolean> = {};
-  for (const row of pagesResult.data ?? []) {
-    pages[row.page_key] = row.enabled !== false;
-  }
-
-  return {
-    hotel: resolvedHotel,
-    sections: sectionsMap,
-    faqs: (faqsResult.data as HotelFAQ[] | null) ?? [],
-    pages,
-  };
+  return loadSiteContent(supabase, resolveDomain());
 }
