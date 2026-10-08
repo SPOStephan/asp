@@ -29,7 +29,7 @@ export function Footer() {
         <div className="footer__top">
           <div className="footer__brand">
             <div className="footer__logo">
-              <img src={resolveMedia(navbar?.logo_white, MUSTER_MEDIA.logoWhite)} alt={hotel.name} />
+              <img loading="lazy" decoding="async" src={resolveMedia(navbar?.logo_white, MUSTER_MEDIA.logoWhite)} alt={hotel.name} />
             </div>
             <p className="footer__tagline" data-cms-focus="tagline" data-cms-path="tagline">{data.tagline}</p>
             <div className="footer__social">

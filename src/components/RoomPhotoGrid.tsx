@@ -55,7 +55,7 @@ export function RoomPhotoGrid({ room }: RoomPhotoGridProps) {
               onClick={() => setActive(index)}
               aria-label={`Foto öffnen: ${slide.alt || room.name}`}
             >
-              <img src={slide.src} alt={slide.alt || room.name} />
+              <img loading="lazy" decoding="async" src={slide.src} alt={slide.alt || room.name} />
               {index === 2 && extra > 0 ? <span className="room-photos__more">+{extra}</span> : null}
             </button>
           );

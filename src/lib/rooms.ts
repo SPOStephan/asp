@@ -1,8 +1,11 @@
 import { resolveMedia } from './media';
 
-export type RoomTag = 'zimmer' | 'suite' | 'meerblick' | 'familie';
+import type { ListFilter } from './listFilters';
 
-export type RoomFilterId = 'alle' | RoomTag;
+// Free per hotel; these are only the suggestions for hotels without their own filters.
+export type RoomTag = string;
+
+export type RoomFilterId = string;
 
 export interface RoomGalleryImage {
   src: string;
@@ -29,8 +32,7 @@ export interface RoomStory {
   gallery: RoomGalleryImage[];
 }
 
-export const ROOM_FILTERS: { id: RoomFilterId; label: string }[] = [
-  { id: 'alle', label: 'Alle' },
+export const ROOM_FILTERS: ListFilter[] = [
   { id: 'zimmer', label: 'Zimmer' },
   { id: 'suite', label: 'Suiten' },
   { id: 'meerblick', label: 'Meerblick' },
@@ -260,11 +262,10 @@ type RawRoom = Partial<RoomStory> & {
   image_primary_alt?: string;
 };
 
+// A room may belong to no filter at all: an empty list stays empty.
 function asTags(value: unknown, fallback: RoomTag[]): RoomTag[] {
   if (!Array.isArray(value)) return fallback;
-  const allowed: RoomTag[] = ['zimmer', 'suite', 'meerblick', 'familie'];
-  const tags = value.filter((tag): tag is RoomTag => allowed.includes(tag as RoomTag));
-  return tags.length ? tags : fallback;
+  return value.filter((tag): tag is RoomTag => typeof tag === 'string' && tag.trim() !== '');
 }
 
 function asGallery(value: unknown, fallback: RoomGalleryImage[]): RoomGalleryImage[] {
@@ -312,9 +313,6 @@ export function filterRooms(rooms: RoomStory[], filter: RoomFilterId) {
   return rooms.filter((room) => room.tags.includes(filter));
 }
 
-export function isRoomFilter(value: string | null): value is RoomFilterId {
-  return ROOM_FILTERS.some((filter) => filter.id === value);
-}
 
 export type AmenityIcon =
   | 'bed'

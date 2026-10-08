@@ -46,10 +46,10 @@ export function OverlapStage({
         </div>
         <div className="overlap-stage__visual">
           <figure className="overlap-stage__front" data-cms-path={cms?.front ?? 'overlap_front'} data-cms-kind="image">
-            <img src={front} alt={frontAlt} />
+            <img loading="lazy" decoding="async" src={front} alt={frontAlt} />
           </figure>
           <figure className="overlap-stage__back" data-cms-path={cms?.back ?? 'overlap_back'} data-cms-kind="image">
-            <img src={back} alt={backAlt} />
+            <img loading="lazy" decoding="async" src={back} alt={backAlt} />
           </figure>
         </div>
       </section>

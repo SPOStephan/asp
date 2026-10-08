@@ -6,6 +6,7 @@ import type { AddressInfo } from 'node:net';
 import { buildSystemPrompt, cleanSearchTerms, readJudgement, readQaPairs, type ConciergeContext } from '../src/ai/concierge';
 import { crawlableLinks, htmlToText, isPublicHttpUrl, pageChunks } from '../src/ai/htmlText';
 import { complete, listModels, stream } from '../src/ai/provider';
+import { anonymize, anonymizeAfterDays, redactPatterns } from '../src/ai/anonymize';
 import { answerParts, conciergeConfig, guestText, safeHref } from '../src/lib/concierge';
 import { chunkMarkdown, chunkText, GAP_MARKER, readAnswer, stripGapMarker } from '../src/lib/knowledge';
 
@@ -95,6 +96,16 @@ const parts = answerParts('Buchen Sie hier: https://buchen.example/meer. Mehr un
 check('links and bold in answers', parts.some((part) => part.type === 'link' && part.href === 'https://buchen.example/meer') && parts.some((part) => part.type === 'link' && part.href === '/wellness') && parts.some((part) => part.type === 'bold'), parts);
 check('no script links', !parts.some((part) => part.type === 'link' && part.href.startsWith('javascript')) && safeHref('javascript:alert(1)') === null && safeHref('//evil.example') === null);
 
+// Anonymising
+const keep = { emails: ['info@meer.de'], phones: ['+49 (0) 4863 / 7090'] };
+const redacted = redactPatterns('Ich bin unter max.muster@web.de oder 0171 2345678 erreichbar, IBAN DE89 3704 0044 0532 0130 00. Hotel: info@meer.de, +49 4863 7090. Anreise 16.10.2026, Spa 7 - 22 Uhr, 2 Personen.', keep);
+check('guest e-mail and phone removed', !redacted.includes('max.muster') && !redacted.includes('2345678') && redacted.includes('[E-Mail]') && redacted.includes('[Telefon]'), redacted);
+check('IBAN removed', redacted.includes('[IBAN]') && !redacted.includes('3704'), redacted);
+check('hotel contact, dates and times kept', redacted.includes('info@meer.de') && redacted.includes('+49 4863 7090') && redacted.includes('16.10.2026') && redacted.includes('7 - 22 Uhr'), redacted);
+check('days until anonymising', anonymizeAfterDays('') === 30 && anonymizeAfterDays('0') === 0 && anonymizeAfterDays('x') === 30 && anonymizeAfterDays('14') === 14);
+const withoutModel = await anonymize(null, null, { question: 'Mail: a@b.de', answer: 'ok', hotelName: 'H', keep });
+check('without a model nothing counts as done', withoutModel.ai === false && withoutModel.question === 'Mail: [E-Mail]');
+
 // Provider against a fake OpenAI-compatible server
 const seen: Array<Record<string, unknown>> = [];
 const server = createServer((request, response) => {
@@ -113,6 +124,15 @@ const server = createServer((request, response) => {
     }
     const body = JSON.parse(raw) as Record<string, unknown>;
     seen.push(body);
+    const messages = body.messages as Array<{ content: string }>;
+    if (!body.stream && String(messages[0]?.content).includes('Du anonymisierst')) {
+      const input = JSON.parse(messages[1].content) as { question: string; answer: string };
+      const swap = (text: string) => text.replace(/Herr Müller|Müller/g, '[Name]');
+      const output = String(messages[1].content).includes('LANG') ? { question: input.question + ' extra'.repeat(200), answer: input.answer } : { question: swap(input.question), answer: swap(input.answer) };
+      response.setHeader('Content-Type', 'application/json');
+      response.end(JSON.stringify({ model: 'x/real', choices: [{ message: { content: JSON.stringify(output) } }] }));
+      return;
+    }
     if (body.stream) {
       response.setHeader('Content-Type', 'text/event-stream');
       response.write(': OPENROUTER PROCESSING\n\n');
@@ -145,6 +165,10 @@ try {
   error = err instanceof Error ? err.message : String(err);
 }
 check('provider errors are readable', error.includes('401') && error.includes('bad key'), error);
+const anon = await anonymize(config, 'x/helper', { question: 'Ich bin Herr Müller, Tel. 0171 2345678', answer: 'Gern, Herr Müller! Rufen Sie uns an: +49 4863 7090.', hotelName: 'Hotel Meer', keep });
+check('names removed by the model, patterns by code', anon.ai && anon.question === 'Ich bin [Name], Tel. [Telefon]' && anon.answer === 'Gern, [Name]! Rufen Sie uns an: +49 4863 7090.', anon);
+const grown = await anonymize(config, 'x/helper', { question: 'LANG Müller', answer: 'ok', hotelName: 'Hotel Meer', keep });
+check('model output that grows is not trusted', grown.question === 'LANG Müller', grown);
 server.close();
 
 if (failed) {

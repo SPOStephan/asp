@@ -78,10 +78,14 @@ export function pageTitle(key: string) {
 export class SiteModel {
   readonly content: HotelContent;
   readonly origin: string;
+  // Where images are served from: the address the page is opened on. The canonical
+  // address can be a domain that does not serve this site yet (e.g. the old website).
+  readonly assetOrigin: string;
 
-  constructor(content: HotelContent, origin: string) {
+  constructor(content: HotelContent, origin: string, assetOrigin = origin) {
     this.content = content;
     this.origin = origin;
+    this.assetOrigin = assetOrigin;
   }
 
   get hotel() {
@@ -114,7 +118,7 @@ export class SiteModel {
   media(value: string) {
     const src = str(value);
     if (!src) return '';
-    return /^https?:\/\//i.test(src) ? src : this.url(src.startsWith('/') ? src : `/${src}`);
+    return /^https?:\/\//i.test(src) ? src : `${this.assetOrigin}${src.startsWith('/') ? src : `/${src}`}`;
   }
 
   activePages(): SiteLink[] {

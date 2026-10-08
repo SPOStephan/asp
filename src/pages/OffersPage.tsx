@@ -51,7 +51,7 @@ export function OffersPage() {
                 <Reveal key={item.id} delay={index * 80}>
                   <article className="offers-page__story" id={item.id} data-cms-focus={`items:${index}`}>
                     <figure className="offers-page__photo" data-cms-path={`items.${item.id}.image`} data-cms-kind="image">
-                      <img src={item.image} alt={item.image_alt} />
+                      <img loading="lazy" decoding="async" src={item.image} alt={item.image_alt} />
                     </figure>
                     <p className="offers-page__kicker" data-cms-path={`items.${item.id}.title`}>{item.title}</p>
                     <h2 className="offers-page__name heading-font" data-cms-path={`items.${item.id}.subtitle`}>{item.subtitle}</h2>

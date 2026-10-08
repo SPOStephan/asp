@@ -17,7 +17,7 @@ export function Hero() {
       <div className="hero__visual">
         <CmsHeroPan section="hero" path="hero_focal" value={data.hero_focal}>
           <div className="hero__bg" data-cms-focus="image" data-cms-path="hero_image" data-cms-kind="image">
-            <img src={resolveMedia(data.hero_image, MUSTER_MEDIA.hero)} alt={data.hero_image_alt || ''} draggable={false} />
+            <img fetchPriority="high" decoding="async" src={resolveMedia(data.hero_image, MUSTER_MEDIA.hero)} alt={data.hero_image_alt || ''} draggable={false} />
             <div className="hero__overlay" />
           </div>
           <div className="hero__content">

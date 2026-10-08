@@ -80,7 +80,7 @@ export function WellnessPage() {
                     {...(cms ? { 'data-cms-nav': '' } : {})}
                   >
                     <div className="wellness-tile__image" data-cms-path={`items.${topic.id}.image`} data-cms-kind="image">
-                      <img src={topic.image} alt={topic.image_alt} />
+                      <img loading="lazy" decoding="async" src={topic.image} alt={topic.image_alt} />
                     </div>
                     <div className="wellness-tile__overlay" />
                     <div className="wellness-tile__content">
@@ -105,7 +105,7 @@ export function WellnessPage() {
                     data-cms-focus={`chapters:${index}`}
                   >
                     <figure className="wellness-chapter__photo" data-cms-path={`chapters.${chapter.id}.image`} data-cms-kind="image">
-                      <img src={chapter.image} alt={chapter.image_alt} />
+                      <img loading="lazy" decoding="async" src={chapter.image} alt={chapter.image_alt} />
                     </figure>
                     <div className="wellness-chapter__copy">
                       <p className="wellness-chapter__kicker" data-cms-path={`chapters.${chapter.id}.kicker`}>{chapter.kicker}</p>

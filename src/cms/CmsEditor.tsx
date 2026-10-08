@@ -3,7 +3,9 @@ import { Trash2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { type DiscoverTile, newDiscoverTile, resolveDiscoverTiles } from '../lib/media';
-import { ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
+import { BLOG_TOPICS, resolveBlogPosts } from '../lib/blog';
+import { readFilters } from '../lib/listFilters';
+import { ROOM_FILTERS, ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
 import { keepLiveFocals } from './cmsFocal';
@@ -17,6 +19,7 @@ import {
 } from './cmsPages';
 import { useCms } from './CmsContext';
 import { isHiddenMetaPath } from './cmsHidden';
+import { CmsFilterEditor } from './CmsFilterEditor';
 import { CmsIconPicker } from './CmsIconPicker';
 import { CmsImageField } from './CmsImageField';
 import { CmsLinkPicker } from './CmsLinkPicker';
@@ -458,6 +461,13 @@ function DiscoverFields() {
   );
 }
 
+function roomFilterDraft(base: Record<string, unknown>, rooms: Array<{ id: string; tags: string[] }>) {
+  return {
+    filters: readFilters(base.filters) ?? ROOM_FILTERS,
+    tags: Object.fromEntries(rooms.map((room) => [room.id, room.tags])) as Record<string, string[]>,
+  };
+}
+
 function RoomsFields() {
   const cms = useCms();
   const hotel = useHotel();
@@ -474,12 +484,12 @@ function RoomsFields() {
     intro: String(base.intro ?? ''),
     hero_image: String(base.hero_image ?? ''),
     hero_image_alt: String(base.hero_image_alt ?? ''),
-    show_filters: (base as { show_filters?: boolean }).show_filters !== false,
     note_title: String(base.note_title ?? ''),
     note_text: String(base.note_text ?? ''),
     note_cta: String(base.note_cta ?? ''),
     icon_color: String((base as { icon_color?: string }).icon_color ?? ''),
   });
+  const [filterDraft, setFilterDraft] = useState(() => roomFilterDraft(base, rooms));
   const current = rooms.find((room) => room.id === roomId) ?? rooms[0];
   const [roomDraft, setRoomDraft] = useState({
     name: current?.name ?? '',
@@ -538,12 +548,12 @@ function RoomsFields() {
       intro: String(base.intro ?? ''),
       hero_image: String(base.hero_image ?? ''),
       hero_image_alt: String(base.hero_image_alt ?? ''),
-      show_filters: (base as { show_filters?: boolean }).show_filters !== false,
       note_title: String(base.note_title ?? ''),
       note_text: String(base.note_text ?? ''),
       note_cta: String(base.note_cta ?? ''),
       icon_color: String((base as { icon_color?: string }).icon_color ?? ''),
     });
+    setFilterDraft(roomFilterDraft(base, rooms));
   }, [cms?.draftTick]);
 
   const payload = keepLiveFocals({
@@ -551,11 +561,16 @@ function RoomsFields() {
     ...draft,
     hero_image: String(base.hero_image || draft.hero_image),
     hotel_email: hotel?.email ?? null,
+    filters: filterDraft.filters,
+    // The old switch "show_filters" now is the eye of the filter bar.
+    hidden_filters: (base as { hidden_filters?: boolean }).hidden_filters ?? (base as { show_filters?: boolean }).show_filters === false,
+    show_filters: undefined,
     items: rooms.map((room) =>
       room.id !== (current?.id ?? roomId)
-        ? room
+        ? { ...room, tags: filterDraft.tags[room.id] ?? room.tags }
         : {
             ...room,
+            tags: filterDraft.tags[room.id] ?? room.tags,
             name: roomDraft.name,
             kicker: roomDraft.kicker,
             text: roomDraft.text,
@@ -579,10 +594,13 @@ function RoomsFields() {
       <Field focus="intro" path="intro" label="Intro" value={draft.intro} onChange={(intro) => setDraft({ ...draft, intro })} multiline />
       <CmsImageField focus="image" label="Hero-Bild" value={String(base.hero_image || draft.hero_image)} section="rooms_page" path="hero_image" />
       <Field label="Hero-Alt" value={draft.hero_image_alt} onChange={(hero_image_alt) => setDraft({ ...draft, hero_image_alt })} />
-      <label className="cms-choice">
-        <input type="checkbox" checked={draft.show_filters} onChange={(event) => setDraft({ ...draft, show_filters: event.target.checked })} />
-        Filter zeigen
-      </label>
+      <CmsFilterEditor
+        title="Filter über der Zimmerliste"
+        filters={filterDraft.filters}
+        entries={rooms.map((room) => ({ id: room.id, name: room.name, tags: filterDraft.tags[room.id] ?? room.tags }))}
+        multi
+        onChange={(filters, tags) => setFilterDraft({ filters, tags })}
+      />
       <Field focus="note" path="note_title" label="Hinweis Titel" value={draft.note_title} onChange={(note_title) => setDraft({ ...draft, note_title })} />
       <Field focus="note" path="note_text" label="Hinweis Text" value={draft.note_text} onChange={(note_text) => setDraft({ ...draft, note_text })} multiline />
       <Field focus="note" path="note_cta" label="Hinweis CTA" value={draft.note_cta} onChange={(note_cta) => setDraft({ ...draft, note_cta })} />
@@ -769,6 +787,29 @@ function EntryFields({ sectionKey, entryId, hub }: { sectionKey: string; entryId
   );
 }
 
+function BlogTopicFields({ draft, setDraft }: { draft: Record<string, unknown>; setDraft: (next: Record<string, unknown>) => void }) {
+  const posts = resolveBlogPosts(draft.items as Parameters<typeof resolveBlogPosts>[0]);
+  const raw = (Array.isArray(draft.items) && draft.items.length ? draft.items : posts) as Array<Record<string, unknown>>;
+  return (
+    <CmsFilterEditor
+      title="Themen über den Beiträgen"
+      filters={readFilters(draft.filters) ?? BLOG_TOPICS}
+      entries={posts.map((post) => ({ id: post.id, name: post.title, tags: post.topic ? [post.topic] : [] }))}
+      multi={false}
+      onChange={(filters, tags) =>
+        setDraft({
+          ...draft,
+          filters,
+          items: raw.map((item, index) => {
+            const id = String(item.id ?? posts[index]?.id ?? '');
+            return { ...item, topic: tags[id]?.[0] ?? '' };
+          }),
+        })
+      }
+    />
+  );
+}
+
 function GenericFields({ sectionKey }: { sectionKey: string }) {
   const cms = useCms();
   const data = useSection(sectionKey);
@@ -796,8 +837,9 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
         />
       ) : null}
       {entries.length === 0 ? <p className="cms-muted">Dieser Block hat noch keine CMS-Felder.</p> : null}
+      {sectionKey === 'blog_page' ? <BlogTopicFields draft={draft} setDraft={setDraft} /> : null}
       {entries.map(([key, value]) =>
-        key === 'icon_color' ? null : (
+        key === 'icon_color' || (sectionKey === 'blog_page' && key === 'filters') ? null : (
           <GenericValue
             key={key}
             section={sectionKey}

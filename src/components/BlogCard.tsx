@@ -1,8 +1,10 @@
 import { useCms } from '../cms/CmsContext';
 import { toCmsHref } from '../cms/cmsPages';
 import { TextCta } from './TextCta';
+import { useSection } from '../context/HotelContext';
+import { filterLabel, readFilters } from '../lib/listFilters';
 import {
-  BLOG_TOPIC_LABEL,
+  BLOG_TOPICS,
   blogHref,
   formatBlogDate,
   type BlogPost,
@@ -15,18 +17,23 @@ interface BlogCardProps {
 
 export function BlogCard({ post, featured = false }: BlogCardProps) {
   const cms = useCms();
+  const topicLabel = filterLabel(readFilters(useSection('blog_page')?.filters), BLOG_TOPICS, post.topic);
   const href = cms ? toCmsHref(blogHref(post.slug)) : blogHref(post.slug);
   const nav = cms ? { 'data-cms-nav': '' } : {};
 
   return (
     <article className={`blog-card${featured ? ' blog-card--featured' : ''}`}>
       <a className="blog-card__photo" href={href} data-cms-path={`items.${post.id}.hero_image`} data-cms-kind="image" {...nav}>
-        <img src={post.hero_image} alt={post.hero_image_alt} />
+        <img loading="lazy" decoding="async" src={post.hero_image} alt={post.hero_image_alt} />
       </a>
       <div className="blog-card__copy">
         <p className="blog-card__meta">
-          <span>{BLOG_TOPIC_LABEL[post.topic]}</span>
-          <span aria-hidden="true"> · </span>
+          {topicLabel ? (
+            <>
+              <span>{topicLabel}</span>
+              <span aria-hidden="true"> · </span>
+            </>
+          ) : null}
           <time dateTime={post.published_at}>{formatBlogDate(post.published_at)}</time>
         </p>
         <h2 className="blog-card__title heading-font">

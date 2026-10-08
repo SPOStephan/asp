@@ -81,7 +81,7 @@ export function CulinaryPage() {
                     data-cms-focus={`items:${index}`}
                   >
                     <figure className="culinary-venue__photo" data-cms-path={`items.${venue.id}.image`} data-cms-kind="image">
-                      <img src={venue.image} alt={venue.image_alt} />
+                      <img loading="lazy" decoding="async" src={venue.image} alt={venue.image_alt} />
                     </figure>
                     <div className="culinary-venue__copy">
                       <p className="culinary-venue__kicker" data-cms-path={`items.${venue.id}.kicker`}>{venue.kicker}</p>

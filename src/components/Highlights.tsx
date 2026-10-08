@@ -52,7 +52,7 @@ export function Highlights() {
                 </TextCta>
               </div>
               <div className="hcard__image">
-                <img src={h.image} alt={h.title} />
+                <img loading="lazy" decoding="async" src={h.image} alt={h.title} />
               </div>
             </article>
           </Reveal>

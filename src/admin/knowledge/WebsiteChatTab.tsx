@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { CONCIERGE_SECTION, conciergeConfig } from '../../lib/concierge';
 import type { Rating, SourceRef } from '../../lib/knowledge';
+import { callAi } from '../../lib/aiClient';
 import { supabase } from '../../lib/supabase';
 import { formatCost, formatDate, useKnowledge } from './knowledgeScope';
 import { AnswerCard, type Answer } from './TestChatTab';
@@ -15,6 +16,7 @@ type Row = {
   gap: boolean;
   cost: number | null;
   created_at: string;
+  anonymized_at: string | null;
 };
 
 type Conversation = { id: string; started: string; messages: Row[]; cost: number };
@@ -31,6 +33,27 @@ export function WebsiteChatTab() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [ratings, setRatings] = useState<Record<string, Rating>>({});
   const [open, setOpen] = useState<string | null>(null);
+  const [days, setDays] = useState<number | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    callAi<{ anonymizeDays: number }>('status')
+      .then((status) => setDays(status.anonymizeDays))
+      .catch(() => setDays(null));
+  }, []);
+
+  async function anonymizeNow(conversationId: string) {
+    setBusy(conversationId);
+    setError(null);
+    try {
+      const result = await callAi<{ done: number; failed: number; errors: string[] }>('anonymize', { conversationId });
+      if (result.failed) setError(`${result.failed} Nachricht(en) nicht anonymisiert: ${result.errors.join(' · ')}`);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+    setBusy(null);
+  }
 
   const load = useCallback(async () => {
     const [section, hotel, rows] = await Promise.all([
@@ -38,7 +61,7 @@ export function WebsiteChatTab() {
       supabase.from('hotels').select('name, domains').eq('id', hotelId).maybeSingle(),
       supabase
         .from('chat_messages')
-        .select('id, conversation_id, question, answer, model, sources, gap, cost, created_at')
+        .select('id, conversation_id, question, answer, model, sources, gap, cost, created_at, anonymized_at')
         .eq('hotel_id', hotelId)
         .eq('channel', 'website')
         .order('created_at', { ascending: false })
@@ -140,13 +163,16 @@ export function WebsiteChatTab() {
 
       <h3>Gespräche auf der Website</h3>
       <p className="admin-muted">
-        {conversations.length} Gespräche der letzten Zeit{total ? ` · Kosten ${formatCost(total)}` : ''}. Antworten lassen
-        sich genau wie im Testchat bewerten; Red Flags korrigieren den Chat sofort.
+        {conversations.length} Gespräche{total ? ` · Kosten ${formatCost(total)}` : ''}. Alle Gespräche bleiben dauerhaft
+        gespeichert; persönliche Daten (Namen, E-Mail, Telefon, Adressen, Buchungsnummern) werden
+        {days === null ? ' nach einer Frist' : days === 0 ? ' in der nächsten Nacht' : ` nach ${days} Tagen`} automatisch entfernt.
+        Antworten lassen sich wie im Testchat bewerten; Red Flags korrigieren den Chat sofort.
       </p>
       <div className="kn-conversations">
         {conversations.map((conversation) => {
           const unrated = conversation.messages.filter((message) => !ratings[message.id]).length;
           const gaps = conversation.messages.filter((message) => message.gap).length;
+          const anonymized = conversation.messages.every((message) => message.anonymized_at);
           return (
             <article key={conversation.id} className="admin-card kn-conversation">
               <button type="button" className="kn-conversation__head" onClick={() => setOpen(open === conversation.id ? null : conversation.id)}>
@@ -155,10 +181,18 @@ export function WebsiteChatTab() {
                   {formatDate(conversation.started)} · {conversation.messages.length} Frage{conversation.messages.length === 1 ? '' : 'n'}
                   {gaps ? ` · ${gaps} Lücke${gaps === 1 ? '' : 'n'}` : ''}
                   {unrated ? ` · ${unrated} unbewertet` : ' · bewertet'}
+                  {anonymized ? ' · anonymisiert' : ''}
                 </span>
               </button>
               {open === conversation.id ? (
                 <div className="kn-turns">
+                  {!anonymized && scope.canEdit ? (
+                    <div className="admin-actions">
+                      <button type="button" className="admin-btn admin-btn--ghost" disabled={busy === conversation.id} onClick={() => void anonymizeNow(conversation.id)}>
+                        {busy === conversation.id ? 'Anonymisiert…' : 'Jetzt anonymisieren'}
+                      </button>
+                    </div>
+                  ) : null}
                   {conversation.messages.map((message) => {
                     const answer: Answer = {
                       id: message.id,

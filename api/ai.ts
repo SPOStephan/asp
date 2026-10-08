@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { emailMessages, ocrMessages, readQaPairs } from '../src/ai/concierge';
 import { crawlableLinks, htmlToText, isPublicHttpUrl, pageChunks } from '../src/ai/htmlText';
 import {
+  anonymizeChat,
   answerQuestion,
   loadHotel,
   replaceChunks,
@@ -11,6 +12,7 @@ import {
   syncWebsite,
   type AiDefaults,
 } from '../src/ai/knowledgeServer';
+import { anonymizeAfterDays } from '../src/ai/anonymize';
 import { ndjsonResponse } from '../src/ai/ndjson';
 import { aiConfig, complete, listModels, type AiConfig } from '../src/ai/provider';
 import type { ChatTurn } from '../src/lib/knowledge';
@@ -80,7 +82,7 @@ export default async function handler(request: Request) {
     switch (action) {
       case 'status': {
         await allowed(client, 'is_admin', {});
-        return { configured: Boolean(config), baseUrl: config?.baseUrl ?? null, defaults };
+        return { configured: Boolean(config), baseUrl: config?.baseUrl ?? null, defaults, anonymizeDays: anonymizeAfterDays(env('AI_CHAT_ANONYMIZE_DAYS')) };
       }
       case 'models': {
         await allowed(client, 'is_admin', {});
@@ -148,6 +150,15 @@ export default async function handler(request: Request) {
           defaults,
           onDelta: (text) => send({ type: 'delta', text }),
         });
+      }
+      case 'anonymize': {
+        // Every message of one conversation, at once instead of after the waiting period.
+        const conversationId = String(input.conversationId ?? '');
+        const { data: rows, error } = await client.from('chat_messages').select('id, hotel_id').eq('conversation_id', conversationId);
+        if (error) throw new Error(error.message);
+        const hotelIds = [...new Set((rows ?? []).map((row) => row.hotel_id as string))];
+        for (const hotelId of hotelIds) await allowed(client, 'can_edit_hotel', { hotel: hotelId });
+        return anonymizeChat(client, config, defaults, (rows ?? []).map((row) => row.id as string));
       }
       case 'run-check': {
         return runCheck(client, needAi(), String(input.checkId ?? ''), host, defaults, input.model ? String(input.model) : undefined);

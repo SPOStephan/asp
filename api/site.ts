@@ -66,7 +66,7 @@ export default async function handler(request: Request) {
       headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
     });
   }
-  const site = new SiteModel(content, canonicalOrigin(content.hotel.domains, host));
+  const site = new SiteModel(content, canonicalOrigin(content.hotel.domains, host), `https://${host}`);
 
   if (file === 'robots') return text(robotsTxt(site), 'text/plain');
   if (file === 'sitemap') return text(sitemapXml(site), 'application/xml');

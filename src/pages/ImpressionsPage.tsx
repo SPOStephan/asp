@@ -120,7 +120,7 @@ export function ImpressionsPage() {
                   data-cms-kind="image"
                   onClick={() => setActive(index)}
                 >
-                  <img src={shot.src} alt="" />
+                  <img loading="lazy" decoding="async" src={shot.src} alt="" />
                   <span className="impressions-page__shot-label" data-cms-path={itemIndex >= 0 ? `items.${itemIndex}.alt` : undefined}>{shot.alt}</span>
                 </button>
                 );
