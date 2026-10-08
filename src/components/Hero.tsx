@@ -17,6 +17,14 @@ export function fadeStrength(value: unknown) {
   return Number.isFinite(number) ? Math.min(100, Math.max(0, number)) / 100 : 0;
 }
 
+// Heading position on the home picture, % of the screen height from the top.
+export const HOME_TEXT_TOP = 55;
+
+export function heroTextTop(value: unknown) {
+  const number = Number(value);
+  return (Number.isFinite(number) && value !== '' && value != null ? Math.min(75, Math.max(25, number)) : HOME_TEXT_TOP) / 100;
+}
+
 // Home page hero. Default: like the sub-pages (the heading stays in the middle of the
 // screen, turns dark at the picture's edge and lands in the page). "classic" keeps the
 // earlier version (text fades in on the picture), switchable per hotel in the CMS.
@@ -53,15 +61,30 @@ function HeroFlow() {
           imageAlt={data.hero_image_alt || ''}
           eyebrow={data.eyebrow ?? ''}
           title={data.title ?? ''}
+          titleLine2={<HeroTitleLine2 normal={data.title_word_normal} script={data.title_word_script} />}
           subtitle={data.subtitle}
           focal={data.hero_focal}
           cms={{ section: 'hero', image: media.editPath }}
           style={media.fadeVars}
           imageOverlay={<div className="hero__fade" />}
           imageFooter={<AvailabilityBar />}
+          textTop={heroTextTop(data.text_top)}
         />
       </section>
     </CmsSection>
+  );
+}
+
+// Optional second title line as in the welcome heading: a normal word, then a script word.
+function HeroTitleLine2({ normal, script }: { normal?: string; script?: string }) {
+  if (!normal && !script) return null;
+  return (
+    <>
+      <br />
+      {normal ? <span className="subpage-hero__normal-word">{normal}</span> : null}
+      {normal && script ? ' ' : null}
+      {script ? <span className="subpage-hero__script">{script}</span> : null}
+    </>
   );
 }
 

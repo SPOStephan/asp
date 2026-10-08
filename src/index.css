@@ -4068,7 +4068,7 @@ body.room-lightbox-open .availability-bar__slot {
 }
 .subpage-hero__text {
   position: absolute;
-  top: 45vh;
+  top: var(--hero-text-top, 45vh);
   left: 0;
   width: 100%;
   text-align: center;
@@ -4076,7 +4076,7 @@ body.room-lightbox-open .availability-bar__slot {
   box-sizing: border-box;
 }
 .subpage-hero__clip--dark .subpage-hero__text {
-  top: calc(45vh - var(--image-bottom));
+  top: calc(var(--hero-text-top, 45vh) - var(--image-bottom));
 }
 .subpage-hero__text--white {
   color: var(--neutral-0);
@@ -4254,3 +4254,8 @@ body.room-lightbox-open .availability-bar__slot {
 .subpage-hero__image > picture img { display: block; }
 .subpage-hero__footer { position: relative; z-index: 3; width: 100%; }
 .subpage-hero .hero__fade { z-index: 0; }
+/* Home hero: optional second title line with a script word (as in the welcome heading). */
+.subpage-hero__normal-word { display: inline-block; }
+.subpage-hero__script { font-family: var(--font-script); font-style: normal; font-weight: 400; font-size: 1.5em; line-height: 0.82; display: inline-block; vertical-align: baseline; margin-left: 0.06em; }
+.subpage-hero__text--dark .subpage-hero__script { color: var(--accent-400); }
+.welcome.welcome--after-hero { padding-top: 24px; }
