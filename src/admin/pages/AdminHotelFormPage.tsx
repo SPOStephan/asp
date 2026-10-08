@@ -275,8 +275,13 @@ export function AdminHotelFormPage() {
           />
         </label>
         <label>
-          Buchungs-URL
-          <input value={form.booking_url} onChange={(event) => setForm({ ...form, booking_url: event.target.value })} />
+          Buchungs-URL (Onepagebooking)
+          <input
+            value={form.booking_url}
+            onChange={(event) => setForm({ ...form, booking_url: event.target.value })}
+            placeholder="https://onepagebooking.com/hotelcode"
+          />
+          <span className="admin-muted">„Verfügbarkeit prüfen“ öffnet diese Adresse mit Anreise und Abreise des Gastes.</span>
         </label>
         <label>
           Telefon

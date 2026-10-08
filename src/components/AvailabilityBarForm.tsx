@@ -12,7 +12,8 @@ import {
   formatStaySummary,
   nextDateSelection,
   startOfMonth,
-  toBookingParams,
+  bookingUrl,
+  inquiryMailHref,
 } from '../lib/availability';
 
 interface AvailabilityBarFormProps {
@@ -86,7 +87,9 @@ function AvailabilityBarFormModern({
       className={`availability-bar__form availability-bar__form--modern${sheet ? ' availability-bar__form--sheet' : ''}`}
       onSubmit={(event) => {
         event.preventDefault();
-        toBookingParams(query);
+        const target = bookingUrl(hotel?.booking_url, query);
+        if (target) window.open(target, '_blank', 'noopener');
+        else if (hotel?.email) window.location.href = inquiryMailHref(hotel.email, query);
         setOpen(null);
         onSubmitted?.();
       }}
