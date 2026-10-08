@@ -1,5 +1,5 @@
 import { Gift, Mail, MapPin, Phone, Search } from 'lucide-react';
-import { AiChatIcon } from './AiChatIcon';
+import { ConciergeButton } from '../concierge/ConciergeButton';
 import { useHotel } from '../context/HotelContext';
 
 interface AvailabilityBarFormLegacyProps {
@@ -53,9 +53,7 @@ export function AvailabilityBarFormLegacy({ idPrefix = '' }: AvailabilityBarForm
           <MapPin size={18} strokeWidth={1.5} />
         </a>
       </div>
-      <button type="button" className="availability-bar__chat" aria-label="Frage stellen">
-        <AiChatIcon />
-      </button>
+      <ConciergeButton />
     </form>
   );
 }

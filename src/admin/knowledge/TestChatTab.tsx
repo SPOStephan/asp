@@ -5,7 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { formatCost, hotelName, useKnowledge } from './knowledgeScope';
 import { useModels } from './SettingsTab';
 
-type Answer = {
+export type Answer = {
   id: string | null;
   answer: string;
   gap: boolean;
@@ -177,7 +177,7 @@ function AnswerText({ text, sources }: { text: string; sources: SourceRef[] }) {
 
 const RATING_LABEL: Record<Rating, string> = { good: '👍 Gut', improve: '👎 Verbesserungswürdig', wrong: '🚩 Falsch' };
 
-function AnswerCard({ question, answer, onRated }: { question: string; answer: Answer; onRated: (rating: Rating) => void }) {
+export function AnswerCard({ question, answer, onRated }: { question: string; answer: Answer; onRated: (rating: Rating) => void }) {
   const { scope } = useKnowledge();
   const [form, setForm] = useState<Rating | null>(null);
   const [showSources, setShowSources] = useState(false);

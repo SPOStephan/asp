@@ -210,3 +210,16 @@
   .kn-question { max-width: 90%; }
   .kn-flag-card dl { grid-template-columns: 1fr; }
 }
+
+.kn-conversations { display: grid; gap: 10px; max-width: 1100px; }
+.kn-conversation { padding: 0; }
+.kn-conversation__head {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 14px 18px;
+  text-align: left;
+  color: #133b5c;
+}
+.kn-conversation .kn-turns { padding: 0 18px 18px; margin: 0; }
+.kn-turn { display: grid; gap: 10px; }

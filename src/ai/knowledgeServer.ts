@@ -170,7 +170,9 @@ export type AnswerInput = {
   question: string;
   history: ChatTurn[];
   conversationId: string;
-  channel: 'test' | 'check';
+  channel: 'test' | 'check' | 'website';
+  // Website visitors: an anonymous, daily changing hash for the limits (no IP is stored).
+  clientHash?: string;
   model?: string;
   host: string;
   defaults: AiDefaults;
@@ -188,12 +190,13 @@ export type StoredAnswer = {
   searchTerms: string;
 };
 
-async function correctionsFor(client: SupabaseClient, hotelId: string): Promise<KnowledgeHit[]> {
+async function correctionsFor(client: SupabaseClient, organizationId: string, hotelId: string): Promise<KnowledgeHit[]> {
   const sources = must(
     await client
       .from('knowledge_sources')
       .select('id, title, hotel_id, kind')
       .eq('kind', 'correction')
+      .eq('organization_id', organizationId)
       .eq('enabled', true)
       .eq('status', 'ready')
       .or(`hotel_id.eq.${hotelId},hotel_id.is.null`)
@@ -257,7 +260,7 @@ export async function answerQuestion(client: SupabaseClient, config: AiConfig, i
       .eq('organization_id', hotel.organization_id)
       .or(`hotel_id.eq.${hotel.id},hotel_id.is.null`)
       .order('created_at'),
-    correctionsFor(client, hotel.id),
+    correctionsFor(client, hotel.organization_id, hotel.id),
     search(client, hotel.id, question, settings.crossSelling),
     search(client, hotel.id, searchTerms, settings.crossSelling),
   ]);
@@ -295,6 +298,7 @@ export async function answerQuestion(client: SupabaseClient, config: AiConfig, i
       gap: read.gap,
       usage: result.usage,
       cost,
+      client_hash: input.clientHash ?? null,
     })
     .select('id')
     .single();

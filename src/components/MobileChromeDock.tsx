@@ -4,6 +4,7 @@ import { ChatCircleTextIcon } from '@phosphor-icons/react';
 import { useHotel } from '../context/HotelContext';
 import { useMobileChrome } from '../context/MobileChromeContext';
 import { isBookingHash, usePhoneChrome } from '../lib/phoneChrome';
+import { ConciergeChat } from '../concierge/ConciergeChat';
 import { AvailabilityBarForm } from './AvailabilityBarForm';
 import './MobileChromeDock.css';
 
@@ -27,7 +28,6 @@ export function MobileChromeDock() {
     const form = document.getElementById('dock-availability');
     if (form instanceof HTMLFormElement) form.requestSubmit();
   };
-  const mailHref = hotel?.email ? `mailto:${hotel.email}` : undefined;
 
   useEffect(() => {
     if (!phone) return;
@@ -90,9 +90,8 @@ export function MobileChromeDock() {
       ) : null}
 
       {panel === 'chat' ? (
-        <div className="mobile-chrome__chat-sheet" role="dialog" aria-label="Chat">
-          <p>Schreiben Sie uns — der Chat sitzt hier, sobald er angebunden ist.</p>
-          {mailHref ? <a href={mailHref}>E-Mail an das Hotel</a> : null}
+        <div className="mobile-chrome__chat-sheet is-concierge" role="dialog" aria-label="Chat">
+          <ConciergeChat onClose={closePanels} />
         </div>
       ) : null}
 
