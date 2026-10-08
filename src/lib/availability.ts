@@ -133,7 +133,8 @@ export function formatStaySummary(arrival: string | null, departure: string | nu
 
 /** Placeholder mapping for the later IBE handoff. */
 // Link into the hotel's booking engine (OPB: onepagebooking.com/<hotelcode> or the hotel's own
-// booking subdomain) with the stay the guest picked. OPB expects dates as DD.MM.YYYY.
+// booking subdomain) with the stay the guest picked. OPB expects dates as DD.MM.YYYY and the
+// number of adults as `adults` (2 unless the guest changed it).
 export function bookingUrl(base: string | null | undefined, query: AvailabilityQuery): string | null {
   const raw = base?.trim();
   if (!raw) return null;
@@ -145,6 +146,7 @@ export function bookingUrl(base: string | null | undefined, query: AvailabilityQ
   }
   if (query.arrival) url.searchParams.set('arrival', formatDateDe(query.arrival));
   if (query.departure) url.searchParams.set('departure', formatDateDe(query.departure));
+  url.searchParams.set('adults', String(Math.max(1, query.adults || 2)));
   return url.toString();
 }
 
