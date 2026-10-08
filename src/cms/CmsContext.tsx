@@ -14,6 +14,7 @@ import {
 } from './cmsFrame';
 import { fieldKind, keepLiveMedia, setPath } from './cmsDraft';
 import { writeLiveMedia } from './cmsLiveMedia';
+import { type MediaSource, withMediaSource } from './cmsMediaSource';
 import { removedRecordIds } from './cmsHidden';
 import type { FocalDevice } from './cmsFocal';
 import { useCmsPlaceholders } from './cmsPlaceholders';
@@ -41,6 +42,8 @@ interface CmsValue {
   preview: (sectionKey: string, data: Record<string, unknown>) => void;
   previewFaqs: (faqs: HotelFAQ[]) => void;
   applyField: (sectionKey: string, path: string, value: unknown, quiet?: boolean) => void;
+  // A new picture together with its original and crop, written in one step.
+  applyImage: (sectionKey: string, path: string, url: string, source: MediaSource) => void;
   focalPreview: FocalDevice;
   setFocalPreview: (device: FocalDevice) => void;
   setFrameWindow: (frame: Window | null) => void;
@@ -247,6 +250,15 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     }
     preview(sectionKey, next, quiet);
     if (!quiet) setDraftTick((tick) => tick + 1);
+  }
+
+  function applyImage(sectionKey: string, path: string, url: string, source: MediaSource) {
+    const current = contentRef.current?.sections[sectionKey] ?? {};
+    const next = withMediaSource(setPath(current, path, url), path, source);
+    writeLiveMedia(sectionKey, path, url);
+    void persistLiveSection(sectionKey, next);
+    preview(sectionKey, next);
+    setDraftTick((tick) => tick + 1);
   }
 
   function commitInline(value: string) {
@@ -477,6 +489,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         preview,
         previewFaqs,
         applyField,
+        applyImage,
         focalPreview,
         setFocalPreview,
         setFrameWindow,

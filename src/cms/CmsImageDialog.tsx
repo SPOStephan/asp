@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react';
-import { useHotel } from '../context/HotelContext';
-import { type CropRect, exportWebp, fitRect, loadImage, waitForImage, zoomRect } from './cmsImage';
+import { useHotel, useHotelContent } from '../context/HotelContext';
+import { getPath } from './cmsDraft';
+import { type CropRect, exportWebp, fitRect, loadImage, ORIGINAL_MAX_EDGE, waitForImage, zoomRect } from './cmsImage';
+import { clampCrop, editableImageUrl, readMediaSource } from './cmsMediaSource';
 import { formatImageHint, imageHint } from './cmsImageHints';
 import { uploadToBunny } from './cmsUpload';
 import { useCms } from './CmsContext';
@@ -33,6 +35,7 @@ function cropFrame(stageWidth: number, crop: CropRect) {
 export function CmsImageDialog() {
   const cms = useCms();
   const hotel = useHotel();
+  const { content } = useHotelContent();
   const request = cms?.imageRequest;
   const inputRef = useRef<HTMLInputElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -45,6 +48,9 @@ export function CmsImageDialog() {
   const [busy, setBusy] = useState(false);
   const [appliedUrl, setAppliedUrl] = useState<string | null>(null);
   const [stageWidth, setStageWidth] = useState(0);
+  // Address of the uncropped original of the picture in the dialog (null: new file, not stored yet).
+  const [sourceUrl, setSourceUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const drag = useRef<{ startX: number; startY: number; crop: CropRect; scale: number } | null>(null);
 
   useEffect(() => {
@@ -59,7 +65,46 @@ export function CmsImageDialog() {
     }
     setAlt('');
     setAppliedUrl(null);
+    setError(null);
+    setImage(null);
+    setFileName(null);
+    setSourceUrl(null);
     setAspect(imageHint(request.section, request.path).aspect);
+    // A picture that is already there opens with its original and last crop, ready to adjust.
+    const section = (content?.sections[request.section] ?? {}) as Record<string, unknown>;
+    const current = getPath(section, request.path);
+    const stored = readMediaSource(section, request.path);
+    const src = stored?.src || (typeof current === 'string' ? current.trim() : '');
+    if (!src) return;
+    let cancelled = false;
+    setLoading(true);
+    void (async () => {
+      try {
+        const response = await fetch(editableImageUrl(src));
+        if (!response.ok) throw new Error(String(response.status));
+        const loaded = await loadImage(await response.blob());
+        if (cancelled) return;
+        setImage(loaded);
+        setFileName('Aktuelles Bild');
+        setSourceUrl(src);
+        if (stored?.crop) {
+          // Keep the ratio of the last crop while zooming.
+          setAspect(undefined);
+          setCrop(clampCrop(stored.crop, loaded.naturalWidth, loaded.naturalHeight));
+        } else {
+          setCrop({ x: 0, y: 0, width: loaded.naturalWidth, height: loaded.naturalHeight });
+          setAspect(undefined);
+        }
+      } catch {
+        if (!cancelled) setError('Das aktuelle Bild ließ sich nicht zum Bearbeiten laden. Eine neue Datei wählen geht immer.');
+      }
+      if (!cancelled) setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // The picture is read once when the dialog opens, not on every change of the content.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [request]);
 
   // Mouse wheel / trackpad zooms like the buttons (set below, after the early return).
@@ -94,7 +139,7 @@ export function CmsImageDialog() {
     setCrop(zoomRect(crop, image.naturalWidth, image.naturalHeight, factor, aspect));
   }
 
-  async function pushUpload(source: HTMLImageElement, sourceCrop: CropRect) {
+  async function pushUpload(source: HTMLImageElement, sourceCrop: CropRect, knownSource: string | null) {
     if (!hotel) {
       setError('Hotel noch nicht geladen. Bitte kurz warten und die Datei noch einmal wählen.');
       return;
@@ -103,11 +148,18 @@ export function CmsImageDialog() {
     setError(null);
     setAppliedUrl(null);
     try {
+      // The uncropped original goes to Bunny once, so the crop can change later.
+      let original = knownSource;
+      if (!original) {
+        const full = { x: 0, y: 0, width: source.naturalWidth, height: source.naturalHeight };
+        original = await uploadToBunny(await exportWebp(source, full, undefined, ORIGINAL_MAX_EDGE), hotel.id, alt ? `${alt} (Original)` : 'Original');
+        setSourceUrl(original);
+      }
       const file = await exportWebp(source, sourceCrop);
       const url = await uploadToBunny(file, hotel.id, alt);
       await waitForImage(url);
-      cms.applyField(request.section, request.path, url);
-      if (request.altPath && alt) cms.applyField(request.section, request.altPath, alt);
+      cms!.applyImage(request!.section, request!.path, url, { src: original, crop: sourceCrop });
+      if (request!.altPath && alt) cms!.applyField(request!.section, request!.altPath, alt);
       setAppliedUrl(url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload fehlgeschlagen.');
@@ -125,7 +177,8 @@ export function CmsImageDialog() {
       setImage(next);
       setFileName(file.name);
       setCrop(nextCrop);
-      await pushUpload(next, nextCrop);
+      setSourceUrl(null);
+      await pushUpload(next, nextCrop, null);
     } catch (err) {
       setImage(null);
       setFileName(null);
@@ -165,7 +218,7 @@ export function CmsImageDialog() {
 
   async function upload() {
     if (!image) return;
-    await pushUpload(image, crop);
+    await pushUpload(image, crop, sourceUrl);
   }
 
   const zoomPercent = image ? Math.round((fitRect(image.naturalWidth, image.naturalHeight, aspect).width / crop.width) * 100) : 100;
@@ -238,7 +291,14 @@ export function CmsImageDialog() {
             JPG, PNG oder WebP hierher oder Datei wählen
           </button>
         )}
-        {fileName ? <p className="cms-muted">Gewählt: {fileName}</p> : null}
+        {loading ? <p className="cms-muted">Aktuelles Bild wird geladen…</p> : null}
+        {fileName ? (
+          <p className="cms-muted">
+            {fileName === 'Aktuelles Bild'
+              ? 'Aktuelles Bild: verschieben, zoomen und „Ausschnitt übernehmen“ – oder eine neue Datei wählen.'
+              : `Gewählt: ${fileName}`}
+          </p>
+        ) : null}
         {busy ? <p className="cms-muted">Wird als WebP optimiert und nach Bunny gelegt…</p> : null}
         {appliedUrl ? (
           <p className="cms-muted">
@@ -254,7 +314,7 @@ export function CmsImageDialog() {
         {error ? <p className="cms-error">{error}</p> : null}
         <div className="cms-modal__actions">
           <button type="button" className="cms-btn" disabled={!image || busy} onClick={() => void upload()}>
-            {busy ? 'Lädt…' : appliedUrl ? 'Zuschnitt erneut übernehmen' : 'Hochladen und übernehmen'}
+            {busy ? 'Lädt…' : appliedUrl ? 'Zuschnitt erneut übernehmen' : sourceUrl ? 'Ausschnitt übernehmen' : 'Hochladen und übernehmen'}
           </button>
           <button type="button" className="cms-btn cms-btn--ghost" onClick={() => cms.closeImage()}>
             {appliedUrl ? 'Fertig' : 'Abbrechen'}

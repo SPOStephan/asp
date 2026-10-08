@@ -1,5 +1,7 @@
 export const IMAGE_MAX_EDGE = 2400;
 export const IMAGE_WEBP_QUALITY = 0.82;
+// Originals are kept a little larger, so a later, tighter crop stays sharp.
+export const ORIGINAL_MAX_EDGE = 3200;
 
 export type CropRect = { x: number; y: number; width: number; height: number };
 
@@ -103,7 +105,7 @@ function blobFromCanvas(canvas: HTMLCanvasElement, type: string, quality: number
   });
 }
 
-export async function exportWebp(image: HTMLImageElement, crop: CropRect, quality = IMAGE_WEBP_QUALITY): Promise<File> {
+export async function exportWebp(image: HTMLImageElement, crop: CropRect, quality = IMAGE_WEBP_QUALITY, maxEdge = IMAGE_MAX_EDGE): Promise<File> {
   if (typeof image.decode === 'function') {
     try {
       await image.decode();
@@ -114,7 +116,7 @@ export async function exportWebp(image: HTMLImageElement, crop: CropRect, qualit
   if (!image.naturalWidth || !image.naturalHeight) {
     throw new Error('Bild ist nicht geladen. Bitte die Datei erneut wählen.');
   }
-  const scale = Math.min(1, IMAGE_MAX_EDGE / Math.max(crop.width, crop.height));
+  const scale = Math.min(1, maxEdge / Math.max(crop.width, crop.height));
   const width = Math.max(1, Math.round(crop.width * scale));
   const height = Math.max(1, Math.round(crop.height * scale));
   const canvas = document.createElement('canvas');
