@@ -9,6 +9,7 @@ import { AdminLoginPage } from './pages/AdminLoginPage';
 import { AdminIconsPage } from './pages/AdminIconsPage';
 import { AdminMediaPage } from './pages/AdminMediaPage';
 import { AdminTemplatesPage } from './pages/AdminTemplatesPage';
+import { KnowledgeIndexPage, KnowledgePage } from './knowledge/KnowledgePage';
 import './admin.css';
 
 function AdminGate() {
@@ -50,6 +51,9 @@ function AdminGate() {
               </NavLink>
             </>
           ) : null}
+          <NavLink to="/admin/wissen" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
+            KI-Wissen
+          </NavLink>
           <NavLink to="/admin/media" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
             Medien
           </NavLink>
@@ -71,6 +75,9 @@ function AdminGate() {
             <Route path="/admin/hotels/:id" element={<AdminHotelFormPage />} />
             {admin.platform ? <Route path="/admin/vorlagen" element={<AdminTemplatesPage />} /> : null}
             {admin.platform ? <Route path="/admin/icons" element={<AdminIconsPage />} /> : null}
+            <Route path="/admin/wissen" element={<KnowledgeIndexPage />} />
+            <Route path="/admin/wissen/hotel/:hotelId" element={<KnowledgePage level="hotel" />} />
+            <Route path="/admin/wissen/gruppe/:orgId" element={<KnowledgePage level="group" />} />
             <Route path="/admin/media" element={<AdminMediaPage />} />
             <Route path="/admin/admins" element={<AdminAdminsPage />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />

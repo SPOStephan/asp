@@ -33,6 +33,7 @@ export interface Hotel {
   is_active: boolean;
   color_world?: 'blue' | 'red' | 'green';
   booking_url?: string | null;
+  organization_id?: string | null;
 }
 
 export interface HotelSection {
