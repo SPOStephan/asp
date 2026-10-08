@@ -6,6 +6,7 @@ import { heroFocalStyle } from '../cms/cmsFocal';
 import { useHotel, useSection } from '../context/HotelContext';
 import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { AvailabilityBar } from './AvailabilityBar';
+import { SubpageHero } from './SubpageHero';
 
 // Same breakpoint as the phone crop of the hero in index.css.
 export const HERO_MOBILE_MEDIA = '(max-width: 600px)';
@@ -16,7 +17,55 @@ export function fadeStrength(value: unknown) {
   return Number.isFinite(number) ? Math.min(100, Math.max(0, number)) / 100 : 0;
 }
 
+// Home page hero. Default: like the sub-pages (the heading stays in the middle of the
+// screen, turns dark at the picture's edge and lands in the page). "classic" keeps the
+// earlier version (text fades in on the picture), switchable per hotel in the CMS.
 export function Hero() {
+  const data = useSection('hero') ?? {};
+  return data.layout === 'classic' ? <HeroClassic /> : <HeroFlow />;
+}
+
+function useHeroMedia(data: Record<string, unknown>) {
+  const hotel = useHotel();
+  const cms = useCms();
+  const mobileImage = typeof data.hero_image_mobile === 'string' ? data.hero_image_mobile.trim() : '';
+  return {
+    image: resolveMedia(data.hero_image as string | undefined, MUSTER_MEDIA.hero),
+    mobileImage,
+    editPath: mobileImage && cms?.focalPreview === 'mobile' ? 'hero_image_mobile' : 'hero_image',
+    fadeVars: {
+      '--hero-fade-color': hotel?.primary_color || 'var(--primary-500)',
+      '--hero-fade-desktop': String(fadeStrength(data.fade_desktop)),
+      '--hero-fade-mobile': String(fadeStrength(data.fade_mobile)),
+    },
+  };
+}
+
+function HeroFlow() {
+  const data = useSection('hero') ?? {};
+  const media = useHeroMedia(data);
+  return (
+    <CmsSection sectionKey="hero" label="Hero">
+      <section className="hero-flow" id="top">
+        <SubpageHero
+          image={media.image}
+          imageMobile={media.mobileImage}
+          imageAlt={data.hero_image_alt || ''}
+          eyebrow={data.eyebrow ?? ''}
+          title={data.title ?? ''}
+          subtitle={data.subtitle}
+          focal={data.hero_focal}
+          cms={{ section: 'hero', image: media.editPath }}
+          style={media.fadeVars}
+          imageOverlay={<div className="hero__fade" />}
+          imageFooter={<AvailabilityBar />}
+        />
+      </section>
+    </CmsSection>
+  );
+}
+
+function HeroClassic() {
   const data = useSection('hero') ?? {};
 
   const hotel = useHotel();

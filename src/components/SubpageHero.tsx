@@ -14,23 +14,35 @@ interface SubpageHeroCms {
 
 interface SubpageHeroProps {
   image: string;
+  // Optional own picture for phones.
+  imageMobile?: string;
   imageAlt: string;
   eyebrow: string;
   title: string;
   subtitle?: string;
   focal?: unknown;
   cms?: SubpageHeroCms;
+  // Extra CSS variables, e.g. the colour gradient of the home page.
+  style?: Record<string, string>;
+  // Sits at the bottom edge of the picture (the booking bar on the home page).
+  imageFooter?: ReactNode;
+  // Layer between picture and text (the colour gradient).
+  imageOverlay?: ReactNode;
   children?: ReactNode;
 }
 
 export function SubpageHero({
   image,
+  imageMobile,
   imageAlt,
   eyebrow,
   title,
   subtitle,
   focal,
   cms,
+  style,
+  imageFooter,
+  imageOverlay,
   children,
 }: SubpageHeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -80,6 +92,7 @@ export function SubpageHero({
   const cssVars = {
     '--image-bottom': `${imageBottom}px`,
     ...heroFocalStyle(focal),
+    ...style,
   } as CSSProperties & {
     '--image-bottom': string;
   };
@@ -91,7 +104,9 @@ export function SubpageHero({
 
   const Headline = ({ editable = false }: { editable?: boolean }) => (
     <>
-      <p className="subpage-hero__eyebrow" {...(editable ? { 'data-cms-focus': 'head', 'data-cms-path': eyebrowPath } : {})}>{eyebrow}</p>
+      {eyebrow || (editable && editing) ? (
+        <p className="subpage-hero__eyebrow" {...(editable ? { 'data-cms-focus': 'head', 'data-cms-path': eyebrowPath } : {})}>{eyebrow}</p>
+      ) : null}
       <h1 className="subpage-hero__title" {...(editable ? { 'data-cms-focus': 'title', 'data-cms-path': titlePath } : {})}>{title}</h1>
       {subtitle || (editable && editing) ? <p className="subpage-hero__subtitle" {...(editable ? { 'data-cms-focus': 'subtitle', 'data-cms-path': subtitlePath } : {})}>{subtitle}</p> : null}
     </>
@@ -100,17 +115,22 @@ export function SubpageHero({
   return (
     <div className="subpage-hero" style={cssVars}>
       <CmsHeroPan section={cms?.section ?? ''} path={cms?.focalPath ?? 'hero_focal'} value={focal}>
-      <div className="subpage-hero__image" ref={heroRef} data-cms-focus="image" data-cms-path={imagePath} data-cms-kind="image">
-        <img
-          src={image}
-          alt={imageAlt}
-          width={1080}
-          height={692}
-          fetchPriority="high"
-          decoding="async"
-          draggable={false}
-        />
+      <div className={`subpage-hero__image${imageFooter ? ' has-footer' : ''}`} ref={heroRef} data-cms-focus="image" data-cms-path={imagePath} data-cms-kind="image">
+        <picture>
+          {imageMobile ? <source media="(max-width: 600px)" srcSet={imageMobile} /> : null}
+          <img
+            src={image}
+            alt={imageAlt}
+            width={1080}
+            height={692}
+            fetchPriority="high"
+            decoding="async"
+            draggable={false}
+          />
+        </picture>
         <div className="subpage-hero__overlay" />
+        {imageOverlay}
+        {imageFooter ? <div className="subpage-hero__footer">{imageFooter}</div> : null}
       </div>
       </CmsHeroPan>
 

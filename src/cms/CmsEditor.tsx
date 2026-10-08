@@ -274,6 +274,8 @@ function HeroFields() {
     hero_image_alt: String(data.hero_image_alt ?? ''),
     fade_desktop: Number(data.fade_desktop ?? 0) || 0,
     fade_mobile: Number(data.fade_mobile ?? 0) || 0,
+    eyebrow: String(data.eyebrow ?? ''),
+    layout: data.layout === 'classic' ? 'classic' : 'flow',
   });
 
   useEffect(() => {
@@ -284,6 +286,8 @@ function HeroFields() {
       hero_image_alt: String(data.hero_image_alt ?? ''),
       fade_desktop: Number(data.fade_desktop ?? 0) || 0,
       fade_mobile: Number(data.fade_mobile ?? 0) || 0,
+      eyebrow: String(data.eyebrow ?? ''),
+      layout: data.layout === 'classic' ? 'classic' : 'flow',
     });
   }, [cms?.draftTick]);
 
@@ -296,6 +300,8 @@ function HeroFields() {
       hero_image_alt: draft.hero_image_alt,
       fade_desktop: draft.fade_desktop,
       fade_mobile: draft.fade_mobile,
+      eyebrow: draft.eyebrow,
+      layout: draft.layout,
     },
     data,
   );
@@ -304,6 +310,16 @@ function HeroFields() {
   return (
     <form className="cms-form" onSubmit={(event: FormEvent) => event.preventDefault()}>
       <h3>Hero</h3>
+      <label className="cms-field">
+        Darstellung
+        <select value={draft.layout} onChange={(event) => setDraft({ ...draft, layout: event.target.value })}>
+          <option value="flow">Wie die Unterseiten (Schrift wandert beim Scrollen)</option>
+          <option value="classic">Klassisch (Schrift auf dem Bild, Stand bis Okt. 2026)</option>
+        </select>
+      </label>
+      {draft.layout === 'flow' ? (
+        <Field focus="head" path="eyebrow" label="Schmuckzeile über dem Titel (optional, Schreibschrift)" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
+      ) : null}
       <Field focus="title" path="title" label="Titel" value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <CmsImageField focus="image" label="Bild" value={String(data.hero_image || draft.hero_image)} section="hero" path="hero_image" />
