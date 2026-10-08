@@ -44,7 +44,7 @@ interface CmsValue {
   previewFaqs: (faqs: HotelFAQ[]) => void;
   applyField: (sectionKey: string, path: string, value: unknown, quiet?: boolean) => void;
   // A new picture together with its original and crop, written in one step.
-  applyImage: (sectionKey: string, path: string, url: string, source: MediaSource) => void;
+  applyImage: (sectionKey: string, path: string, url: string, source: MediaSource, extra?: Record<string, unknown>) => void;
   focalPreview: FocalDevice;
   setFocalPreview: (device: FocalDevice) => void;
   setFrameWindow: (frame: Window | null) => void;
@@ -254,9 +254,11 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     if (!quiet) setDraftTick((tick) => tick + 1);
   }
 
-  function applyImage(sectionKey: string, path: string, url: string, source: MediaSource) {
+  // `extra`: further fields written in the same step (e.g. a reset drag position).
+  function applyImage(sectionKey: string, path: string, url: string, source: MediaSource, extra: Record<string, unknown> = {}) {
     const current = contentRef.current?.sections[sectionKey] ?? {};
-    const next = withMediaSource(setPath(current, path, url), path, source);
+    let next: Record<string, unknown> = withMediaSource(setPath(current, path, url), path, source);
+    for (const [extraPath, value] of Object.entries(extra)) next = setPath(next, extraPath, value);
     writeLiveMedia(sectionKey, path, url);
     void persistLiveSection(sectionKey, next);
     preview(sectionKey, next);
