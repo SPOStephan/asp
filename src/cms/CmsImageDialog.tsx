@@ -4,6 +4,8 @@ import { getPath } from './cmsDraft';
 import { type CropRect, exportWebp, fitRect, loadImage, ORIGINAL_MAX_EDGE, waitForImage, zoomRect } from './cmsImage';
 import { clampCrop, editableImageUrl, readMediaSource } from './cmsMediaSource';
 import { formatImageHint, imageHint } from './cmsImageHints';
+import { focalPathFor, refitCrop, slotAspect } from './cmsSlot';
+import { readHeroFocal } from './cmsFocal';
 import { uploadToBunny } from './cmsUpload';
 import { useCms } from './CmsContext';
 
@@ -43,6 +45,8 @@ export function CmsImageDialog() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [crop, setCrop] = useState<CropRect>({ x: 0, y: 0, width: 1, height: 1 });
   const [aspect, setAspect] = useState<number | undefined>(undefined);
+  // Ratio of the picture's place on the page (see cmsSlot.ts); the default frame.
+  const [pageAspect, setPageAspect] = useState<number | undefined>(undefined);
   const [alt, setAlt] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -69,7 +73,10 @@ export function CmsImageDialog() {
     setImage(null);
     setFileName(null);
     setSourceUrl(null);
-    setAspect(imageHint(request.section, request.path).aspect);
+    const measured = slotAspect(request.section, request.path, cms?.focalPreview ?? 'desktop');
+    const target = measured ?? imageHint(request.section, request.path).aspect;
+    setPageAspect(measured);
+    setAspect(target);
     // A picture that is already there opens with its original and last crop, ready to adjust.
     const section = (content?.sections[request.section] ?? {}) as Record<string, unknown>;
     const current = getPath(section, request.path);
@@ -87,13 +94,13 @@ export function CmsImageDialog() {
         setImage(loaded);
         setFileName('Aktuelles Bild');
         setSourceUrl(src);
+        // The frame always has the shape the picture has on the page, so it shows what
+        // visitors see; the last crop is kept as far as that shape allows.
         if (stored?.crop) {
-          // Keep the ratio of the last crop while zooming.
-          setAspect(undefined);
-          setCrop(clampCrop(stored.crop, loaded.naturalWidth, loaded.naturalHeight));
+          const last = clampCrop(stored.crop, loaded.naturalWidth, loaded.naturalHeight);
+          setCrop(target ? refitCrop(last, target, loaded.naturalWidth, loaded.naturalHeight) : last);
         } else {
-          setCrop({ x: 0, y: 0, width: loaded.naturalWidth, height: loaded.naturalHeight });
-          setAspect(undefined);
+          setCrop(fitRect(loaded.naturalWidth, loaded.naturalHeight, target));
         }
       } catch {
         if (!cancelled) setError('Das aktuelle Bild ließ sich nicht zum Bearbeiten laden. Eine neue Datei wählen geht immer.');
@@ -158,7 +165,15 @@ export function CmsImageDialog() {
       const file = await exportWebp(source, sourceCrop);
       const url = await uploadToBunny(file, hotel.id, alt);
       await waitForImage(url);
-      cms!.applyImage(request!.section, request!.path, url, { src: original, crop: sourceCrop });
+      // The crop now is what the page shows; an old drag/zoom position would shift it again.
+      const focal = focalPathFor(request!.path);
+      const extra: Record<string, unknown> = {};
+      if (focal) {
+        const section = (content?.sections[request!.section] ?? {}) as Record<string, unknown>;
+        const current = readHeroFocal(getPath(section, focal.path));
+        extra[focal.path] = { ...current, [focal.device]: { x: 50, y: 50, z: 1 } };
+      }
+      cms!.applyImage(request!.section, request!.path, url, { src: original, crop: sourceCrop }, extra);
       if (request!.altPath && alt) cms!.applyField(request!.section, request!.altPath, alt);
       setAppliedUrl(url);
     } catch (err) {
@@ -249,11 +264,21 @@ export function CmsImageDialog() {
           <button type="button" className="cms-btn cms-btn--ghost" disabled={!image} onClick={() => nudgeZoom(1.12)}>
             − Weiter
           </button>
+          {pageAspect ? (
+            <button
+              type="button"
+              className={`cms-chip${aspect === pageAspect ? ' is-on' : ''}`}
+              title="Genau der Ausschnitt, den Besucher auf der Seite sehen"
+              onClick={() => applyAspect(pageAspect)}
+            >
+              Wie auf der Seite
+            </button>
+          ) : null}
           {ASPECTS.map((item) => (
             <button
               key={item.label}
               type="button"
-              className={`cms-chip${aspect === item.value ? ' is-on' : ''}`}
+              className={`cms-chip${aspect === item.value && aspect !== pageAspect ? ' is-on' : ''}`}
               onClick={() => applyAspect(item.value)}
             >
               {item.label}
