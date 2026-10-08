@@ -12,6 +12,7 @@ import { Footer } from './components/Footer';
 import { FixedAvailabilityBar } from './components/FixedAvailabilityBar';
 import { LoadingScreen, ErrorScreen } from './components/Loading';
 import { MobileChromeDock } from './components/MobileChromeDock';
+import { ConciergeDesktop } from './concierge/ConciergeDesktop';
 import { Navbar } from './components/Navbar';
 import { BlogPage } from './pages/BlogPage';
 import { BlogPostPage } from './pages/BlogPostPage';
@@ -132,6 +133,7 @@ function App() {
       {isTypePreview && <TypePreviewHomeNote />}
       {showFixedBar ? <FixedAvailabilityBar /> : null}
       {showDock ? <MobileChromeDock /> : null}
+      {!isPhone && !isFontLab && !isMenuLab && !isChromeLab ? <ConciergeDesktop /> : null}
     </div>
   );
 }

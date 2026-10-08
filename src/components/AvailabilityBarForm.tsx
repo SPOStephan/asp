@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Calendar, ChevronDown, Gift, Mail, MapPin, Phone, Search, Users } from 'lucide-react';
-import { AiChatIcon } from './AiChatIcon';
+import { ConciergeButton } from '../concierge/ConciergeButton';
 import { AvailabilityBarFormLegacy } from './AvailabilityBarFormLegacy';
 import { AvailabilityDateLayer } from './AvailabilityDateLayer';
 import { AvailabilityGuestsLayer } from './AvailabilityGuestsLayer';
@@ -194,9 +194,7 @@ function AvailabilityBarFormModern({
               <MapPin size={18} strokeWidth={1.5} />
             </a>
           </div>
-          <button type="button" className="availability-bar__chat" aria-label="Frage stellen">
-            <AiChatIcon />
-          </button>
+          <ConciergeButton />
         </>
       )}
     </form>

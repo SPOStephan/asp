@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import './App.css'
 import App from './App.tsx'
+import { ConciergeProvider } from './concierge/ConciergeContext'
 import { HotelProvider } from './context/HotelContext'
 import { IconLibraryProvider } from './context/IconLibraryContext'
 import { MobileChromeProvider } from './context/MobileChromeContext'
@@ -12,11 +13,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <HotelProvider>
+        <ConciergeProvider>
         <IconLibraryProvider>
         <MobileChromeProvider>
           <App />
         </MobileChromeProvider>
         </IconLibraryProvider>
+        </ConciergeProvider>
       </HotelProvider>
     </BrowserRouter>
   </StrictMode>,

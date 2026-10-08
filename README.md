@@ -74,4 +74,17 @@ Die KI ist anbieteroffen: jede OpenAI-kompatible Schnittstelle (OpenRouter, Mist
 | `AI_HELPER_MODEL` | Standard-Modell für Hilfsaufgaben, darf günstig sein (optional) | |
 
 Modelle lassen sich je Organisation und je Hotel unter „Einstellungen“ überschreiben.
+
+**Website-Chat** (Admin → KI-Wissen → Hotel → Website-Chat): pro Hotel einschalten, Name, Begrüßung und
+Vorschläge festlegen. Er öffnet sich über das Chat-Symbol der Buchungsleiste bzw. der mobilen Leiste; ausgeschaltet
+zeigt das Symbol E-Mail und Telefon. Gespräche der Gäste lassen sich dort lesen und bewerten wie im Testchat.
+
+| Variable | Zweck | Beispiel |
+|---|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-Zugang für Gäste ohne Login (`/api/chat`), nie mit `VITE_` | aus Supabase → Settings → API |
+| `AI_CHAT_LIMIT_VISITOR_HOUR` | Fragen pro Besucher und Stunde (optional) | `30` |
+| `AI_CHAT_LIMIT_HOTEL_DAY` | Fragen pro Hotel und Tag (optional) | `1500` |
+
+Das Hotel ergibt sich immer aus der aufgerufenen Domain; IP-Adressen werden nicht gespeichert, nur ein täglich
+wechselnder Hashwert für die Limits.
 Prüfungen ohne Datenbank und ohne Kosten: `npx tsx scripts/check-knowledge.ts`

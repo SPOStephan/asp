@@ -11,17 +11,14 @@ import {
   syncWebsite,
   type AiDefaults,
 } from '../src/ai/knowledgeServer';
+import { ndjsonResponse } from '../src/ai/ndjson';
 import { aiConfig, complete, listModels, type AiConfig } from '../src/ai/provider';
 import type { ChatTurn } from '../src/lib/knowledge';
 
-// Everything the admin area asks the AI for. Answers are streamed as one JSON object per
-// line ({"type":"delta"|"ping"|"result"|"error"}), so long model calls never hit the
-// time limit for the first byte and answers appear while they are written.
+// Everything the admin area asks the AI for, streamed line by line (src/ai/ndjson.ts).
 //
 // Environment: AI_API_KEY, AI_BASE_URL (default OpenRouter), and optional platform
 // defaults AI_CHAT_MODEL, AI_EXTRACT_MODEL, AI_HELPER_MODEL.
-
-type Send = (event: Record<string, unknown>) => void;
 
 function env(name: string) {
   return ((globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.[name] || '').trim();
@@ -34,26 +31,6 @@ function json(status: number, body: Record<string, unknown>) {
 function requestHost(request: Request) {
   const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || new URL(request.url).host;
   return host.split(',')[0].trim().toLowerCase();
-}
-
-function streamed(work: (send: Send) => Promise<unknown>) {
-  const encoder = new TextEncoder();
-  const body = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const send: Send = (event) => controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
-      const ping = setInterval(() => send({ type: 'ping' }), 5000);
-      send({ type: 'start' });
-      try {
-        send({ type: 'result', data: await work(send) });
-      } catch (err) {
-        send({ type: 'error', error: err instanceof Error ? err.message : String(err) });
-      } finally {
-        clearInterval(ping);
-        controller.close();
-      }
-    },
-  });
-  return new Response(body, { headers: { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-store' } });
 }
 
 async function allowed(client: SupabaseClient, fn: string, args: Record<string, unknown>) {
@@ -99,7 +76,7 @@ export default async function handler(request: Request) {
     return config;
   };
 
-  return streamed(async (send) => {
+  return ndjsonResponse(async (send) => {
     switch (action) {
       case 'status': {
         await allowed(client, 'is_admin', {});

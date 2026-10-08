@@ -6,6 +6,7 @@ import type { AddressInfo } from 'node:net';
 import { buildSystemPrompt, cleanSearchTerms, readJudgement, readQaPairs, type ConciergeContext } from '../src/ai/concierge';
 import { crawlableLinks, htmlToText, isPublicHttpUrl, pageChunks } from '../src/ai/htmlText';
 import { complete, listModels, stream } from '../src/ai/provider';
+import { answerParts, conciergeConfig, guestText, safeHref } from '../src/lib/concierge';
 import { chunkMarkdown, chunkText, GAP_MARKER, readAnswer, stripGapMarker } from '../src/lib/knowledge';
 
 let failed = 0;
@@ -83,6 +84,16 @@ check('search terms cleaned', cleanSearchTerms('Hund, Kosten; "Haustier"!') === 
 check('judgement read', readJudgement('```json\n{"pass": true, "reason": "stimmt"}\n```').pass === true);
 check('unreadable judgement fails', readJudgement('weiß nicht').pass === false);
 check('question-answer pairs read', readQaPairs('Hier: [{"question":"Parken?","answer":"Tiefgarage 15 €"},{"question":"","answer":"x"}]').length === 1);
+
+// Website chat
+const off = conciergeConfig(undefined, 'Hotel Meer');
+check('chat is off until switched on', !off.enabled && off.greeting.includes('Hotel Meer'));
+const on = conciergeConfig({ enabled: true, name: 'Ella', suggestions: ['A', '', 'B', 'C', 'D', 'E'] }, 'Hotel Meer');
+check('chat config read', on.enabled && on.name === 'Ella' && on.suggestions.join() === 'A,B,C,D', on);
+check('guests see no source numbers', guestText('Hunde 25 € [1]. Sauna 7–22 Uhr [2, 3].') === 'Hunde 25 €. Sauna 7–22 Uhr.', guestText('Hunde 25 € [1]. Sauna 7–22 Uhr [2, 3].'));
+const parts = answerParts('Buchen Sie hier: https://buchen.example/meer. Mehr unter [Spa](/wellness) oder **heute** [x](javascript:alert(1))');
+check('links and bold in answers', parts.some((part) => part.type === 'link' && part.href === 'https://buchen.example/meer') && parts.some((part) => part.type === 'link' && part.href === '/wellness') && parts.some((part) => part.type === 'bold'), parts);
+check('no script links', !parts.some((part) => part.type === 'link' && part.href.startsWith('javascript')) && safeHref('javascript:alert(1)') === null && safeHref('//evil.example') === null);
 
 // Provider against a fake OpenAI-compatible server
 const seen: Array<Record<string, unknown>> = [];

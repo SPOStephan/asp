@@ -1,0 +1,207 @@
+/* Website chat: one look for every hotel, colours from the hotel's palette. */
+.concierge {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--neutral-50, #faf8f4);
+  color: var(--neutral-800, #1a1916);
+  font-family: var(--font-body);
+}
+.concierge__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--primary-500);
+  color: #fff;
+}
+.concierge__head > div { display: grid; gap: 2px; margin-right: auto; }
+.concierge__head strong { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 500; }
+.concierge__head span { font-size: 0.78rem; opacity: 0.8; }
+.concierge--off .concierge__head strong { margin-right: auto; }
+.concierge__close,
+.concierge__new {
+  color: #fff;
+  opacity: 0.85;
+}
+.concierge__new {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.concierge__close:hover,
+.concierge__new:hover { opacity: 1; }
+.concierge__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overscroll-behavior: contain;
+}
+.concierge__msg {
+  max-width: 88%;
+  padding: 12px 14px;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+.concierge__msg p { margin: 0 0 8px; }
+.concierge__msg p:last-child { margin-bottom: 0; }
+.concierge__msg ul { margin: 0 0 8px; padding-left: 18px; }
+.concierge__msg a { color: var(--accent-500, var(--accent-400)); text-decoration: underline; text-underline-offset: 3px; }
+.concierge__msg--bot {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid var(--neutral-200, #e4ddd0);
+}
+.concierge__msg--bot.is-error { border-color: var(--accent-400); }
+.concierge__msg--guest {
+  align-self: flex-end;
+  background: var(--primary-500);
+  color: #fff;
+  white-space: pre-wrap;
+}
+.concierge__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.concierge__links a {
+  padding: 5px 10px;
+  border: 1px solid var(--neutral-200, #e4ddd0);
+  font-size: 0.78rem;
+  text-decoration: none;
+  color: var(--primary-500);
+}
+.concierge__suggestions { display: flex; flex-wrap: wrap; gap: 8px; }
+.concierge__suggestions button {
+  padding: 8px 12px;
+  border: 1px solid var(--accent-400);
+  color: var(--primary-500);
+  background: #fff;
+  font-size: 0.86rem;
+  text-align: left;
+}
+.concierge__suggestions button:hover { background: var(--neutral-100, #f4f1ea); }
+.concierge__typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+.concierge__typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neutral-400, #a8a29a);
+  animation: concierge-dot 1.2s infinite ease-in-out;
+}
+.concierge__typing i:nth-child(2) { animation-delay: 0.15s; }
+.concierge__typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes concierge-dot {
+  0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-3px); }
+}
+.concierge__ask {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 12px 14px 6px;
+  border-top: 1px solid var(--neutral-200, #e4ddd0);
+  background: #fff;
+}
+.concierge__ask textarea {
+  flex: 1;
+  resize: none;
+  max-height: 120px;
+  padding: 10px 12px;
+  border: 1px solid var(--neutral-200, #e4ddd0);
+  font: inherit;
+  font-size: 16px;
+  color: inherit;
+  background: #fff;
+}
+.concierge__ask button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  background: var(--accent-400);
+  color: #fff;
+}
+.concierge__ask button:disabled { opacity: 0.45; }
+.concierge__note {
+  margin: 0;
+  padding: 4px 14px 12px;
+  background: #fff;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--neutral-500, #6f6a63);
+}
+.concierge__note a { color: inherit; }
+.concierge--off > p { margin: 18px 18px 8px; color: var(--neutral-600); line-height: 1.6; }
+.concierge__contact { display: flex; gap: 18px; padding: 0 18px 20px; }
+.concierge__contact a {
+  color: var(--accent-400);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* Desktop panel and its button */
+.concierge-panel {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1100;
+  width: min(400px, calc(100vw - 48px));
+  height: min(640px, calc(100dvh - 48px));
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+body.has-fixed-bar .concierge-panel { bottom: 110px; height: min(640px, calc(100dvh - 140px)); }
+.concierge-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1090;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent-400);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(10, 32, 50, 0.22);
+  transition: transform var(--transition), background var(--transition);
+}
+.concierge-launcher:hover { background: var(--accent-300); transform: translateY(-2px); }
+.concierge-launcher.is-on { display: none; }
+/* The booking bar has its own chat circle once it sticks: then one button is enough. */
+body:has(.availability-bar.is-stuck .availability-bar__chat) .concierge-launcher,
+body.has-fixed-bar .concierge-launcher,
+body.is-phone .concierge-launcher,
+body.is-phone .concierge-panel { display: none; }
+
+/* Mobile: inside the sheet of the bottom bar */
+.mobile-chrome__chat-sheet.is-concierge {
+  padding: 0;
+  height: min(78dvh, 640px);
+  display: flex;
+}
+.mobile-chrome__chat-sheet.is-concierge .concierge { flex: 1; }
+/* The old placeholder styled every link of the sheet; the chat sets its own. */
+.mobile-chrome__chat-sheet.is-concierge a {
+  letter-spacing: normal;
+  text-transform: none;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+.mobile-chrome__chat-sheet.is-concierge .concierge__msg a { color: var(--accent-500, var(--accent-400)); }
+.mobile-chrome__chat-sheet.is-concierge .concierge__links a { color: var(--primary-500); font-size: 0.78rem; }
+/* Room for the chat circle of the bottom bar. */
+.mobile-chrome__chat-sheet.is-concierge .concierge__note { padding-right: 96px; }

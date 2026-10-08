@@ -9,6 +9,7 @@ import { RulesTab } from './RulesTab';
 import { SettingsTab } from './SettingsTab';
 import { SourcesTab } from './SourcesTab';
 import { TestChatTab } from './TestChatTab';
+import { WebsiteChatTab } from './WebsiteChatTab';
 import './knowledge.css';
 
 type OrgRow = { id: string; name: string };
@@ -74,12 +75,13 @@ export function KnowledgeIndexPage() {
   );
 }
 
-type TabKey = 'overview' | 'sources' | 'chat' | 'feedback' | 'checks' | 'rules' | 'settings';
+type TabKey = 'overview' | 'sources' | 'chat' | 'website' | 'feedback' | 'checks' | 'rules' | 'settings';
 
 const TABS: Array<{ key: TabKey; label: string; hotelOnly?: boolean }> = [
   { key: 'overview', label: 'Übersicht' },
   { key: 'sources', label: 'Quellen' },
   { key: 'chat', label: 'Testchat', hotelOnly: true },
+  { key: 'website', label: 'Website-Chat', hotelOnly: true },
   { key: 'feedback', label: 'Bewertungen & Lücken' },
   { key: 'checks', label: 'Prüffragen' },
   { key: 'rules', label: 'Antwortregeln' },
@@ -175,6 +177,7 @@ function KnowledgeShell() {
       {tab === 'overview' ? <OverviewTab open={open} /> : null}
       {tab === 'sources' ? <SourcesTab /> : null}
       {tab === 'chat' ? <TestChatTab /> : null}
+      {tab === 'website' ? <WebsiteChatTab /> : null}
       {tab === 'feedback' ? <FeedbackTab /> : null}
       {tab === 'checks' ? <ChecksTab /> : null}
       {tab === 'rules' ? <RulesTab /> : null}
