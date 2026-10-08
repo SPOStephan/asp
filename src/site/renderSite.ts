@@ -1,6 +1,7 @@
 import { onPlatformDomain, PLATFORM_DOMAIN } from '../config/product';
 import type { ContentBlock, PageModel, SiteLink, SiteModel } from './pageModel';
 import type { HotelContent } from './siteData';
+import { cdnSrcSet, HERO_SIZES } from '../lib/media';
 
 // Paths that are tools, not content: never indexed, served as the plain app.
 const PRIVATE_PATHS = /^\/(admin|cms|vorschau|schriften|menue-mobil|mobil-leiste\d*)(\/|$)/;
@@ -82,13 +83,17 @@ export function contentCoreHtml(model: PageModel, site: SiteModel) {
 // Phones with their own hero picture must not download the desktop one first.
 const PHONE_MEDIA = '(max-width: 600px)';
 
+// Same choice of sizes as the hero itself, so the preloaded file is the one it shows.
+function preload(src: string, sizes: string, media?: string) {
+  const srcset = cdnSrcSet(src);
+  const sized = srcset ? ` imagesrcset="${escapeHtml(srcset)}" imagesizes="${escapeHtml(sizes)}"` : '';
+  return `<link rel="preload" as="image" href="${escapeHtml(src)}"${sized}${media ? ` media="${media}"` : ''}>`;
+}
+
 function imagePreloads(model: PageModel) {
   if (!model.image) return [];
-  if (!model.imageMobile) return [`<link rel="preload" as="image" href="${escapeHtml(model.image)}">`];
-  return [
-    `<link rel="preload" as="image" href="${escapeHtml(model.imageMobile)}" media="${PHONE_MEDIA}">`,
-    `<link rel="preload" as="image" href="${escapeHtml(model.image)}" media="(min-width: 601px)">`,
-  ];
+  if (!model.imageMobile) return [preload(model.image, HERO_SIZES)];
+  return [preload(model.imageMobile, '100vw', PHONE_MEDIA), preload(model.image, HERO_SIZES, '(min-width: 601px)')];
 }
 
 function headHtml(model: PageModel, site: SiteModel) {

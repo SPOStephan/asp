@@ -4,7 +4,7 @@ import { CmsHeroPan } from '../cms/CmsHeroPan';
 import { CmsSection } from '../cms/CmsSection';
 import { heroFocalStyle } from '../cms/cmsFocal';
 import { useHotel, useSection } from '../context/HotelContext';
-import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
+import { cdnSrcSet, HERO_SIZES, MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { AvailabilityBar } from './AvailabilityBar';
 import { SubpageHero } from './SubpageHero';
 
@@ -113,8 +113,8 @@ function HeroClassic() {
         <CmsHeroPan section="hero" path="hero_focal" value={data.hero_focal}>
           <div className="hero__bg" data-cms-focus="image" data-cms-path={editPath} data-cms-kind="image">
             <picture>
-              {mobileImage ? <source media={HERO_MOBILE_MEDIA} srcSet={mobileImage} /> : null}
-              <img fetchPriority="high" decoding="async" src={image} alt={data.hero_image_alt || ''} draggable={false} />
+              {mobileImage ? <source media={HERO_MOBILE_MEDIA} srcSet={cdnSrcSet(mobileImage) ?? mobileImage} sizes="100vw" /> : null}
+              <img fetchPriority="high" decoding="async" src={image} srcSet={cdnSrcSet(image)} sizes={HERO_SIZES} alt={data.hero_image_alt || ''} draggable={false} />
             </picture>
             <div className="hero__overlay" />
             <div className="hero__fade" />

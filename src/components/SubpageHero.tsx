@@ -3,6 +3,7 @@ import { useCms as useCmsContext } from '../cms/CmsContext';
 import { CmsHeroPan } from '../cms/CmsHeroPan';
 import { heroFocalStyle } from '../cms/cmsFocal';
 import { isCmsFrame } from '../cms/cmsFrame';
+import { cdnSrcSet, HERO_SIZES } from '../lib/media';
 
 // Same breakpoint as the phone rules of the heading in index.css.
 const HERO_PHONE_MEDIA = '(max-width: 600px)';
@@ -146,9 +147,11 @@ export function SubpageHero({
       <CmsHeroPan section={cms?.section ?? ''} path={cms?.focalPath ?? 'hero_focal'} value={focal}>
       <div className={`subpage-hero__image${imageFooter ? ' has-footer' : ''}`} ref={heroRef} data-cms-focus="image" data-cms-path={imagePath} data-cms-kind="image">
         <picture>
-          {imageMobile ? <source media="(max-width: 600px)" srcSet={imageMobile} /> : null}
+          {imageMobile ? <source media="(max-width: 600px)" srcSet={cdnSrcSet(imageMobile) ?? imageMobile} sizes="100vw" /> : null}
           <img
             src={image}
+            srcSet={cdnSrcSet(image)}
+            sizes={HERO_SIZES}
             alt={imageAlt}
             width={1080}
             height={692}
