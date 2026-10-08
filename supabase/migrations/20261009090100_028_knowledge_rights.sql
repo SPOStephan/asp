@@ -155,57 +155,20 @@ CREATE POLICY "manager_delete_check_questions" ON check_questions FOR DELETE
 -- of the same organisation for cross-selling. Runs with the caller's rights, so it can
 -- never return another customer's knowledge. Any word of the question may match.
 CREATE OR REPLACE FUNCTION search_knowledge(hotel uuid, terms text, max_rows integer DEFAULT 12, other_hotels boolean DEFAULT true)
-RETURNS TABLE (
-  chunk_id uuid,
-  source_id uuid,
-  kind text,
-  title text,
-  heading text,
-  content text,
-  url text,
-  source_hotel uuid,
-  rank real
-)
+RETURNS TABLE (chunk_id uuid, source_id uuid, kind text, title text, heading text, content text, url text, source_hotel uuid, rank real)
 LANGUAGE sql
 STABLE
 SET search_path = public
 AS $fn$
-  WITH target AS (
-    SELECT h.organization_id AS org FROM hotels h WHERE h.id = hotel
-  ),
-  q AS (
-    SELECT (
-      SELECT string_agg(quote_literal(t.lexeme), ' | ')
-      FROM unnest(to_tsvector('german', coalesce(terms, ''))) AS t
-    )::tsquery AS query
-  )
-  SELECT
-    c.id,
-    s.id,
-    s.kind,
-    s.title,
-    c.heading,
-    c.content,
-    coalesce(c.url, s.url),
-    s.hotel_id,
-    (
-      ts_rank_cd(c.search, q.query)
+  WITH target AS (SELECT h.organization_id AS org FROM hotels h WHERE h.id = hotel),
+  q AS (SELECT (SELECT string_agg(quote_literal(t.lexeme), ' | ') FROM unnest(to_tsvector('german', coalesce(terms, ''))) AS t)::tsquery AS query)
+  SELECT c.id, s.id, s.kind, s.title, c.heading, c.content, coalesce(c.url, s.url), s.hotel_id,
+    (ts_rank_cd(c.search, q.query)
       * CASE WHEN s.hotel_id = hotel THEN 1.2 WHEN s.hotel_id IS NULL THEN 1.0 ELSE 0.5 END
-      * CASE s.kind WHEN 'correction' THEN 3 WHEN 'example' THEN 1.5 ELSE 1 END
-    )::real
-  FROM knowledge_chunks c
-  JOIN knowledge_sources s ON s.id = c.source_id
-  CROSS JOIN target
-  CROSS JOIN q
-  WHERE q.query IS NOT NULL
-    AND s.organization_id = target.org
-    AND s.enabled
-    AND s.status = 'ready'
-    AND (
-      s.hotel_id = hotel
-      OR s.hotel_id IS NULL
-      OR (other_hotels AND s.kind IN ('website', 'url', 'pdf', 'text'))
-    )
+      * CASE s.kind WHEN 'correction' THEN 3 WHEN 'example' THEN 1.5 ELSE 1 END)::real
+  FROM knowledge_chunks c JOIN knowledge_sources s ON s.id = c.source_id CROSS JOIN target CROSS JOIN q
+  WHERE q.query IS NOT NULL AND s.organization_id = target.org AND s.enabled AND s.status = 'ready'
+    AND (s.hotel_id = hotel OR s.hotel_id IS NULL OR (other_hotels AND s.kind IN ('website', 'url', 'pdf', 'text')))
     AND c.search @@ q.query
   ORDER BY 9 DESC
   LIMIT greatest(1, least(max_rows, 40));
