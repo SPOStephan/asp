@@ -28,6 +28,8 @@ interface SubpageHeroProps {
   imageFooter?: ReactNode;
   // Layer between picture and text (the colour gradient).
   imageOverlay?: ReactNode;
+  // Where the heading stands, as a share of the screen height from the top.
+  textTop?: number;
   children?: ReactNode;
 }
 
@@ -43,6 +45,7 @@ export function SubpageHero({
   style,
   imageFooter,
   imageOverlay,
+  textTop = 0.45,
   children,
 }: SubpageHeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -63,7 +66,7 @@ export function SubpageHero({
       const frameWidth = frame?.clientWidth || window.innerWidth;
       const flowTopPadding = frameWidth <= 768 ? 80 : 120;
       setImageBottom(Math.max(0, Math.min(vh, bottom)));
-      setDocked(bottom <= vh * 0.45 - flowTopPadding);
+      setDocked(bottom <= vh * textTop - flowTopPadding);
     };
 
     const onScroll = () => {
@@ -87,10 +90,11 @@ export function SubpageHero({
       observer?.disconnect();
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [textTop]);
 
   const cssVars = {
     '--image-bottom': `${imageBottom}px`,
+    '--hero-text-top': `${textTop * 100}vh`,
     ...heroFocalStyle(focal),
     ...style,
   } as CSSProperties & {

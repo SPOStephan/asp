@@ -17,6 +17,7 @@ import {
   matchesCmsEntry,
   sectionDraft,
 } from './cmsPages';
+import { HOME_EYEBROW, heroTextTop } from '../components/Hero';
 import { useCms } from './CmsContext';
 import { isHiddenMetaPath } from './cmsHidden';
 import { CmsFilterEditor } from './CmsFilterEditor';
@@ -274,7 +275,8 @@ function HeroFields() {
     hero_image_alt: String(data.hero_image_alt ?? ''),
     fade_desktop: Number(data.fade_desktop ?? 0) || 0,
     fade_mobile: Number(data.fade_mobile ?? 0) || 0,
-    eyebrow: String(data.eyebrow ?? ''),
+    eyebrow: typeof data.eyebrow === 'string' ? data.eyebrow : HOME_EYEBROW,
+    text_top: Math.round(heroTextTop(data.text_top) * 100),
     layout: data.layout === 'classic' ? 'classic' : 'flow',
   });
 
@@ -286,7 +288,8 @@ function HeroFields() {
       hero_image_alt: String(data.hero_image_alt ?? ''),
       fade_desktop: Number(data.fade_desktop ?? 0) || 0,
       fade_mobile: Number(data.fade_mobile ?? 0) || 0,
-      eyebrow: String(data.eyebrow ?? ''),
+      eyebrow: typeof data.eyebrow === 'string' ? data.eyebrow : HOME_EYEBROW,
+      text_top: Math.round(heroTextTop(data.text_top) * 100),
       layout: data.layout === 'classic' ? 'classic' : 'flow',
     });
   }, [cms?.draftTick]);
@@ -302,6 +305,7 @@ function HeroFields() {
       fade_mobile: draft.fade_mobile,
       eyebrow: draft.eyebrow,
       layout: draft.layout,
+      text_top: draft.text_top,
     },
     data,
   );
@@ -318,7 +322,13 @@ function HeroFields() {
         </select>
       </label>
       {draft.layout === 'flow' ? (
-        <Field focus="head" path="eyebrow" label="Schmuckzeile über dem Titel (optional, Schreibschrift)" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
+        <>
+          <Field focus="head" path="eyebrow" label="Schmuckzeile über dem Titel (Schreibschrift, leer = keine)" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
+          <label className="cms-field">
+            Schrift-Position: {draft.text_top} % von oben
+            <input type="range" min={25} max={75} step={1} value={draft.text_top} onChange={(event) => setDraft({ ...draft, text_top: Number(event.target.value) })} />
+          </label>
+        </>
       ) : null}
       <Field focus="title" path="title" label="Titel" value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />

@@ -4068,7 +4068,7 @@ body.room-lightbox-open .availability-bar__slot {
 }
 .subpage-hero__text {
   position: absolute;
-  top: 45vh;
+  top: var(--hero-text-top, 45vh);
   left: 0;
   width: 100%;
   text-align: center;
@@ -4076,7 +4076,7 @@ body.room-lightbox-open .availability-bar__slot {
   box-sizing: border-box;
 }
 .subpage-hero__clip--dark .subpage-hero__text {
-  top: calc(45vh - var(--image-bottom));
+  top: calc(var(--hero-text-top, 45vh) - var(--image-bottom));
 }
 .subpage-hero__text--white {
   color: var(--neutral-0);

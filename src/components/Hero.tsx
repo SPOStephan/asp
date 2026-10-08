@@ -17,6 +17,16 @@ export function fadeStrength(value: unknown) {
   return Number.isFinite(number) ? Math.min(100, Math.max(0, number)) / 100 : 0;
 }
 
+// Script line above the home title until the hotel writes its own; cleared = no line.
+export const HOME_EYEBROW = 'Ankommen';
+// Heading position on the home picture, % of the screen height from the top.
+export const HOME_TEXT_TOP = 55;
+
+export function heroTextTop(value: unknown) {
+  const number = Number(value);
+  return (Number.isFinite(number) && value !== '' && value != null ? Math.min(75, Math.max(25, number)) : HOME_TEXT_TOP) / 100;
+}
+
 // Home page hero. Default: like the sub-pages (the heading stays in the middle of the
 // screen, turns dark at the picture's edge and lands in the page). "classic" keeps the
 // earlier version (text fades in on the picture), switchable per hotel in the CMS.
@@ -51,7 +61,7 @@ function HeroFlow() {
           image={media.image}
           imageMobile={media.mobileImage}
           imageAlt={data.hero_image_alt || ''}
-          eyebrow={data.eyebrow ?? ''}
+          eyebrow={typeof data.eyebrow === 'string' ? data.eyebrow : HOME_EYEBROW}
           title={data.title ?? ''}
           subtitle={data.subtitle}
           focal={data.hero_focal}
@@ -59,6 +69,7 @@ function HeroFlow() {
           style={media.fadeVars}
           imageOverlay={<div className="hero__fade" />}
           imageFooter={<AvailabilityBar />}
+          textTop={heroTextTop(data.text_top)}
         />
       </section>
     </CmsSection>
