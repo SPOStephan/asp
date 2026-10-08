@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useCms } from '../cms/CmsContext';
-import { useSearchParams } from 'react-router-dom';
 import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { Reveal } from '../components/Reveal';
 import { RoomOverlapCard } from '../components/RoomOverlapCard';
@@ -8,14 +7,8 @@ import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { resolveMedia } from '../lib/media';
-import {
-  filterRooms,
-  isRoomFilter,
-  resolveRooms,
-  ROOM_FILTERS,
-  ROOMS_PAGE_FALLBACK,
-  type RoomFilterId,
-} from '../lib/rooms';
+import { ListFilterBar, useListFilter } from '../components/ListFilterBar';
+import { filterRooms, resolveRooms, ROOM_FILTERS, ROOMS_PAGE_FALLBACK } from '../lib/rooms';
 
 export function RoomsCardsPage() {
   const editing = Boolean(useCms());
@@ -23,10 +16,8 @@ export function RoomsCardsPage() {
   const page = useSection('rooms_page');
   const data = page ?? ROOMS_PAGE_FALLBACK;
   const items = resolveRooms(data.items);
-  const [params, setParams] = useSearchParams();
-  const filter: RoomFilterId = isRoomFilter(params.get('filter'))
-    ? (params.get('filter') as RoomFilterId)
-    : 'alle';
+  const roomFilter = useListFilter(page, ROOM_FILTERS, items.map((room) => room.tags), 'filter');
+  const filter = roomFilter.active;
   const visible = filterRooms(items, filter);
   const adviceHref = hotel?.email ? `mailto:${hotel.email}` : '#buchung';
 
@@ -38,13 +29,6 @@ export function RoomsCardsPage() {
       document.title = previous;
     };
   }, [data.title, hotel?.name]);
-
-  const setFilter = (next: RoomFilterId) => {
-    const nextParams = new URLSearchParams(params);
-    if (next === 'alle') nextParams.delete('filter');
-    else nextParams.set('filter', next);
-    setParams(nextParams, { replace: true });
-  };
 
   return (
     <CmsSection sectionKey="rooms_page" label="Zimmer">
@@ -63,22 +47,17 @@ export function RoomsCardsPage() {
             {data.intro || editing ? <p className="rooms-cards__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
           </CmsPart>
 
-          {data.show_filters !== false ? (
-            <div className="rooms-page__filters" role="tablist" aria-label="Zimmer filtern">
-              {ROOM_FILTERS.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={filter === item.id}
-                  className={`rooms-page__filter${filter === item.id ? ' is-active' : ''}`}
-                  onClick={() => setFilter(item.id)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          ) : null}
+          <CmsPart sectionKey="rooms_page" part="filters" label="Filter">
+            {roomFilter.switchedOn || editing ? (
+              <ListFilterBar
+                filters={roomFilter.filters}
+                active={filter}
+                onChange={roomFilter.setActive}
+                className="rooms-page__filter"
+                label="Zimmer filtern"
+              />
+            ) : null}
+          </CmsPart>
 
           <CmsPart sectionKey="rooms_page" part="list" label="Zimmerliste">
             <section className="rooms-cards__list" aria-label="Zimmer und Suiten">

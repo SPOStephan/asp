@@ -1,6 +1,9 @@
 import { resolveMedia } from './media';
 
-export type BlogTopicId = 'erholung' | 'familie' | 'hund';
+import type { ListFilter } from './listFilters';
+
+// Free per hotel; the list below only names the topics of hotels without their own.
+export type BlogTopicId = string;
 
 export type BlogSource = 'human' | 'ai';
 
@@ -33,18 +36,11 @@ export interface BlogPost {
   blocks: BlogBlock[];
 }
 
-export const BLOG_TOPICS: { id: BlogTopicId | 'alle'; label: string }[] = [
-  { id: 'alle', label: 'Alle' },
+export const BLOG_TOPICS: ListFilter[] = [
   { id: 'erholung', label: 'Erholung' },
   { id: 'familie', label: 'Familie' },
   { id: 'hund', label: 'Mit Hund' },
 ];
-
-export const BLOG_TOPIC_LABEL: Record<BlogTopicId, string> = {
-  erholung: 'Erholung',
-  familie: 'Familie',
-  hund: 'Mit Hund',
-};
 
 export const BLOG_PAGE_FALLBACK = {
   eyebrow: 'Journal',
@@ -236,10 +232,6 @@ export const BLOG_PAGE_FALLBACK = {
 type RawBlock = Partial<BlogBlock> & { type?: string };
 type RawPost = Partial<BlogPost> & { blocks?: RawBlock[] };
 
-export function isBlogTopic(value: string | null): value is BlogTopicId {
-  return value === 'erholung' || value === 'familie' || value === 'hund';
-}
-
 export function resolveBlogPosts(items?: RawPost[]): BlogPost[] {
   const raw = items?.length ? items : BLOG_PAGE_FALLBACK.items;
   return raw
@@ -265,14 +257,14 @@ export function resolveBlogPosts(items?: RawPost[]): BlogPost[] {
     .sort((a, b) => (a.published_at < b.published_at ? 1 : -1));
 }
 
-const TOPIC_PROMO: Record<BlogTopicId, string> = {
+const TOPIC_PROMO: Record<string, string> = {
   erholung: 'wellnessurlaub',
   familie: 'feiertage',
   hund: 'wellnessurlaub',
 };
 
 export function suggestPromoOfferId(topic: BlogTopicId) {
-  return TOPIC_PROMO[topic];
+  return TOPIC_PROMO[topic] ?? '';
 }
 
 function resolvePromo(

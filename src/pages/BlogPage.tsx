@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useCms } from '../cms/CmsContext';
 import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { BlogCard } from '../components/BlogCard';
 import { Reveal } from '../components/Reveal';
@@ -7,24 +7,17 @@ import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { resolveMedia } from '../lib/media';
-import {
-  BLOG_PAGE_FALLBACK,
-  BLOG_TOPICS,
-  filterBlogPosts,
-  isBlogTopic,
-  resolveBlogPosts,
-  type BlogTopicId,
-} from '../lib/blog';
+import { ListFilterBar, useListFilter } from '../components/ListFilterBar';
+import { BLOG_PAGE_FALLBACK, BLOG_TOPICS, filterBlogPosts, resolveBlogPosts } from '../lib/blog';
 
 export function BlogPage() {
+  const editing = Boolean(useCms());
   const hotel = useHotel();
   const page = useSection('blog_page');
   const data = page ?? BLOG_PAGE_FALLBACK;
   const posts = resolveBlogPosts(data.items);
-  const [params, setParams] = useSearchParams();
-  const topic: BlogTopicId | 'alle' = isBlogTopic(params.get('thema'))
-    ? (params.get('thema') as BlogTopicId)
-    : 'alle';
+  const topicFilter = useListFilter(page, BLOG_TOPICS, posts.map((post) => [post.topic]), 'thema');
+  const topic = topicFilter.active;
   const visible = filterBlogPosts(posts, topic);
   const [featured, ...rest] = visible;
 
@@ -36,13 +29,6 @@ export function BlogPage() {
       document.title = previous;
     };
   }, [data.title, hotel?.name]);
-
-  const setTopic = (next: BlogTopicId | 'alle') => {
-    const nextParams = new URLSearchParams(params);
-    if (next === 'alle') nextParams.delete('thema');
-    else nextParams.set('thema', next);
-    setParams(nextParams, { replace: true });
-  };
 
   return (
     <CmsSection sectionKey="blog_page" label="Journal">
@@ -62,20 +48,9 @@ export function BlogPage() {
           </CmsPart>
 
           <CmsPart sectionKey="blog_page" part="filters" label="Themen">
-            <div className="blog-page__filters" role="tablist" aria-label="Themen">
-              {BLOG_TOPICS.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={topic === item.id}
-                  className={`blog-page__filter${topic === item.id ? ' is-active' : ''}`}
-                  onClick={() => setTopic(item.id)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
+            {topicFilter.switchedOn || editing ? (
+              <ListFilterBar filters={topicFilter.filters} active={topic} onChange={topicFilter.setActive} className="blog-page__filter" label="Themen" />
+            ) : null}
           </CmsPart>
 
           {featured ? (

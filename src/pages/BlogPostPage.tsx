@@ -10,7 +10,8 @@ import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { entryFocal } from '../cms/cmsFocal';
-import { blogHeadings, BLOG_TOPIC_LABEL, formatBlogDate, resolveBlogPosts } from '../lib/blog';
+import { blogHeadings, BLOG_TOPICS, formatBlogDate, resolveBlogPosts } from '../lib/blog';
+import { filterLabel, readFilters } from '../lib/listFilters';
 import { resolveOfferStories } from '../lib/offers';
 
 export function BlogPostPage() {
@@ -56,7 +57,7 @@ export function BlogPostPage() {
       <SubpageHero
         image={post.hero_image}
         imageAlt={post.hero_image_alt}
-        eyebrow={BLOG_TOPIC_LABEL[post.topic]}
+        eyebrow={filterLabel(readFilters(page?.filters), BLOG_TOPICS, post.topic)}
         title={post.title}
         subtitle={formatBlogDate(post.published_at)}
         focal={entryFocal(page?.items, post.id) ?? entryFocal(page?.items, post.slug)}

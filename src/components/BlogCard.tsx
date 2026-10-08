@@ -1,8 +1,10 @@
 import { useCms } from '../cms/CmsContext';
 import { toCmsHref } from '../cms/cmsPages';
 import { TextCta } from './TextCta';
+import { useSection } from '../context/HotelContext';
+import { filterLabel, readFilters } from '../lib/listFilters';
 import {
-  BLOG_TOPIC_LABEL,
+  BLOG_TOPICS,
   blogHref,
   formatBlogDate,
   type BlogPost,
@@ -15,6 +17,7 @@ interface BlogCardProps {
 
 export function BlogCard({ post, featured = false }: BlogCardProps) {
   const cms = useCms();
+  const topicLabel = filterLabel(readFilters(useSection('blog_page')?.filters), BLOG_TOPICS, post.topic);
   const href = cms ? toCmsHref(blogHref(post.slug)) : blogHref(post.slug);
   const nav = cms ? { 'data-cms-nav': '' } : {};
 
@@ -25,8 +28,12 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
       </a>
       <div className="blog-card__copy">
         <p className="blog-card__meta">
-          <span>{BLOG_TOPIC_LABEL[post.topic]}</span>
-          <span aria-hidden="true"> · </span>
+          {topicLabel ? (
+            <>
+              <span>{topicLabel}</span>
+              <span aria-hidden="true"> · </span>
+            </>
+          ) : null}
           <time dateTime={post.published_at}>{formatBlogDate(post.published_at)}</time>
         </p>
         <h2 className="blog-card__title heading-font">
