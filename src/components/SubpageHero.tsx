@@ -100,7 +100,7 @@ export function SubpageHero({
 
   const cssVars = {
     '--image-bottom': `${imageBottom}px`,
-    '--hero-text-top': `${textTop * 100}vh`,
+    '--hero-text-top': `${textTop * 100}svh`,
     ...heroFocalStyle(focal),
     ...style,
   } as CSSProperties & {
