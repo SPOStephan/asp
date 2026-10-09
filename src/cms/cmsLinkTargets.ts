@@ -5,6 +5,7 @@ import { offerHref, resolveOfferStories } from '../lib/offers';
 import { genericSectionKey, SYSTEM_TEMPLATES, type PageTemplate } from '../lib/pageTemplates';
 import { resolveRooms, roomHref } from '../lib/rooms';
 import { resolveWellnessTopics, wellnessTopicHref } from '../lib/wellness';
+import { occasionHref, resolveOccasions } from '../lib/occasions';
 
 export type CmsLinkTarget = {
   href: string;
@@ -36,6 +37,9 @@ export function cmsLinkTargets(content: HotelContent | null, templates: PageTemp
   }
   for (const topic of resolveWellnessTopics(sections.wellness_page?.items)) {
     targets.push({ href: wellnessTopicHref(topic.id), label: topic.name, group: 'Wellness', active: pages.wellness === true });
+  }
+  for (const occasion of resolveOccasions(sections.occasions_page?.items)) {
+    targets.push({ href: occasionHref(occasion.id), label: occasion.name, group: 'Anlässe', active: pages.anlaesse === true });
   }
   for (const offer of resolveOfferStories(sections.offers_page?.items, sections.offers?.items)) {
     targets.push({ href: offerHref(offer.id), label: offer.title, group: 'Angebote', active: pages.angebote === true });

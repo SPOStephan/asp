@@ -21,6 +21,8 @@ import { OffersPage } from '../pages/OffersPage';
 import { RoomsCardsPage } from '../pages/RoomsCardsPage';
 import { WellnessPage } from '../pages/WellnessPage';
 import { WellnessTopicPage } from '../pages/WellnessTopicPage';
+import { OccasionPage } from '../pages/OccasionPage';
+import { OccasionsPage } from '../pages/OccasionsPage';
 import { cmsFrameDevice, isCmsFrame, isCmsFrameSearch, toCmsFrameHref } from './cmsFrame';
 import { CmsEditor } from './CmsEditor';
 import { CmsErrorBoundary } from './CmsErrorBoundary';
@@ -41,6 +43,8 @@ function CmsStage() {
         <Route path="/cms" element={<HomePage />} />
         <Route path="/cms/zimmer" element={<RoomsCardsPage />} />
         <Route path="/cms/wellness/:topicId" element={<WellnessTopicPage />} />
+        <Route path="/cms/anlaesse" element={<OccasionsPage />} />
+        <Route path="/cms/anlaesse/:occasionId" element={<OccasionPage />} />
         <Route path="/cms/wellness" element={<WellnessPage />} />
         <Route path="/cms/kulinarik" element={<CulinaryPage />} />
         <Route path="/cms/angebote/:offerId" element={<OfferDetailPage />} />

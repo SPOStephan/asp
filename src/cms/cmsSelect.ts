@@ -41,6 +41,7 @@ export const CMS_SECTION_LABELS: Record<string, string> = {
   culinary_page: 'Kulinarik',
   offers_page: 'Angebote',
   impressions_page: 'Impressionen',
+  occasions_page: 'Anlässe',
   faq_page: 'FAQ',
   footer: 'Footer',
   legal_impressum: 'Impressum',

@@ -32,6 +32,8 @@ import { RoomsCardsPage } from './pages/RoomsCardsPage';
 import { TypePreviewHomeNote } from './pages/TypePreviewHome';
 import { WellnessPage } from './pages/WellnessPage';
 import { WellnessTopicPage } from './pages/WellnessTopicPage';
+import { OccasionPage } from './pages/OccasionPage';
+import { OccasionsPage } from './pages/OccasionsPage';
 import { useHotelContent } from './context/HotelContext';
 import { pageKeyFromPath } from './lib/musterPages';
 import { usePhoneChrome } from './lib/phoneChrome';
@@ -109,6 +111,8 @@ function App() {
           <Route path="/vorschau" element={<HomePage />} />
           <Route path="/wellness" element={<WellnessPage />} />
           <Route path="/wellness/:topicId" element={<WellnessTopicPage />} />
+          <Route path="/anlaesse" element={<OccasionsPage />} />
+          <Route path="/anlaesse/:occasionId" element={<OccasionPage />} />
           <Route path="/angebote" element={<OffersPage />} />
           <Route path="/angebote/:offerId" element={<OfferDetailPage />} />
           <Route path="/zimmer" element={<RoomsCardsPage />} />
