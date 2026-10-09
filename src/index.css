@@ -1228,16 +1228,19 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .wellness-scene__hero { width: 50vw; }
 }
 
-/* Phones, default: the side pictures lie over the edges of the middle one, larger and
-   staggered like a collage, and slide out to the sides when it unfolds. */
+/* Phones: a narrower middle picture, so the pictures beside it are wider and less cut;
+   the same small gap between all of them. */
 @media (max-width: 600px) {
-  .wellness-scene--overlap .wellness-scene__hero { width: 60vw; top: 24vh; height: 62vh; }
-  .wellness-scene--overlap .wellness-scene__hero.is-expanded { width: 100vw; top: 0; height: 100vh; }
-  .wellness-scene--overlap .wellness-scene__side { box-shadow: 0 10px 28px rgba(19, 59, 92, 0.22); }
-  .wellness-scene--overlap .wellness-scene__side--left-top { left: 3vw; top: 29vh; width: 38vw; height: 20vh; }
-  .wellness-scene--overlap .wellness-scene__side--left-bottom { left: 7vw; top: 53vh; width: 36vw; height: 24vh; }
-  .wellness-scene--overlap .wellness-scene__side--right-top { right: 5vw; left: auto; top: 35vh; width: 36vw; height: 22vh; }
-  .wellness-scene--overlap .wellness-scene__side--right-bottom { right: 3vw; left: auto; top: 62vh; width: 40vw; height: 19vh; }
+  .wellness-scene { --side-gap: 2vw; --mid-w: 40vw; --side-w: calc((100vw - var(--mid-w)) / 2 - var(--side-gap)); }
+  .wellness-scene__hero { width: var(--mid-w); top: 8vh; }
+  .wellness-scene__hero.is-expanded { top: 0; }
+  /* Less empty space above the scene on phones. */
+  .wellness-scene__heading { padding-top: 6vh; }
+  .wellness-scene { --ensemble-top: calc(45vh - (var(--top-h) + var(--bottom-h) + var(--side-gap)) / 2); }
+  .wellness-scene__side--left-top,
+  .wellness-scene__side--left-bottom,
+  .wellness-scene__side--right-top,
+  .wellness-scene__side--right-bottom { width: var(--side-w); }
 }
 
 /* ==================== CULINARY ==================== */
