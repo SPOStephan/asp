@@ -633,3 +633,6 @@ body.cms-on .cms-part.is-hidden > :not(.cms-block__chrome) {
 .cms-filters__matrix th, .cms-filters__matrix td { padding: 6px 4px; border-bottom: 1px solid #e4ddd0; text-align: center; }
 .cms-filters__matrix tbody th { text-align: left; font-weight: 400; }
 .rooms-page__filters--empty, .blog-page__filters--empty { color: #8a8378; font-size: 0.85rem; font-style: italic; }
+.cms-filename { display: flex; align-items: center; gap: 6px; }
+.cms-filename input { flex: 1; }
+.cms-filename > span { color: #6f6a63; font-size: 0.9em; }
