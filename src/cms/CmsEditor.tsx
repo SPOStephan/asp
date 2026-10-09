@@ -225,19 +225,34 @@ function SaveBar({ sectionKey, onSave }: { sectionKey: string; onSave: () => Pro
   return null;
 }
 
+type BarLink = { label: string; href: string };
+
+function readBarLinks(value: unknown): BarLink[] {
+  return Array.isArray(value)
+    ? value.filter(isPlainObject).map((link) => ({ label: String(link.label ?? ''), href: String(link.href ?? '') }))
+    : [];
+}
+
+// Desktop bar after scrolling: a few chosen pages next to "Menü", and the optional
+// "Anfragen" button (off unless switched on for the hotel).
+const BAR_LINKS_MAX = 6;
+
 function NavbarFields() {
   const cms = useCms();
   const data = useSection('navbar') ?? {};
-  const [draft, setDraft] = useState({
+  const read = () => ({
     logo_white: String(data.logo_white ?? ''),
     logo_normal: String(data.logo_normal ?? ''),
+    links: readBarLinks(data.links),
+    show_inquire: data.show_inquire === true,
+    cta_text: String(data.cta_text ?? ''),
+    cta_href: String(data.cta_href ?? ''),
   });
+  const [draft, setDraft] = useState(read);
 
   useEffect(() => {
-    setDraft({
-      logo_white: String(data.logo_white ?? ''),
-      logo_normal: String(data.logo_normal ?? ''),
-    });
+    setDraft(read());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cms?.draftTick]);
 
   const payload = keepLiveMedia(
@@ -251,6 +266,16 @@ function NavbarFields() {
   );
   useLivePreview('navbar', payload);
 
+  const setLink = (index: number, next: Partial<BarLink>) =>
+    setDraft({ ...draft, links: draft.links.map((link, at) => (at === index ? { ...link, ...next } : link)) });
+  const moveLink = (index: number, step: number) => {
+    const target = index + step;
+    if (target < 0 || target >= draft.links.length) return;
+    const links = draft.links.slice();
+    [links[index], links[target]] = [links[target], links[index]];
+    setDraft({ ...draft, links });
+  };
+
   return (
     <form className="cms-form" onSubmit={(event: FormEvent) => event.preventDefault()}>
       <h3>Logo & Leiste</h3>
@@ -260,6 +285,60 @@ function NavbarFields() {
       </p>
       <CmsImageField focus="logo" label="Logo weiß (auf dem Header)" value={String(data.logo_white || draft.logo_white)} section="navbar" path="logo_white" />
       <CmsImageField focus="logo" label="Logo farbig (helle Leiste)" value={String(data.logo_normal || draft.logo_normal)} section="navbar" path="logo_normal" />
+
+      <fieldset className="cms-fade">
+        <legend>Menüpunkte in der Leiste (Desktop)</legend>
+        <p className="cms-muted">
+          Erscheinen am Desktop nach dem Scrollen neben „Menü“, in dieser Reihenfolge. Höchstens {BAR_LINKS_MAX}; Seiten, die
+          ausgeschaltet sind, fallen automatisch weg. Alle Seiten bleiben im großen Menü.
+        </p>
+        {draft.links.map((link, index) => (
+          <div key={index} className="cms-bar-link">
+            <div className="cms-filters__row">
+              <input aria-label="Bezeichnung" value={link.label} placeholder="Bezeichnung" onChange={(event) => setLink(index, { label: event.target.value })} />
+              <button type="button" className="cms-item-move" disabled={index === 0} onClick={() => moveLink(index, -1)} aria-label="Nach vorn">
+                ↑
+              </button>
+              <button type="button" className="cms-item-move" disabled={index === draft.links.length - 1} onClick={() => moveLink(index, 1)} aria-label="Nach hinten">
+                ↓
+              </button>
+              <button
+                type="button"
+                className="cms-item-move"
+                onClick={() => setDraft({ ...draft, links: draft.links.filter((_, at) => at !== index) })}
+                aria-label={`${link.label || 'Menüpunkt'} entfernen`}
+              >
+                ✕
+              </button>
+            </div>
+            <CmsLinkPicker value={link.href} context={link.label} onChange={(href) => setLink(index, { href })} />
+          </div>
+        ))}
+        {draft.links.length < BAR_LINKS_MAX ? (
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setDraft({ ...draft, links: [...draft.links, { label: '', href: '' }] })}>
+            Menüpunkt hinzufügen
+          </button>
+        ) : null}
+      </fieldset>
+
+      <fieldset className="cms-fade">
+        <legend>„Anfragen“-Button</legend>
+        <label className="cms-choice">
+          <input type="checkbox" checked={draft.show_inquire} onChange={(event) => setDraft({ ...draft, show_inquire: event.target.checked })} />
+          Neben „Buchen“ einen zweiten Button zeigen
+        </label>
+        {draft.show_inquire ? (
+          <>
+            <Field label="Beschriftung" value={draft.cta_text} onChange={(cta_text) => setDraft({ ...draft, cta_text })} />
+            <CmsLinkPicker
+              label="Ziel"
+              value={draft.cta_href}
+              context={draft.cta_text}
+              onChange={(cta_href) => setDraft({ ...draft, cta_href })}
+            />
+          </>
+        ) : null}
+      </fieldset>
       <SaveBar sectionKey="navbar" onSave={() => cms!.saveSection('navbar', payload)} />
     </form>
   );

@@ -389,6 +389,7 @@ export function Navbar() {
 
   const { isPageEnabled } = useHotelContent();
   const navLinks: NavLink[] = ((data.links ?? []) as NavLink[]).filter((link) => {
+    if (!link?.label?.trim() || !link.href?.trim()) return false;
     const key = pageKeyFromHref(remapSiteHref(link.href, link.label));
     return !key || isPageEnabled(key);
   });
@@ -520,9 +521,12 @@ export function Navbar() {
                 )}
               </div>
               <div className="navbar__actions">
-                <button className="navbar__cta" onClick={() => handleNavClick(inquireHref)}>
-                  {inquireLabel}
-                </button>
+                {/* Optional per hotel (CMS: Logo & Leiste), off unless switched on. */}
+                {data.show_inquire === true ? (
+                  <button className="navbar__cta" onClick={() => handleNavClick(inquireHref)}>
+                    {inquireLabel}
+                  </button>
+                ) : null}
                 <a
                   className="navbar__cta navbar__cta--solid"
                   href={bookHref}
