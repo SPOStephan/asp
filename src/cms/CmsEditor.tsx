@@ -1072,20 +1072,6 @@ const SECTION_SLIDERS: Record<string, Array<{ key: string; label: string; hint: 
   ],
 };
 
-// Optional choices a block can have before they are set (first option = default).
-const SECTION_CHOICES: Record<string, Array<{ key: string; label: string; options: Array<{ value: string; label: string }> }>> = {
-  wellness: [
-    {
-      key: 'mobile_layout',
-      label: 'Darstellung auf Handys',
-      options: [
-        { value: 'overlap', label: 'Bilder überlappen das mittlere und fahren beim Aufklappen zur Seite' },
-        { value: 'side', label: 'Bilder schmal daneben (bisherige Darstellung)' },
-      ],
-    },
-  ],
-};
-
 function GenericFields({ sectionKey }: { sectionKey: string }) {
   const cms = useCms();
   const data = useSection(sectionKey);
@@ -1114,21 +1100,6 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
       ) : null}
       {entries.length === 0 ? <p className="cms-muted">Dieser Block hat noch keine CMS-Felder.</p> : null}
       {sectionKey === 'blog_page' ? <BlogTopicFields draft={draft} setDraft={setDraft} /> : null}
-      {(SECTION_CHOICES[sectionKey] ?? []).map((choice) => (
-        <label key={choice.key} className="cms-field" data-cms-panel-focus={choice.key}>
-          {choice.label}
-          <select
-            value={String(draft[choice.key] ?? choice.options[0].value)}
-            onChange={(event) => setDraft({ ...draft, [choice.key]: event.target.value })}
-          >
-            {choice.options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      ))}
       {(SECTION_SLIDERS[sectionKey] ?? []).map((slider) => {
         const current = Math.min(100, Math.max(0, Number(draft[slider.key]) || 0));
         return (
@@ -1143,10 +1114,7 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
         );
       })}
       {entries.map(([key, value]) =>
-        key === 'icon_color' ||
-        (sectionKey === 'blog_page' && key === 'filters') ||
-        SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ||
-        SECTION_CHOICES[sectionKey]?.some((choice) => choice.key === key) ? null : (
+        key === 'icon_color' || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : (
           <GenericValue
             key={key}
             section={sectionKey}
