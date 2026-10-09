@@ -67,7 +67,6 @@ function HeroFlow() {
           cms={{ section: 'hero', image: media.editPath }}
           style={media.fadeVars}
           imageOverlay={<div className="hero__fade" />}
-          imageFooter={<AvailabilityBar />}
           textTop={heroTextTop(data.text_top)}
           textTopMobile={data.text_top_mobile != null && data.text_top_mobile !== '' ? heroTextTop(data.text_top_mobile) : undefined}
         />
