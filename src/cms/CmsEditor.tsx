@@ -1106,6 +1106,30 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
   );
 }
 
+// A new, empty entry shaped like the existing ones (all their fields, texts empty, the
+// first icon kept as a start, a fresh id where entries have ids).
+function blankListItem(list: unknown[], path: string): unknown {
+  const sample = list[list.length - 1];
+  if (typeof sample === 'string') return '';
+  if (typeof sample === 'number') return 0;
+  if (!isPlainObject(sample)) return '';
+  const blank: Record<string, unknown> = {};
+  for (const entry of list) {
+    if (!isPlainObject(entry)) continue;
+    for (const [key, value] of Object.entries(entry)) {
+      if (key in blank) continue;
+      if (key === 'icon' || key === 'icon_color') blank[key] = value;
+      else if (typeof value === 'string') blank[key] = '';
+      else if (typeof value === 'number') blank[key] = 0;
+      else if (typeof value === 'boolean') blank[key] = false;
+      else if (Array.isArray(value)) blank[key] = [];
+      else if (isPlainObject(value)) blank[key] = blankListItem([value], key);
+    }
+  }
+  if ('id' in blank) blank.id = `${path.split('.').pop() || 'eintrag'}-${Date.now().toString(36)}`;
+  return blank;
+}
+
 function GenericValue({
   section,
   path,
@@ -1273,6 +1297,11 @@ function GenericValue({
             </fieldset>
           );
         })}
+        {value.length ? (
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => onChange([...value, blankListItem(value, path)])}>
+            + {label === 'items' ? 'Eintrag' : label} hinzufügen
+          </button>
+        ) : null}
       </div>
     );
   }
