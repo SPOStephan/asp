@@ -1,6 +1,7 @@
 import { discoverPageKeys, missingDiscoverPages } from './discoverPages';
 import { fillEmptyMedia } from './media';
 import { supabase } from './supabase';
+import { OFFERS_PAGE_FALLBACK, resolveOfferStories, slugify as offerSlug } from './offers';
 import { canResumeHotelSlug, isHotelSlugConflict } from './hotelSave';
 import {
   GENERIC_SKELETON,
@@ -216,4 +217,30 @@ export async function updateLibraryTemplate(
   const result = await supabase.from('page_templates').update(patch).eq('id', id);
   if (result.error) return { error: result.error.message };
   return {};
+}
+
+// A new offer with its own detail page (/angebote/<id>), e.g. straight from a link on the
+// home page. Existing offers stay; the hotel team fills in text and pictures afterwards.
+export async function createOfferPage(
+  hotelId: string,
+  title: string,
+  sections: Record<string, Record<string, unknown>>,
+): Promise<{ id?: string; data?: Record<string, unknown>; error?: string }> {
+  const current = sections.offers_page ?? {};
+  const existing = (Array.isArray(current.items)
+    ? current.items
+    : Array.isArray(sections.offers?.items)
+      ? sections.offers.items
+      : OFFERS_PAGE_FALLBACK.items) as Array<Record<string, unknown>>;
+  const taken = new Set(resolveOfferStories(existing as never).map((offer) => offer.id));
+  const base = offerSlug(title) || 'angebot';
+  let id = base;
+  for (let index = 2; taken.has(id); index += 1) id = `${base}-${index}`;
+  const item = { id, title: title.trim(), subtitle: '', text: '', detail_text: [''], details: [], includes: [], travel_period_label: '', travel_period: '' };
+  const data = { ...current, items: [...existing, item] };
+  const page = await supabase.from('hotel_pages').upsert({ hotel_id: hotelId, page_key: 'angebote', enabled: true, muster_version: 'v1' }, { onConflict: 'hotel_id,page_key' });
+  if (page.error) return { error: page.error.message };
+  const saved = await supabase.from('hotel_sections').upsert({ hotel_id: hotelId, section_key: 'offers_page', data }, { onConflict: 'hotel_id,section_key' });
+  if (saved.error) return { error: saved.error.message };
+  return { id, data };
 }

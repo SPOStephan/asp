@@ -1112,12 +1112,15 @@ function GenericValue({
   label,
   value,
   onChange,
+  hint,
 }: {
   section: string;
   path: string;
   label: string;
   value: unknown;
   onChange: (value: unknown) => void;
+  // Title of the item a nested value belongs to (offer, room …), for link suggestions.
+  hint?: string;
 }) {
   if (path === 'hero_focal' || path.endsWith('.hero_focal') || isHiddenMetaPath(path)) return null;
 
@@ -1160,6 +1163,7 @@ function GenericValue({
           const itemId = isPlainObject(item) && typeof item.id === 'string' ? item.id : String(index);
           const itemPath = `${path}.${itemId}`;
           const openTo = path === 'items' && isPlainObject(item) ? cmsEntryHref(section, item) : null;
+          const itemHint = isPlainObject(item) && typeof item.title === 'string' && item.title.trim() ? item.title : hint;
           return (
             <fieldset key={itemPath} className="cms-tile" data-cms-panel-focus={`${path}:${index}`}>
               <legend>
@@ -1202,6 +1206,7 @@ function GenericValue({
                       label="Ziel"
                       value={childValue}
                       context={String(item.label ?? item.title ?? '')}
+                      hint={itemHint}
                       newTab={item.new_tab === true}
                       onChange={(next) => {
                         const copy = value.slice();
@@ -1215,7 +1220,7 @@ function GenericValue({
                       }}
                     />
                   ) : typeof childValue === 'string' || typeof childValue === 'number' || typeof childValue === 'boolean' ? (
-                    <GenericValue
+                    <GenericValue hint={itemHint}
                       key={childKey}
                       section={section}
                       path={`${itemPath}.${childKey}`}
@@ -1240,7 +1245,7 @@ function GenericValue({
                       multiline
                     />
                   ) : (
-                    <GenericValue
+                    <GenericValue hint={itemHint}
                       key={childKey}
                       section={section}
                       path={`${itemPath}.${childKey}`}
@@ -1289,7 +1294,7 @@ function GenericValue({
               onChange={(next) => onChange({ ...value, icon: next })}
             />
           ) : (
-            <GenericValue
+            <GenericValue hint={hint}
               key={childKey}
               section={section}
               path={`${path}.${childKey}`}

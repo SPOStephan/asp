@@ -60,3 +60,31 @@ export function filterLinkTargets(targets: CmsLinkTarget[], query: string) {
   if (!needle) return targets;
   return targets.filter((target) => `${target.label} ${target.group} ${target.href}`.toLowerCase().includes(needle));
 }
+
+// Pages that fit what a link belongs to (e.g. the offer "Wellness-Schnuppertage" on the
+// home page → its detail page), best first. Word match on the titles, umlauts folded.
+function words(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word.length >= 3)
+    .map((word) => word.replace(/(en|er|e|n|s)$/, ''));
+}
+
+export function suggestLinkTargets(targets: CmsLinkTarget[], hint: string | undefined, limit = 3) {
+  const wanted = new Set(words(hint ?? ''));
+  if (!wanted.size) return [];
+  return targets
+    .filter((target) => target.href !== '/')
+    .map((target) => {
+      const have = words(`${target.label} ${target.href.split('/').pop() ?? ''}`);
+      const shared = have.filter((word) => wanted.has(word)).length;
+      const score = shared / Math.max(1, Math.min(wanted.size, new Set(have).size)) + (target.group === 'Angebote' ? 0.01 : 0);
+      return { target, score };
+    })
+    .filter((entry) => entry.score >= 0.34)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((entry) => entry.target);
+}
