@@ -636,3 +636,4 @@ body.cms-on .cms-part.is-hidden > :not(.cms-block__chrome) {
 .cms-filename { display: flex; align-items: center; gap: 6px; }
 .cms-filename input { flex: 1; }
 .cms-filename > span { color: #6f6a63; font-size: 0.9em; }
+.cms-link__suggested button { background: #faf6ee; border-left: 3px solid #957640; }

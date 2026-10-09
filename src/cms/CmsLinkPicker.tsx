@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useHotelContent } from '../context/HotelContext';
-import { createHotelPage } from '../lib/applyHotelPages';
+import { createHotelPage, createOfferPage } from '../lib/applyHotelPages';
+import { offerHref } from '../lib/offers';
 import { GENERIC_SKELETON, genericSectionKey } from '../lib/pageTemplates';
-import { cmsLinkTargets, filterLinkTargets, isExternalHref, matchLinkTarget } from './cmsLinkTargets';
+import { cmsLinkTargets, filterLinkTargets, isExternalHref, matchLinkTarget, suggestLinkTargets } from './cmsLinkTargets';
 
 export function CmsLinkPicker({
   label = 'Link',
@@ -11,6 +12,7 @@ export function CmsLinkPicker({
   newTab,
   onChange,
   onNewTabChange,
+  hint,
 }: {
   label?: string;
   value: string;
@@ -20,6 +22,8 @@ export function CmsLinkPicker({
   onChange: (href: string) => void;
   // Without it the link has no "new tab" choice (e.g. the navigation bar).
   onNewTabChange?: (next: boolean) => void;
+  // What the link belongs to (e.g. the offer's title): fitting pages are listed first.
+  hint?: string;
 }) {
   const { content, enablePages, patchSection } = useHotelContent();
   const targets = useMemo(() => cmsLinkTargets(content), [content]);
@@ -29,6 +33,9 @@ export function CmsLinkPicker({
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hits = filterLinkTargets(targets, query);
+  const suggested = query.trim() ? [] : suggestLinkTargets(targets, hint ?? context);
+  const rest = suggested.length ? hits.filter((target) => !suggested.includes(target)) : hits;
+  const offerTitle = (query.trim() && !isExternalHref(query) ? query : hint ?? '').trim();
   const external = isExternalHref(query) ? query.trim() : '';
 
   function pick(href: string) {
@@ -51,6 +58,21 @@ export function CmsLinkPicker({
     patchSection(genericSectionKey(result.key), { ...GENERIC_SKELETON, title });
     enablePages([result.key]);
     pick(`/seite/${result.key}`);
+  }
+
+  async function createOffer() {
+    if (!content || !offerTitle) return;
+    setCreating(true);
+    setError(null);
+    const result = await createOfferPage(content.hotel.id, offerTitle, content.sections as Record<string, Record<string, unknown>>);
+    setCreating(false);
+    if (result.error || !result.id || !result.data) {
+      setError(result.error ?? 'Angebot konnte nicht angelegt werden.');
+      return;
+    }
+    patchSection('offers_page', result.data);
+    enablePages(['angebote']);
+    pick(offerHref(result.id));
   }
 
   return (
@@ -77,7 +99,17 @@ export function CmsLinkPicker({
                 </button>
               </li>
             ) : null}
-            {hits.map((target) => (
+            {suggested.map((target) => (
+              <li key={`hint-${target.href}`} className="cms-link__suggested">
+                <button type="button" onClick={() => pick(target.href)} aria-current={current?.href === target.href}>
+                  <span>
+                    Passt vermutlich: {target.group} · {target.label}
+                  </span>
+                  <small>{target.href}</small>
+                </button>
+              </li>
+            ))}
+            {rest.map((target) => (
               <li key={target.href}>
                 <button type="button" onClick={() => pick(target.href)} aria-current={current?.href === target.href}>
                   <span>
@@ -92,6 +124,9 @@ export function CmsLinkPicker({
           </ul>
           <button type="button" className="cms-btn cms-btn--ghost" disabled={!query.trim() || creating || Boolean(external)} onClick={() => void createPage()}>
             {creating ? 'Legt an…' : query.trim() && !external ? `Neue Seite „${query.trim()}“` : 'Neue Seite (Namen oben eingeben)'}
+          </button>
+          <button type="button" className="cms-btn cms-btn--ghost" disabled={!offerTitle || creating} onClick={() => void createOffer()}>
+            {offerTitle ? `Neues Angebot „${offerTitle}“ anlegen` : 'Neues Angebot (Namen oben eingeben)'}
           </button>
           {error ? <p className="cms-error">{error}</p> : null}
         </div>
