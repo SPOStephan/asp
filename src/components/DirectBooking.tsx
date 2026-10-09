@@ -55,13 +55,13 @@ export function DirectBooking() {
           <ul className="direct-booking__list">
             {items.map((item, index) => {
               return (
-                <li key={item.title} className="direct-booking__item" data-cms-focus={`items:${index}`}>
+                <li key={index} className="direct-booking__item" data-cms-focus={`items:${index}`}>
                   <span data-cms-path={`items.${index}.icon`} data-cms-kind="icon">
                     <CmsGlyph className="direct-booking__icon" name={item.icon} color={item.icon_color || data.icon_color} size={22} />
                   </span>
                   <div>
                     <p className="direct-booking__item-title" data-cms-path={`items.${index}.title`}>{item.title}</p>
-                    {item.text ? <p className="direct-booking__item-text">{item.text}</p> : null}
+                    {item.text || (editing && item.text !== undefined) ? <p className="direct-booking__item-text" data-cms-path={`items.${index}.text`}>{item.text}</p> : null}
                   </div>
                 </li>
               );
