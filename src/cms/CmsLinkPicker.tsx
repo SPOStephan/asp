@@ -16,9 +16,10 @@ export function CmsLinkPicker({
   value: string;
   // Title of the item that carries the link; older links resolve through it.
   context?: string;
-  newTab: boolean;
+  newTab?: boolean;
   onChange: (href: string) => void;
-  onNewTabChange: (next: boolean) => void;
+  // Without it the link has no "new tab" choice (e.g. the navigation bar).
+  onNewTabChange?: (next: boolean) => void;
 }) {
   const { content, enablePages, patchSection } = useHotelContent();
   const targets = useMemo(() => cmsLinkTargets(content), [content]);
@@ -95,10 +96,12 @@ export function CmsLinkPicker({
           {error ? <p className="cms-error">{error}</p> : null}
         </div>
       ) : null}
-      <label className="cms-choice">
-        <input type="checkbox" checked={newTab} onChange={(event) => onNewTabChange(event.target.checked)} />
-        In neuem Tab öffnen
-      </label>
+      {onNewTabChange ? (
+        <label className="cms-choice">
+          <input type="checkbox" checked={Boolean(newTab)} onChange={(event) => onNewTabChange(event.target.checked)} />
+          In neuem Tab öffnen
+        </label>
+      ) : null}
     </div>
   );
 }
