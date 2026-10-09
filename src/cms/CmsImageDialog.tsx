@@ -1,10 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react';
 import { useHotel, useHotelContent } from '../context/HotelContext';
 import { getPath } from './cmsDraft';
-import { type CropRect, exportWebp, fitRect, loadImage, ORIGINAL_MAX_EDGE, ORIGINAL_WEBP_QUALITY, screenMaxEdge, waitForImage, zoomRect } from './cmsImage';
+import { type CropRect, exportWebp, previewDataUrl, fitRect, loadImage, ORIGINAL_MAX_EDGE, ORIGINAL_WEBP_QUALITY, screenMaxEdge, waitForImage, zoomRect } from './cmsImage';
 import { clampCrop, editableImageUrl, MEDIA_SOURCES_KEY, readMediaSource } from './cmsMediaSource';
 import { clearLiveMedia } from './cmsLiveMedia';
 import { nameFromUrl, pictureBaseName, slugifyFileName } from './cmsFileName';
+import { CMS_SECTION_LABELS } from './cmsSelect';
+import { callAi } from '../lib/aiClient';
 import { formatImageHint, imageHint } from './cmsImageHints';
 import { focalPathFor, refitCrop, slotAspect } from './cmsSlot';
 import { readHeroFocal } from './cmsFocal';
@@ -54,6 +56,8 @@ export function CmsImageDialog() {
   const [alt, setAlt] = useState('');
   // File name on the CDN, readable for search engines (see cmsFileName.ts).
   const [baseName, setBaseName] = useState('');
+  const [describing, setDescribing] = useState(false);
+  const autoDescribe = useRef<{ keepName: boolean } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [appliedUrl, setAppliedUrl] = useState<string | null>(null);
@@ -90,7 +94,10 @@ export function CmsImageDialog() {
     const current = getPath(section, request.path);
     const currentAlt = request.altPath ? getPath(section, request.altPath) : '';
     setAlt(typeof currentAlt === 'string' ? currentAlt : '');
-    setBaseName(nameFromUrl(typeof current === 'string' ? current : '') || pictureBaseName(typeof currentAlt === 'string' ? currentAlt : '', hotel?.name));
+    const urlName = nameFromUrl(typeof current === 'string' ? current : '');
+    setBaseName(urlName || pictureBaseName(typeof currentAlt === 'string' ? currentAlt : '', hotel?.name));
+    // A picture without alt text gets a suggestion as soon as it is loaded.
+    autoDescribe.current = typeof currentAlt === 'string' && currentAlt.trim() ? null : { keepName: Boolean(urlName) };
     const own = readMediaSource(section, request.path);
     const ownSrc = own?.src || (typeof current === 'string' ? current.trim() : '');
     let pick: OpenSource | null = ownSrc ? { src: ownSrc, crop: own?.crop, label: 'Aktuelles Bild' } : null;
@@ -132,11 +139,20 @@ export function CmsImageDialog() {
       setSourceUrl(pick.src);
       // The frame always has the shape the picture has on the page, so it shows what
       // visitors see; the last crop is kept as far as that shape allows.
+      let opened: CropRect;
       if (pick.crop) {
         const last = clampCrop(pick.crop, loaded.naturalWidth, loaded.naturalHeight);
-        setCrop(target ? refitCrop(last, target, loaded.naturalWidth, loaded.naturalHeight) : last);
+        opened = target ? refitCrop(last, target, loaded.naturalWidth, loaded.naturalHeight) : last;
       } else {
-        setCrop(fitRect(loaded.naturalWidth, loaded.naturalHeight, target));
+        opened = fitRect(loaded.naturalWidth, loaded.naturalHeight, target);
+      }
+      setCrop(opened);
+      const auto = autoDescribe.current;
+      if (auto) {
+        autoDescribe.current = null;
+        void suggestAlt(loaded, opened).then((suggestion) => {
+          if (suggestion?.fileName && !auto.keepName) setBaseName(pictureBaseName(suggestion.fileName, suggestion.alt, hotel?.name));
+        });
       }
     } catch {
       if (!cancelled()) setError('Das aktuelle Bild ließ sich nicht zum Bearbeiten laden. Eine neue Datei wählen geht immer.');
@@ -176,8 +192,8 @@ export function CmsImageDialog() {
     setCrop(zoomRect(crop, image.naturalWidth, image.naturalHeight, factor, aspect));
   }
 
-  async function pushUpload(source: HTMLImageElement, sourceCrop: CropRect, knownSource: string | null, name = baseName) {
-    const base = slugifyFileName(name) || pictureBaseName(alt, hotel?.name);
+  async function pushUpload(source: HTMLImageElement, sourceCrop: CropRect, knownSource: string | null, name = baseName, altText = alt) {
+    const base = slugifyFileName(name) || pictureBaseName(altText, hotel?.name);
     const named = (file: File, suffix = '') => new File([file], `${base}${suffix}.${file.name.split('.').pop() || 'webp'}`, { type: file.type });
     if (!hotel) {
       setError('Hotel noch nicht geladen. Bitte kurz warten und die Datei noch einmal wählen.');
@@ -191,12 +207,12 @@ export function CmsImageDialog() {
       let original = knownSource;
       if (!original) {
         const full = { x: 0, y: 0, width: source.naturalWidth, height: source.naturalHeight };
-        original = await uploadToBunny(named(await exportWebp(source, full, ORIGINAL_WEBP_QUALITY, ORIGINAL_MAX_EDGE), '-original'), hotel.id, alt ? `${alt} (Original)` : 'Original');
+        original = await uploadToBunny(named(await exportWebp(source, full, ORIGINAL_WEBP_QUALITY, ORIGINAL_MAX_EDGE), '-original'), hotel.id, altText ? `${altText} (Original)` : 'Original');
         setSourceUrl(original);
       }
       // Full-screen pictures need more pixels than the rest to stay sharp on large and 3x screens.
       const file = named(await exportWebp(source, sourceCrop, undefined, focalPathFor(request!.path) ? screenMaxEdge(sourceCrop) : undefined));
-      const url = await uploadToBunny(file, hotel.id, alt);
+      const url = await uploadToBunny(file, hotel.id, altText);
       await waitForImage(url);
       // The crop now is what the page shows; an old drag/zoom position would shift it again.
       const focal = focalPathFor(request!.path);
@@ -218,13 +234,46 @@ export function CmsImageDialog() {
         }
       }
       // The alt text goes in the same step: a second write would start from the old picture.
-      if (request!.altPath && alt) extra[request!.altPath] = alt;
+      if (request!.altPath && altText) extra[request!.altPath] = altText;
       cms!.applyImage(request!.section, request!.path, url, { src: original, crop: sourceCrop }, extra);
       setAppliedUrl(url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload fehlgeschlagen.');
     }
     setBusy(false);
+  }
+
+  // Where the picture sits, for the AI: section, its heading and the item (room, tile …).
+  function placeOfPicture() {
+    if (!request) return '';
+    const section = (content?.sections[request.section] ?? {}) as Record<string, unknown>;
+    const parentPath = request.path.split('.').slice(0, -1).join('.');
+    const parent = parentPath ? getPath(section, parentPath) : null;
+    const item = parent && typeof parent === 'object' && !Array.isArray(parent) ? (parent as Record<string, unknown>) : null;
+    const itemName = item ? [item.title, item.name, item.label, item.kicker].find((value) => typeof value === 'string' && value.trim()) : '';
+    return [CMS_SECTION_LABELS[request.section] ?? request.section, typeof section.title === 'string' ? section.title : '', String(itemName ?? '')]
+      .filter(Boolean)
+      .join(' · ');
+  }
+
+  // Alt text and file name suggested by the AI; null when it is not available (then the
+  // team can still type them). Never blocks the upload for long.
+  async function suggestAlt(source: HTMLImageElement, area: CropRect) {
+    if (!hotel) return null;
+    setDescribing(true);
+    try {
+      const image = await previewDataUrl(source, area);
+      const result = await Promise.race([
+        callAi<{ alt: string; fileName: string }>('describe-image', { hotelId: hotel.id, image, place: placeOfPicture() }),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 15_000)),
+      ]);
+      if (result?.alt) setAlt(result.alt);
+      return result;
+    } catch {
+      return null;
+    } finally {
+      setDescribing(false);
+    }
   }
 
   async function onFile(file: File | undefined) {
@@ -238,9 +287,12 @@ export function CmsImageDialog() {
       setFileName(file.name);
       setCrop(nextCrop);
       setSourceUrl(null);
-      const name = pictureBaseName(file.name, alt, hotel?.name);
+      // The AI looks at the picture first: alt text and file name come from what it shows.
+      const suggestion = await suggestAlt(next, nextCrop);
+      const altText = suggestion?.alt || alt;
+      const name = pictureBaseName(file.name, suggestion?.fileName, altText, hotel?.name);
       setBaseName(name);
-      await pushUpload(next, nextCrop, null, name);
+      await pushUpload(next, nextCrop, null, name, altText);
     } catch (err) {
       setImage(null);
       setFileName(null);
@@ -391,8 +443,23 @@ export function CmsImageDialog() {
           </p>
         ) : null}
         <label className="cms-field">
-          Alt-Text (was ist zu sehen?)
-          <input value={alt} onChange={(event) => setAlt(event.target.value)} placeholder="z. B. Hallenbad mit Blick auf die Berge" />
+          Alt-Text (schreibt die KI, Sie können ihn anpassen)
+          <span className="cms-filename">
+            <input value={alt} onChange={(event) => setAlt(event.target.value)} placeholder={describing ? 'KI sieht sich das Bild an…' : 'z. B. Hallenbad mit Blick auf die Berge'} />
+            <button
+              type="button"
+              className="cms-btn cms-btn--ghost"
+              disabled={!image || describing}
+              onClick={async () => {
+                if (!image) return;
+                const suggestion = await suggestAlt(image, crop);
+                if (suggestion?.fileName) setBaseName(pictureBaseName(suggestion.fileName, suggestion.alt, hotel?.name));
+              }}
+            >
+              {describing ? 'Schaut…' : 'KI-Vorschlag'}
+            </button>
+          </span>
+          <span className="cms-muted">Wird mit dem Bild übernommen. Neuer Vorschlag ändert auch den Dateinamen.</span>
         </label>
         <label className="cms-field">
           Dateiname für Google
