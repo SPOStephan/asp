@@ -42,7 +42,8 @@ export type CmsFrameMessage =
   | { source: typeof CMS_FRAME_SOURCE; type: 'preview-faqs'; faqs: unknown }
   | { source: typeof CMS_FRAME_SOURCE; type: 'select'; section: string | null; focus?: string | null; path?: string | null }
   | { source: typeof CMS_FRAME_SOURCE; type: 'navigate'; path: string }
-  | { source: typeof CMS_FRAME_SOURCE; type: 'open-image'; request: unknown };
+  | { source: typeof CMS_FRAME_SOURCE; type: 'open-image'; request: unknown }
+  | { source: typeof CMS_FRAME_SOURCE; type: 'persist-switch'; section: string; key: string; value: boolean };
 
 export function isCmsFrameMessage(data: unknown): data is CmsFrameMessage {
   return Boolean(data && typeof data === 'object' && (data as { source?: string }).source === CMS_FRAME_SOURCE);
