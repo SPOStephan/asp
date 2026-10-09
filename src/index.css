@@ -1772,8 +1772,9 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .offers__visual { min-height: 0; }
   .offers__photo--primary,
   .offers__row--reverse .offers__photo--primary { width: 68%; }
+  /* Like on desktop: the small picture sits a little higher than the end of the large one. */
   .offers__photo--secondary,
-  .offers__row--reverse .offers__photo--secondary { width: 52%; bottom: 0; }
+  .offers__row--reverse .offers__photo--secondary { width: 52%; bottom: 8%; }
 }
 
 /* ==================== INCLUDE LIST ==================== */
