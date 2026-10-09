@@ -1234,6 +1234,8 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .wellness-scene { --side-gap: 2vw; --mid-w: 40vw; --side-w: calc((100vw - var(--mid-w)) / 2 - var(--side-gap)); }
   .wellness-scene__hero { width: var(--mid-w); top: 8vh; }
   .wellness-scene__hero.is-expanded { top: 0; }
+  /* The text on the unfolded picture uses the phone's width (it shrank to half of it). */
+  .wellness-scene__copy { width: calc(100vw - 40px); max-width: none; }
   /* Less empty space above the scene on phones. */
   .wellness-scene__heading { padding-top: 6vh; }
   .wellness-scene { --ensemble-top: calc(45vh - (var(--top-h) + var(--bottom-h) + var(--side-gap)) / 2); }
