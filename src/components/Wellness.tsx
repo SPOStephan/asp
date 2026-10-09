@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { CmsSection } from '../cms/CmsSection';
 import { TextCta } from './TextCta';
-import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
-import { useSection } from '../context/HotelContext';
+import { cdnSrcSet, HERO_SIZES, MUSTER_MEDIA, resolveMedia } from '../lib/media';
+import { useHotel, useSection } from '../context/HotelContext';
+import { fadeStrength } from './Hero';
 
 interface CollageItem {
   src: string;
@@ -16,6 +17,7 @@ export function Wellness() {
   const [sideImagesVisible, setSideImagesVisible] = useState(false);
   const [textOpacity, setTextOpacity] = useState(0);
   const data = useSection('wellness');
+  const hotel = useHotel();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -80,8 +82,21 @@ export function Wellness() {
               data-cms-focus={`collage_items:${i}`}
             />
           ))}
-          <div className={`wellness-scene__hero${expanded ? ' is-expanded' : ''}`} data-cms-focus="hero_image">
-            <img loading="lazy" decoding="async" src={resolveMedia(data.hero_image, MUSTER_MEDIA.wellness)} alt={data.hero_image_alt || ''} />
+          <div
+            className={`wellness-scene__hero${expanded ? ' is-expanded' : ''}`}
+            data-cms-focus="hero_image"
+            style={{ '--wellness-fade-color': hotel?.primary_color || 'var(--primary-500)', '--wellness-fade': String(fadeStrength(data.fade) * textOpacity) } as CSSProperties}
+          >
+            {/* Sized for the full screen it unfolds to, so it stays sharp on Retina screens. */}
+            <img
+              loading="lazy"
+              decoding="async"
+              src={resolveMedia(data.hero_image, MUSTER_MEDIA.wellness)}
+              srcSet={cdnSrcSet(data.hero_image)}
+              sizes={HERO_SIZES}
+              alt={data.hero_image_alt || ''}
+            />
+            <div className="wellness-scene__fade" aria-hidden="true" />
           </div>
         </div>
 
