@@ -1061,6 +1061,17 @@ function BlogTopicFields({ draft, setDraft }: { draft: Record<string, unknown>; 
   );
 }
 
+// Optional sliders a block can have before they are set (0–100, 0 = off).
+const SECTION_SLIDERS: Record<string, Array<{ key: string; label: string; hint: string }>> = {
+  wellness: [
+    {
+      key: 'fade',
+      label: 'Farbverlauf unten (Hotelfarbe)',
+      hint: 'Macht die Schrift auf dem aufgeklappten Bild besser lesbar. 0 % = aus.',
+    },
+  ],
+};
+
 function GenericFields({ sectionKey }: { sectionKey: string }) {
   const cms = useCms();
   const data = useSection(sectionKey);
@@ -1089,8 +1100,21 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
       ) : null}
       {entries.length === 0 ? <p className="cms-muted">Dieser Block hat noch keine CMS-Felder.</p> : null}
       {sectionKey === 'blog_page' ? <BlogTopicFields draft={draft} setDraft={setDraft} /> : null}
+      {(SECTION_SLIDERS[sectionKey] ?? []).map((slider) => {
+        const current = Math.min(100, Math.max(0, Number(draft[slider.key]) || 0));
+        return (
+          <fieldset key={slider.key} className="cms-fade" data-cms-panel-focus={slider.key}>
+            <legend>{slider.label}</legend>
+            <p className="cms-muted">{slider.hint}</p>
+            <label className="cms-field">
+              Stärke: {current} %
+              <input type="range" min={0} max={100} step={5} value={current} onChange={(event) => setDraft({ ...draft, [slider.key]: Number(event.target.value) })} />
+            </label>
+          </fieldset>
+        );
+      })}
       {entries.map(([key, value]) =>
-        key === 'icon_color' || (sectionKey === 'blog_page' && key === 'filters') ? null : (
+        key === 'icon_color' || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : (
           <GenericValue
             key={key}
             section={sectionKey}
