@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useCms } from './CmsContext';
+import { fieldElement } from './cmsSelect';
 
 export function CmsInlineEdit() {
   const cms = useCms();
@@ -12,7 +13,7 @@ export function CmsInlineEdit() {
       setBox(null);
       return;
     }
-    const el = document.querySelector(`.cms-stage [data-cms-path="${CSS.escape(inline.path)}"]`);
+    const el = fieldElement(inline.section, inline.path);
     if (!(el instanceof HTMLElement)) return;
     el.dataset.cmsEditing = 'true';
     el.contentEditable = 'true';
@@ -46,7 +47,7 @@ export function CmsInlineEdit() {
   useEffect(() => {
     if (!inline) return;
     function onScroll() {
-      const el = document.querySelector(`.cms-stage [data-cms-path="${CSS.escape(inline.path)}"]`);
+      const el = fieldElement(inline.section, inline.path);
       if (el instanceof HTMLElement) setBox(el.getBoundingClientRect());
     }
     window.addEventListener('scroll', onScroll, true);

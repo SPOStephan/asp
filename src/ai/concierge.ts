@@ -245,3 +245,47 @@ export function ocrMessages(dataUrl: string): AiMessage[] {
     },
   ];
 }
+
+// Alt text for a picture of the hotel's website, with what is known about the hotel, so the
+// text names the region where it fits (sea, mountains, view) and never invents anything.
+export type AltContext = { hotelName: string; address?: string | null; about?: string | null; place?: string };
+
+export function altTextMessages(dataUrl: string, context: AltContext): AiMessage[] {
+  const facts = [
+    `Hotel: ${context.hotelName}`,
+    context.address ? `Adresse/Lage: ${context.address}` : '',
+    context.about ? `Über das Hotel: ${context.about}` : '',
+    context.place ? `Das Bild steht auf der Website hier: ${context.place}` : '',
+  ].filter(Boolean);
+  return [
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: [
+            'Du schreibst den Alt-Text für ein Bild auf der Website eines Hotels – für blinde Gäste und für Google.',
+            ...facts,
+            '',
+            'Regeln:',
+            '- Ein sachlicher Satz auf Deutsch, höchstens 120 Zeichen: was ist zu sehen (Raum, Ausstattung, Speise, Landschaft, Stimmung).',
+            '- Ort oder Region (aus der Adresse ableiten, z. B. Nordsee, St. Peter-Ording, Sauerland) nur nennen, wenn es zum Motiv passt: Außenansicht, Landschaft, Meer, Berge, Ausblick, Strand.',
+            '- Den Hotelnamen nur, wenn das Haus selbst oder sein Name zu sehen ist oder es eindeutig ein Raum des Hotels ist – sparsam.',
+            '- Nicht beginnen mit „Bild von“, „Foto von“. Keine Werbesprache, nichts erfinden, keine Personen benennen.',
+            '- Dazu ein kurzer Dateiname: 3 bis 6 deutsche Wörter, klein, mit Bindestrichen, ohne Umlaute (ae, oe, ue, ss).',
+            '',
+            'Antworte nur mit JSON: {"alt": "…", "datei": "…"}',
+          ].join('\n'),
+        },
+        { type: 'image_url', image_url: { url: dataUrl } },
+      ],
+    },
+  ];
+}
+
+export function readAltSuggestion(text: string): { alt: string; fileName: string } {
+  const parsed = parseJson<{ alt?: unknown; datei?: unknown; file?: unknown }>(text);
+  const alt = String(parsed?.alt ?? '').replace(/\s+/g, ' ').trim().slice(0, 160);
+  const fileName = String(parsed?.datei ?? parsed?.file ?? '').trim();
+  return { alt, fileName };
+}

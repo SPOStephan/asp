@@ -183,3 +183,10 @@ export function waitForImage(url: string, timeoutMs = 20000): Promise<void> {
     image.src = url;
   });
 }
+
+// Small JPEG of the visible part, for the AI to look at (fast and cheap to send).
+export async function previewDataUrl(image: HTMLImageElement, crop: CropRect, maxEdge = 1024) {
+  const scale = Math.min(1, maxEdge / Math.max(crop.width, crop.height));
+  const canvas = downscale(image, crop, Math.max(1, Math.round(crop.width * scale)), Math.max(1, Math.round(crop.height * scale)));
+  return canvas.toDataURL('image/jpeg', 0.82);
+}

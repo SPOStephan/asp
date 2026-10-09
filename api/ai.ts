@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { emailMessages, ocrMessages, readQaPairs } from '../src/ai/concierge';
+import { altTextMessages, emailMessages, ocrMessages, readAltSuggestion, readQaPairs } from '../src/ai/concierge';
 import { crawlableLinks, htmlToText, isPublicHttpUrl, pageChunks } from '../src/ai/htmlText';
 import {
   anonymizeChat,
@@ -117,6 +117,27 @@ export default async function handler(request: Request) {
         const settings = await resolveSettings(client, organizationId, hotelId, defaults);
         const result = await complete(needAi(), { model: requireModel(settings, 'extract'), messages: ocrMessages(image), maxTokens: 4000, temperature: 0 });
         return { text: result.text.trim(), model: result.model, usage: result.usage };
+      }
+      case 'describe-image': {
+        // Alt text and file name for a picture the hotel team uploads in the CMS.
+        const hotelId = String(input.hotelId ?? '');
+        await allowed(client, 'can_edit_hotel', { hotel: hotelId });
+        const image = String(input.image ?? '');
+        if (!/^data:image\/(jpeg|png|webp);base64,/.test(image)) throw new Error('Kein Bild.');
+        const hotel = await loadHotel(client, hotelId);
+        const settings = await resolveSettings(client, hotel.organization_id, hotel.id, defaults);
+        const result = await complete(needAi(), {
+          model: requireModel(settings, 'extract'),
+          messages: altTextMessages(image, {
+            hotelName: hotel.name,
+            address: [hotel.address, hotel.address_detail].filter(Boolean).join(', '),
+            about: hotel.seo_description,
+            place: String(input.place ?? '').slice(0, 300),
+          }),
+          maxTokens: 300,
+          temperature: 0.2,
+        });
+        return { ...readAltSuggestion(result.text), model: result.model };
       }
       case 'emails': {
         const organizationId = String(input.organizationId ?? '');

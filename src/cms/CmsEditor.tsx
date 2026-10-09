@@ -146,7 +146,10 @@ export function CmsEditor() {
         ? root.querySelector(`[data-cms-panel-focus="${CSS.escape(focus)}"]`)
         : root.querySelector('.cms-form');
       if (!(target instanceof HTMLElement)) return;
-      target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      // Scroll the panel only: scrollIntoView would also move the page preview behind it,
+      // so a double click for inline editing would land on another entry.
+      const top = target.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop;
+      root.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' });
       target.classList.add('cms-panel-flash');
       timer = window.setTimeout(() => target.classList.remove('cms-panel-flash'), 1200);
     });
@@ -248,6 +251,8 @@ function NavbarFields() {
     show_inquire: data.show_inquire === true,
     cta_text: String(data.cta_text ?? ''),
     cta_href: String(data.cta_href ?? ''),
+    bar_voucher_href: String(data.bar_voucher_href ?? ''),
+    bar_arrival_href: String(data.bar_arrival_href ?? ''),
   });
   const [draft, setDraft] = useState(read);
 
@@ -338,6 +343,35 @@ function NavbarFields() {
               onChange={(cta_href) => setDraft({ ...draft, cta_href })}
             />
           </>
+        ) : null}
+      </fieldset>
+      <fieldset className="cms-fade">
+        <legend>Symbole in der Buchungsleiste (Desktop)</legend>
+        <p className="cms-muted">E-Mail und Telefon kommen aus den Hoteldaten. Gutscheine erscheinen nur mit Ziel.</p>
+        <CmsLinkPicker
+          label="Gutscheine (Geschenk-Symbol)"
+          value={draft.bar_voucher_href}
+          context="Gutscheine"
+          onChange={(bar_voucher_href) => setDraft({ ...draft, bar_voucher_href })}
+        />
+        {draft.bar_voucher_href ? (
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setDraft({ ...draft, bar_voucher_href: '' })}>
+            Gutschein-Symbol ausblenden
+          </button>
+        ) : null}
+        <CmsLinkPicker
+          label="Anreise (Karten-Symbol)"
+          value={draft.bar_arrival_href}
+          context="Anreise"
+          onChange={(bar_arrival_href) => setDraft({ ...draft, bar_arrival_href })}
+        />
+        <p className="cms-muted">
+          {draft.bar_arrival_href ? '' : 'Ohne eigenes Ziel öffnet das Symbol die Hoteladresse in Google Maps.'}
+        </p>
+        {draft.bar_arrival_href ? (
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setDraft({ ...draft, bar_arrival_href: '' })}>
+            Zurück zu Google Maps
+          </button>
         ) : null}
       </fieldset>
       <SaveBar sectionKey="navbar" onSave={() => cms!.saveSection('navbar', payload)} />

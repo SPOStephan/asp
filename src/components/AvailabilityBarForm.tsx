@@ -4,7 +4,7 @@ import { ConciergeButton } from '../concierge/ConciergeButton';
 import { AvailabilityBarFormLegacy } from './AvailabilityBarFormLegacy';
 import { AvailabilityDateLayer } from './AvailabilityDateLayer';
 import { AvailabilityGuestsLayer } from './AvailabilityGuestsLayer';
-import { useHotel } from '../context/HotelContext';
+import { useHotel, useSection } from '../context/HotelContext';
 import {
   AVAILABILITY_UI_MODE,
   createAvailabilityQuery,
@@ -42,6 +42,14 @@ function AvailabilityBarFormModern({
   const [viewMonth, setViewMonth] = useState(() => startOfMonth(new Date()));
   const phoneHref = hotel?.phone ? `tel:${hotel.phone.replace(/\s/g, '')}` : '#';
   const mailHref = hotel?.email ? `mailto:${hotel.email}` : '#';
+  // Icons of the bar, set in the CMS (Logo & Leiste). Vouchers only with a link; the
+  // arrival icon opens the hotel's address in Google Maps unless another target is set.
+  const bar = useSection('navbar') ?? {};
+  const voucherHref = typeof bar.bar_voucher_href === 'string' ? bar.bar_voucher_href.trim() : '';
+  const ownArrival = typeof bar.bar_arrival_href === 'string' ? bar.bar_arrival_href.trim() : '';
+  const mapsQuery = [hotel?.name, hotel?.address].filter(Boolean).join(', ');
+  const arrivalHref = ownArrival || (mapsQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}` : '');
+  const external = (href: string) => (/^https?:\/\//i.test(href) ? { target: '_blank', rel: 'noopener noreferrer' } : {});
   const guestsId = `${idPrefix}guests-trigger`;
   const datesId = `${idPrefix}dates-trigger`;
 
@@ -181,18 +189,22 @@ function AvailabilityBarFormModern({
       {hideExtras ? null : (
         <>
           <div className="availability-bar__tools" aria-label="Schnelle Kontakte">
-            <a className="availability-bar__tool" href="#" aria-label="Geschenkgutscheine">
-              <Gift size={18} strokeWidth={1.5} />
-            </a>
+            {voucherHref ? (
+              <a className="availability-bar__tool" href={voucherHref} aria-label="Geschenkgutscheine" {...external(voucherHref)}>
+                <Gift size={18} strokeWidth={1.5} />
+              </a>
+            ) : null}
             <a className="availability-bar__tool" href={mailHref} aria-label="E-Mail schreiben">
               <Mail size={18} strokeWidth={1.5} />
             </a>
             <a className="availability-bar__tool" href={phoneHref} aria-label="Anrufen">
               <Phone size={18} strokeWidth={1.5} />
             </a>
-            <a className="availability-bar__tool" href="#anreise" aria-label="Anreise und Lage">
-              <MapPin size={18} strokeWidth={1.5} />
-            </a>
+            {arrivalHref ? (
+              <a className="availability-bar__tool" href={arrivalHref} aria-label="Anreise und Lage" {...external(arrivalHref)}>
+                <MapPin size={18} strokeWidth={1.5} />
+              </a>
+            ) : null}
           </div>
           <ConciergeButton />
         </>
