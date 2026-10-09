@@ -5,6 +5,7 @@ import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { type DiscoverTile, newDiscoverTile, resolveDiscoverTiles } from '../lib/media';
 import { BLOG_TOPICS, resolveBlogPosts } from '../lib/blog';
 import { readFilters } from '../lib/listFilters';
+import { hasReadMore, placeReadMore, READ_MORE_MARK, stripReadMore } from '../lib/readMore';
 import { ROOM_FILTERS, ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
@@ -419,6 +420,11 @@ function WelcomeFields() {
 
   const payload = { ...data, ...draft };
   useLivePreview('welcome', payload);
+  // Where the cursor last stood in one of the two paragraphs (for the read-more mark).
+  const [caret, setCaret] = useState<{ key: string; position: number } | null>(null);
+  const rememberCaret = (key: string) => (event: { target: EventTarget }) => {
+    if (event.target instanceof HTMLTextAreaElement) setCaret({ key, position: event.target.selectionStart });
+  };
 
   return (
     <form className="cms-form" onSubmit={(event) => event.preventDefault()}>
@@ -427,8 +433,44 @@ function WelcomeFields() {
       <Field focus="title" path="title_word_normal" label="Wort normal" value={draft.title_word_normal} onChange={(title_word_normal) => setDraft({ ...draft, title_word_normal })} />
       <Field focus="title" path="title_word_script" label="Wort Schreibschrift" value={draft.title_word_script} onChange={(title_word_script) => setDraft({ ...draft, title_word_script })} />
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
-      <Field focus="text" path="text_paragraph1" label="Absatz 1" value={draft.text_paragraph1} onChange={(text_paragraph1) => setDraft({ ...draft, text_paragraph1 })} multiline />
-      <Field focus="text" path="text_paragraph2" label="Absatz 2" value={draft.text_paragraph2} onChange={(text_paragraph2) => setDraft({ ...draft, text_paragraph2 })} multiline />
+      <div onKeyUpCapture={rememberCaret('text_paragraph1')} onClickCapture={rememberCaret('text_paragraph1')} onSelectCapture={rememberCaret('text_paragraph1')}>
+        <Field focus="text" path="text_paragraph1" label="Absatz 1" value={draft.text_paragraph1} onChange={(text_paragraph1) => setDraft({ ...draft, text_paragraph1 })} multiline />
+      </div>
+      <div onKeyUpCapture={rememberCaret('text_paragraph2')} onClickCapture={rememberCaret('text_paragraph2')} onSelectCapture={rememberCaret('text_paragraph2')}>
+        <Field focus="text" path="text_paragraph2" label="Absatz 2" value={draft.text_paragraph2} onChange={(text_paragraph2) => setDraft({ ...draft, text_paragraph2 })} multiline />
+      </div>
+      <fieldset className="cms-fade">
+        <legend>Kürzung auf Handys</legend>
+        <p className="cms-muted">
+          Auf Handys erscheint der Text gekürzt mit „Weiterlesen“. Ohne Angabe nach drei Zeilen. Eigene Stelle: Cursor im Text
+          an die gewünschte Stelle setzen und den Knopf drücken (oder {READ_MORE_MARK} von Hand schreiben). Der ganze Text bleibt
+          für Suchmaschinen und KI lesbar.
+        </p>
+        <div className="cms-modal__actions">
+          <button
+            type="button"
+            className="cms-btn cms-btn--ghost"
+            disabled={!caret}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => {
+              if (!caret) return;
+              const texts = { text_paragraph1: draft.text_paragraph1, text_paragraph2: draft.text_paragraph2 };
+              setDraft({ ...draft, ...placeReadMore(texts, caret.key, caret.position) });
+            }}
+          >
+            „Weiterlesen“ hier setzen
+          </button>
+          {hasReadMore(draft.text_paragraph1) || hasReadMore(draft.text_paragraph2) ? (
+            <button
+              type="button"
+              className="cms-btn cms-btn--ghost"
+              onClick={() => setDraft({ ...draft, text_paragraph1: stripReadMore(draft.text_paragraph1), text_paragraph2: stripReadMore(draft.text_paragraph2) })}
+            >
+              Eigene Stelle entfernen
+            </button>
+          ) : null}
+        </div>
+      </fieldset>
       <SaveBar sectionKey="welcome" onSave={() => cms!.saveSection('welcome', payload)} />
     </form>
   );

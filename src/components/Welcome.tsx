@@ -1,16 +1,24 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+import { useCms } from '../cms/CmsContext';
 import { CmsSection } from '../cms/CmsSection';
 import { useSection } from '../context/HotelContext';
 import { PHONE_CHROME_MQ } from '../lib/phoneChrome';
+import { hasReadMore, READ_MORE_MARK, splitReadMore } from '../lib/readMore';
 import { HighlightStrip } from './HighlightStrip';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 
+// Phones show the welcome text shortened. Where "[weiterlesen]" stands in the text, the cut
+// is exactly there; without it the text is cut after three lines. The folded part stays in
+// the page (only hidden), so search engines and AI read all of it.
 function WelcomeCopy({ paragraphs }: { paragraphs: Array<{ text: string; path: string }> }) {
+  const editing = Boolean(useCms());
   const [open, setOpen] = useState(false);
   const [needsMore, setNeedsMore] = useState(false);
   const innerRef = useRef<HTMLDivElement>(null);
   const copyId = 'welcome-copy';
+  const markAt = paragraphs.findIndex((paragraph) => hasReadMore(paragraph.text));
+  const marked = markAt >= 0;
 
   useLayoutEffect(() => {
     const el = innerRef.current;
@@ -22,7 +30,7 @@ function WelcomeCopy({ paragraphs }: { paragraphs: Array<{ text: string; path: s
         setNeedsMore(false);
         return;
       }
-      setNeedsMore(el.scrollHeight > el.clientHeight + 2);
+      setNeedsMore(marked && !editing ? true : el.scrollHeight > el.clientHeight + 2);
     };
 
     measure();
@@ -34,14 +42,41 @@ function WelcomeCopy({ paragraphs }: { paragraphs: Array<{ text: string; path: s
       media.removeEventListener('change', measure);
       observer.disconnect();
     };
-  }, [open, paragraphs]);
+  }, [open, paragraphs, marked, editing]);
 
+  const body = (paragraph: { text: string; path: string }, index: number) => {
+    const split = splitReadMore(paragraph.text);
+    if (split && editing) {
+      // In the CMS the mark stays visible (and part of the text when editing inline).
+      return (
+        <p key={paragraph.path} data-cms-path={paragraph.path}>
+          {split.before}
+          <span className="welcome__mark"> {READ_MORE_MARK} </span>
+          {split.after}
+        </p>
+      );
+    }
+    if (split) {
+      return (
+        <p key={paragraph.path} data-cms-path={paragraph.path}>
+          {split.before}
+          {split.after ? <span className="welcome__rest"> {split.after}</span> : null}
+        </p>
+      );
+    }
+    const folded = marked && !editing && index > markAt;
+    return (
+      <p key={paragraph.path} data-cms-path={paragraph.path} className={folded ? 'welcome__rest' : undefined}>
+        {paragraph.text}
+      </p>
+    );
+  };
+
+  const mode = marked && !editing ? ` welcome__text--marked${needsMore ? ' welcome__text--cut' : ''}` : '';
   return (
-    <div className={`welcome__text${open ? ' welcome__text--open' : ''}`} data-cms-focus="text">
+    <div className={`welcome__text${mode}${open ? ' welcome__text--open' : ''}`} data-cms-focus="text">
       <div className="welcome__text-inner" id={copyId} ref={innerRef}>
-        {paragraphs.map((paragraph) => (
-          <p key={paragraph.path} data-cms-path={paragraph.path}>{paragraph.text}</p>
-        ))}
+        {paragraphs.map(body)}
       </div>
       {needsMore && !open && (
         <TextCta
