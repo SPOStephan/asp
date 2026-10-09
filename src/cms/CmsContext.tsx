@@ -44,6 +44,8 @@ interface CmsValue {
   preview: (sectionKey: string, data: Record<string, unknown>) => void;
   previewFaqs: (faqs: HotelFAQ[]) => void;
   applyField: (sectionKey: string, path: string, value: unknown, quiet?: boolean) => void;
+  // Show/hide switches (the eye): take effect on the site at once, without "Speichern".
+  setSwitch: (sectionKey: string, key: string, value: boolean) => void;
   // A new picture together with its original and crop, written in one step.
   applyImage: (sectionKey: string, path: string, url: string, source: MediaSource, extra?: Record<string, unknown>) => void;
   removeImage: (sectionKey: string, path: string, extra?: Record<string, unknown>) => void;
@@ -125,6 +127,8 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   inlineRef.current = inline;
   const postPeerRef = useRef(postPeer);
   postPeerRef.current = postPeer;
+  const persistSwitchRef = useRef(persistSwitch);
+  persistSwitchRef.current = persistSwitch;
   const frameModeRef = useRef(frameMode);
   frameModeRef.current = frameMode;
   const focalPreviewRef = useRef(focalPreview);
@@ -255,6 +259,33 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     }
     preview(sectionKey, next, quiet);
     if (!quiet) setDraftTick((tick) => tick + 1);
+  }
+
+  // Writes only this one switch onto the saved section, so unsaved edits elsewhere stay drafts.
+  async function persistSwitch(sectionKey: string, key: string, value: boolean) {
+    if (!hotel) return;
+    const saved = await supabase.from('hotel_sections').select('data').eq('hotel_id', hotel.id).eq('section_key', sectionKey).maybeSingle();
+    if (saved.error) {
+      setSaveError(saved.error.message);
+      return;
+    }
+    const data = { ...(saved.data?.data as Record<string, unknown> | null), [key]: value };
+    const result = await supabase.from('hotel_sections').upsert(
+      { hotel_id: hotel.id, section_key: sectionKey, data },
+      { onConflict: 'hotel_id,section_key' },
+    );
+    if (result.error) setSaveError(result.error.message);
+    else {
+      void purgeSite(hotel.id);
+      scheduleWebsiteSync(hotel.id);
+    }
+  }
+
+  function setSwitch(sectionKey: string, key: string, value: boolean) {
+    applyField(sectionKey, key, value);
+    // The page preview runs in a frame; the editor around it does the saving.
+    if (frameMode) postPeer({ type: 'persist-switch', section: sectionKey, key, value });
+    else void persistSwitch(sectionKey, key, value);
   }
 
   // `extra`: further fields written in the same step (e.g. a reset drag position).
@@ -396,6 +427,10 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         navigateRef.current(message.path);
         return;
       }
+      if (message.type === 'persist-switch' && !frameModeRef.current) {
+        void persistSwitchRef.current(message.section, message.key, message.value);
+        return;
+      }
       if (message.type === 'open-image' && !frameModeRef.current) {
         setImageRequest(message.request as CmsImageRequest);
       }
@@ -509,6 +544,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         preview,
         previewFaqs,
         applyField,
+        setSwitch,
         applyImage,
         removeImage,
         focalPreview,

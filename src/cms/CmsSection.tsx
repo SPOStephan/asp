@@ -83,7 +83,7 @@ export function CmsSection({
           <Pencil size={14} strokeWidth={1.75} />
         </button>
         {canHide ? (
-          <HideButton label={display} hidden={hidden} onToggle={() => cms.applyField(sectionKey, hiddenKey, !hidden)} />
+          <HideButton label={display} hidden={hidden} onToggle={() => cms.setSwitch(sectionKey, hiddenKey, !hidden)} />
         ) : null}
       </div>
       {children}
@@ -136,7 +136,7 @@ export function CmsPart({
     <div className={`cms-part${hidden ? ' is-hidden' : ''}`} data-cms-part={part}>
       <div className="cms-block__chrome cms-part__chrome">
         <span className="cms-block__label">{hidden ? `${label} · aus` : label}</span>
-        <HideButton label={label} hidden={hidden} onToggle={() => cms.applyField(sectionKey, key, !hidden)} />
+        <HideButton label={label} hidden={hidden} onToggle={() => cms.setSwitch(sectionKey, key, !hidden)} />
       </div>
       {children}
     </div>

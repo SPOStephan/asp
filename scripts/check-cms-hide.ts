@@ -33,7 +33,7 @@ assert.deepEqual(removedRecordIds(['a'], ['a']), []);
 
 const section = readFileSync(new URL('../src/cms/CmsSection.tsx', import.meta.url), 'utf8');
 assert.match(section, /cms-block__eye/);
-assert.match(section, /applyField\(sectionKey, hiddenKey, !hidden\)/);
+assert.match(section, /setSwitch\(sectionKey, hiddenKey, !hidden\)/);
 assert.match(section, /hidden && !cms/);
 assert.match(section, /EyeOff/);
 
