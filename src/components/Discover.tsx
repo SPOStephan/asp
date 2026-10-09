@@ -3,6 +3,7 @@ import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { useSection } from '../context/HotelContext';
 import { MUSTER_MEDIA, resolveDiscoverTiles, resolveMedia } from '../lib/media';
 import { remapSiteHref } from '../lib/links';
+import { ScriptWords } from './ScriptWords';
 import { Reveal } from './Reveal';
 
 export function Discover() {
@@ -30,7 +31,7 @@ export function Discover() {
             <div className="discover__head" data-cms-focus="head">
               <p className="eyebrow" data-cms-path="eyebrow">{data.eyebrow}</p>
               <h2 className="discover__title heading-font" data-cms-path="title">
-                {data.title}
+                <ScriptWords text={data.title} script={data.title_script} className="discover__script" />
               </h2>
               <p className="discover__subtitle" data-cms-path="subtitle">{data.subtitle}</p>
             </div>

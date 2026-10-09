@@ -561,6 +561,7 @@ function DiscoverFields() {
   const [draft, setDraft] = useState({
     eyebrow: String(data.eyebrow ?? ''),
     title: String(data.title ?? ''),
+    title_script: String(data.title_script ?? ''),
     subtitle: String(data.subtitle ?? ''),
     feature_image_left: String(data.feature_image_left ?? ''),
     feature_image_left_alt: String(data.feature_image_left_alt ?? ''),
@@ -573,6 +574,7 @@ function DiscoverFields() {
     setDraft({
       eyebrow: String(data.eyebrow ?? ''),
       title: String(data.title ?? ''),
+      title_script: String(data.title_script ?? ''),
       subtitle: String(data.subtitle ?? ''),
       feature_image_left: String(data.feature_image_left ?? ''),
       feature_image_left_alt: String(data.feature_image_left_alt ?? ''),
@@ -616,6 +618,16 @@ function DiscoverFields() {
       <h3>Discover</h3>
       <Field focus="head" path="eyebrow" label="Eyebrow" value={draft.eyebrow} onChange={(eyebrow) => setDraft({ ...draft, eyebrow })} />
       <Field focus="head" path="title" label="Titel" value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
+      <Field
+        focus="head"
+        path="title_script"
+        label="Wort/Wörter daraus in goldener Schreibschrift (optional)"
+        value={draft.title_script}
+        onChange={(title_script) => setDraft({ ...draft, title_script })}
+      />
+      {draft.title_script.trim() && !draft.title.toLowerCase().includes(draft.title_script.trim().toLowerCase()) ? (
+        <p className="cms-error">Diese Wörter kommen im Titel nicht vor – bitte genau so schreiben wie im Titel.</p>
+      ) : null}
       <Field focus="head" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <CmsImageField focus="feature_left" label="Bild links" value={String(data.feature_image_left || draft.feature_image_left)} section="discover" path="feature_image_left" />
       <Field label="Alt links" value={draft.feature_image_left_alt} onChange={(feature_image_left_alt) => setDraft({ ...draft, feature_image_left_alt })} />
