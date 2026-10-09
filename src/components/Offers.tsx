@@ -10,6 +10,7 @@ const OFFER_TEXT =
 interface OfferLink {
   label: string;
   href: string;
+  new_tab?: boolean;
 }
 
 interface OfferItem {
@@ -162,7 +163,7 @@ export function Offers() {
                 {item.links?.length ? (
                   <div className="offers__links">
                     {item.links.map((link) => (
-                      <TextCta key={link.label} href={link.href}>
+                      <TextCta key={link.label} href={link.href} newTab={link.new_tab === true}>
                         {link.label}
                       </TextCta>
                     ))}
