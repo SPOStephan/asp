@@ -22,13 +22,19 @@ UPDATE hotel_sections
 SET data = data - 'impressions_script' - 'impressions_title' - 'impressions_cta' - 'impressions_cta_href' - 'impressions'
 WHERE section_key = 'awards';
 
--- New hotels created from the home template get the section right after the awards.
-UPDATE page_templates
-SET section_keys = CASE
-  WHEN 'awards' = ANY (section_keys) THEN
-    section_keys[1:array_position(section_keys, 'awards')]
-    || ARRAY['impressions']
-    || section_keys[array_position(section_keys, 'awards') + 1:]
-  ELSE array_append(section_keys, 'impressions')
-END
-WHERE template_key = 'home' AND NOT ('impressions' = ANY (section_keys));
+-- New hotels created from the home template get the section right after the awards
+-- (only where the template table exists).
+DO $$
+BEGIN
+  IF to_regclass('public.page_templates') IS NOT NULL THEN
+    UPDATE page_templates
+    SET section_keys = CASE
+      WHEN 'awards' = ANY (section_keys) THEN
+        section_keys[1:array_position(section_keys, 'awards')]
+        || ARRAY['impressions']
+        || section_keys[array_position(section_keys, 'awards') + 1:]
+      ELSE array_append(section_keys, 'impressions')
+    END
+    WHERE template_key = 'home' AND NOT ('impressions' = ANY (section_keys));
+  END IF;
+END $$;
