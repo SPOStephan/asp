@@ -3,7 +3,9 @@ import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from './Reveal';
 import { Plus, Minus } from 'lucide-react';
 import { TextCta } from './TextCta';
-import { culinaryVenueHref } from '../lib/culinary';
+import { culinaryTileHref } from '../lib/culinary';
+import { useCms } from '../cms/CmsContext';
+import { toCmsHref } from '../cms/cmsPages';
 import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { useSection } from '../context/HotelContext';
 
@@ -12,17 +14,14 @@ interface Restaurant {
   alt: string;
   eyebrow: string;
   name: string;
-}
-
-function venueHref(name: string) {
-  if (/grill/i.test(name)) return culinaryVenueHref('grill');
-  if (/strand/i.test(name)) return culinaryVenueHref('strandstube');
-  return culinaryVenueHref('restaurant');
+  href?: string;
+  new_tab?: boolean;
 }
 
 export function Culinary() {
   const [expanded, setExpanded] = useState(false);
   const data = useSection('culinary');
+  const cms = useCms();
 
   if (!data) return null;
 
@@ -87,7 +86,14 @@ export function Culinary() {
         <Reveal delay={200}>
           <div className="culinary__images">
             {restaurants.map((r, index) => (
-              <a className="culinary__img-block" key={r.name} href={venueHref(r.name)} data-cms-focus={`restaurants:${index}`}>
+              <a
+                className="culinary__img-block"
+                key={`${r.name}-${index}`}
+                href={cms ? toCmsHref(culinaryTileHref(r)) : culinaryTileHref(r)}
+                target={r.new_tab && !cms ? '_blank' : undefined}
+                rel={r.new_tab && !cms ? 'noopener noreferrer' : undefined}
+                data-cms-focus={`restaurants:${index}`}
+              >
                 <img loading="lazy" decoding="async" src={r.image} alt={r.alt} />
                 <div className="culinary__img-label">
                   <p className="eyebrow">{r.eyebrow}</p>
