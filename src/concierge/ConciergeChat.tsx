@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowUp, X } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, ConciergeBell, Mail, Phone, RotateCcw, X } from 'lucide-react';
 import { useHotel } from '../context/HotelContext';
 import { answerParts } from '../lib/concierge';
 import { useConcierge, type GuestMessage } from './ConciergeContext';
@@ -67,6 +67,7 @@ function Message({ message }: { message: GuestMessage }) {
           {message.links.map((link) => (
             <a key={link.url} href={link.url}>
               {link.title}
+              <ArrowUpRight size={14} strokeWidth={1.6} aria-hidden="true" />
             </a>
           ))}
         </div>
@@ -105,17 +106,33 @@ export function ConciergeChat({ onClose }: { onClose?: () => void }) {
     return (
       <div className="concierge concierge--off">
         <header className="concierge__head">
-          <strong>Schreiben Sie uns</strong>
+          <span className="concierge__avatar" aria-hidden="true">
+            <Mail size={20} strokeWidth={1.4} />
+          </span>
+          <div className="concierge__title">
+            <strong>Schreiben Sie uns</strong>
+            <span>{hotel?.name}</span>
+          </div>
           {onClose ? (
-            <button type="button" className="concierge__close" aria-label="Schließen" onClick={onClose}>
+            <button type="button" className="concierge__icon" aria-label="Schließen" onClick={onClose}>
               <X size={20} strokeWidth={1.5} />
             </button>
           ) : null}
         </header>
-        <p>Wir sind gern für Sie da.</p>
+        <p className="concierge__lead">Wir sind gern für Sie da – per E-Mail oder am Telefon.</p>
         <div className="concierge__contact">
-          {mail ? <a href={mail}>E-Mail an das Hotel</a> : null}
-          {phone ? <a href={phone}>Anrufen</a> : null}
+          {mail ? (
+            <a href={mail}>
+              <Mail size={18} strokeWidth={1.5} aria-hidden="true" />
+              E-Mail schreiben
+            </a>
+          ) : null}
+          {phone ? (
+            <a href={phone}>
+              <Phone size={18} strokeWidth={1.5} aria-hidden="true" />
+              Anrufen
+            </a>
+          ) : null}
         </div>
       </div>
     );
@@ -124,17 +141,23 @@ export function ConciergeChat({ onClose }: { onClose?: () => void }) {
   return (
     <div className="concierge">
       <header className="concierge__head">
-        <div>
+        <span className="concierge__avatar" aria-hidden="true">
+          <ConciergeBell size={20} strokeWidth={1.4} />
+        </span>
+        <div className="concierge__title">
           <strong>{config.name}</strong>
-          <span>{hotel?.name}</span>
+          <span>
+            <i className="concierge__dot" aria-hidden="true" />
+            {hotel?.name} · antwortet sofort
+          </span>
         </div>
         {messages.length ? (
-          <button type="button" className="concierge__new" onClick={reset} disabled={busy}>
-            Neu
+          <button type="button" className="concierge__icon" aria-label="Neues Gespräch" title="Neues Gespräch" onClick={reset} disabled={busy}>
+            <RotateCcw size={18} strokeWidth={1.5} />
           </button>
         ) : null}
         {onClose ? (
-          <button type="button" className="concierge__close" aria-label="Chat schließen" onClick={onClose}>
+          <button type="button" className="concierge__icon" aria-label="Chat schließen" onClick={onClose}>
             <X size={20} strokeWidth={1.5} />
           </button>
         ) : null}
@@ -157,6 +180,7 @@ export function ConciergeChat({ onClose }: { onClose?: () => void }) {
         ) : null}
       </div>
       <form className="concierge__ask" onSubmit={send}>
+        <div className="concierge__field">
         <textarea
           ref={input}
           rows={1}
@@ -170,8 +194,9 @@ export function ConciergeChat({ onClose }: { onClose?: () => void }) {
           }}
         />
         <button type="submit" aria-label="Senden" disabled={busy || !question.trim()}>
-          <ArrowUp size={20} strokeWidth={1.8} />
+          <ArrowUp size={18} strokeWidth={2} />
         </button>
+        </div>
       </form>
       <p className="concierge__note">
         KI-Assistent – Antworten können Fehler enthalten. Bitte keine persönlichen Daten eingeben.
