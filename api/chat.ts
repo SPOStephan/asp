@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { answerQuestion, type AiDefaults } from '../src/ai/knowledgeServer';
+import { platformDefaults } from '../src/ai/defaultModels';
 import { ndjsonResponse } from '../src/ai/ndjson';
 import { aiConfig } from '../src/ai/provider';
 import { REFERENCE_HOTEL_SLUG } from '../src/config/product';
@@ -59,20 +60,32 @@ async function count(query: PromiseLike<{ count: number | null; error: { message
   return result.count ?? 0;
 }
 
+const GUEST_UNAVAILABLE = 'Der Chat ist gerade leider nicht erreichbar.';
+
+// Whatever goes wrong inside, a guest only ever reads a friendly sentence.
 export default async function handler(request: Request) {
+  try {
+    return await handle(request);
+  } catch (err) {
+    console.error('website chat:', err instanceof Error ? err.message : err);
+    return json(503, { error: GUEST_UNAVAILABLE });
+  }
+}
+
+async function handle(request: Request) {
   if (request.method !== 'POST') return json(405, { error: 'Nur POST.' });
   const supabaseUrl = env('VITE_SUPABASE_URL');
   const serviceKey = env('SUPABASE_SERVICE_ROLE_KEY');
   const config = aiConfig(env);
-  if (!supabaseUrl || !serviceKey || !config) return json(503, { error: 'Der Chat ist auf dem Server noch nicht eingerichtet.' });
+  if (!supabaseUrl || !serviceKey || !config) return json(503, { error: GUEST_UNAVAILABLE });
 
   const client = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const host = requestHost(request);
   const hotel = await hotelForHost(client, host);
-  if (!hotel?.organization_id) return json(404, { error: 'Für diese Adresse gibt es keinen Chat.' });
+  if (!hotel?.organization_id) return json(404, { error: GUEST_UNAVAILABLE });
   const section = await client.from('hotel_sections').select('data').eq('hotel_id', hotel.id).eq('section_key', CONCIERGE_SECTION).maybeSingle();
   if (!conciergeConfig(section.data?.data as Record<string, unknown> | undefined, hotel.name).enabled) {
-    return json(403, { error: 'Der Chat ist für dieses Hotel ausgeschaltet.' });
+    return json(403, { error: GUEST_UNAVAILABLE });
   }
 
   const input = (await request.json().catch(() => ({}))) as { question?: unknown; history?: unknown; conversationId?: unknown };
@@ -100,8 +113,9 @@ export default async function handler(request: Request) {
     return json(429, { error: 'Der Chat ist heute ausgelastet. Bitte schreiben Sie uns direkt oder rufen Sie an.' });
   }
 
-  const defaults: AiDefaults = { chat: env('AI_CHAT_MODEL'), extract: env('AI_EXTRACT_MODEL'), helper: env('AI_HELPER_MODEL') };
+  const defaults: AiDefaults = await platformDefaults(config, env);
   return ndjsonResponse(async (send) => {
+    // Guests never see technical or internal messages; the hotel team finds them in the logs.
     const answer = await answerQuestion(client, config, {
       hotelId: hotel.id,
       question,
@@ -112,6 +126,9 @@ export default async function handler(request: Request) {
       defaults,
       clientHash,
       onDelta: (text) => send({ type: 'delta', text }),
+    }).catch((err: unknown) => {
+      console.error('website chat:', err instanceof Error ? err.message : err);
+      throw new Error(GUEST_UNAVAILABLE);
     });
     // Guests see the pages the answer is based on, not the internal sources.
     const seen = new Set<string>();
