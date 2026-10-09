@@ -381,6 +381,10 @@ export class SiteModel {
     if (visible('awards')) {
       blocks.push({ heading: str(awards!.title), items: itemsOf(awards!.items, 'label') });
     }
+    const impressions = s('impressions');
+    if (visible('impressions')) {
+      blocks.push({ heading: words(impressions!.script, impressions!.title), items: itemsOf(impressions!.images, 'alt') });
+    }
     const facts = s('facts');
     if (visible('facts')) {
       blocks.push({

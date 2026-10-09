@@ -1114,7 +1114,10 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
         );
       })}
       {entries.map(([key, value]) =>
-        key === 'icon_color' || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : (
+        key === 'icon_color' || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : key.endsWith('_href') && typeof value === 'string' ? (
+          // Button targets of a section (e.g. "Alle Impressionen"): choose a page or address.
+          <CmsLinkPicker key={key} label={key} value={value} onChange={(next) => setDraft({ ...draft, [key]: next })} />
+        ) : (
           <GenericValue
             key={key}
             section={sectionKey}
@@ -1133,6 +1136,7 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
 // A new, empty entry shaped like the existing ones (all their fields, texts empty, the
 // first icon kept as a start, a fresh id where entries have ids).
 function blankListItem(list: unknown[], path: string): unknown {
+  if (!list.length && /(^|\.)(images|impressions)$/.test(path)) return { src: '', alt: '' };
   const sample = list[list.length - 1];
   if (typeof sample === 'string') return '';
   if (typeof sample === 'number') return 0;

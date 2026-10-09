@@ -42,6 +42,7 @@ export const HOME_SECTION_KEYS = [
   'culinary',
   'generations',
   'awards',
+  'impressions',
   'facts',
   'faq_home_section',
   'blog_page',
