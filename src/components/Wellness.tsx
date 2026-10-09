@@ -64,7 +64,9 @@ export function Wellness() {
 
   return (
     <CmsSection sectionKey="wellness" label="Wellness">
-    <section className="wellness-scene" id="wellness" ref={sectionRef}>
+    {/* Phones: side pictures overlap the middle one and move aside as it unfolds;
+        "side" keeps the earlier layout (pictures next to it), switchable in the CMS. */}
+    <section className={`wellness-scene${data.mobile_layout === 'side' ? '' : ' wellness-scene--overlap'}`} id="wellness" ref={sectionRef}>
       <div className="wellness-scene__sticky">
         <div className={`wellness-scene__heading${expanded ? ' is-hidden' : ''}`} data-cms-focus="title">
           <p className="eyebrow">{data.eyebrow}</p>
