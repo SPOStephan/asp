@@ -12,6 +12,7 @@ import {
   WELLNESS_PAGE_FALLBACK,
   wellnessTopicHref,
 } from '../lib/wellness';
+import { stripReadMore } from '../lib/readMore';
 import type { HotelContent } from './siteData';
 
 export type SiteLink = { label: string; href: string };
@@ -310,7 +311,7 @@ export class SiteModel {
     if (visible('welcome')) {
       blocks.push({
         heading: words(welcome!.title_line1, welcome!.title_word_normal, welcome!.title_word_script),
-        text: texts(welcome!.subtitle, welcome!.text_paragraph1, welcome!.text_paragraph2),
+        text: texts(welcome!.subtitle, stripReadMore(str(welcome!.text_paragraph1)), stripReadMore(str(welcome!.text_paragraph2))),
       });
     }
     const strip = s('highlight_strip');

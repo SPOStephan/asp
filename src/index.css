@@ -1108,7 +1108,7 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .welcome__head { margin-bottom: 32px; }
   .welcome__text { width: 100%; max-width: none; }
   .welcome__text p { font-size: 1.1rem; line-height: 1.65; margin-bottom: 16px; }
-  .welcome__text:not(.welcome__text--open) .welcome__text-inner {
+  .welcome__text:not(.welcome__text--open):not(.welcome__text--marked) .welcome__text-inner {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
@@ -4272,4 +4272,18 @@ body.room-lightbox-open .availability-bar__slot {
 @media (max-width: 600px) {
   .subpage-hero__clip--white .subpage-hero__text { top: var(--hero-text-top-mobile, var(--hero-text-top, 45svh)); }
   .subpage-hero__clip--dark .subpage-hero__text { top: calc(var(--hero-text-top-mobile, var(--hero-text-top, 45svh)) - var(--image-bottom)); }
+}
+/* Cut set by hand ("[weiterlesen]", phones): the rest is hidden, not clipped by lines. */
+.welcome__text--cut:not(.welcome__text--open) .welcome__rest { display: none; }
+/* CMS: where the welcome text folds on phones. */
+.welcome__mark {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 0 8px;
+  border: 1px dashed var(--accent-400);
+  border-radius: 999px;
+  font-size: 0.72em;
+  letter-spacing: 0.08em;
+  color: var(--accent-400);
+  vertical-align: middle;
 }
