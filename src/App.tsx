@@ -67,8 +67,11 @@ function App() {
   const isChromeLab = location.pathname.startsWith('/mobil-leiste');
   const isPhone = usePhoneChrome();
   const showDock = !adminShell && !cmsShell && isPhone && !isFontLab && !isMenuLab && !isChromeLab;
-  const showFixedBar = !adminShell && !cmsShell && !isHome && !isFontLab && !isMenuLab && !isChromeLab && !isPhone;
-  const { loading, error } = useHotelContent();
+  const { loading, error, content } = useHotelContent();
+  // The home hero in sub-page style has the booking bar fixed at the bottom from the start,
+  // like every sub-page; only the classic home hero carries its own bar.
+  const classicHome = isHome && content?.sections.hero?.layout === 'classic';
+  const showFixedBar = !adminShell && !cmsShell && !classicHome && !isFontLab && !isMenuLab && !isChromeLab && !isPhone;
   useSiteHead(!adminShell && !cmsShell);
 
   useEffect(() => {
