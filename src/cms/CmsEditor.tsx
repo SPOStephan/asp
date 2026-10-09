@@ -1153,7 +1153,7 @@ function blankListItem(list: unknown[], path: string): unknown {
   for (const entry of list) {
     if (!isPlainObject(entry)) continue;
     for (const [key, value] of Object.entries(entry)) {
-      if (key in blank) continue;
+      if (key in blank || key === 'focal' || key === 'hero_focal') continue;
       if (key === 'icon' || key === 'icon_color') blank[key] = value;
       else if (typeof value === 'string') blank[key] = '';
       else if (typeof value === 'number') blank[key] = 0;
@@ -1182,7 +1182,7 @@ function GenericValue({
   // Title of the item a nested value belongs to (offer, room …), for link suggestions.
   hint?: string;
 }) {
-  if (path === 'hero_focal' || path.endsWith('.hero_focal') || isHiddenMetaPath(path)) return null;
+  if (path === 'hero_focal' || path.endsWith('.hero_focal') || path.endsWith('.focal') || isHiddenMetaPath(path)) return null;
 
   if (typeof value === 'boolean') {
     return (

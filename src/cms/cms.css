@@ -103,6 +103,9 @@
   display: flex;
   flex-direction: column;
 }
+.cms-hero-pan--tile { width: 100%; height: 100%; }
+.cms-hero-pan--tile .cms-hero-pan__tools { bottom: 8px; left: 8px; opacity: 0; transition: opacity 0.2s ease; }
+.cms-hero-pan--tile:hover .cms-hero-pan__tools { opacity: 1; }
 .cms-hero-pan:active,
 .cms-hero-pan.is-panned {
   cursor: grabbing;

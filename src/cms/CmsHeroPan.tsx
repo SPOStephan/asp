@@ -1,16 +1,20 @@
 import { useLayoutEffect, useRef, type CSSProperties, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
-import { panFocal, readHeroFocal, readZoom, writeHeroFocal, zoomHeroFocal, type FocalDevice } from './cmsFocal';
+import { CENTER_FOCAL, panFocal, readHeroFocal, readZoom, writeHeroFocal, zoomHeroFocal, type FocalDevice } from './cmsFocal';
 import { useCms } from './CmsContext';
 
 export function CmsHeroPan({
   section,
   path,
   value,
+  tile = false,
   children,
 }: {
   section: string;
   path: string;
   value: unknown;
+  // A picture inside a grid or list (e.g. the impressions): smaller tools, and the
+  // new position goes into the editor panel as soon as the drag ends.
+  tile?: boolean;
   children: ReactNode;
 }) {
   const cms = useCms();
@@ -22,7 +26,9 @@ export function CmsHeroPan({
     moved: boolean;
   } | null>(null);
   const device: FocalDevice = cms?.focalPreview ?? 'desktop';
-  const point = readHeroFocal(value)[device];
+  // Tiles start centred on phones too; the hero keeps its own phone default.
+  const fallback = tile ? CENTER_FOCAL : undefined;
+  const point = readHeroFocal(value, fallback)[device];
   const zoom = readZoom(point);
 
   useLayoutEffect(() => {
@@ -38,7 +44,7 @@ export function CmsHeroPan({
 
   function onPointerDown(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return;
-    const focal = readHeroFocal(value)[device];
+    const focal = readHeroFocal(value, fallback)[device];
     drag.current = { x: event.clientX, y: event.clientY, start: focal, moved: false };
     event.currentTarget.classList.remove('is-panned');
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -54,7 +60,7 @@ export function CmsHeroPan({
       current.moved = true;
       event.currentTarget.classList.add('is-panned');
     }
-    const next = writeHeroFocal(value, device, panFocal(current.start, dx, dy, frame.width, frame.height));
+    const next = writeHeroFocal(value, device, panFocal(current.start, dx, dy, frame.width, frame.height), fallback);
     const nextPoint = next[device];
     const img = event.currentTarget.querySelector('img');
     if (img instanceof HTMLImageElement) {
@@ -70,6 +76,16 @@ export function CmsHeroPan({
       event.preventDefault();
       event.stopPropagation();
       event.currentTarget.classList.add('is-panned');
+      if (tile) {
+        const frame = event.currentTarget.getBoundingClientRect();
+        const next = writeHeroFocal(
+          value,
+          device,
+          panFocal(drag.current.start, event.clientX - drag.current.x, event.clientY - drag.current.y, frame.width, frame.height),
+          fallback,
+        );
+        cms!.applyField(section, path, next);
+      }
     }
     drag.current = null;
   }
@@ -84,7 +100,7 @@ export function CmsHeroPan({
   return (
     <div
       ref={rootRef}
-      className="cms-hero-pan"
+      className={tile ? 'cms-hero-pan cms-hero-pan--tile' : 'cms-hero-pan'}
       data-cms-pan=""
       style={{ '--cms-hero-focal': `${point.x}% ${point.y}%` } as CSSProperties}
       onPointerDown={onPointerDown}
@@ -99,7 +115,7 @@ export function CmsHeroPan({
       {/* data-cms-ui: the CMS click handler must leave these buttons alone. */}
       <div className="cms-hero-pan__tools" data-cms-ui="">
         <span className="cms-hero-pan__hint">
-          {device === 'mobile' ? 'Mobil ziehen' : 'Desktop ziehen'} · + / − zoomt
+          {tile ? (device === 'mobile' ? 'Mobil' : 'Desktop') : `${device === 'mobile' ? 'Mobil ziehen' : 'Desktop ziehen'} · + / − zoomt`}
         </span>
         <button
           type="button"
@@ -109,7 +125,7 @@ export function CmsHeroPan({
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
-            cms.applyField(section, path, zoomHeroFocal(value, device, 1.12));
+            cms.applyField(section, path, zoomHeroFocal(value, device, 1.12, fallback));
           }}
         >
           +
@@ -122,7 +138,7 @@ export function CmsHeroPan({
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
-            cms.applyField(section, path, zoomHeroFocal(value, device, 0.9));
+            cms.applyField(section, path, zoomHeroFocal(value, device, 0.9, fallback));
           }}
         >
           −
