@@ -7,6 +7,7 @@ import { FAQ } from '../components/FAQ';
 import { Generations } from '../components/Generations';
 import { Hero } from '../components/Hero';
 import { Highlights } from '../components/Highlights';
+import { Impressions } from '../components/Impressions';
 import { HomeBlog } from '../components/HomeBlog';
 import { Newsletter } from '../components/Newsletter';
 import { Offers } from '../components/Offers';
@@ -26,6 +27,7 @@ export function HomePage() {
       <Culinary />
       <Generations />
       <Awards />
+      <Impressions />
       <Facts />
       <FAQ />
       <HomeBlog />
