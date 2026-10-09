@@ -1228,6 +1228,21 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .wellness-scene__hero { width: 50vw; }
 }
 
+/* Phones: a narrower middle picture, so the pictures beside it are wider and less cut;
+   the same small gap between all of them. */
+@media (max-width: 600px) {
+  .wellness-scene { --side-gap: 2vw; --mid-w: 40vw; --side-w: calc((100vw - var(--mid-w)) / 2 - var(--side-gap)); }
+  .wellness-scene__hero { width: var(--mid-w); top: 8vh; }
+  .wellness-scene__hero.is-expanded { top: 0; }
+  /* Less empty space above the scene on phones. */
+  .wellness-scene__heading { padding-top: 6vh; }
+  .wellness-scene { --ensemble-top: calc(45vh - (var(--top-h) + var(--bottom-h) + var(--side-gap)) / 2); }
+  .wellness-scene__side--left-top,
+  .wellness-scene__side--left-bottom,
+  .wellness-scene__side--right-top,
+  .wellness-scene__side--right-bottom { width: var(--side-w); }
+}
+
 /* ==================== CULINARY ==================== */
 .culinary { background: var(--neutral-0); }
 .culinary__hero { position: relative; height: 70vh; min-height: 480px; overflow: hidden; }
