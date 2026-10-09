@@ -75,11 +75,17 @@ export default async function handler(request: Request) {
   if (rightsError) return json(500, { error: rightsError.message });
   if (allowed !== true) return json(403, { error: 'Keine Berechtigung für dieses Hotel.' });
   const alt = String(form.get('alt') ?? '').trim() || null;
-  const folder = hotelId ? `hotels/${hotelId}` : 'shared';
+  // Readable addresses for search engines: hotels/<hotel>/<what-it-shows>-<4 chars>.webp
+  // (the short suffix keeps two pictures with the same name apart).
+  const slug = hotelId ? String((await supabase.from('hotels').select('slug').eq('id', hotelId).maybeSingle()).data?.slug ?? '') : '';
+  const folder = hotelId ? `hotels/${safeName(slug) || hotelId}` : 'shared';
   const fileName = file.type === 'image/webp'
     ? safeName(file.name.replace(/\.[a-z0-9]+$/i, '.webp'))
     : safeName(file.name);
-  const bunnyPath = `${folder}/${Date.now()}-${fileName}`;
+  const dot = fileName.lastIndexOf('.');
+  const stem = (dot > 0 ? fileName.slice(0, dot) : fileName).toLowerCase();
+  const ext = dot > 0 ? fileName.slice(dot).toLowerCase() : '';
+  const bunnyPath = `${folder}/${stem}-${crypto.randomUUID().slice(0, 4)}${ext}`;
   const bytes = new Uint8Array(await file.arrayBuffer());
 
   const put = await fetch(`https://${storageHost}/${zone}/${bunnyPath}`, {
