@@ -46,7 +46,15 @@ export const FOOTER_FALLBACK = {
   ],
 };
 
+// Fields older sections lack, so the editor still offers them (the page shows the same defaults).
+const CULINARY_FALLBACK = {
+  extra_text: '',
+  cta: 'Alle Restaurants',
+  cta_href: '/kulinarik',
+};
+
 export const CMS_SECTION_FALLBACKS: Record<string, Record<string, unknown>> = {
+  culinary: CULINARY_FALLBACK,
   wellness_page: WELLNESS_PAGE_FALLBACK,
   culinary_page: CULINARY_PAGE_FALLBACK,
   offers_page: OFFERS_PAGE_FALLBACK,

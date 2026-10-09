@@ -27,6 +27,10 @@ export function Culinary() {
   if (!data) return null;
 
   const restaurants: Restaurant[] = data.restaurants ?? [];
+  const extraText = typeof data.extra_text === 'string' ? data.extra_text.trim() : '';
+  // An empty button text removes the button; without the field the old default stays.
+  const ctaText = typeof data.cta === 'string' ? data.cta.trim() : 'Alle Restaurants';
+  const ctaHref = (typeof data.cta_href === 'string' && data.cta_href.trim()) || '/kulinarik';
 
   return (
     <CmsSection sectionKey="culinary" label="Kulinarik">
@@ -51,24 +55,31 @@ export function Culinary() {
             <div className="culinary__text" data-cms-focus="text">
               <p>{data.text}</p>
 
-              {expanded && (
+              {extraText && expanded && (
                 <div className="culinary__extra">
-                  <p>{data.extra_text}</p>
+                  <p>{extraText}</p>
                 </div>
               )}
 
-              <button
-                className="culinary__toggle"
-                onClick={() => setExpanded(!expanded)}
-              >
-                {expanded ? (
-                  <><Minus size={16} strokeWidth={1.5} /> Weniger</>
-                ) : (
-                  <><Plus size={16} strokeWidth={1.5} /> Mehr lesen</>
-                )}
-              </button>
+              {/* "Mehr lesen" only when there is more to read. */}
+              {extraText ? (
+                <button
+                  className="culinary__toggle"
+                  onClick={() => setExpanded(!expanded)}
+                >
+                  {expanded ? (
+                    <><Minus size={16} strokeWidth={1.5} /> Weniger</>
+                  ) : (
+                    <><Plus size={16} strokeWidth={1.5} /> Mehr lesen</>
+                  )}
+                </button>
+              ) : null}
 
-              <TextCta href="/kulinarik">Alle Restaurants</TextCta>
+              {ctaText ? (
+                <span data-cms-focus="cta">
+                  <TextCta href={ctaHref}>{ctaText}</TextCta>
+                </span>
+              ) : null}
             </div>
           </Reveal>
         </div>
