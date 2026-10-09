@@ -136,3 +136,12 @@ export function hitKind(selection: CmsSelection, target: EventTarget | null) {
   }
   return 'text';
 }
+
+// The element of one field on the page. Paths like "items.0.title" exist in several
+// sections, so the section always narrows the search.
+export function fieldElement(section: string, path: string): HTMLElement | null {
+  const inSection = document.querySelector(`.cms-stage [data-cms-section="${CSS.escape(section)}"] [data-cms-path="${CSS.escape(path)}"]`);
+  if (inSection instanceof HTMLElement) return inSection;
+  const anywhere = document.querySelector(`.cms-stage [data-cms-path="${CSS.escape(path)}"]`);
+  return anywhere instanceof HTMLElement ? anywhere : null;
+}

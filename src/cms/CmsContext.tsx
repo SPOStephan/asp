@@ -28,6 +28,7 @@ import {
   type CmsImageRequest,
   type CmsInline,
   type CmsSelection,
+  fieldElement,
 } from './cmsSelect';
 
 interface CmsValue {
@@ -180,8 +181,9 @@ export function CmsProvider({ children }: { children: ReactNode }) {
 
     document.querySelectorAll('[data-cms-focus].is-on').forEach((node) => node.classList.remove('is-on'));
     if (selected?.focus) {
+      // Within the chosen section only: "items:0" exists in several sections.
       document
-        .querySelectorAll(`[data-cms-focus="${CSS.escape(selected.focus)}"]`)
+        .querySelectorAll(`[data-cms-section="${CSS.escape(selected.section)}"] [data-cms-focus="${CSS.escape(selected.focus)}"]`)
         .forEach((node) => node.classList.add('is-on'));
     }
   }, [selected]);
@@ -287,7 +289,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   function cancelInline() {
     const current = inlineRef.current;
     if (current) {
-      const el = document.querySelector(`.cms-stage [data-cms-path="${CSS.escape(current.path)}"]`);
+      const el = fieldElement(current.section, current.path);
       if (el instanceof HTMLElement) el.innerText = current.original;
     }
     setInline(null);
@@ -305,7 +307,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       }
 
       if (inlineRef.current && target instanceof Element && !target.closest('[data-cms-editing]')) {
-        const el = document.querySelector(`.cms-stage [data-cms-path="${CSS.escape(inlineRef.current.path)}"]`);
+        const el = fieldElement(inlineRef.current.section, inlineRef.current.path);
         commitInline(el instanceof HTMLElement ? el.innerText : inlineRef.current.original);
       }
 
