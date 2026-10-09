@@ -1428,7 +1428,8 @@ body.has-fixed-bar { padding-bottom: 92px; }
 .highlights__title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; margin: 16px 0; line-height: 1.1; }
 .highlights__title em { font-style: italic; color: var(--primary-500); }
 .highlights__list { display: flex; flex-direction: column; }
-.hcard { display: grid; grid-template-columns: 1fr 1fr; min-height: 480px; align-items: stretch; }
+/* Pictures about a third taller than before (480px); the text stays centred to the picture. */
+.hcard { display: grid; grid-template-columns: 1fr 1fr; min-height: clamp(640px, 44vw, 820px); align-items: stretch; }
 .hcard--reverse { direction: rtl; }
 .hcard--reverse > * { direction: ltr; }
 .hcard__text { display: flex; flex-direction: column; justify-content: center; padding: 64px; }
@@ -1443,7 +1444,7 @@ body.has-fixed-bar { padding-bottom: 92px; }
   .hcard { grid-template-columns: 1fr; min-height: auto; }
   .hcard--reverse { direction: ltr; }
   .hcard__text { padding: 48px 24px; }
-  .hcard__image { height: 280px; }
+  .hcard__image { height: 380px; }
 }
 
 /* ==================== DISCOVER ==================== */
