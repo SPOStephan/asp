@@ -10,6 +10,8 @@ interface TextCtaProps {
   onClick?: MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>;
   'aria-expanded'?: boolean;
   'aria-controls'?: string;
+  // Opens in a new tab (e.g. an external booking engine); not inside the CMS.
+  newTab?: boolean;
 }
 
 export function TextCta({
@@ -19,6 +21,7 @@ export function TextCta({
   onClick,
   'aria-expanded': ariaExpanded,
   'aria-controls': ariaControls,
+  newTab = false,
 }: TextCtaProps) {
   const cms = useCms();
   const resolved = href && cms ? toCmsHref(href) : href;
@@ -37,7 +40,13 @@ export function TextCta({
       cms && resolved && !resolved.startsWith('#') && !resolved.startsWith('mailto:') && !resolved.startsWith('tel:'),
     );
     return (
-      <a className={classes} href={resolved} onClick={onClick} {...(cmsNav ? { 'data-cms-nav': '' } : {})}>
+      <a
+        className={classes}
+        href={resolved}
+        onClick={onClick}
+        {...(newTab && !cms ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        {...(cmsNav ? { 'data-cms-nav': '' } : {})}
+      >
         {inner}
       </a>
     );

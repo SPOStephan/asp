@@ -1195,6 +1195,25 @@ function GenericValue({
                         onChange(copy);
                       }}
                     />
+                  ) : childKey === 'new_tab' ? null : childKey === 'href' && typeof childValue === 'string' ? (
+                    // Link targets: choose a page or address, optionally "open in a new tab".
+                    <CmsLinkPicker
+                      key={childKey}
+                      label="Ziel"
+                      value={childValue}
+                      context={String(item.label ?? item.title ?? '')}
+                      newTab={item.new_tab === true}
+                      onChange={(next) => {
+                        const copy = value.slice();
+                        copy[index] = { ...item, href: next };
+                        onChange(copy);
+                      }}
+                      onNewTabChange={(next) => {
+                        const copy = value.slice();
+                        copy[index] = { ...item, new_tab: next };
+                        onChange(copy);
+                      }}
+                    />
                   ) : typeof childValue === 'string' || typeof childValue === 'number' || typeof childValue === 'boolean' ? (
                     <GenericValue
                       key={childKey}
