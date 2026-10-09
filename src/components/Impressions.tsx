@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import { CmsSection } from '../cms/CmsSection';
+import { useCms } from '../cms/CmsContext';
+import { GalleryViewer } from './GalleryViewer';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
@@ -34,6 +37,13 @@ export function Impressions() {
     .map((shot, position) => ({ shot, position }))
     .filter(({ shot }) => shot?.src);
   const ownImages = Boolean(own && Array.isArray(own.images));
+  const cms = useCms();
+  // Picture opened large (tap a tile; swipe or arrows for the next ones). Not in the CMS,
+  // where a click on a picture edits it.
+  const [active, setActive] = useState<number | null>(null);
+  const shots = images.map(({ shot }) => ({ src: shot.src, alt: shot.alt }));
+  const step = (delta: number) =>
+    setActive((index) => (index === null || !shots.length ? null : (index + delta + shots.length) % shots.length));
 
   if (!own && !images.length) return null;
 
@@ -66,6 +76,14 @@ export function Impressions() {
                   ) : (
                     <img loading="lazy" decoding="async" src={shot.src} alt={shot.alt} />
                   )}
+                  {!cms ? (
+                    <button
+                      type="button"
+                      className="impressions__open"
+                      aria-label={`${shot.alt || 'Bild'} groß ansehen`}
+                      onClick={() => setActive(index)}
+                    />
+                  ) : null}
                 </figure>
               ))}
             </div>
@@ -79,6 +97,9 @@ export function Impressions() {
           </div>
         </Reveal>
       </section>
+      {active !== null && !cms ? (
+        <GalleryViewer shots={shots} active={active} onClose={() => setActive(null)} onStep={step} />
+      ) : null}
     </CmsSection>
   );
 }
