@@ -8,7 +8,7 @@ import { nameFromUrl, pictureBaseName, slugifyFileName } from './cmsFileName';
 import { CMS_SECTION_LABELS } from './cmsSelect';
 import { callAi } from '../lib/aiClient';
 import { formatImageHint, imageHint } from './cmsImageHints';
-import { focalPathFor, refitCrop, slotAspect } from './cmsSlot';
+import { focalPathFor, refitCrop, slotAspect, slotIsPannable } from './cmsSlot';
 import { readHeroFocal } from './cmsFocal';
 import { uploadToBunny } from './cmsUpload';
 import { useCms } from './CmsContext';
@@ -85,8 +85,9 @@ export function CmsImageDialog() {
     setImage(null);
     setFileName(null);
     setSourceUrl(null);
-    const measured = slotAspect(request.section, request.path, cms?.focalPreview ?? 'desktop');
-    const target = measured ?? imageHint(request.section, request.path).aspect;
+    const pannable = slotIsPannable(request.section, request.path);
+    const measured = pannable ? undefined : slotAspect(request.section, request.path, cms?.focalPreview ?? 'desktop');
+    const target = pannable ? undefined : measured ?? imageHint(request.section, request.path).aspect;
     setPageAspect(measured);
     setAspect(target);
     // A picture that is already there opens with its original and last crop, ready to adjust.
@@ -118,7 +119,7 @@ export function CmsImageDialog() {
     }
     if (!pick) return;
     let cancelled = false;
-    void openSource(pick, target, () => cancelled);
+    void openSource(pick, target, () => cancelled, pannable);
     return () => {
       cancelled = true;
     };
@@ -126,7 +127,7 @@ export function CmsImageDialog() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [request]);
 
-  async function openSource(pick: OpenSource, target: number | undefined, cancelled: () => boolean) {
+  async function openSource(pick: OpenSource, target: number | undefined, cancelled: () => boolean, whole = false) {
     setLoading(true);
     setError(null);
     try {
@@ -140,7 +141,10 @@ export function CmsImageDialog() {
       // The frame always has the shape the picture has on the page, so it shows what
       // visitors see; the last crop is kept as far as that shape allows.
       let opened: CropRect;
-      if (pick.crop) {
+      if (whole) {
+        // Dragged into place on the page: the whole photo, so there is room to move it.
+        opened = fitRect(loaded.naturalWidth, loaded.naturalHeight, undefined);
+      } else if (pick.crop) {
         const last = clampCrop(pick.crop, loaded.naturalWidth, loaded.naturalHeight);
         opened = target ? refitCrop(last, target, loaded.naturalWidth, loaded.naturalHeight) : last;
       } else {

@@ -21,6 +21,13 @@ function slotElement(doc: Document, section: string, path: string) {
   return null;
 }
 
+// Pictures placed in the page by dragging (gallery tiles): they keep their whole photo, so
+// each device can choose its part later; a crop to the tile shape would leave nothing to drag.
+export function slotIsPannable(section: string, path: string): boolean {
+  const element = slotElement(previewDocument(), section, path);
+  return Boolean(element?.closest('[data-cms-pan]')) && !focalPathFor(path);
+}
+
 // Ratio for the crop frame, or undefined when the slot cannot be measured.
 export function slotAspect(section: string, path: string, device: FocalDevice): number | undefined {
   const doc = previewDocument();
