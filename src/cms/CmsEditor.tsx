@@ -1136,7 +1136,15 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
 // A new, empty entry shaped like the existing ones (all their fields, texts empty, the
 // first icon kept as a start, a fresh id where entries have ids).
 function blankListItem(list: unknown[], path: string): unknown {
-  if (!list.length && /(^|\.)(images|impressions)$/.test(path)) return { src: '', alt: '' };
+  if (!list.length) {
+    // Empty lists still get an entry of the right shape.
+    const leaf = path.split('.').pop() ?? '';
+    if (leaf === 'images' || leaf === 'impressions') return { src: '', alt: '' };
+    if (leaf === 'community') return { text: '', author: '', href: '', image: '' };
+    if (leaf === 'faqs') return { question: '', answer: '' };
+    if (leaf === 'links') return { label: '', href: '', new_tab: false };
+    if (leaf === 'details') return { label: '', value: '' };
+  }
   const sample = list[list.length - 1];
   if (typeof sample === 'string') return '';
   if (typeof sample === 'number') return 0;

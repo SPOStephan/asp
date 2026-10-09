@@ -6,6 +6,7 @@ export type PageLayoutKey =
   | 'culinary'
   | 'blog'
   | 'impressions'
+  | 'occasions'
   | 'faq'
   | 'legal'
   | 'generic';
@@ -189,6 +190,21 @@ export const SYSTEM_TEMPLATES: PageTemplate[] = [
     default_selected: false,
     required: false,
     sort_order: 80,
+  },
+  {
+    template_key: 'anlaesse',
+    title: 'Anlässe',
+    description: 'Übersicht und eine Seite je Anlass (z. B. mit Hund, zu zweit, mit der Familie).',
+    path_prefix: '/anlaesse',
+    tags: ['anlass', 'zielgruppe'],
+    preview_url: null,
+    kind: 'system',
+    layout_key: 'occasions',
+    section_keys: ['occasions_page'],
+    skeleton: emptySections(['occasions_page']),
+    default_selected: false,
+    required: false,
+    sort_order: 85,
   },
   {
     template_key: 'impressionen',

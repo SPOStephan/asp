@@ -1,6 +1,7 @@
 import { BLOG_PAGE_FALLBACK } from '../lib/blog';
 import { CULINARY_PAGE_FALLBACK, culinaryTileHref } from '../lib/culinary';
 import { IMPRESSIONS_PAGE_FALLBACK } from '../lib/impressions';
+import { OCCASIONS_PAGE_FALLBACK } from '../lib/occasions';
 import { OFFERS_PAGE_FALLBACK } from '../lib/offers';
 import { WELLNESS_PAGE_FALLBACK } from '../lib/wellness';
 
@@ -10,6 +11,7 @@ export const CMS_EDITOR_PAGES = [
   { label: 'Wellness', to: '/cms/wellness', publicPath: '/wellness' },
   { label: 'Kulinarik', to: '/cms/kulinarik', publicPath: '/kulinarik' },
   { label: 'Angebote', to: '/cms/angebote', publicPath: '/angebote' },
+  { label: 'Anlässe', to: '/cms/anlaesse', publicPath: '/anlaesse' },
   { label: 'Blog', to: '/cms/blog', publicPath: '/blog' },
   { label: 'Impressionen', to: '/cms/impressionen', publicPath: '/impressionen' },
   { label: 'FAQ', to: '/cms/faqs', publicPath: '/faqs' },
@@ -60,6 +62,7 @@ export const CMS_SECTION_FALLBACKS: Record<string, Record<string, unknown>> = {
   offers_page: OFFERS_PAGE_FALLBACK,
   blog_page: BLOG_PAGE_FALLBACK,
   impressions_page: IMPRESSIONS_PAGE_FALLBACK,
+  occasions_page: OCCASIONS_PAGE_FALLBACK,
   faq_page: FAQ_PAGE_FALLBACK,
   footer: FOOTER_FALLBACK,
 };
@@ -68,10 +71,11 @@ export const CMS_DETAIL_LABELS: Record<string, string> = {
   blog_page: 'Beitrag',
   offers_page: 'Angebot',
   wellness_page: 'Wellness-Seite',
+  occasions_page: 'Anlass',
 };
 
 export type CmsDetail = {
-  section: 'blog_page' | 'offers_page' | 'wellness_page';
+  section: 'blog_page' | 'offers_page' | 'wellness_page' | 'occasions_page';
   entryId: string;
   hub: string;
 };
@@ -108,6 +112,7 @@ export function cmsDetailFromPath(pathname: string): CmsDetail | null {
     { section: 'blog_page', hub: '/cms/blog', re: /^\/cms\/blog\/([^/]+)$/ },
     { section: 'offers_page', hub: '/cms/angebote', re: /^\/cms\/angebote\/([^/]+)$/ },
     { section: 'wellness_page', hub: '/cms/wellness', re: /^\/cms\/wellness\/([^/]+)$/ },
+    { section: 'occasions_page', hub: '/cms/anlaesse', re: /^\/cms\/anlaesse\/([^/]+)$/ },
   ];
   for (const pattern of patterns) {
     const match = pathname.match(pattern.re);
@@ -125,6 +130,7 @@ export function cmsEntryHref(section: string, item: Record<string, unknown>): st
   if (section === 'blog_page') return `/cms/blog/${slug}`;
   if (section === 'offers_page') return `/cms/angebote/${id || slug}`;
   if (section === 'wellness_page') return `/cms/wellness/${id || slug}`;
+  if (section === 'occasions_page') return `/cms/anlaesse/${id || slug}`;
   return null;
 }
 
@@ -140,6 +146,14 @@ export function sectionDraft(sectionKey: string, data?: Record<string, unknown> 
     draft.restaurants = draft.restaurants.map((tile) =>
       tile && typeof tile === 'object'
         ? { ...tile, href: culinaryTileHref(tile as Record<string, unknown>), new_tab: (tile as Record<string, unknown>).new_tab === true }
+        : tile,
+    );
+  }
+  // "Für jeden Anlass" tiles: every tile can lead to a page.
+  if (sectionKey === 'generations' && Array.isArray(draft.images)) {
+    draft.images = draft.images.map((tile) =>
+      tile && typeof tile === 'object'
+        ? { href: '', new_tab: false, ...(tile as Record<string, unknown>) }
         : tile,
     );
   }

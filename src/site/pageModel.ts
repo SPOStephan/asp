@@ -3,6 +3,7 @@ import { CULINARY_PAGE_FALLBACK, resolveCulinaryRhythm, resolveCulinaryVenues } 
 import { IMPRESSIONS_PAGE_FALLBACK, resolveImpressions } from '../lib/impressions';
 import { remapSiteHref } from '../lib/links';
 import { resolveDiscoverTiles } from '../lib/media';
+import { occasionHref, OCCASIONS_PAGE_FALLBACK, resolveOccasions } from '../lib/occasions';
 import { OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
 import { genericSectionKey, pageKeyFromHref, SYSTEM_TEMPLATES } from '../lib/pageTemplates';
 import { formatRoomPriceDetail, resolveRooms, ROOMS_PAGE_FALLBACK, roomHref } from '../lib/rooms';
@@ -149,6 +150,11 @@ export class SiteModel {
         links.push({ label: topic.name, href: wellnessTopicHref(topic.id) });
       }
     }
+    if (this.isAvailable('anlaesse')) {
+      for (const occasion of resolveOccasions(sections.occasions_page?.items)) {
+        links.push({ label: occasion.name, href: occasionHref(occasion.id) });
+      }
+    }
     if (this.isAvailable('angebote')) {
       for (const offer of resolveOfferStories(sections.offers_page?.items, sections.offers?.items)) {
         links.push({ label: offer.title, href: offerHref(offer.id) });
@@ -206,6 +212,8 @@ export class SiteModel {
         return this.isAvailable('wellness') ? (second ? this.wellnessTopic(second) : this.wellness()) : this.notFound(clean);
       case 'kulinarik':
         return this.isAvailable('kulinarik') && !second ? this.culinary() : this.notFound(clean);
+      case 'anlaesse':
+        return this.isAvailable('anlaesse') ? (second ? this.occasion(second) : this.occasions()) : this.notFound(clean);
       case 'angebote':
         return this.isAvailable('angebote') ? (second ? this.offer(second) : this.offers()) : this.notFound(clean);
       case 'blog':
@@ -374,7 +382,13 @@ export class SiteModel {
       blocks.push({
         heading: words(generations!.title_line1, generations!.title_line2_em),
         text: texts(generations!.subtitle),
-        items: itemsOf(generations!.images, 'label', 'caption'),
+        items: (Array.isArray(generations!.images) ? generations!.images : [])
+          .map((item: Section) => ({
+            title: str(item?.label),
+            text: str(item?.caption),
+            href: str(item?.href) ? this.linkable(str(item.href), str(item?.caption)) || undefined : undefined,
+          }))
+          .filter((item: ContentItem) => item.title || item.text),
       });
     }
     const awards = s('awards');
@@ -548,6 +562,57 @@ export class SiteModel {
       image: topic.hero_image || topic.image,
       crumbs: [{ label: pageTitle('wellness'), href: '/wellness' }],
       blocks,
+    });
+  }
+
+  private occasions(): PageModel {
+    const page = this.section('occasions_page');
+    const data: Section = { ...OCCASIONS_PAGE_FALLBACK, ...page };
+    const occasions = resolveOccasions(data.items);
+    const blocks: ContentBlock[] = [];
+    if (str(data.intro)) blocks.push({ text: texts(data.intro) });
+    blocks.push({
+      heading: str(data.title) || pageTitle('anlaesse'),
+      items: occasions.map((occasion) => ({ title: occasion.name, text: words(occasion.kicker, occasion.summary), href: occasionHref(occasion.id) })),
+    });
+    return this.build('/anlaesse', {
+      eyebrow: str(data.eyebrow) || undefined,
+      h1: str(data.title) || pageTitle('anlaesse'),
+      lead: str(data.subtitle) || undefined,
+      image: str(data.hero_image) || occasions[0]?.hero_image || undefined,
+      blocks,
+    });
+  }
+
+  private occasion(id: string): PageModel {
+    const occasion = resolveOccasions(this.section('occasions_page')?.items).find((item) => item.id === id);
+    if (!occasion) return this.notFound(occasionHref(id));
+    const blocks: ContentBlock[] = [{ text: texts(occasion.text) }];
+    if (occasion.details.length) blocks.push({ heading: 'Auf einen Blick', items: occasion.details.map((fact) => ({ title: fact.label, text: fact.value })) });
+    if (occasion.includes.length) blocks.push({ heading: 'Das erwartet Sie', items: occasion.includes.map((item) => ({ title: item })) });
+    if (occasion.links.length) {
+      blocks.push({
+        heading: 'Passend dazu',
+        items: occasion.links.map((link) => ({ title: link.label || link.href, href: this.linkable(link.href, link.label) || undefined })),
+      });
+    }
+    if (occasion.community.length) {
+      blocks.push({
+        heading: 'Tipps aus der Community',
+        items: occasion.community.map((tip) => ({ title: tip.author || 'Tipp', text: tip.text, href: tip.href || undefined })),
+      });
+    }
+    if (occasion.faqs.length) {
+      blocks.push({ heading: 'Gut zu wissen', items: occasion.faqs.map((faq) => ({ title: faq.question, text: faq.answer })) });
+    }
+    return this.build(occasionHref(occasion.id), {
+      eyebrow: occasion.kicker || undefined,
+      h1: occasion.name,
+      lead: occasion.summary || undefined,
+      image: occasion.hero_image || undefined,
+      crumbs: [{ label: str(this.section('occasions_page')?.title) || pageTitle('anlaesse'), href: '/anlaesse' }],
+      blocks,
+      jsonLd: occasion.faqs.length ? [faqJsonLd(occasion.faqs)] : [],
     });
   }
 
