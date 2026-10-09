@@ -13,6 +13,7 @@ import {
   type AiDefaults,
 } from '../src/ai/knowledgeServer';
 import { anonymizeAfterDays } from '../src/ai/anonymize';
+import { platformDefaults } from '../src/ai/defaultModels';
 import { ndjsonResponse } from '../src/ai/ndjson';
 import { aiConfig, complete, listModels, type AiConfig } from '../src/ai/provider';
 import type { ChatTurn } from '../src/lib/knowledge';
@@ -71,8 +72,8 @@ export default async function handler(request: Request) {
   const input = (await request.json().catch(() => ({}))) as Record<string, any>;
   const action = String(input.action ?? '');
   const host = requestHost(request);
-  const defaults: AiDefaults = { chat: env('AI_CHAT_MODEL'), extract: env('AI_EXTRACT_MODEL'), helper: env('AI_HELPER_MODEL') };
   const config = aiConfig(env);
+  const defaults: AiDefaults = await platformDefaults(config, env);
   const needAi = (): AiConfig => {
     if (!config) throw new Error('Auf dem Server ist noch kein KI-Zugang hinterlegt (AI_API_KEY).');
     return config;

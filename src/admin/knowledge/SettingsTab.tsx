@@ -120,8 +120,9 @@ export function SettingsTab() {
 
   const fallback = (key: 'chat_model' | 'extract_model' | 'helper_model') => {
     const platform = key === 'chat_model' ? status?.defaults.chat : key === 'extract_model' ? status?.defaults.extract : status?.defaults.helper;
-    const value = inherited?.[key] || platform || (key !== 'chat_model' ? inherited?.chat_model || status?.defaults.chat : '');
-    return value ? `erbt: ${value}` : 'noch keins gewählt';
+    // Empty field: the organisation's choice, else a model picked automatically for the task.
+    if (inherited?.[key]) return `wie Organisation: ${inherited[key]}`;
+    return platform ? `automatisch: ${platform}` : 'automatisch';
   };
 
   return (

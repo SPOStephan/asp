@@ -4,6 +4,8 @@ import { useHotel, useSection } from '../context/HotelContext';
 import { conciergeConfig, CONCIERGE_SECTION, guestText, type ConciergeConfig } from '../lib/concierge';
 import { stripGapMarker } from '../lib/knowledge';
 
+const GUEST_UNAVAILABLE = 'Der Chat ist gerade leider nicht erreichbar.';
+
 export type GuestMessage = {
   role: 'user' | 'assistant';
   content: string;
@@ -85,6 +87,9 @@ export function ConciergeProvider({ children }: { children: ReactNode }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question: text, history, conversationId: conversation.current }),
         });
+        // Only messages written for guests (too many questions, empty question) are shown;
+        // anything else becomes one friendly sentence.
+        if (!response.ok && response.status !== 400 && response.status !== 429) throw new Error(GUEST_UNAVAILABLE);
         const result = await readNdjson<{ answer: string; links: GuestMessage['links']; conversationId: string }>(response, (delta) => {
           streamed += delta;
           patchLast({ content: guestText(stripGapMarker(streamed)) });
@@ -94,7 +99,7 @@ export function ConciergeProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         const contact = [hotel?.phone ? `Telefon ${hotel.phone}` : '', hotel?.email ?? ''].filter(Boolean).join(' · ');
         patchLast({
-          content: `${err instanceof Error ? err.message : 'Der Chat ist gerade nicht erreichbar.'}${contact ? `\n\nSie erreichen uns direkt: ${contact}` : ''}`,
+          content: `${err instanceof Error && err.message ? err.message : GUEST_UNAVAILABLE}${contact ? `\n\nSie erreichen uns direkt: ${contact}` : ''}`,
           streaming: false,
           error: true,
         });
