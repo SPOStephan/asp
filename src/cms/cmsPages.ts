@@ -1,5 +1,5 @@
 import { BLOG_PAGE_FALLBACK } from '../lib/blog';
-import { CULINARY_PAGE_FALLBACK } from '../lib/culinary';
+import { CULINARY_PAGE_FALLBACK, culinaryTileHref } from '../lib/culinary';
 import { IMPRESSIONS_PAGE_FALLBACK } from '../lib/impressions';
 import { OFFERS_PAGE_FALLBACK } from '../lib/offers';
 import { WELLNESS_PAGE_FALLBACK } from '../lib/wellness';
@@ -46,7 +46,15 @@ export const FOOTER_FALLBACK = {
   ],
 };
 
+// Fields older sections lack, so the editor still offers them (the page shows the same defaults).
+const CULINARY_FALLBACK = {
+  extra_text: '',
+  cta: 'Alle Restaurants',
+  cta_href: '/kulinarik',
+};
+
 export const CMS_SECTION_FALLBACKS: Record<string, Record<string, unknown>> = {
+  culinary: CULINARY_FALLBACK,
   wellness_page: WELLNESS_PAGE_FALLBACK,
   culinary_page: CULINARY_PAGE_FALLBACK,
   offers_page: OFFERS_PAGE_FALLBACK,
@@ -126,5 +134,14 @@ export function matchesCmsEntry(item: Record<string, unknown>, entryId: string) 
 
 export function sectionDraft(sectionKey: string, data?: Record<string, unknown> | null) {
   const fallback = CMS_SECTION_FALLBACKS[sectionKey] ?? {};
-  return { ...fallback, ...data };
+  const draft: Record<string, unknown> = { ...fallback, ...data };
+  // Culinary picture tiles: show the link they lead to today, so it can be changed.
+  if (sectionKey === 'culinary' && Array.isArray(draft.restaurants)) {
+    draft.restaurants = draft.restaurants.map((tile) =>
+      tile && typeof tile === 'object'
+        ? { ...tile, href: culinaryTileHref(tile as Record<string, unknown>), new_tab: (tile as Record<string, unknown>).new_tab === true }
+        : tile,
+    );
+  }
+  return draft;
 }

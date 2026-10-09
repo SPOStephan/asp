@@ -160,6 +160,16 @@ export function culinaryVenueHref(id: string) {
   return `/kulinarik#${id}`;
 }
 
+// Link of a picture tile in the home culinary section. Tiles without their own link
+// keep the target the page used before tiles had a link field.
+export function culinaryTileHref(tile: { href?: unknown; name?: unknown }) {
+  if (typeof tile.href === 'string' && tile.href.trim()) return tile.href.trim();
+  const name = typeof tile.name === 'string' ? tile.name : '';
+  if (/grill/i.test(name)) return culinaryVenueHref('grill');
+  if (/strand/i.test(name)) return culinaryVenueHref('strandstube');
+  return culinaryVenueHref('restaurant');
+}
+
 export function remapCulinaryHref(href: string, label?: string) {
   const culinaryHash = href === '#kulinarik' || href === '#culinary';
   if (!culinaryHash) return href;
