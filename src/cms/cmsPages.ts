@@ -56,6 +56,8 @@ const CULINARY_FALLBACK = {
 };
 
 export const CMS_SECTION_FALLBACKS: Record<string, Record<string, unknown>> = {
+  // Phones show the impressions one below the other unless this is switched on.
+  impressions: { mobile_grid: false },
   culinary: CULINARY_FALLBACK,
   wellness_page: WELLNESS_PAGE_FALLBACK,
   culinary_page: CULINARY_PAGE_FALLBACK,

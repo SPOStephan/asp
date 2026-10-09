@@ -57,6 +57,8 @@ export function readHeroFocal(value: unknown, mobileFallback: FocalPoint = DEFAU
   return { desktop: DEFAULT_DESKTOP, mobile: mobileFallback };
 }
 
+export const CENTER_FOCAL: FocalPoint = { x: 50, y: 50, z: 1 };
+
 export function heroFocalStyle(value: unknown, mobileFallback?: FocalPoint) {
   const focal = readHeroFocal(value, mobileFallback);
   return {
@@ -89,8 +91,8 @@ export function entryFocal(items: unknown, entryId: string) {
   return typeof item === 'object' && item && 'hero_focal' in item ? (item as { hero_focal?: unknown }).hero_focal : undefined;
 }
 
-export function writeHeroFocal(current: unknown, device: FocalDevice, point: FocalPoint): HeroFocal {
-  const next = readHeroFocal(current);
+export function writeHeroFocal(current: unknown, device: FocalDevice, point: FocalPoint, mobileFallback?: FocalPoint): HeroFocal {
+  const next = readHeroFocal(current, mobileFallback);
   next[device] = {
     x: clamp(point.x),
     y: clamp(point.y),
@@ -99,10 +101,10 @@ export function writeHeroFocal(current: unknown, device: FocalDevice, point: Foc
   return next;
 }
 
-export function zoomHeroFocal(current: unknown, device: FocalDevice, factor: number): HeroFocal {
-  const next = readHeroFocal(current);
+export function zoomHeroFocal(current: unknown, device: FocalDevice, factor: number, mobileFallback?: FocalPoint): HeroFocal {
+  const next = readHeroFocal(current, mobileFallback);
   const point = next[device];
-  return writeHeroFocal(current, device, { ...point, z: readZoom(point) * factor });
+  return writeHeroFocal(current, device, { ...point, z: readZoom(point) * factor }, mobileFallback);
 }
 
 function sameEntry(item: Record<string, unknown>, live: Record<string, unknown>) {
