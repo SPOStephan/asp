@@ -69,12 +69,10 @@ export function GalleryViewer({ shots, active, onClose, onStep }: GalleryViewerP
           onStep(delta < 0 ? 1 : -1);
         }}
       >
+        {/* The description stays the alt text (screen readers); on screen only the position. */}
         <img src={current.src} alt={current.alt} />
-        <figcaption>
-          <span>{current.alt}</span>
-          <em>
-            {active + 1} / {shots.length}
-          </em>
+        <figcaption className="gallery-view__count" aria-hidden="true">
+          {active + 1} / {shots.length}
         </figcaption>
       </figure>
       <button
