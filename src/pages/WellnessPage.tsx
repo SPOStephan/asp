@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { filled } from '../lib/filled';
 import { ArrowUpRight } from 'lucide-react';
 import { useCms } from '../cms/CmsContext';
 import { toCmsHref } from '../cms/cmsPages';
@@ -26,7 +27,7 @@ export function WellnessPage() {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${data.title ?? 'Wellness'} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${data.title ?? 'Wellness'} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
@@ -46,13 +47,13 @@ export function WellnessPage() {
         cms={{ section: 'wellness_page' }}
       >
         <div className="wellness-hub">
-          <CmsPart sectionKey="wellness_page" part="intro" label="Einleitung">
+          <CmsPart sectionKey="wellness_page" part="intro" label="Einleitung" empty={!filled(data.intro ?? (data as Record<string, unknown>).content_text ?? WELLNESS_PAGE_FALLBACK.intro)}>
             <p className="wellness-hub__intro" data-cms-focus="intro" data-cms-path="intro">
               {data.intro ?? data.content_text ?? WELLNESS_PAGE_FALLBACK.intro}
             </p>
           </CmsPart>
 
-          <CmsPart sectionKey="wellness_page" part="day" label="Day Spa">
+          <CmsPart sectionKey="wellness_page" part="day" label="Day Spa" empty={!filled(data.day_title ?? WELLNESS_PAGE_FALLBACK.day_title, data.day_text ?? WELLNESS_PAGE_FALLBACK.day_text)}>
             <section className="wellness-hub__day" aria-label="Day Spa" data-cms-focus="day">
               <p className="wellness-hub__day-kicker" data-cms-path="day_kicker">
                 {data.day_kicker ?? WELLNESS_PAGE_FALLBACK.day_kicker}
@@ -69,7 +70,7 @@ export function WellnessPage() {
             </section>
           </CmsPart>
 
-          <CmsPart sectionKey="wellness_page" part="tiles" label="Bereiche">
+          <CmsPart sectionKey="wellness_page" part="tiles" label="Bereiche" empty={!topics.length}>
             <section className="wellness-hub__tiles" aria-label="Wellness-Bereiche">
               {topics.map((topic, index) => (
                 <Reveal key={topic.id} delay={index * 50}>
@@ -96,7 +97,7 @@ export function WellnessPage() {
             </section>
           </CmsPart>
 
-          <CmsPart sectionKey="wellness_page" part="chapters" label="Kapitel">
+          <CmsPart sectionKey="wellness_page" part="chapters" label="Kapitel" empty={!chapters.length}>
             <section className="wellness-hub__chapters" aria-label="Aus dem Spa">
               {chapters.map((chapter, index) => (
                 <Reveal key={chapter.id} delay={index * 60}>
@@ -119,6 +120,7 @@ export function WellnessPage() {
             </section>
           </CmsPart>
 
+          {filled(data.overlap_title ?? WELLNESS_PAGE_FALLBACK.overlap_title, data.overlap_text ?? WELLNESS_PAGE_FALLBACK.overlap_text) ? (
           <OverlapStage
             kicker={data.overlap_kicker ?? WELLNESS_PAGE_FALLBACK.overlap_kicker}
             title={data.overlap_title ?? WELLNESS_PAGE_FALLBACK.overlap_title}
@@ -130,8 +132,9 @@ export function WellnessPage() {
             back={data.overlap_back ?? WELLNESS_PAGE_FALLBACK.overlap_back}
             backAlt={data.overlap_back_alt ?? WELLNESS_PAGE_FALLBACK.overlap_back_alt}
           />
+          ) : null}
 
-          <CmsPart sectionKey="wellness_page" part="note" label="Hinweis">
+          <CmsPart sectionKey="wellness_page" part="note" label="Hinweis" empty={!filled(data.note_title ?? WELLNESS_PAGE_FALLBACK.note_title, data.note_text ?? WELLNESS_PAGE_FALLBACK.note_text)}>
             <section className="wellness-hub__note" data-cms-focus="note">
               <h2 className="wellness-hub__note-title heading-font" data-cms-path="note_title">
                 {data.note_title ?? WELLNESS_PAGE_FALLBACK.note_title}

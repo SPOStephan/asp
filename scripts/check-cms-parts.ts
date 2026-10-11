@@ -9,7 +9,12 @@ assert.equal(partHiddenKey('tiles'), 'hidden_tiles');
 assert.ok(isHiddenMetaPath('hidden_tiles'));
 assert.ok(!isHiddenMetaPath('title'));
 
-const content = { hotel: { id: 'h1' }, sections: { page_hunde: { title: 'Hundeurlaub' } }, faqs: [], pages: { zimmer: true, hunde: true } } as unknown as HotelContent;
+const content = {
+  hotel: { id: 'h1' },
+  sections: { page_hunde: { title: 'Hundeurlaub' }, wellness_page: { items: [{ id: 'sauna', name: 'Sauna' }] } },
+  faqs: [],
+  pages: { zimmer: true, hunde: true },
+} as unknown as HotelContent;
 const targets = cmsLinkTargets(content);
 assert.ok(targets.some((target) => target.href === '/zimmer' && target.active));
 assert.ok(targets.some((target) => target.href === '/kulinarik' && !target.active));

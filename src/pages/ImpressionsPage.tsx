@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { filled } from '../lib/filled';
 import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { useCms } from '../cms/CmsContext';
 import { GalleryViewer } from '../components/GalleryViewer';
@@ -31,7 +32,7 @@ export function ImpressionsPage() {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${data.title ?? 'Impressionen'} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${data.title ?? 'Impressionen'} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
@@ -82,13 +83,13 @@ export function ImpressionsPage() {
         cms={{ section: 'impressions_page' }}
       >
         <article className="impressions-page">
-          <CmsPart sectionKey="impressions_page" part="intro" label="Einleitung">
+          <CmsPart sectionKey="impressions_page" part="intro" label="Einleitung" empty={!filled(data.intro ?? IMPRESSIONS_PAGE_FALLBACK.intro)}>
             <p className="impressions-page__intro" data-cms-focus="intro" data-cms-path="intro">
               {data.intro ?? IMPRESSIONS_PAGE_FALLBACK.intro}
             </p>
           </CmsPart>
 
-          <CmsPart sectionKey="impressions_page" part="filters" label="Filter">
+          <CmsPart sectionKey="impressions_page" part="filters" label="Filter" empty={!shots.length}>
             <div className="impressions-page__filters" role="tablist" aria-label="Motive">
               {IMPRESSION_TOPICS.map((item) => (
                 <button
@@ -128,7 +129,7 @@ export function ImpressionsPage() {
             </div>
           </CmsPart>
 
-          <CmsPart sectionKey="impressions_page" part="note" label="Hinweis">
+          <CmsPart sectionKey="impressions_page" part="note" label="Hinweis" empty={!filled(data.note_title ?? IMPRESSIONS_PAGE_FALLBACK.note_title, data.note_text ?? IMPRESSIONS_PAGE_FALLBACK.note_text)}>
             <div className="impressions-page__note" data-cms-focus="note">
               <h2 className="impressions-page__note-title heading-font" data-cms-path="note_title">
                 {data.note_title ?? IMPRESSIONS_PAGE_FALLBACK.note_title}

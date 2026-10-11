@@ -42,16 +42,19 @@ assert.deepEqual(repairMediaUrls({ hero_image: 'lohbeck.b-cdn.net/x.webp', items
   items: [{ image: 'https://lohbeck.b-cdn.net/y.webp', title: 'Suite' }],
 });
 
-assert.equal(MUSTER_DISCOVER_TILES.length, 9);
-assert.equal(resolveDiscoverTiles(undefined).length, 9);
-assert.equal(resolveDiscoverTiles([]).length, 9);
+assert.equal(resolveDiscoverTiles(undefined).length, 0);
+assert.equal(resolveDiscoverTiles([]).length, 0);
 assert.deepEqual(resolveDiscoverTiles([{ title: 'Eigene' }]), [{ id: 'tile-1', image: '', eyebrow: '', title: 'Eigene', href: '' }]);
 assert.deepEqual(resolveDiscoverTiles(undefined).map((tile) => tile.id), MUSTER_DISCOVER_TILES.map((_, index) => `tile-${index + 1}`));
 assert.deepEqual(resolveDiscoverTiles([{ id: 'a' }, { id: 'a' }]).map((tile) => tile.id), ['a', 'a-2']);
-assert.deepEqual(discoverPageKeys(undefined).sort(), ['kulinarik', 'wellness', 'zimmer']);
+assert.deepEqual(discoverPageKeys(undefined), []);
+assert.deepEqual(discoverPageKeys([{ title: 'Spa', href: '/wellness' }, { title: 'Zimmer', href: '/zimmer' }]).sort(), ['wellness', 'zimmer']);
 assert.deepEqual(missingDiscoverPages([{ title: 'X', href: '/impressionen' }, { title: 'Y', href: '/zimmer' }], { zimmer: true }), ['impressionen']);
 const discover = readFileSync(new URL('../src/components/Discover.tsx', import.meta.url), 'utf8');
 assert.doesNotMatch(discover, /isPageEnabled/, 'Discover tiles are never hidden for disabled pages');
-assert.equal((fillEmptyMedia('discover', {}).tiles as unknown[]).length, 9);
+// A new hotel gets no tiles and no pictures of another hotel, only the neutral placeholder.
+assert.equal((fillEmptyMedia('discover', {}).tiles as unknown[]).length, 0);
+assert.equal(MUSTER_DISCOVER_TILES.length, 0);
+assert.ok(Object.values(MUSTER_MEDIA).every((src) => src === '' || src === '/placeholder.svg'));
 
 console.log('media placeholders ok');

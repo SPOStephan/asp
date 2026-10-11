@@ -1,4 +1,4 @@
-import { resolveMedia } from './media';
+import { PLACEHOLDER_IMAGE, resolveMedia } from './media';
 
 export interface OfferLink {
   label: string;
@@ -21,69 +21,34 @@ export interface OfferStory {
   hero_image_alt: string;
 }
 
+// Neutral start for a hotel without its own offers: no other hotel's arrangements.
 export const OFFERS_PAGE_FALLBACK = {
-  eyebrow: 'Arrangements',
-  title: 'Unsere besten Angebote',
-  subtitle: 'Für Ihre Nordsee-Ferien',
-  intro:
-    'Zwei Arrangements, klar erzählt. Kein Buchungsraster — sondern zwei Geschichten vom Meer, mit allem was dazugehört.',
-  hero_image: '/teaser-autumn.webp',
-  hero_image_alt: 'Herbstlicht über Sankt Peter-Ording',
-  note_title: 'Ein anderes Arrangement?',
-  note_text: 'Wir stellen Ihnen gern ein individuelles Paket zusammen — passend zu Anreise, Anlass und Tempo.',
-  note_cta: 'Persönliche Beratung',
-  items: [
-    {
-      id: 'wellnessurlaub',
-      title: 'Wellnessurlaub',
-      subtitle: 'Auszeit am Meer',
-      text:
-        'Drei Nächte zwischen Suite, Spa und Salzwasser. Ein Guthaben für Anwendungen, der Pool mit Weitblick und Zeit, die niemand plant.',
-      detail_text: [
-        'Drei Nächte zwischen Suite, Spa und Salzwasser. Ein Guthaben für Anwendungen, der Pool mit Weitblick und Zeit, die niemand plant.',
-        'Der Tag darf langsam beginnen: Frühstück ohne Uhr, ein Gang durch den Spa, Salz in der Luft. Am Nachmittag bleibt das Wellnessguthaben für die Anwendung, die gerade passt — oder für gar nichts, außer Wärme und Stille.',
-        'Late Check-out nach Verfügbarkeit verlängert den letzten Vormittag. Kein Hetzen, kein früher Koffer. Nur noch einmal der Blick aufs Wasser.',
-      ],
-      details: ['3 Nächte', 'ab 655 Euro pro Person'],
-      travel_period_label: 'Reisezeitraum',
-      travel_period: 'September bis Dezember',
-      includes: [
-        'Übernachtung mit Frühstück',
-        '50 € Wellnessguthaben',
-        'Zugang zum gesamten Spa',
-        'Late Check-out nach Verfügbarkeit',
-      ],
-      image: '/teaser-spa.webp',
-      image_alt: 'Wellness und Spa im ambassador hotel & spa',
-      hero_image: '/hotel-nordsee-wellness02.webp',
-      hero_image_alt: 'Wellnessbereich des ambassador hotel & spa',
-    },
-    {
-      id: 'feiertage',
-      title: 'Feiertage',
-      subtitle: 'Weihnachten mit Meerblick',
-      text:
-        'Die stillen Tage am Deich. Festliche Menüs, ein helles Zimmer zum Meer und Abende, die länger werden als der Kalender.',
-      detail_text: [
-        'Die stillen Tage am Deich. Festliche Menüs, ein helles Zimmer zum Meer und Abende, die länger werden als der Kalender.',
-        'Weihnachten hier heißt: weniger Programm, mehr Licht. Ein Tisch, der für Sie gedeckt ist, Gänge, die zur Jahreszeit passen, und Zimmer, in denen der Horizont nah bleibt.',
-        'Zur Anreise liegt eine kleine Aufmerksamkeit bereit. Der Spa steht offen — für ein Bad zwischen den Festtagen oder einfach für Wärme, wenn der Wind von See kommt.',
-      ],
-      details: ['3 Nächte', 'ab 655 Euro pro Person'],
-      travel_period_label: 'Reisezeitraum',
-      travel_period: 'November bis Januar',
-      includes: [
-        'Übernachtung mit Frühstück',
-        'Festtagsmenüs an den Feiertagen',
-        'Zugang zum gesamten Spa',
-        'Kleine Aufmerksamkeit zur Anreise',
-      ],
-      image: '/collage-dining1.webp',
-      image_alt: 'Festliche Kulinarik im Hotel',
-      hero_image: '/culinary-dining.webp',
-      hero_image_alt: 'Festliche Tafel im Restaurant',
-    },
-  ] satisfies OfferStory[],
+  eyebrow: '',
+  title: 'Angebote',
+  subtitle: '',
+  intro: '',
+  hero_image: PLACEHOLDER_IMAGE,
+  hero_image_alt: '',
+  note_title: '',
+  note_text: '',
+  note_cta: '',
+  items: [] as OfferStory[],
+};
+
+const EMPTY_OFFER: OfferStory = {
+  id: '',
+  title: '',
+  subtitle: '',
+  text: '',
+  detail_text: [],
+  details: [],
+  travel_period_label: '',
+  travel_period: '',
+  includes: [],
+  image: PLACEHOLDER_IMAGE,
+  image_alt: '',
+  hero_image: PLACEHOLDER_IMAGE,
+  hero_image_alt: '',
 };
 
 export function slugify(value: string) {
@@ -106,9 +71,9 @@ export function resolveOfferStories(
   pageItems?: RawOffer[],
   homeItems?: RawOffer[]
 ): OfferStory[] {
-  const raw = pageItems ?? homeItems ?? OFFERS_PAGE_FALLBACK.items;
+  const raw = pageItems ?? homeItems ?? [];
   return raw.map((item, index) => {
-    const fallback = OFFERS_PAGE_FALLBACK.items[index] ?? OFFERS_PAGE_FALLBACK.items[0];
+    const fallback = { ...EMPTY_OFFER, title: `Angebot ${index + 1}` };
     return {
       id: item.id ?? slugify(item.title ?? fallback.title),
       title: item.title ?? fallback.title,

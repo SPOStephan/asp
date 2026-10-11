@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { filled } from '../lib/filled';
 import { useCms } from '../cms/CmsContext';
 import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { BlogCard } from '../components/BlogCard';
@@ -23,7 +24,7 @@ export function BlogPage() {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${data.title ?? 'Blog'} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${data.title ?? 'Blog'} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
@@ -43,7 +44,7 @@ export function BlogPage() {
         cms={{ section: 'blog_page' }}
       >
         <div className="blog-page">
-          <CmsPart sectionKey="blog_page" part="intro" label="Einleitung">
+          <CmsPart sectionKey="blog_page" part="intro" label="Einleitung" empty={!filled(data.intro ?? BLOG_PAGE_FALLBACK.intro)}>
             <p className="blog-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro ?? BLOG_PAGE_FALLBACK.intro}</p>
           </CmsPart>
 
@@ -75,7 +76,7 @@ export function BlogPage() {
             </section>
           ) : null}
 
-          <CmsPart sectionKey="blog_page" part="note" label="Hinweis">
+          <CmsPart sectionKey="blog_page" part="note" label="Hinweis" empty={!filled(data.note_title ?? BLOG_PAGE_FALLBACK.note_title, data.note_text ?? BLOG_PAGE_FALLBACK.note_text)}>
             <section className="blog-page__note" data-cms-focus="note">
               <h2 className="blog-page__note-title heading-font" data-cms-path="note_title">
                 {data.note_title ?? BLOG_PAGE_FALLBACK.note_title}

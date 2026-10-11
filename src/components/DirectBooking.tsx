@@ -12,27 +12,23 @@ interface BenefitItem {
   text?: string;
 }
 
-const FALLBACK = {
-  eyebrow: 'Ihr Vorteil',
-  title: 'Direktbuchung',
-  subtitle: 'Buchen Sie direkt bei uns — und sichern Sie sich diese Extra-Leistungen.',
-  cta_text: 'Jetzt direkt buchen',
+// A hotel without its own section shows none: benefits differ from hotel to hotel.
+const FALLBACK: { eyebrow: string; title: string; subtitle: string; cta_text: string; cta_href: string; items: BenefitItem[] } = {
+  eyebrow: '',
+  title: 'Direkt buchen',
+  subtitle: '',
+  cta_text: '',
   cta_href: '#buchung',
-  items: [
-    { icon: 'BadgePercent', title: 'Bestpreisgarantie' },
-    { icon: 'Car', title: 'Parkrabatt 10 € pro Nacht', text: 'nach Verfügbarkeit' },
-    { icon: 'BedDouble', title: 'Alle Zimmerkategorien' },
-    { icon: 'BadgeCheck', title: 'Sofortige Buchungsbestätigung' },
-    { icon: 'Wifi', title: 'Kostenfreies WLAN' },
-    { icon: 'Star', title: 'Stammgastpass-Vorteil' },
-  ] satisfies BenefitItem[],
+  items: [],
 };
 
 export function DirectBooking() {
   const editing = Boolean(useCms());
   const cms = useSection('direct_booking');
-  const data = cms ?? FALLBACK;
+  const data: Record<string, any> = cms ?? FALLBACK;
   const items: BenefitItem[] = data.items ?? FALLBACK.items;
+
+  if (!cms && !editing) return null;
 
   return (
     <CmsSection sectionKey="direct_booking" label="Direktbuchung">

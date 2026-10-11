@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { filled } from '../lib/filled';
 import { useCms } from '../cms/CmsContext';
 import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { Reveal } from '../components/Reveal';
@@ -23,7 +24,7 @@ export function RoomsCardsPage() {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${data.title ?? 'Zimmer & Suiten'} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${data.title ?? 'Zimmer & Suiten'} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
@@ -73,13 +74,13 @@ export function RoomsCardsPage() {
             </section>
           </CmsPart>
 
-          <CmsPart sectionKey="rooms_page" part="price_note" label="Preishinweis">
+          <CmsPart sectionKey="rooms_page" part="price_note" label="Preishinweis" empty={!filled(data.price_note ?? ROOMS_PAGE_FALLBACK.price_note)}>
             <p className="rooms-cards__price-note">
               {data.price_note ?? ROOMS_PAGE_FALLBACK.price_note}
             </p>
           </CmsPart>
 
-          <CmsPart sectionKey="rooms_page" part="note" label="Hinweis">
+          <CmsPart sectionKey="rooms_page" part="note" label="Hinweis" empty={!filled(data.note_title ?? ROOMS_PAGE_FALLBACK.note_title, data.note_text ?? ROOMS_PAGE_FALLBACK.note_text)}>
             <section className="rooms-cards__note" data-cms-focus="note">
               <h2 className="rooms-cards__note-title heading-font">
                 {data.note_title ?? ROOMS_PAGE_FALLBACK.note_title}

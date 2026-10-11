@@ -20,7 +20,7 @@ const content = {
     hero: { title: 'Willkommen am Meer', subtitle: 'Ruhe und Weite', hero_image: '/hero.webp' },
     welcome: { title_line1: 'Hallo', text_paragraph1: 'Unser Haus liegt direkt am Deich und hat einen eigenen Strandzugang.' },
     discover: { title: 'Entdecken', hidden_tiles: true, tiles: [{ title: 'Geheim', href: '/zimmer' }] },
-    rooms_page: { title: 'Unsere Zimmer', hidden_note: true },
+    rooms_page: { title: 'Unsere Zimmer', hidden_note: true, items: [{ id: 'deichblick', name: 'Doppelzimmer Deichblick', text: 'Mit Blick auf den Deich.' }] },
     page_hunde: { title: 'Urlaub mit Hund', body: 'Hunde sind willkommen.\n\nMit Napf im Zimmer.' },
   },
   faqs: [{ id: 'f', hotel_id: 'h1', category: 'Anreise', question: 'Wann Check-in?', answer: 'Ab 15 Uhr.', sort_order: 0, show_on_home: true }],

@@ -21,7 +21,7 @@ export function WellnessTopicPage() {
   useEffect(() => {
     if (!topic) return;
     const previous = document.title;
-    document.title = `${topic.name} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${topic.name} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
@@ -33,6 +33,8 @@ export function WellnessTopicPage() {
   }
 
   const prefix = `items.${topic.id}`;
+  // "Termin anfragen" only where the hotel has an appointment page of its own.
+  const hasBooking = topics.some((item) => item.id === 'termin');
 
   return (
     <CmsSection sectionKey="wellness_page" label="Wellness-Seite">
@@ -96,7 +98,7 @@ export function WellnessTopicPage() {
             {topic.price_note || cms ? <p className="wellness-topic__price-note" data-cms-path={`${prefix}.price_note`}>{topic.price_note}</p> : null}
 
             <div className="wellness-topic__links">
-              <TextCta href="/wellness/termin">Termin anfragen</TextCta>
+              {hasBooking ? <TextCta href="/wellness/termin">Termin anfragen</TextCta> : null}
               <TextCta href="/wellness">Alle Wellness-Bereiche</TextCta>
             </div>
           </div>
@@ -106,8 +108,8 @@ export function WellnessTopicPage() {
               kicker={topic.kicker}
               title={topic.name}
               text={topic.summary}
-              cta={topic.id === 'termin' ? 'Alle Wellness-Bereiche' : 'Termin anfragen'}
-              href={topic.id === 'termin' ? '/wellness' : '/wellness/termin'}
+              cta={topic.id === 'termin' || !hasBooking ? 'Alle Wellness-Bereiche' : 'Termin anfragen'}
+              href={topic.id === 'termin' || !hasBooking ? '/wellness' : '/wellness/termin'}
               front={topic.hero_image}
               frontAlt={topic.hero_image_alt}
               back={topic.pair_image}

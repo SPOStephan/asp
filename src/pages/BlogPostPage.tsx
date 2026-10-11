@@ -35,7 +35,7 @@ export function BlogPostPage() {
   useEffect(() => {
     if (!post) return;
     const previous = document.title;
-    document.title = `${post.title} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${post.title} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;

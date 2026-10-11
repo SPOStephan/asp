@@ -21,7 +21,7 @@ export function RoomDetailPage() {
   useEffect(() => {
     if (!room) return;
     const previous = document.title;
-    document.title = `${room.name} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${room.name} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;

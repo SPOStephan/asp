@@ -472,7 +472,7 @@ export function CmsImageDialog() {
               value={baseName}
               onChange={(event) => setBaseName(event.target.value)}
               onBlur={() => setBaseName(slugifyFileName(baseName) || pictureBaseName(alt, hotel?.name))}
-              placeholder="z. B. hotel-nordsee-meerblick"
+              placeholder="z. B. hotel-aussenansicht-sommer"
             />
             <span>.webp</span>
           </span>

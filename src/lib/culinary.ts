@@ -1,4 +1,4 @@
-import { resolveMedia } from './media';
+import { PLACEHOLDER_IMAGE, resolveMedia } from './media';
 
 export interface CulinaryFact {
   label: string;
@@ -22,92 +22,25 @@ export interface CulinaryRhythm {
   text: string;
 }
 
+// Neutral start for a hotel without its own culinary page.
 export const CULINARY_PAGE_FALLBACK = {
-  eyebrow: 'Kulinarik',
-  title: 'Genuss am Meer',
-  subtitle: 'Restaurant · Bar · Steakhouse',
-  intro:
-    'Norddeutsche Küche, Fine Dining und Grill — drei Adressen im Haus, eine Küche mit Produkten von der Küste und den Höfen ringsum. Halbpension, vegetarisch und vegan sind selbstverständlich.',
-  hero_image: '/culinary-dining.webp',
-  hero_image_alt: 'Gedeckter Tisch im Restaurant des ambassador hotel & spa',
-  also_title: 'Auch im Haus',
-  also_text:
-    'Sushi-Bar und Nordseelounge bleiben zwei leise Alternativen, wenn der Abend eine andere Richtung nimmt.',
-  note_title: 'Einen Tisch reservieren?',
-  note_text:
-    'Wir decken gern Ihren Tisch. Schreiben Sie uns oder sprechen Sie die Rezeption an — Allergien und Wünsche nehmen wir vorher auf.',
-  note_cta: 'Persönliche Beratung',
-  items: [
-    {
-      id: 'restaurant',
-      name: 'Restaurant & Bar',
-      kicker: 'Hausrestaurant',
-      text:
-        'Der Abend beginnt hier. Nordseefisch, Gemüse von den Höfen ringsum und eine Bar, die nicht hetzt. Regionale Tradition, internationale Ideen — und immer ein Tisch zum Horizont.',
-      details: [
-        { label: 'Stil', value: 'À la carte & Bar' },
-        { label: 'Küche', value: 'Nordsee, international, vegetarisch und vegan' },
-      ],
-      includes: [
-        'Regionale Produkte',
-        'Internationale Karte',
-        'Vegetarisch und vegan',
-        'Bar im Haus',
-      ],
-      image: '/culinary-dining.webp',
-      image_alt: 'Fine Dining und Bar im ambassador hotel & spa',
-    },
-    {
-      id: 'strandstube',
-      name: 'Strandstube',
-      kicker: 'Fine Dining',
-      text:
-        'Weniger Tische, mehr Ruhe. Die Strandstube ist das Fine Dining im Haus — saisonale Gänge, präzise und ohne Spektakel. Für Abende, die länger werden als die Speisekarte.',
-      details: [
-        { label: 'Stil', value: 'Fine Dining' },
-        { label: 'Küche', value: 'Saisonale Menüs, 5-Gang-Wahlmenü zur Halbpension' },
-      ],
-      includes: [
-        'Saisonale Karte',
-        '5-Gang-Wahlmenü zur Halbpension',
-        'Individuelle Alternativen bei Unverträglichkeiten',
-      ],
-      image: '/collage-dining1.webp',
-      image_alt: 'Gourmetküche in der Strandstube',
-    },
-    {
-      id: 'grill',
-      name: 'Grill & Dine',
-      kicker: 'Steakhouse',
-      text:
-        'Feuer, Fleisch und ein klarer Teller. Das Steakhouse im Haus — geradlinig, regional, ohne Schnörkel. Für Gäste, die den Abend lieber am Grill als an sieben Gängen verbringen.',
-      details: [
-        { label: 'Stil', value: 'Steakhouse' },
-        { label: 'Küche', value: 'Grill und regionale Cuts' },
-      ],
-      includes: ['Steaks vom Grill', 'Regionale Beilagen', 'Abendliche Atmosphäre'],
-      image: '/collage-dining2.webp',
-      image_alt: 'Steakhouse Grill & Dine',
-    },
-  ] satisfies CulinaryVenue[],
-  rhythm: [
-    {
-      kicker: 'Morgen',
-      title: 'Frühstück',
-      text: 'Ein reichhaltiges Buffet, ohne Uhr. Der Tag darf langsam beginnen — bevor der Deich den Takt übernimmt.',
-    },
-    {
-      kicker: 'Abend',
-      title: 'Halbpension',
-      text: 'Frühstück und ein 5-Gang-Wahlmenü. Zusätzliche Getränke sind nicht enthalten — Allergien klären wir vorher.',
-    },
-    {
-      kicker: 'Spät',
-      title: 'Bar',
-      text: 'Ein Glas nach dem letzten Gang. Die Bar bleibt der leise Ort im Haus, wenn der Wind von See kommt.',
-    },
-  ] satisfies CulinaryRhythm[],
+  eyebrow: '',
+  title: 'Kulinarik',
+  subtitle: '',
+  intro: '',
+  hero_image: PLACEHOLDER_IMAGE,
+  hero_image_alt: '',
+  also_title: '',
+  also_text: '',
+  note_title: '',
+  note_text: '',
+  note_cta: '',
+  items: [] as CulinaryVenue[],
+  rhythm: [] as CulinaryRhythm[],
 };
+
+const EMPTY_VENUE: CulinaryVenue = { id: '', name: '', kicker: '', text: '', details: [], includes: [], image: PLACEHOLDER_IMAGE, image_alt: '' };
+const EMPTY_RHYTHM: CulinaryRhythm = { kicker: '', title: '', text: '' };
 
 type RawVenue = Partial<CulinaryVenue> & {
   alt?: string;
@@ -118,9 +51,9 @@ type RawFact = Partial<CulinaryFact>;
 type RawRhythm = Partial<CulinaryRhythm>;
 
 export function resolveCulinaryVenues(items?: RawVenue[]): CulinaryVenue[] {
-  const raw = items?.length ? items : CULINARY_PAGE_FALLBACK.items;
+  const raw = items ?? [];
   return raw.map((item, index) => {
-    const fallback = CULINARY_PAGE_FALLBACK.items[index] ?? CULINARY_PAGE_FALLBACK.items[0];
+    const fallback = { ...EMPTY_VENUE, id: `bereich-${index + 1}` };
     return {
       id: item.id ?? fallback.id,
       name: item.name ?? fallback.name,
@@ -135,9 +68,9 @@ export function resolveCulinaryVenues(items?: RawVenue[]): CulinaryVenue[] {
 }
 
 export function resolveCulinaryRhythm(items?: RawRhythm[]): CulinaryRhythm[] {
-  const raw = items?.length ? items : CULINARY_PAGE_FALLBACK.rhythm;
-  return raw.map((item, index) => {
-    const fallback = CULINARY_PAGE_FALLBACK.rhythm[index] ?? CULINARY_PAGE_FALLBACK.rhythm[0];
+  const raw = items ?? [];
+  return raw.map((item) => {
+    const fallback = EMPTY_RHYTHM;
     return {
       kicker: item.kicker ?? fallback.kicker,
       title: item.title ?? fallback.title,
@@ -160,14 +93,11 @@ export function culinaryVenueHref(id: string) {
   return `/kulinarik#${id}`;
 }
 
-// Link of a picture tile in the home culinary section. Tiles without their own link
-// keep the target the page used before tiles had a link field.
+// Link of a picture tile in the home culinary section; without its own link the tile leads
+// to the culinary page.
 export function culinaryTileHref(tile: { href?: unknown; name?: unknown }) {
   if (typeof tile.href === 'string' && tile.href.trim()) return tile.href.trim();
-  const name = typeof tile.name === 'string' ? tile.name : '';
-  if (/grill/i.test(name)) return culinaryVenueHref('grill');
-  if (/strand/i.test(name)) return culinaryVenueHref('strandstube');
-  return culinaryVenueHref('restaurant');
+  return '/kulinarik';
 }
 
 export function remapCulinaryHref(href: string, label?: string) {
