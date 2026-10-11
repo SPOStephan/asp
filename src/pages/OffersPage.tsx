@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { filled } from '../lib/filled';
 import { useCms } from '../cms/CmsContext';
 import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { IncludeList } from '../components/IncludeList';
@@ -19,7 +20,7 @@ export function OffersPage() {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${data.title ?? 'Angebote'} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${data.title ?? 'Angebote'} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
@@ -74,7 +75,7 @@ export function OffersPage() {
             </section>
           </CmsPart>
 
-          <CmsPart sectionKey="offers_page" part="note" label="Hinweis">
+          <CmsPart sectionKey="offers_page" part="note" label="Hinweis" empty={!filled(data.note_title ?? OFFERS_PAGE_FALLBACK.note_title, data.note_text ?? OFFERS_PAGE_FALLBACK.note_text)}>
             <section className="offers-page__note" data-cms-focus="note">
               <h2 className="offers-page__note-title heading-font" data-cms-path="note_title">
                 {data.note_title ?? OFFERS_PAGE_FALLBACK.note_title}

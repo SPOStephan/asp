@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { CmsSection } from '../cms/CmsSection';
+import { useCms } from '../cms/CmsContext';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
 
-const OFFER_TEXT =
-  'Genießen Sie zwei Übernachtungen an der Nordsee mit 50 € Wellnessguthaben und mehr …';
+const OFFER_TEXT = '';
 
 interface OfferLink {
   label: string;
@@ -25,40 +25,12 @@ interface OfferItem {
   image_secondary_alt: string;
 }
 
-const FALLBACK = {
+// A hotel without its own offers section shows none (never another hotel's offers).
+const FALLBACK: { title_line1: string; title_line2: string; title_script: string; items: OfferItem[] } = {
   title_line1: 'Unsere besten Angebote',
-  title_line2: 'für Ihre',
-  title_script: 'Nordsee-Ferien',
-  items: [
-    {
-      title: 'Wellnessurlaub',
-      subtitle: 'Auszeit am Meer',
-      text: OFFER_TEXT,
-      details: ['3 Nächte', 'ab 655 Euro pro Person'],
-      links: [
-        { label: 'Mehr erfahren', href: '/angebote/wellnessurlaub' },
-        { label: 'Jetzt buchen', href: '#buchung' },
-      ],
-      image_primary: '/teaser-suite.webp',
-      image_primary_alt: 'Suite im ambassador hotel & spa',
-      image_secondary: '/collage-dining1.webp',
-      image_secondary_alt: 'Kulinarik im Hotel',
-    },
-    {
-      title: 'Feiertage',
-      subtitle: 'Weihnachten mit Meerblick',
-      text: OFFER_TEXT,
-      details: ['3 Nächte', 'ab 655 Euro pro Person'],
-      links: [
-        { label: 'Mehr erfahren', href: '/angebote/feiertage' },
-        { label: 'Jetzt buchen', href: '#buchung' },
-      ],
-      image_primary: '/collage-pool.webp',
-      image_primary_alt: 'Poolbereich im ambassador hotel & spa',
-      image_secondary: '/teaser-spa.webp',
-      image_secondary_alt: 'Wellness und Spa',
-    },
-  ] satisfies OfferItem[],
+  title_line2: '',
+  title_script: '',
+  items: [],
 };
 
 function offerHeadline(data: {
@@ -117,13 +89,16 @@ function OfferVisual({
 }
 
 export function Offers() {
+  const editing = Boolean(useCms());
   const cms = useSection('offers');
-  const data = cms ?? FALLBACK;
+  const data: Record<string, any> = cms ?? FALLBACK;
   const items: OfferItem[] = (data.items ?? FALLBACK.items).map((item, index) => ({
     ...item,
     text: item.text ?? FALLBACK.items[index]?.text ?? OFFER_TEXT,
   }));
   const headline = offerHeadline(data);
+
+  if (!items.length && !editing) return null;
 
   return (
     <CmsSection sectionKey="offers" label="Angebote">

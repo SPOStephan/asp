@@ -21,6 +21,7 @@ import {
 import { heroTextTop } from '../components/Hero';
 import { useCms } from './CmsContext';
 import { isHiddenMetaPath } from './cmsHidden';
+import { CMS_LIST_SHAPES } from './cmsListShapes';
 import { CmsFilterEditor } from './CmsFilterEditor';
 import { CmsIconPicker } from './CmsIconPicker';
 import { CmsImageField } from './CmsImageField';
@@ -1135,10 +1136,12 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
 
 // A new, empty entry shaped like the existing ones (all their fields, texts empty, the
 // first icon kept as a start, a fresh id where entries have ids).
-function blankListItem(list: unknown[], path: string): unknown {
+function blankListItem(list: unknown[], path: string, section = ''): unknown {
   if (!list.length) {
     // Empty lists still get an entry of the right shape.
     const leaf = path.split('.').pop() ?? '';
+    const shape = CMS_LIST_SHAPES[`${section}:${leaf}`];
+    if (shape) return { ...shape, ...('id' in shape ? { id: `${leaf}-${Date.now().toString(36)}` } : {}) };
     if (leaf === 'images' || leaf === 'impressions') return { src: '', alt: '' };
     if (leaf === 'community') return { text: '', author: '', href: '', image: '' };
     if (leaf === 'faqs') return { question: '', answer: '' };
@@ -1334,7 +1337,7 @@ function GenericValue({
           );
         })}
         {value.length ? (
-          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => onChange([...value, blankListItem(value, path)])}>
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => onChange([...value, blankListItem(value, path, section)])}>
             + {label === 'items' ? 'Eintrag' : label} hinzufügen
           </button>
         ) : null}

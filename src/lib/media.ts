@@ -1,29 +1,23 @@
+// Neutral stand-ins while a hotel has no pictures of its own (never another hotel's).
+export const PLACEHOLDER_IMAGE = '/placeholder.svg';
+
 export const MUSTER_MEDIA = {
-  hero: '/asp-start01.jpg',
-  logoWhite: '/ASP_Logo-weiss.png',
-  logoNormal: '/ASP_Logo-normal.png',
-  culinary: '/culinary-dining.webp',
-  wellness: '/hotel-nordsee-wellness02.webp',
-  rooms: '/hotel-stpeter-ording-Austernfischer-Suite05.jpg',
-  offers: '/teaser-autumn.webp',
-  blog: '/teaser-autumn.webp',
-  impressions: '/autumn-aerial.webp',
-  discoverLeft: '/willkommen-spo-smart.jpg',
-  discoverRight: '/hotel-stpeter-ording-Austernfischer-Suite05.jpg',
+  hero: PLACEHOLDER_IMAGE,
+  // No logo yet: the hotel name shows instead.
+  logoWhite: '',
+  logoNormal: '',
+  culinary: PLACEHOLDER_IMAGE,
+  wellness: PLACEHOLDER_IMAGE,
+  rooms: PLACEHOLDER_IMAGE,
+  offers: PLACEHOLDER_IMAGE,
+  blog: PLACEHOLDER_IMAGE,
+  impressions: PLACEHOLDER_IMAGE,
+  discoverLeft: PLACEHOLDER_IMAGE,
+  discoverRight: PLACEHOLDER_IMAGE,
 } as const;
 
-// The nine Discover tiles from the Ambassador pilot, used while a hotel has none.
-export const MUSTER_DISCOVER_TILES = [
-  { image: '/suite-room.webp', eyebrow: 'Übernachten', title: 'Zimmer & Suiten', href: '#highlights' },
-  { image: '/teaser-autumn.webp', eyebrow: 'Saison', title: 'Angebote', href: '#newsletter' },
-  { image: '/spa-wellness.webp', eyebrow: 'Wohlbefinden', title: 'Wellness & Spa', href: '#wellness' },
-  { image: '/culinary-dining.webp', eyebrow: 'Genuss', title: 'Restaurant & Bar', href: '#culinary' },
-  { image: '/autumn-aerial.webp', eyebrow: 'Region', title: 'Urlaub an der Nordsee', href: '#generations' },
-  { image: '/collage-ski.webp', eyebrow: 'Winter', title: 'Strand & See', href: '#highlights' },
-  { image: '/teaser-family.webp', eyebrow: 'Familie', title: 'Familienurlaub', href: '#generations' },
-  { image: '/collage-mtb.webp', eyebrow: 'Aktiv', title: 'Erlebnisse', href: '#highlights' },
-  { image: '/yoga-outdoor.webp', eyebrow: 'Balance', title: 'Yoga & Retreats', href: '#wellness' },
-];
+// A hotel without tiles shows none (the editor adds them).
+export const MUSTER_DISCOVER_TILES: Array<Record<string, string>> = [];
 
 export type DiscoverTile = { id: string; image: string; eyebrow: string; title: string; href: string; new_tab?: boolean };
 

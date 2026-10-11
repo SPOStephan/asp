@@ -9,12 +9,13 @@ import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { entryFocal } from '../cms/cmsFocal';
 import { resolveOfferStories } from '../lib/offers';
+import { PLACEHOLDER_IMAGE } from '../lib/media';
 
 const PAIR_FALLBACK = {
-  left: '/willkommen-spo-smart.jpg',
-  leftAlt: 'Ausblick auf das Meer mit Whirlpool',
-  right: '/hotel-stpeter-ording-Austernfischer-Suite05.jpg',
-  rightAlt: 'Suite mit Meerblick und Balkon',
+  left: PLACEHOLDER_IMAGE,
+  leftAlt: '',
+  right: PLACEHOLDER_IMAGE,
+  rightAlt: '',
 };
 
 export function OfferDetailPage() {
@@ -30,7 +31,7 @@ export function OfferDetailPage() {
   useEffect(() => {
     if (!offer) return;
     const previous = document.title;
-    document.title = `${offer.title} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${offer.title} | ${hotel?.name ?? ''}`;
     window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;

@@ -29,10 +29,10 @@ export const FAQ_PAGE_FALLBACK = {
 };
 
 export const FOOTER_FALLBACK = {
-  tagline: '5-Sterne Wellnesshotel an der Nordsee. Wo das Meer noch echt ist.',
+  tagline: '',
   col_explore_title: 'Entdecken',
   col_explore_links: [
-    { label: 'Das Resort', href: '#welcome' },
+    { label: 'Das Hotel', href: '#welcome' },
     { label: 'Angebote', href: '/angebote' },
     { label: 'Wellness & Spa', href: '/wellness' },
     { label: 'Kulinarik', href: '/kulinarik' },
@@ -43,8 +43,6 @@ export const FOOTER_FALLBACK = {
   col_service_links: [
     { label: 'Anreise', href: '#anreise' },
     { label: 'FAQ', href: '/faqs' },
-    { label: 'Geschenkgutscheine', href: '#' },
-    { label: 'Karriere', href: '#' },
   ],
 };
 

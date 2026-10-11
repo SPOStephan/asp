@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, House, X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
+import { autoMenuGroups } from '../lib/autoMenu';
 import { useCms } from '../cms/CmsContext';
 import { toCmsHref } from '../cms/cmsPages';
 import { filterMenuGroups, pageKeyFromHref } from '../lib/musterPages';
@@ -31,66 +32,6 @@ interface LanguageOption {
 const FALLBACK_LANGUAGES: LanguageOption[] = [
   { code: 'de', label: 'DE' },
   { code: 'en', label: 'EN' },
-];
-
-const FALLBACK_GROUPS: MenuGroup[] = [
-  {
-    title: 'Zimmer & Suiten',
-    href: '/zimmer',
-    links: [
-      { label: 'Zimmer & Suiten', href: '/zimmer' },
-      { label: 'Für jede Generation', href: '#suiten' },
-      { label: 'Direkt buchen', href: '#direktbuchung' },
-    ],
-  },
-  {
-    title: 'Angebote',
-    href: '/angebote',
-    links: [
-      { label: 'Aktuelle Angebote', href: '/angebote' },
-      { label: 'Wellnessurlaub', href: '/angebote/wellnessurlaub' },
-      { label: 'Feiertage', href: '/angebote/feiertage' },
-    ],
-  },
-  {
-    title: 'Erlebnisse',
-    links: [
-      { label: 'Hotel-Highlights', href: '#highlights' },
-      { label: 'Entdecken', href: '#discover' },
-      { label: 'Impressionen', href: '/impressionen' },
-    ],
-  },
-  {
-    title: 'Wellness',
-    href: '/wellness',
-    links: [
-      { label: 'Schwimmbad & Sauna', href: '/wellness/schwimmbad-sauna' },
-      { label: 'Wellness-Informationen', href: '/wellness/informationen' },
-      { label: 'Auramaris Spa', href: '/wellness/auramaris' },
-      { label: 'Termin-Vereinbarung', href: '/wellness/termin' },
-      { label: 'Spa-Preisliste', href: '/wellness/preisliste' },
-      { label: 'Angebot des Monats', href: '/wellness/angebot' },
-    ],
-  },
-  {
-    title: 'Kulinarik',
-    href: '/kulinarik',
-    links: [
-      { label: 'Restaurant & Bar', href: '/kulinarik#restaurant' },
-      { label: 'Strandstube', href: '/kulinarik#strandstube' },
-      { label: 'Grill & Dine', href: '/kulinarik#grill' },
-    ],
-  },
-  {
-    title: 'Hotel',
-    links: [
-      { label: 'Das Resort', href: '#welcome' },
-      { label: 'Anreise', href: '#anreise' },
-      { label: 'Blog', href: '/blog' },
-      { label: 'FAQ', href: '/faqs' },
-      { label: 'Newsletter', href: '#newsletter' },
-    ],
-  },
 ];
 
 function mobileGroupHref(title: string, href?: string) {
@@ -387,14 +328,14 @@ export function Navbar() {
     }
   };
 
-  const { isPageEnabled } = useHotelContent();
+  const { isPageEnabled, content } = useHotelContent();
   const navLinks: NavLink[] = ((data.links ?? []) as NavLink[]).filter((link) => {
     if (!link?.label?.trim() || !link.href?.trim()) return false;
     const key = pageKeyFromHref(remapSiteHref(link.href, link.label));
     return !key || isPageEnabled(key);
   });
   const menuGroups: MenuGroup[] = filterMenuGroups(
-    data.menu_groups?.length ? data.menu_groups : FALLBACK_GROUPS,
+    data.menu_groups?.length ? data.menu_groups : autoMenuGroups(content?.sections ?? {}),
     isPageEnabled,
   );
   const languages: LanguageOption[] = data.languages?.length ? data.languages : FALLBACK_LANGUAGES;
@@ -464,16 +405,23 @@ export function Navbar() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
-          <img
-            className="navbar__logo-image navbar__logo-image--white"
-            src={resolveMedia(data.logo_white, MUSTER_MEDIA.logoWhite)}
-            alt={hotel?.name || ''}
-          />
-          <img
-            className="navbar__logo-image navbar__logo-image--normal"
-            src={resolveMedia(data.logo_normal, MUSTER_MEDIA.logoNormal)}
-            alt={hotel?.name || ''}
-          />
+          {resolveMedia(data.logo_white, MUSTER_MEDIA.logoWhite) || resolveMedia(data.logo_normal, MUSTER_MEDIA.logoNormal) ? (
+            <>
+              <img
+                className="navbar__logo-image navbar__logo-image--white"
+                src={resolveMedia(data.logo_white, resolveMedia(data.logo_normal, MUSTER_MEDIA.logoWhite))}
+                alt={hotel?.name || ''}
+              />
+              <img
+                className="navbar__logo-image navbar__logo-image--normal"
+                src={resolveMedia(data.logo_normal, resolveMedia(data.logo_white, MUSTER_MEDIA.logoNormal))}
+                alt={hotel?.name || ''}
+              />
+            </>
+          ) : (
+            // No logo uploaded yet: the hotel's name instead of someone else's logo.
+            <span className="navbar__logo-text heading-font">{hotel?.name || ''}</span>
+          )}
         </a>
 
         <div className="navbar__right">

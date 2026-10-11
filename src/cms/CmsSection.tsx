@@ -117,11 +117,14 @@ export function CmsPart({
   sectionKey,
   part,
   label,
+  empty = false,
   children,
 }: {
   sectionKey: string;
   part: string;
   label: string;
+  // Nothing filled in yet: hidden on the site, still shown in the editor to fill it.
+  empty?: boolean;
   children: ReactNode;
 }) {
   const cms = useCms();
@@ -129,7 +132,7 @@ export function CmsPart({
   const key = partHiddenKey(part);
   const hidden = isSectionHidden(data, key);
 
-  if (hidden && !cms) return null;
+  if ((hidden || empty) && !cms) return null;
   if (!cms) return children;
 
   return (

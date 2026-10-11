@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { filled } from '../lib/filled';
 import { useLocation } from 'react-router-dom';
 import { CmsPart, CmsSection } from '../cms/CmsSection';
 import { IncludeList } from '../components/IncludeList';
@@ -25,7 +26,7 @@ export function CulinaryPage() {
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${data.title ?? 'Kulinarik'} | ${hotel?.name ?? 'ambassador hotel & spa'}`;
+    document.title = `${data.title ?? 'Kulinarik'} | ${hotel?.name ?? ''}`;
 
     if (location.hash) {
       const id = decodeURIComponent(location.hash.slice(1));
@@ -57,7 +58,7 @@ export function CulinaryPage() {
         cms={{ section: 'culinary_page' }}
       >
         <div className="culinary-page">
-          <CmsPart sectionKey="culinary_page" part="intro" label="Einleitung">
+          <CmsPart sectionKey="culinary_page" part="intro" label="Einleitung" empty={!filled(data.intro ?? home?.text ?? CULINARY_PAGE_FALLBACK.intro)}>
             <p className="culinary-page__intro" data-cms-focus="intro" data-cms-path="intro">
               {data.intro ?? home?.text ?? CULINARY_PAGE_FALLBACK.intro}
             </p>
@@ -71,7 +72,7 @@ export function CulinaryPage() {
             ))}
           </nav>
 
-          <CmsPart sectionKey="culinary_page" part="venues" label="Restaurants">
+          <CmsPart sectionKey="culinary_page" part="venues" label="Restaurants" empty={!items.length}>
             <section className="culinary-page__venues" aria-label="Restaurants im Haus">
               {items.map((venue, index) => (
                 <Reveal key={venue.id} delay={index * 60}>
@@ -106,7 +107,7 @@ export function CulinaryPage() {
             </section>
           </CmsPart>
 
-          <CmsPart sectionKey="culinary_page" part="rhythm" label="Tagesablauf">
+          <CmsPart sectionKey="culinary_page" part="rhythm" label="Tagesablauf" empty={!rhythm.length}>
             <section className="culinary-page__rhythm" aria-label="Vom Morgen bis in die Nacht">
               {rhythm.map((item, index) => (
                 <article key={item.title} className="culinary-page__beat" data-cms-focus={`rhythm:${index}`}>
@@ -118,14 +119,14 @@ export function CulinaryPage() {
             </section>
           </CmsPart>
 
-          <CmsPart sectionKey="culinary_page" part="also" label="Zusatz">
+          <CmsPart sectionKey="culinary_page" part="also" label="Zusatz" empty={!filled(data.also_title ?? CULINARY_PAGE_FALLBACK.also_title, data.also_text ?? CULINARY_PAGE_FALLBACK.also_text)}>
             <p className="culinary-page__aside" data-cms-focus="also">
               <strong data-cms-path="also_title">{data.also_title ?? CULINARY_PAGE_FALLBACK.also_title}.</strong>{' '}
               <span data-cms-path="also_text">{data.also_text ?? CULINARY_PAGE_FALLBACK.also_text}</span>
             </p>
           </CmsPart>
 
-          <CmsPart sectionKey="culinary_page" part="note" label="Hinweis">
+          <CmsPart sectionKey="culinary_page" part="note" label="Hinweis" empty={!filled(data.note_title ?? CULINARY_PAGE_FALLBACK.note_title, data.note_text ?? CULINARY_PAGE_FALLBACK.note_text)}>
             <section className="culinary-page__note" data-cms-focus="note">
               <h2 className="culinary-page__note-title heading-font" data-cms-path="note_title">
                 {data.note_title ?? CULINARY_PAGE_FALLBACK.note_title}
