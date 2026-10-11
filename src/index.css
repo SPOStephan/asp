@@ -4049,20 +4049,10 @@ body.room-lightbox-open .availability-bar__slot {
   margin: 0 auto;
   object-fit: contain;
 }
-.gallery-view__stage figcaption {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 24px;
-  margin-top: 18px;
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 0.92rem;
-}
-.gallery-view__stage em {
-  font-style: normal;
+.gallery-view__count {
+  margin-top: 14px;
   font-size: 0.72rem;
   letter-spacing: 0.18em;
-  text-transform: uppercase;
   color: var(--accent-300);
 }
 .gallery-view__close,
@@ -4102,11 +4092,51 @@ body.room-lightbox-open .availability-bar__slot {
   .impressions-page__shot-label { opacity: 1; transform: none; }
   .impressions-page__shot::after { opacity: 1; }
   .impressions-page__note { margin-bottom: 88px; padding-top: 48px; }
-  .gallery-view { padding: 72px 56px 28px; }
-  .gallery-view__nav { width: 40px; height: 40px; }
+}
+
+/* Phones and tablets: the picture uses the whole screen width (upright) or the whole
+   screen (turned sideways); arrows and counter lie on the picture. */
+@media (max-width: 900px), (pointer: coarse) and (max-height: 600px) {
+  .gallery-view { padding: 0; background: #000; }
+  .gallery-view__stage {
+    position: relative;
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    display: grid;
+    place-items: center;
+  }
+  .gallery-view__stage img {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    object-fit: contain;
+  }
+  .gallery-view__count {
+    position: absolute;
+    left: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    margin: 0;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.45);
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .gallery-view__close,
+  .gallery-view__nav {
+    z-index: 2;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.42);
+  }
+  .gallery-view__close { top: calc(12px + env(safe-area-inset-top)); right: 12px; width: 42px; height: 42px; }
+  .gallery-view__nav { width: 42px; height: 42px; }
   .gallery-view__nav--prev { left: 10px; }
   .gallery-view__nav--next { right: 10px; }
-  .gallery-view__stage figcaption { flex-direction: column; gap: 8px; text-align: left; }
+}
+/* Phone turned sideways: the picture fills the whole screen. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .gallery-view__stage img { object-fit: cover; }
 }
 
 /* ==================== SUBPAGE HERO ==================== */
