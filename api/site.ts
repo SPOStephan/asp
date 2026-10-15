@@ -11,6 +11,7 @@ import {
 } from '../src/site/renderSite';
 import { siteCacheTag } from '../src/site/cacheTag';
 import { loadSiteContent } from '../src/site/siteData';
+import { isPortalHost } from '../src/portal/config';
 
 // Every page request and the crawler files (robots.txt, sitemap.xml, llms.txt) end up here,
 // so crawlers and AI systems get finished HTML instead of an empty app shell.
@@ -18,6 +19,7 @@ import { loadSiteContent } from '../src/site/siteData';
 const TEMPLATE_HEADER = 'x-site-template';
 const CACHE = 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400';
 let template: { html: string; at: number } | null = null;
+let portalTemplate: { html: string; at: number } | null = null;
 
 function env(name: string) {
   return (process.env[name] || '').trim();
@@ -36,6 +38,15 @@ async function loadTemplate(host: string) {
   return template.html;
 }
 
+// The member portal (e.g. app.<group>.de) is an app behind a login: one shell, no hotel content.
+async function loadPortal(host: string) {
+  if (portalTemplate && Date.now() - portalTemplate.at < 60_000) return portalTemplate.html;
+  const response = await fetch(`https://${host}/portal.html`, { headers: { [TEMPLATE_HEADER]: '1' } });
+  if (!response.ok) throw new Error(`portal.html ${response.status}`);
+  portalTemplate = { html: await response.text(), at: Date.now() };
+  return portalTemplate.html;
+}
+
 function text(body: string, type: string, tag: string, status = 200) {
   return new Response(body, { status, headers: { 'Content-Type': `${type}; charset=utf-8`, 'Cache-Control': CACHE, 'Vercel-Cache-Tag': tag } });
 }
@@ -46,6 +57,14 @@ export default async function handler(request: Request) {
   const host = requestHost(request);
   const file = url.searchParams.get('file');
   const path = normalizePath(url.searchParams.get('path') ?? '/');
+
+  if (isPortalHost(host)) {
+    if (file === 'robots') return new Response('User-agent: *\nDisallow: /\n', { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    if (file) return new Response('Not found', { status: 404 });
+    return new Response(await loadPortal(host), {
+      headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'public, max-age=0, s-maxage=60' },
+    });
+  }
 
   if (!file && isPrivatePath(path)) {
     const html = await loadTemplate(host);

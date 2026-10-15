@@ -1,0 +1,10 @@
+{
+  "appId": "de.lohbeckhotels.app",
+  "appName": "Mein Konto",
+  "webDir": "dist-app",
+  "server": { "androidScheme": "https" },
+  "ios": { "contentInset": "always" },
+  "plugins": {
+    "SplashScreen": { "backgroundColor": "#0d2940", "launchShowDuration": 600 }
+  }
+}
