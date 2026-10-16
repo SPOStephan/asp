@@ -8,7 +8,8 @@
     "build": "vite build && node scripts/app-shell.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
-    "export-cms": "node scripts/export-cms.mjs"
+    "export-cms": "node scripts/export-cms.mjs",
+    "build:app": "vite build --config vite.app.config.ts && node scripts/app-index.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -17,6 +18,7 @@
     "framer-motion": "^13.1.1",
     "lucide-react": "^1.33.0",
     "pdfjs-dist": "6.3.289",
+    "qrcode-generator": "^1.4.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2"

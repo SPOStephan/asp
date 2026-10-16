@@ -1,0 +1,17 @@
+{
+  "name": "Mein Konto",
+  "short_name": "Mein Konto",
+  "description": "Reisen, Punkte und Vorteile in allen Hotels der Gruppe.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf9f7",
+  "theme_color": "#0d2940",
+  "lang": "de",
+  "icons": [
+    { "src": "/portal-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/portal-icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/portal-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

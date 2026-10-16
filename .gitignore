@@ -1,3 +1,6 @@
 node_modules/
 .env
 cms-export/
+
+# Store app build and native projects (created with npx cap add ios/android)
+dist-app

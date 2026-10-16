@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, House, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, House, UserRound, X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { autoMenuGroups } from '../lib/autoMenu';
+import { PORTAL_URL } from '../portal/config';
 import { useCms } from '../cms/CmsContext';
 import { toCmsHref } from '../cms/cmsPages';
 import { filterMenuGroups, pageKeyFromHref } from '../lib/musterPages';
@@ -436,6 +437,12 @@ export function Navbar() {
             </button>
           ) : (
             <>
+              {PORTAL_URL && !cms ? (
+                // Member login of the hotel group's portal (e.g. app.<group>.de).
+                <a className="navbar__account" href={PORTAL_URL} aria-label="Mein Konto" title="Mein Konto">
+                  <UserRound size={19} strokeWidth={1.5} />
+                </a>
+              ) : null}
               <div className="navbar__lang" ref={langRef}>
                 <button
                   type="button"

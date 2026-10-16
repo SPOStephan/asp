@@ -10,6 +10,7 @@ import { AdminIconsPage } from './pages/AdminIconsPage';
 import { AdminMediaPage } from './pages/AdminMediaPage';
 import { AdminTemplatesPage } from './pages/AdminTemplatesPage';
 import { KnowledgeIndexPage, KnowledgePage } from './knowledge/KnowledgePage';
+import { AdminLoyaltyPage } from './loyalty/AdminLoyaltyPage';
 import './admin.css';
 
 function AdminGate() {
@@ -58,6 +59,11 @@ function AdminGate() {
             Medien
           </NavLink>
           {admin.platform || managedOrgs(admin).length ? (
+            <NavLink to="/admin/treue" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
+              Treueprogramm
+            </NavLink>
+          ) : null}
+          {admin.platform || managedOrgs(admin).length ? (
             <NavLink to="/admin/admins" className={({ isActive }) => (isActive ? 'is-on' : undefined)}>
               Team
             </NavLink>
@@ -76,6 +82,7 @@ function AdminGate() {
             {admin.platform ? <Route path="/admin/vorlagen" element={<AdminTemplatesPage />} /> : null}
             {admin.platform ? <Route path="/admin/icons" element={<AdminIconsPage />} /> : null}
             <Route path="/admin/wissen" element={<KnowledgeIndexPage />} />
+            <Route path="/admin/treue" element={<AdminLoyaltyPage />} />
             <Route path="/admin/wissen/hotel/:hotelId" element={<KnowledgePage level="hotel" />} />
             <Route path="/admin/wissen/gruppe/:orgId" element={<KnowledgePage level="group" />} />
             <Route path="/admin/media" element={<AdminMediaPage />} />

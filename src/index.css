@@ -156,6 +156,10 @@ img { display: block; max-width: 100%; }
 .navbar--scrolled .navbar__logo-image,
 .navbar--menu-open .navbar__logo-image { width: 175px; height: 72px; }
 .navbar__logo-image--normal { display: none; }
+.navbar__account { display: grid; place-items: center; width: 36px; height: 36px; margin-right: 6px; color: #fff; border-radius: 50%; transition: color 0.35s ease; }
+.navbar__account:hover { color: var(--accent-300); }
+.navbar--scrolled .navbar__account,
+.navbar--menu-open .navbar__account { color: var(--primary-700); }
 /* Hotel name while no logo is uploaded. */
 .navbar__logo-text { display: block; max-width: 240px; font-size: 1.5rem; line-height: 1.1; text-align: center; color: #fff; transition: color 0.35s ease; }
 .navbar--scrolled .navbar__logo-text,
