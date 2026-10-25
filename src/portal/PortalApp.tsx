@@ -1,51 +1,68 @@
-import { CalendarDays, CreditCard, Gift, Home, UserRound, BedDouble } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BedDouble, CalendarDays, CreditCard, Gift, Home, UserRound } from 'lucide-react';
+import { useEffect, type ReactNode } from 'react';
+import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { PORTAL_NAME } from './config';
+import { formatPoints } from './format';
 import { usePortal } from './PortalData';
+import { PortalFooter } from './parts';
 import { ForgotPage, LoginPage, RegisterPage, ResetPasswordPage } from './pages/AuthPages';
 import { BenefitsPage } from './pages/BenefitsPage';
 import { BookPage } from './pages/BookPage';
 import { CardPage } from './pages/CardPage';
 import { HomePage } from './pages/HomePage';
 import { JoinPage } from './pages/JoinPage';
+import { LandingPage } from './pages/LandingPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { TripsPage } from './pages/TripsPage';
 
 const TABS = [
-  { to: '/', label: 'Start', icon: Home, end: true },
-  { to: '/reisen', label: 'Reisen', icon: CalendarDays },
-  { to: '/vorteile', label: 'Vorteile', icon: Gift },
-  { to: '/buchen', label: 'Buchen', icon: BedDouble },
-  { to: '/karte', label: 'Karte', icon: CreditCard },
+  { to: '/', label: 'Übersicht', short: 'Start', icon: Home, end: true },
+  { to: '/reisen', label: 'Reisen', short: 'Reisen', icon: CalendarDays },
+  { to: '/vorteile', label: 'Vorteile & Prämien', short: 'Prämien', icon: Gift },
+  { to: '/buchen', label: 'Buchen', short: 'Buchen', icon: BedDouble },
+  { to: '/karte', label: 'Mitgliedskarte', short: 'Karte', icon: CreditCard },
 ];
 
 export function useProgramName() {
-  const { summary } = usePortal();
-  return PORTAL_NAME || summary?.program.name || 'Mein Konto';
+  const { summary, info } = usePortal();
+  return PORTAL_NAME || summary?.program.name || info?.name || 'Mein Konto';
+}
+
+// Every page starts at the top, as on a website.
+function ScrollTop() {
+  const { pathname } = useLocation();
+  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  return null;
 }
 
 function Shell({ children }: { children: ReactNode }) {
   const name = useProgramName();
+  const { summary } = usePortal();
   return (
     <div className="portal">
+      <ScrollTop />
       <header className="portal-top">
-        <NavLink to="/" className="portal-top__brand heading">{name}</NavLink>
-        <nav className="portal-top__nav" aria-label="Bereiche">
-          {TABS.map((tab) => (
-            <NavLink key={tab.to} to={tab.to} end={tab.end}>{tab.label}</NavLink>
-          ))}
-        </nav>
-        <NavLink to="/profil" className="portal-top__me" aria-label="Profil">
-          <UserRound size={20} strokeWidth={1.6} />
-        </NavLink>
+        <div className="portal-top__inner">
+          <NavLink to="/" className="portal-top__brand heading">{name}</NavLink>
+          <nav className="portal-top__nav" aria-label="Bereiche">
+            {TABS.filter((tab) => tab.to !== '/buchen').map((tab) => (
+              <NavLink key={tab.to} to={tab.to} end={tab.end}>{tab.label}</NavLink>
+            ))}
+          </nav>
+          <div className="portal-top__side">
+            {summary ? <Link to="/vorteile" className="portal-top__points">{formatPoints(summary.balance)} <span>Punkte</span></Link> : null}
+            <NavLink to="/profil" className="portal-top__me" aria-label="Profil"><UserRound size={18} strokeWidth={1.4} /></NavLink>
+            <Link to="/buchen" className="portal-btn portal-btn--small portal-top__book">Buchen</Link>
+          </div>
+        </div>
       </header>
       <main className="portal-main">{children}</main>
+      <PortalFooter name={name} settings={summary?.program.settings} />
       <nav className="portal-tabs" aria-label="Bereiche">
         {TABS.map((tab) => (
           <NavLink key={tab.to} to={tab.to} end={tab.end}>
-            <tab.icon size={21} strokeWidth={1.5} />
-            <span>{tab.label}</span>
+            <tab.icon size={21} strokeWidth={1.4} />
+            <span>{tab.short}</span>
           </NavLink>
         ))}
       </nav>
@@ -63,11 +80,16 @@ export function PortalApp() {
 
   if (!session) {
     return (
-      <Routes>
-        <Route path="/registrieren" element={<RegisterPage />} />
-        <Route path="/passwort-vergessen" element={<ForgotPage />} />
-        <Route path="*" element={<LoginPage />} />
-      </Routes>
+      <>
+        <ScrollTop />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/anmelden" element={<LoginPage />} />
+          <Route path="/registrieren" element={<RegisterPage />} />
+          <Route path="/passwort-vergessen" element={<ForgotPage />} />
+          <Route path="*" element={<LandingPage />} />
+        </Routes>
+      </>
     );
   }
 

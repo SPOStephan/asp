@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PORTAL_NAME, PORTAL_URL } from '../config';
+import { PORTAL_URL } from '../config';
+import { useProgramName } from '../PortalApp';
 import { sized, hideBroken } from '../format';
 import { usePortal } from '../PortalData';
 import { portal } from '../portalClient';
@@ -21,6 +22,7 @@ function translate(message: string) {
 
 export function AuthFrame({ title, intro, children }: { title: string; intro?: string; children: ReactNode }) {
   const { hotels } = usePortal();
+  const name = useProgramName();
   const picture = hotels.find((hotel) => hotel.image)?.image ?? '';
   return (
     <div className="portal-auth">
@@ -28,7 +30,7 @@ export function AuthFrame({ title, intro, children }: { title: string; intro?: s
         {picture ? <img src={sized(picture, 1600)} alt="" onError={hideBroken} /> : null}
       </div>
       <section className="portal-auth__panel">
-        <p className="portal-eyebrow">{PORTAL_NAME || 'Mein Konto'}</p>
+        <Link to="/" className="portal-eyebrow portal-auth__home">{name}</Link>
         <h1 className="heading portal-auth__title">{title}</h1>
         {intro ? <p className="portal-auth__intro">{intro}</p> : null}
         {children}
@@ -37,7 +39,8 @@ export function AuthFrame({ title, intro, children }: { title: string; intro?: s
   );
 }
 
-export function LoginPage() {
+// Login, used on the start page and on its own page.
+export function LoginForm({ compact }: { compact?: boolean }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +56,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthFrame title="Willkommen zurück" intro="Ihre Reisen, Punkte und Vorteile in allen Hotels der Gruppe – an einem Ort.">
+    <>
       <form className="portal-form" onSubmit={submit}>
         <label>E-Mail-Adresse<input type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
         <label>Passwort<input type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} /></label>
@@ -62,8 +65,16 @@ export function LoginPage() {
       </form>
       <p className="portal-auth__links">
         <Link to="/passwort-vergessen">Passwort vergessen?</Link>
-        <span>Noch kein Mitglied? <Link to="/registrieren">Jetzt kostenlos registrieren</Link></span>
+        {compact ? null : <span>Noch kein Mitglied? <Link to="/registrieren">Jetzt kostenlos registrieren</Link></span>}
       </p>
+    </>
+  );
+}
+
+export function LoginPage() {
+  return (
+    <AuthFrame title="Willkommen zurück" intro="Ihre Reisen, Punkte und Vorteile in allen Hotels der Gruppe – an einem Ort.">
+      <LoginForm />
     </AuthFrame>
   );
 }
@@ -108,7 +119,7 @@ export function RegisterPage() {
   if (sent) {
     return (
       <AuthFrame title="Fast geschafft" intro={`Wir haben Ihnen eine E-Mail an ${form.email} geschickt. Bitte bestätigen Sie den Link darin – danach sind Sie angemeldet.`}>
-        <p className="portal-auth__links"><Link to="/">Zur Anmeldung</Link></p>
+        <p className="portal-auth__links"><Link to="/anmelden">Zur Anmeldung</Link></p>
       </AuthFrame>
     );
   }
@@ -133,7 +144,7 @@ export function RegisterPage() {
         {error ? <p className="portal-error" role="alert">{error}</p> : null}
         <button type="submit" className="portal-btn" disabled={busy}>{busy ? 'Einen Moment …' : 'Kostenlos registrieren'}</button>
       </form>
-      <p className="portal-auth__links"><span>Schon Mitglied? <Link to="/">Anmelden</Link></span></p>
+      <p className="portal-auth__links"><span>Schon Mitglied? <Link to="/anmelden">Anmelden</Link></span></p>
     </AuthFrame>
   );
 }
@@ -159,7 +170,7 @@ export function ForgotPage() {
           <button type="submit" className="portal-btn">Link anfordern</button>
         </form>
       ) : null}
-      <p className="portal-auth__links"><Link to="/">Zur Anmeldung</Link></p>
+      <p className="portal-auth__links"><Link to="/anmelden">Zur Anmeldung</Link></p>
     </AuthFrame>
   );
 }

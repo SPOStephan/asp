@@ -14,6 +14,7 @@ export function TripsPage() {
 
   return (
     <div className="portal-page">
+      <p className="portal-eyebrow">Reisen</p>
       <h1 className="heading portal-title">Meine Reisen</h1>
       <div className="portal-tabs-inline" role="tablist">
         <button type="button" role="tab" aria-selected={tab === 'next'} onClick={() => setTab('next')}>Geplant ({upcoming.length})</button>

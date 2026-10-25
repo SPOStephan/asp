@@ -9,8 +9,9 @@ iOS- und Android-App in die Stores bringen – alles aus demselben Code.
 
 | Teil | Wo |
 | --- | --- |
-| Datenbank, Regeln, Punkte | `supabase/migrations/20261015090000_032_loyalty.sql` |
-| Portal (Login, Übersicht, Reisen, Vorteile, Buchen, Karte, Profil) | `portal.html`, `src/portal/` |
+| Datenbank, Regeln, Punkte | `supabase/migrations/20261015090000_032_loyalty.sql`, `…_033_loyalty_portal.sql` |
+| Portal (Startseite, Login, Übersicht, Reisen, Vorteile, Buchen, Karte, Profil) | `portal.html`, `src/portal/` |
+| Musterdaten für Entwicklung und Vorführung | `supabase/seeds/loyalty-demo.sql` (kein Teil der Migrationen) |
 | PWA (Manifest, Offline-Hülle, Icons) | `public/portal.webmanifest`, `public/portal-sw.js`, `public/portal-icon-*.png` |
 | Store-Apps | `capacitor.config.json`, `vite.app.config.ts`, `npm run build:app` |
 | Verwaltung | Admin → „Treueprogramm“ (`src/admin/loyalty/`) |
@@ -28,20 +29,20 @@ iOS- und Android-App in die Stores bringen – alles aus demselben Code.
   Zeit. Das Team kann Punkte von Hand buchen (Kulanz, Aktionen).
 - **Stufen:** nach den Punkten der letzten N Monate (Standard: Classic, Silber ab 2.500, Gold ab
   7.500 in 24 Monaten).
-- **Stammgastpass digital:** ein Stempel je direkt gebuchtem Aufenthalt, nach 10 Stempeln eine
-  Gratisnacht – wie der bisherige Pass auf Papier.
+- **Statt Stempelkarte:** Punkte, Stufen und Prämien lösen den Stammgastpass auf Papier ab. Die
+  Übersicht zeigt den Weg zur nächsten Stufe und zur nächsten Prämie.
 - **Vorteile:** drei Arten – automatische Vorteile (z. B. Late Check-out), Prämien gegen Punkte
   (Einlösen erzeugt einen Code) und Mitgliederpreise. Jeweils für alle Hotels oder ein Haus, optional
   ab einer Stufe.
 - **Buchen zum Mitgliederpreis:** führt in die Buchungsstrecke des Hotels, der Mitglieder-Code wird
   als URL-Parameter mitgegeben (Code und Parametername im Admin einstellbar).
 
-Alle Werte (Punkte pro Euro, Bonus, Stufen, Verfall, Stempel, Code) stehen im Admin unter
+Alle Werte (Punkte pro Euro, Bonus, Stufen, Verfall, Code, Rechtslinks) stehen im Admin unter
 „Programm“ – nichts davon ist fest im Code.
 
 ## Einrichtung
 
-1. **Migration 032** im Supabase SQL-Editor ausführen.
+1. **Migrationen 032 und 033** im Supabase SQL-Editor ausführen.
 2. **Supabase → Authentication:**
    - Registrierung erlauben („Allow new users to sign up“) und „Confirm email“ einschalten.
    - Unter URL Configuration `https://app.<gruppe>.de` und `https://app.<gruppe>.de/passwort-neu`
@@ -53,8 +54,9 @@ Alle Werte (Punkte pro Euro, Bonus, Stufen, Verfall, Stempel, Code) stehen im Ad
    - `VITE_PORTAL_ORG=<slug der Organisation>` (z. B. `privathotels-dr-lohbeck`)
    - `VITE_PORTAL_URL=https://app.<gruppe>.de` (Login-Link auf den Hotel-Websites, Mail-Links aus der App)
    - optional `VITE_PORTAL_NAME` (sonst der Programmname aus dem Admin)
-4. **Admin → Treueprogramm:** Programmname, Regeln, Mitglieder-Code und Kontakt-E-Mail eintragen,
-   Vorteile anlegen, erste Reisen importieren.
+4. **Admin → Treueprogramm:** Programmname, Regeln, Mitglieder-Code, Kontakt-E-Mail und die Links zu
+   Teilnahmebedingungen, Datenschutz und Impressum eintragen, Vorteile (mit Bild) anlegen, erste
+   Reisen importieren. Die Startseite des Portals zeigt Stufen, Vorteile und Prämien daraus.
 5. **Rechtliches:** Teilnahmebedingungen und Datenschutzhinweise zum Programm (Verarbeitung von
    Aufenthaltsdaten, Newsletter-Einwilligung, Löschung) vor dem Start ergänzen.
 
@@ -86,3 +88,11 @@ Apple/Google Wallet, Login mit Face ID.
 - **Punkteregeln und Stufen:** Standardwerte sind Vorschläge.
 - **Mitgliederpreis:** Rabatt-Code je Buchungsstrecke anlegen und den URL-Parameter klären.
 - **Name, Icon und Farben des Programms** (Icons in `public/portal-icon-*.png` sind neutrale Platzhalter).
+
+## Musterdaten
+
+Für Entwicklung und Vorführungen füllt `supabase/seeds/loyalty-demo.sql` ein bestehendes
+Portal-Konto mit einem fiktiven Gast: Aufenthalte in den Hotels der Gruppe (vergangene, geplante,
+eine Stornierung), Boni, eine eingelöste Prämie und Vorteile mit Bildern von den Hotelseiten.
+Adresse des Kontos und Organisation stehen oben in der Datei; ein erneuter Lauf setzt die Daten
+zurück, der Block am Ende entfernt sie wieder. Alles ist markiert (Buchungsnummern `DEMO-…`).
