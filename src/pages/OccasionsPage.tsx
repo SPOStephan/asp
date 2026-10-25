@@ -7,8 +7,10 @@ import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { useHotel, useSection } from '../context/HotelContext';
 import { occasionHref, OCCASIONS_PAGE_FALLBACK, resolveOccasions } from '../lib/occasions';
+import { usePageTop } from '../lib/usePageTop';
 
 export function OccasionsPage() {
+  usePageTop();
   const cms = useCms();
   const hotel = useHotel();
   const page = useSection('occasions_page');
@@ -19,7 +21,6 @@ export function OccasionsPage() {
   useEffect(() => {
     const previous = document.title;
     document.title = `${data.title || 'Anlässe'} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };

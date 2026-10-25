@@ -10,8 +10,10 @@ import { useHotel, useSection } from '../context/HotelContext';
 import { entryFocal } from '../cms/cmsFocal';
 import { resolveOccasions } from '../lib/occasions';
 import { offerHref, resolveOfferStories } from '../lib/offers';
+import { usePageTop } from '../lib/usePageTop';
 
 export function OccasionPage() {
+  usePageTop();
   const { occasionId } = useParams();
   const cms = useCms();
   const hotel = useHotel();
@@ -24,11 +26,10 @@ export function OccasionPage() {
     if (!occasion) return;
     const previous = document.title;
     document.title = `${occasion.name} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };
-  }, [occasion, hotel?.name]);
+  }, [occasion?.name, hotel?.name]);
 
   if (!occasion) {
     return <Navigate to={cms ? '/cms/anlaesse' : '/anlaesse'} replace />;

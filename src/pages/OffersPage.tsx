@@ -9,8 +9,10 @@ import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { resolveMedia } from '../lib/media';
 import { OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
+import { usePageTop } from '../lib/usePageTop';
 
 export function OffersPage() {
+  usePageTop();
   const editing = Boolean(useCms());
   const hotel = useHotel();
   const page = useSection('offers_page');
@@ -21,7 +23,6 @@ export function OffersPage() {
   useEffect(() => {
     const previous = document.title;
     document.title = `${data.title ?? 'Angebote'} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };

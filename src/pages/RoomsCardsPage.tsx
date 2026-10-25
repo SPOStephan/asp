@@ -10,8 +10,10 @@ import { useHotel, useSection } from '../context/HotelContext';
 import { resolveMedia } from '../lib/media';
 import { ListFilterBar, useListFilter } from '../components/ListFilterBar';
 import { filterRooms, resolveRooms, ROOM_FILTERS, ROOMS_PAGE_FALLBACK } from '../lib/rooms';
+import { usePageTop } from '../lib/usePageTop';
 
 export function RoomsCardsPage() {
+  usePageTop();
   const editing = Boolean(useCms());
   const hotel = useHotel();
   const page = useSection('rooms_page');
@@ -25,7 +27,6 @@ export function RoomsCardsPage() {
   useEffect(() => {
     const previous = document.title;
     document.title = `${data.title ?? 'Zimmer & Suiten'} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };

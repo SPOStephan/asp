@@ -10,8 +10,10 @@ import { TextCta } from '../components/TextCta';
 import { entryFocal } from '../cms/cmsFocal';
 import { useHotel, useSection } from '../context/HotelContext';
 import { expandRoomFeatures, formatRoomPriceDetail, resolveRooms, roomGallery } from '../lib/rooms';
+import { usePageTop } from '../lib/usePageTop';
 
 export function RoomDetailPage() {
+  usePageTop();
   const { roomId } = useParams();
   const cms = useCms();
   const hotel = useHotel();
@@ -25,11 +27,10 @@ export function RoomDetailPage() {
     if (!room) return;
     const previous = document.title;
     document.title = `${room.name} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };
-  }, [room, hotel?.name]);
+  }, [room?.name, hotel?.name]);
 
   if (!room) {
     return <Navigate to={cms ? '/cms/zimmer' : '/zimmer'} replace />;

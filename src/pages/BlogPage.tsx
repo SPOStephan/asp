@@ -10,8 +10,10 @@ import { useHotel, useSection } from '../context/HotelContext';
 import { resolveMedia } from '../lib/media';
 import { ListFilterBar, useListFilter } from '../components/ListFilterBar';
 import { BLOG_PAGE_FALLBACK, BLOG_TOPICS, filterBlogPosts, resolveBlogPosts } from '../lib/blog';
+import { usePageTop } from '../lib/usePageTop';
 
 export function BlogPage() {
+  usePageTop();
   const editing = Boolean(useCms());
   const hotel = useHotel();
   const page = useSection('blog_page');
@@ -25,7 +27,6 @@ export function BlogPage() {
   useEffect(() => {
     const previous = document.title;
     document.title = `${data.title ?? 'Blog'} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };

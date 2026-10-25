@@ -9,6 +9,7 @@ import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { usePageTop } from '../lib/usePageTop';
 import {
   resolveWellnessChapters,
   resolveWellnessMedia,
@@ -18,6 +19,7 @@ import {
 } from '../lib/wellness';
 
 export function WellnessPage() {
+  usePageTop();
   const cms = useCms();
   const hotel = useHotel();
   const page = useSection('wellness_page');
@@ -28,7 +30,6 @@ export function WellnessPage() {
   useEffect(() => {
     const previous = document.title;
     document.title = `${data.title ?? 'Wellness'} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };

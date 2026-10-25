@@ -7,6 +7,7 @@ import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { resolveMedia } from '../lib/media';
+import { usePageTop } from '../lib/usePageTop';
 import {
   classifyImpressionShape,
   filterImpressions,
@@ -19,6 +20,7 @@ import {
 } from '../lib/impressions';
 
 export function ImpressionsPage() {
+  usePageTop();
   const hotel = useHotel();
   const cms = useCms();
   const page = useSection('impressions_page');
@@ -33,7 +35,6 @@ export function ImpressionsPage() {
   useEffect(() => {
     const previous = document.title;
     document.title = `${data.title ?? 'Impressionen'} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };
