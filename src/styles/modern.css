@@ -179,10 +179,14 @@
 }
 
 /* 8: the nine tiles a little wider (nearly the full width, narrow joints), same height as
-   on the current page (4:3 of the old width = 21vw); phones unchanged */
+   on the current page (4:3 of the old width = 21vw) */
 @media (min-width: 901px) {
   .look-modern .discover__grid { width: calc(100% - 32px); gap: 16px; }
   .look-modern .discover__tile { aspect-ratio: auto; height: 21vw; }
+}
+/* phones: the tiles a little taller (upright instead of square) */
+@media (max-width: 600px) {
+  .look-modern .discover__tile { aspect-ratio: 4 / 5; }
 }
 
 /* The hint that this is the comparison page */
