@@ -8,7 +8,7 @@
    5. small motion: underlines that draw in, buttons that lift
    6. the booking bar slides in on scroll; quieter field lines
    7. few text sizes
-   8. larger tiles */
+   8. slightly wider tiles */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -178,18 +178,15 @@
   .look-modern .welcome__highlight p { font-size: var(--m-text); }
 }
 
-/* 8: the nine tiles larger – nearly the full width, narrow joints, upright pictures */
-.look-modern .discover__grid {
-  width: calc(100% - 32px);
-  gap: 16px;
+/* 8: the nine tiles a little wider (nearly the full width, narrow joints), same height as
+   on the current page (4:3 of the old width = 21vw) */
+@media (min-width: 901px) {
+  .look-modern .discover__grid { width: calc(100% - 32px); gap: 16px; }
+  .look-modern .discover__tile { aspect-ratio: auto; height: 21vw; }
 }
-.look-modern .discover__tile { aspect-ratio: 4 / 5; }
-.look-modern .discover__tile-content { padding: 36px 34px; }
-.look-modern .discover__tile-title { font-size: clamp(1.5rem, 2.2vw, 2.1rem); }
-@media (max-width: 760px) {
-  .look-modern .discover__grid { width: calc(100% - 16px); gap: 8px; }
-  .look-modern .discover__tile-content { padding: 18px 16px; }
-  .look-modern .discover__tile-title { font-size: 1.3rem; }
+/* phones: the tiles a little taller than square */
+@media (max-width: 600px) {
+  .look-modern .discover__tile { aspect-ratio: 7 / 8; }
 }
 
 /* The hint that this is the comparison page */
