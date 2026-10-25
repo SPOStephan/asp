@@ -4,7 +4,7 @@ import type { HotelContent } from './siteData';
 import { cdnSrcSet, HERO_SIZES } from '../lib/media';
 
 // Paths that are tools, not content: never indexed, served as the plain app.
-const PRIVATE_PATHS = /^\/(admin|cms|vorschau|schriften|menue-mobil|mobil-leiste\d*)(\/|$)/;
+const PRIVATE_PATHS = /^\/(admin|cms|vorschau|modern|schriften|menue-mobil|mobil-leiste\d*)(\/|$)/;
 
 export function isPrivatePath(path: string) {
   return PRIVATE_PATHS.test(path);

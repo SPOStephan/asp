@@ -1,0 +1,310 @@
+/* Modern look for the start page – only on /modern, next to the current page for comparison.
+   What makes a page feel modern (cf. current product sites):
+   1. soft shapes: large radii on blocks, pictures and buttons (pills)
+   2. layered surfaces: white blocks on a lightly tinted background, soft wide shadows
+   3. calmer type: fewer spaced-out capitals, sentence case, slightly tighter headlines
+   4. small badges instead of tracked uppercase lines
+   5. filled icon tiles instead of thin outlines; buttons with an arrow in a circle
+   The hotel's own colours and serif headlines stay: modern, not generic. */
+
+.look-modern {
+  --m-bg: #f3f1ec;
+  --m-card: #ffffff;
+  --m-radius-xl: 32px;
+  --m-radius-lg: 24px;
+  --m-radius: 18px;
+  --m-shadow: 0 30px 60px -30px rgba(19, 59, 92, 0.28), 0 2px 10px rgba(19, 59, 92, 0.05);
+  --m-shadow-soft: 0 18px 40px -24px rgba(19, 59, 92, 0.25);
+  --m-gold: linear-gradient(135deg, var(--accent-300) 0%, var(--accent-400) 55%, var(--accent-500) 100%);
+  --m-badge: rgba(149, 118, 64, 0.1);
+  background: var(--m-bg);
+}
+html.look-modern-page,
+html.look-modern-page body { background: #f3f1ec; }
+
+/* 1 + 2: every block of the page is a rounded card on the tinted background */
+.look-modern main > section {
+  margin: 14px clamp(8px, 1.4vw, 20px);
+  border-radius: var(--m-radius-xl);
+  overflow: clip;
+  background: var(--m-card);
+  box-shadow: var(--m-shadow-soft);
+}
+.look-modern main > section:first-child { margin-top: 12px; }
+.look-modern .facts,
+.look-modern .direct-booking { background: #fbfaf7; }
+
+/* Headlines: the serif stays, a little tighter */
+.look-modern main h1,
+.look-modern main h2,
+.look-modern main h3 { letter-spacing: -0.015em; }
+
+/* 3 + 4: small labels as badges in sentence case instead of spaced capitals */
+.look-modern .eyebrow,
+.look-modern .welcome__subtitle,
+.look-modern .offers__title,
+.look-modern .generations__label,
+.look-modern .discover__head > p:first-child,
+.look-modern .facts__head > p:first-child,
+.look-modern .faq__head > p:first-child,
+.look-modern .highlights__head > p:first-child,
+.look-modern .direct-booking__intro > p:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--m-badge);
+  color: var(--accent-500);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+.look-modern .discover__head > p:first-child,
+.look-modern .facts__head > p:first-child,
+.look-modern .faq__head > p:first-child,
+.look-modern .highlights__head > p:first-child { margin-left: auto; margin-right: auto; }
+.look-modern .discover__tile-eyebrow,
+.look-modern .facts__label {
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* 5: text links as calm links with a filled arrow circle */
+.look-modern .text-cta {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.look-modern .text-cta__arrow {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: var(--m-gold);
+  color: #fff;
+  box-shadow: 0 6px 14px -6px rgba(149, 118, 64, 0.8);
+}
+
+/* Buttons as pills */
+.look-modern .btn-primary,
+.look-modern .navbar__cta,
+.look-modern .newsletter__submit,
+.look-modern .availability-bar__btn,
+.look-modern .faq__more-link {
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-weight: 600;
+}
+.look-modern .navbar__cta { padding: 11px 24px; }
+
+/* Navigation: after scrolling a floating, frosted bar with round ends */
+.look-modern .navbar--scrolled {
+  top: 10px;
+  left: clamp(8px, 1.4vw, 20px);
+  right: clamp(8px, 1.4vw, 20px);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 18px 40px -22px rgba(19, 59, 92, 0.45);
+  padding: 4px 0;
+}
+.look-modern .navbar--scrolled .navbar__inner { min-height: 72px; }
+.look-modern .navbar__link,
+.look-modern .navbar__lang-toggle,
+.look-modern .navbar__root > a,
+.look-modern .navbar__root > button:not(.navbar__more),
+.look-modern .navbar__account-name { letter-spacing: 0.02em; text-transform: none; font-weight: 600; }
+
+/* Hero: an inset picture with round corners */
+.look-modern .hero-flow { box-shadow: var(--m-shadow); }
+
+.look-modern .hero__subtitle,
+.look-modern .subpage-hero__subtitle {
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+.look-modern .welcome__highlight h3 { letter-spacing: -0.005em; text-transform: none; }
+.look-modern .availability-bar__label,
+.look-modern .availability-bar__picker-label { letter-spacing: 0.02em; text-transform: none; font-size: 0.78rem; }
+
+/* Pictures: round corners and a soft shadow */
+.look-modern .discover__tile,
+.look-modern .discover__feature-image,
+.look-modern .offers__photo,
+.look-modern .culinary__img-block,
+.look-modern .generations__item,
+.look-modern .impressions__shot,
+.look-modern .wellness-scene__hero,
+.look-modern .wellness-scene__side {
+  border-radius: var(--m-radius-lg);
+  overflow: hidden;
+}
+.look-modern .discover__tile,
+.look-modern .offers__photo { box-shadow: var(--m-shadow-soft); }
+.look-modern .discover__tile-image,
+.look-modern .discover__tile img { transition: transform 0.8s ease; }
+.look-modern .discover__tile:hover img { transform: scale(1.04); }
+
+/* Highlights: picture and text as two cards side by side */
+.look-modern .highlights__list { gap: 16px; padding: 0 16px 16px; }
+.look-modern .hcard { gap: 16px; }
+.look-modern .hcard__image,
+.look-modern .hcard__text { border-radius: var(--m-radius-lg); overflow: hidden; }
+.look-modern .hcard__text { background: #fbfaf7; }
+
+/* Icon tiles: filled and rounded instead of thin circles */
+.look-modern .welcome__highlight-icon {
+  border: 0;
+  border-radius: 18px;
+  background: var(--m-gold);
+  color: #fff;
+  box-shadow: 0 14px 26px -14px rgba(149, 118, 64, 0.9);
+}
+.look-modern .welcome__highlight-icon svg { color: #fff; stroke: currentColor; }
+.look-modern .welcome__highlight + .welcome__highlight { border-left-color: transparent; }
+
+/* Facts: small cards with an icon tile */
+.look-modern .facts__grid { gap: 14px; border: 0; }
+.look-modern .facts__item {
+  grid-template-columns: 40px 1fr;
+  padding: 20px;
+  border: 0;
+  border-radius: var(--m-radius);
+  background: #fff;
+  box-shadow: var(--m-shadow-soft);
+}
+.look-modern .facts__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border-radius: 12px;
+  background: var(--m-badge);
+  color: var(--accent-500);
+}
+
+/* FAQ: every question its own card, open/close as a round button */
+.look-modern .faq__list { display: grid; gap: 10px; }
+.look-modern .faq__item {
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--m-radius);
+  background: #fbfaf7;
+}
+.look-modern .faq__item summary { padding: 22px 0; font-size: clamp(1.15rem, 1.8vw, 1.35rem); }
+.look-modern .faq__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--m-badge);
+}
+.look-modern .faq__icon::before,
+.look-modern .faq__icon::after { background: var(--accent-500); }
+
+/* Direct booking list: soft rows */
+.look-modern .direct-booking__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-top: 0;
+  border-radius: 12px;
+  background: var(--m-badge);
+  color: var(--accent-500);
+}
+
+/* Newsletter: a gradient card */
+.look-modern .newsletter { background: none; }
+.look-modern .newsletter__bg { border-radius: inherit; }
+.look-modern .newsletter__input-group,
+.look-modern .newsletter__form input { border-radius: 999px; }
+
+/* Booking bar: floating pill with frosted glass instead of a full-width band */
+.look-modern .availability-bar.is-stuck,
+.look-modern .fixed-availability .availability-bar {
+  left: calc(50% - 80px);
+  right: auto;
+  bottom: 16px;
+  width: min(900px, calc(100% - 340px));
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(13, 41, 64, 0.82);
+  backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: 0 24px 50px -20px rgba(13, 41, 64, 0.6);
+}
+
+/* Footer: rounded top like the blocks above */
+.look-modern .footer { margin: 14px clamp(8px, 1.4vw, 20px) 0; border-radius: var(--m-radius-xl) var(--m-radius-xl) 0 0; overflow: clip; }
+
+/* Phones: the bottom bar floats as a pill as well */
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) {
+  .look-modern .mobile-chrome__dock {
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    height: 60px;
+    padding: 6px;
+    grid-template-columns: 48px 48px 1fr;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    background: rgba(13, 41, 64, 0.86);
+    backdrop-filter: blur(18px) saturate(1.3);
+    box-shadow: 0 18px 40px -16px rgba(13, 41, 64, 0.6);
+  }
+  .look-modern .mobile-chrome__dock > a,
+  .look-modern .mobile-chrome__dock > button { height: 48px; border-right: 0; border-radius: 999px; }
+  .look-modern .mobile-chrome__fab { bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
+  .look-modern .mobile-chrome__book {
+    background: var(--m-gold);
+    letter-spacing: 0.02em;
+    text-transform: none;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 760px) {
+  .look-modern main > section { margin: 10px 8px; border-radius: var(--m-radius-lg); }
+  .look-modern .highlights__list { padding: 0 8px 8px; }
+  .look-modern .hcard { gap: 8px; }
+}
+
+/* The hint that this is the comparison page */
+.modern-note {
+  position: fixed;
+  left: 20px;
+  bottom: 120px;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 30px -12px rgba(13, 41, 64, 0.35);
+  font: 600 0.82rem/1.2 var(--font-body);
+  color: var(--primary-700);
+}
+.modern-note a {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--primary-500);
+  color: #fff;
+  text-decoration: none;
+}
+@media (max-width: 760px) {
+  .modern-note { left: 12px; bottom: 84px; white-space: nowrap; gap: 8px; padding: 4px 4px 4px 12px; font-size: 0.72rem; }
+  .modern-note a { padding: 5px 10px; }
+  .look-modern .navbar--scrolled { top: 6px; left: 6px; right: 6px; }
+}
