@@ -1,6 +1,6 @@
-/* Modern look for the start page – only on /modern, next to the current page for comparison.
-   Draft 2, "quiet luxury": the layout, the collages, square corners and flat surfaces stay.
-   What changes is the finish:
+/* The finish of the start page (class look-modern on the page, on the website and in the CMS
+   preview), for every hotel. The layout, the collages, square corners and flat surfaces are
+   those of the other pages; what the start page adds:
    1. type: the serif headlines stay as they are; a modern sans for text, buttons and small
       lines, mostly in sentence case instead of spaced-out capitals
    3. one rhythm: the same space between the blocks
@@ -390,30 +390,4 @@
 @media (max-width: 600px) {
   .look-modern .culinary__img-label h3,
   .look-modern .generations__overlay .generations__label { font-size: 0.78rem; letter-spacing: 0.1em; }
-}
-
-/* The hint that this is the comparison page */
-.modern-note {
-  position: fixed;
-  left: 20px;
-  bottom: 120px;
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 14px 10px 16px;
-  border: 1px solid var(--m-line, rgba(19, 59, 92, 0.1));
-  background: #fff;
-  box-shadow: 0 10px 30px -18px rgba(13, 41, 64, 0.4);
-  font: 500 0.82rem/1.2 'Manrope', var(--font-body);
-  color: var(--primary-700);
-}
-.modern-note a {
-  color: var(--accent-500);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-@media (max-width: 760px) {
-  .modern-note { left: 12px; bottom: 84px; white-space: nowrap; gap: 10px; padding: 8px 10px; font-size: 0.72rem; }
 }

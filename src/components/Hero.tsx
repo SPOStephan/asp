@@ -53,7 +53,7 @@ function useHeroMedia(data: Record<string, unknown>) {
 function HeroFlow() {
   const data = useSection('hero') ?? {};
   const media = useHeroMedia(data);
-  // The comparison page /modern tries a scroll arrow (its booking bar only comes on scroll).
+  // On the start page the booking bar only comes on scroll; an arrow invites to scroll.
   const { pathname } = useLocation();
   return (
     <CmsSection sectionKey="hero" label="Hero">
@@ -72,7 +72,7 @@ function HeroFlow() {
           imageOverlay={<div className="hero__fade" />}
           textTop={heroTextTop(data.text_top)}
           textTopMobile={data.text_top_mobile != null && data.text_top_mobile !== '' ? heroTextTop(data.text_top_mobile) : undefined}
-          scrollHint={pathname === '/modern'}
+          scrollHint={pathname === '/'}
         />
       </section>
     </CmsSection>
