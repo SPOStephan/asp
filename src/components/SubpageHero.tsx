@@ -68,6 +68,16 @@ export function SubpageHero({
   const editing = Boolean(useCmsContext());
   const [imageBottom, setImageBottom] = useState(0);
   const [docked, setDocked] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // The scroll arrow leaves as soon as the visitor scrolls.
+  useEffect(() => {
+    if (!scrollHint) return;
+    const update = () => setScrolled(window.scrollY > 24);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, [scrollHint]);
 
   useEffect(() => {
     let raf = 0;
@@ -169,7 +179,7 @@ export function SubpageHero({
         {scrollHint ? (
           <button
             type="button"
-            className="subpage-hero__scroll"
+            className={`subpage-hero__scroll${scrolled ? ' is-gone' : ''}`}
             aria-label="Nach unten scrollen"
             onClick={() => window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' })}
           >
