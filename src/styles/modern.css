@@ -13,7 +13,7 @@
    10. hero heading lower, scroll arrow
    11. same joint for the picture pair
    12. buttons in spaced capitals
-   13. tile captions as text links */
+   13. tile captions as text links in spaced capitals, without the small line above */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -263,11 +263,16 @@
    fills gold, an underline that draws in on hover */
 .look-modern .discover__tile-title {
   font-family: var(--font-body);
-  font-size: var(--m-text);
+  font-size: 0.9rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   line-height: 1.3;
   text-shadow: none;
+}
+@media (max-width: 600px) {
+  .look-modern .discover__tile-title { font-size: 0.78rem; letter-spacing: 0.1em; }
+  .look-modern .discover__tile-go { margin-left: 8px; }
 }
 .look-modern .discover__tile-label { position: relative; }
 .look-modern .discover__tile-label::after {
@@ -299,6 +304,8 @@
   transform: translate(3px, -3px);
 }
 .look-modern .discover__tile-arrow { display: none; }
+/* without the small line above: picture and link speak for themselves */
+.look-modern .discover__tile-eyebrow { display: none; }
 
 /* The hint that this is the comparison page */
 .modern-note {
