@@ -1602,6 +1602,7 @@ body.has-fixed-bar { padding-bottom: 92px; }
   font-family: var(--font-heading); font-weight: 400; font-size: 1.5rem;
   color: var(--neutral-0); line-height: 1.15; margin: 0;
 }
+.discover__tile-go { display: none; }
 .discover__tile-arrow {
   position: absolute; top: 22px; right: 22px; z-index: 2;
   display: grid; place-items: center;
