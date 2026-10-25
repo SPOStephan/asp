@@ -14,7 +14,8 @@
    11. same joint for the picture pair
    12. buttons in spaced capitals
    13. tile captions as text links in spaced capitals, without the small line above
-   14. all calls to action in spaced capitals */
+   14. all calls to action in spaced capitals
+   15. eyebrows in spaced capitals */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -322,6 +323,17 @@
   .look-modern .culinary__toggle,
   .look-modern .welcome__caption-link,
   .look-modern .faq__more-link { font-size: 0.85rem; letter-spacing: 0.12em; }
+}
+
+/* 15: lines above headlines (eyebrows) always in spaced capitals */
+.look-modern .eyebrow,
+.look-modern .offers__title,
+.look-modern .generations__label,
+.look-modern .facts__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 
 /* The hint that this is the comparison page */
