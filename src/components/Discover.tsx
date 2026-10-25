@@ -53,7 +53,13 @@ export function Discover() {
                 <div className="discover__tile-overlay" />
                 <div className="discover__tile-content">
                   <p className="discover__tile-eyebrow" data-cms-path={`tiles.${i}.eyebrow`}>{tile.eyebrow}</p>
-                  <h3 className="discover__tile-title" data-cms-path={`tiles.${i}.title`}>{tile.title}</h3>
+                  <h3 className="discover__tile-title">
+                    <span className="discover__tile-label" data-cms-path={`tiles.${i}.title`}>{tile.title}</span>
+                    {/* Arrow next to the title, shown where the tiles look like text links (/modern). */}
+                    <span className="discover__tile-go" aria-hidden="true">
+                      <ArrowUpRight size={14} strokeWidth={1.6} />
+                    </span>
+                  </h3>
                 </div>
                 <div className="discover__tile-arrow" aria-hidden="true">
                   <ArrowUpRight size={22} strokeWidth={1.5} />

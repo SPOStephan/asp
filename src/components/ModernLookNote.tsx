@@ -16,7 +16,7 @@ export function ModernLookNote() {
 
   return (
     <aside className="modern-note" aria-label="Vergleichsansicht">
-      <span>Moderne Variante (Entwurf 8)</span>
+      <span>Moderne Variante (Entwurf 9)</span>
       <Link to="/">Aktuelle Startseite</Link>
     </aside>
   );
