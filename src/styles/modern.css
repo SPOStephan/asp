@@ -225,7 +225,9 @@
   opacity: 0.95;
   animation: modern-scroll-hint 2.4s ease-in-out infinite;
 }
+.subpage-hero__scroll { transition: opacity 0.4s ease; }
 .subpage-hero__scroll:hover { opacity: 1; }
+.subpage-hero__scroll.is-gone { opacity: 0; pointer-events: none; }
 @keyframes modern-scroll-hint {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(10px); }
