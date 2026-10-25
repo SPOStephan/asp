@@ -179,14 +179,15 @@
   .look-modern .welcome__highlight p { font-size: var(--m-text); }
 }
 
-/* 8: the nine tiles a little wider (nearly the full width, narrow joints), same height as
-   on the current page (4:3 of the old width = 21vw) */
+/* 8: the nine tiles a little wider (outer margin and joints both 2.5vw, generous but
+   wider than before), same height as on the current page (4:3 of the old width = 21vw) */
 @media (min-width: 901px) {
-  .look-modern .discover__grid { width: calc(100% - 32px); gap: 16px; }
+  .look-modern .discover__grid { width: calc(100% - 5vw); gap: 2.5vw; }
   .look-modern .discover__tile { aspect-ratio: auto; height: 21vw; }
 }
-/* phones: the tiles a little taller than square */
+/* phones: the tiles a little taller than square; small, even margin and joints */
 @media (max-width: 600px) {
+  .look-modern .discover__grid { width: calc(100% - 28px); gap: 14px; }
   .look-modern .discover__tile { aspect-ratio: 7 / 8; }
 }
 
