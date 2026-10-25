@@ -16,7 +16,8 @@ function json(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 }
 
-export async function POST(request: Request) {
+export default async function handler(request: Request) {
+  if (request.method !== 'POST') return json(405, { error: 'Nur POST.' });
   const supabaseUrl = env('VITE_SUPABASE_URL');
   const supabaseAnon = env('VITE_SUPABASE_ANON_KEY');
   const serviceKey = env('SUPABASE_SERVICE_ROLE_KEY');
@@ -60,3 +61,5 @@ export async function POST(request: Request) {
   target.hash = `${HANDOFF_PARAM}=${encodeURIComponent(code)}`;
   return json(200, { url: target.toString() });
 }
+
+export const config = { runtime: 'edge' };
