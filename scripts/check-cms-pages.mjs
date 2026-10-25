@@ -117,4 +117,23 @@ assert.match(editor, /keepLiveMedia\(payload/);
 assert.match(editor, /function NavbarFields/);
 assert.match(editor, /Logo weiß \(auf dem Header\)/);
 
+// Every page of the website can be opened in the CMS (tools, labs and redirects aside).
+const app = readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8');
+const cmsApp = readFileSync(new URL('../src/cms/CmsApp.tsx', import.meta.url), 'utf8');
+const NOT_CONTENT = /^\/(vorschau|schriften|menue-mobil|mobil-leiste\d*|zimmer-b|zimmer-vergleich\/.*)$/;
+const publicRoutes = [...app.matchAll(/<Route path="([^"*]+)"/g)].map((match) => match[1]).filter((path) => !NOT_CONTENT.test(path));
+const cmsRoutes = new Set([...cmsApp.matchAll(/<Route path="([^"*]+)"/g)].map((match) => match[1]));
+for (const path of publicRoutes) {
+  const cmsPath = path === '/' ? '/cms' : `/cms${path}`;
+  assert.ok(cmsRoutes.has(cmsPath), `Seite ${path} lässt sich im CMS nicht öffnen (${cmsPath} fehlt in CmsApp)`);
+}
+
+// Rooms: their own pages open in the CMS with an editor for all pictures and texts.
+const pages = readFileSync(new URL('../src/cms/cmsPages.ts', import.meta.url), 'utf8');
+assert.match(pages, /section: 'rooms_page', hub: '\/cms\/zimmer'/);
+assert.match(editor, /function RoomEntryFields/);
+assert.match(editor, /Foto hinzufügen/);
+const dialog = readFileSync(new URL('../src/cms/CmsImageDialog.tsx', import.meta.url), 'utf8');
+assert.match(dialog, /suggestion\?\.alt \|\| alt \|\| contextAlt\(\)/, 'pictures never go up without alt text');
+
 console.log('cms page helpers ok');

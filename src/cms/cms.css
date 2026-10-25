@@ -445,6 +445,12 @@ body.cms-on [data-cms-editing] {
   display: grid;
   gap: 10px;
 }
+.cms-image__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
 .cms-image img {
   width: 100%;
   max-height: 180px;

@@ -17,6 +17,7 @@ import { LegalPage } from '../pages/LegalPage';
 import { HomePage } from '../pages/HomePage';
 import { ImpressionsPage } from '../pages/ImpressionsPage';
 import { OfferDetailPage } from '../pages/OfferDetailPage';
+import { RoomDetailPage } from '../pages/RoomDetailPage';
 import { OffersPage } from '../pages/OffersPage';
 import { RoomsCardsPage } from '../pages/RoomsCardsPage';
 import { WellnessPage } from '../pages/WellnessPage';
@@ -42,6 +43,7 @@ function CmsStage() {
       <Routes>
         <Route path="/cms" element={<HomePage />} />
         <Route path="/cms/zimmer" element={<RoomsCardsPage />} />
+        <Route path="/cms/zimmer/:roomId" element={<RoomDetailPage />} />
         <Route path="/cms/wellness/:topicId" element={<WellnessTopicPage />} />
         <Route path="/cms/anlaesse" element={<OccasionsPage />} />
         <Route path="/cms/anlaesse/:occasionId" element={<OccasionPage />} />

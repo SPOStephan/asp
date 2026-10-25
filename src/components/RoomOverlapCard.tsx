@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { TextCta } from './TextCta';
-import { formatRoomPriceDetail, roomHref, type RoomStory } from '../lib/rooms';
+import { formatRoomPriceDetail, roomGallery, roomHref, type RoomStory } from '../lib/rooms';
 
 interface RoomOverlapCardProps {
   room: RoomStory;
@@ -10,7 +10,7 @@ interface RoomOverlapCardProps {
 
 function slidesFor(room: RoomStory) {
   const seen = new Set<string>();
-  return [{ src: room.image, alt: room.image_alt }, ...room.gallery].filter((slide) => {
+  return [{ src: room.image, alt: room.image_alt, field: 'image' }, ...roomGallery(room)].filter((slide) => {
     if (!slide.src || seen.has(slide.src)) return false;
     seen.add(slide.src);
     return true;
@@ -50,6 +50,8 @@ export function RoomOverlapCard({ room, reverse = false }: RoomOverlapCardProps)
               src={slide.src}
               alt={slide.alt || room.name}
               className={`rooms-overlap__image${slideIndex === index ? ' is-active' : ''}`}
+              data-cms-path={`items.${room.id}.${slide.field}`}
+              data-cms-kind="image"
             />
           ))}
         </button>

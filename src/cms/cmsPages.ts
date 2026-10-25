@@ -72,10 +72,11 @@ export const CMS_DETAIL_LABELS: Record<string, string> = {
   offers_page: 'Angebot',
   wellness_page: 'Wellness-Seite',
   occasions_page: 'Anlass',
+  rooms_page: 'Zimmer',
 };
 
 export type CmsDetail = {
-  section: 'blog_page' | 'offers_page' | 'wellness_page' | 'occasions_page';
+  section: 'blog_page' | 'offers_page' | 'wellness_page' | 'occasions_page' | 'rooms_page';
   entryId: string;
   hub: string;
 };
@@ -113,6 +114,7 @@ export function cmsDetailFromPath(pathname: string): CmsDetail | null {
     { section: 'offers_page', hub: '/cms/angebote', re: /^\/cms\/angebote\/([^/]+)$/ },
     { section: 'wellness_page', hub: '/cms/wellness', re: /^\/cms\/wellness\/([^/]+)$/ },
     { section: 'occasions_page', hub: '/cms/anlaesse', re: /^\/cms\/anlaesse\/([^/]+)$/ },
+    { section: 'rooms_page', hub: '/cms/zimmer', re: /^\/cms\/zimmer\/([^/]+)$/ },
   ];
   for (const pattern of patterns) {
     const match = pathname.match(pattern.re);
@@ -131,6 +133,7 @@ export function cmsEntryHref(section: string, item: Record<string, unknown>): st
   if (section === 'offers_page') return `/cms/angebote/${id || slug}`;
   if (section === 'wellness_page') return `/cms/wellness/${id || slug}`;
   if (section === 'occasions_page') return `/cms/anlaesse/${id || slug}`;
+  if (section === 'rooms_page') return `/cms/zimmer/${id || slug}`;
   return null;
 }
 
