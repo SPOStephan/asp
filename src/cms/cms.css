@@ -646,3 +646,31 @@ body.cms-on .cms-part.is-hidden > :not(.cms-block__chrome) {
 .cms-filename input { flex: 1; }
 .cms-filename > span { color: #6f6a63; font-size: 0.9em; }
 .cms-link__suggested button { background: #faf6ee; border-left: 3px solid #957640; }
+
+/* Editor of one entry's own page (room, offer, wellness topic, occasion, post) */
+.cms-entry__moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.cms-entry__item {
+  display: grid;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid #e5e3de;
+}
+.cms-entry__item-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.cms-entry__nested {
+  display: grid;
+  gap: 8px;
+  padding-left: 12px;
+  border-left: 2px solid #eee7d9;
+}

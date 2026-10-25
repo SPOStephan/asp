@@ -1,0 +1,30 @@
+name: Prüfungen
+
+# Runs on every pull request: the website builds, and every page of the website can be
+# edited in the CMS (scripts/check-cms-pages.mjs), besides the other content checks.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Jede Seite im CMS bearbeitbar
+        run: node scripts/check-cms-pages.mjs
+      - name: Inhalte und CMS
+        run: |
+          for check in check-cms-focal check-cms-hide check-cms-icons check-cms-images check-cms-parts check-cms-placeholders \
+                       check-media check-media-sources check-neutral-defaults check-site check-filters check-loyalty; do
+            echo "== $check"
+            npx --yes tsx "scripts/$check.ts"
+          done
+      - name: Build
+        run: npx vite build

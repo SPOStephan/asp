@@ -131,8 +131,14 @@ for (const path of publicRoutes) {
 // Rooms: their own pages open in the CMS with an editor for all pictures and texts.
 const pages = readFileSync(new URL('../src/cms/cmsPages.ts', import.meta.url), 'utf8');
 assert.match(pages, /section: 'rooms_page', hub: '\/cms\/zimmer'/);
-assert.match(editor, /function RoomEntryFields/);
-assert.match(editor, /Foto hinzufügen/);
+// Every entry page (room, offer, wellness topic, occasion, post …) has its own editor with all
+// pictures and plain German labels – a new kind of detail page needs its entry in ENTRY_SPECS.
+const entryEditor = readFileSync(new URL('../src/cms/CmsEntryEditor.tsx', import.meta.url), 'utf8');
+for (const [, section] of pages.matchAll(/section: '([a-z_]+)', hub: '\/cms\//g)) {
+  assert.match(entryEditor, new RegExp(`\\n  ${section}: \\{\\n    title:`), `Detailseiten von ${section} haben keinen eigenen Editor (ENTRY_SPECS)`);
+}
+assert.match(entryEditor, /Foto hinzufügen/);
+assert.match(editor, /function MenuGroupsEditor/, 'the big menu can be edited');
 const dialog = readFileSync(new URL('../src/cms/CmsImageDialog.tsx', import.meta.url), 'utf8');
 assert.match(dialog, /suggestion\?\.alt \|\| alt \|\| contextAlt\(\)/, 'pictures never go up without alt text');
 
