@@ -8,7 +8,8 @@
    5. small motion: underlines that draw in, buttons that lift
    6. the booking bar slides in on scroll; quieter field lines
    7. few text sizes
-   8. slightly wider tiles */
+   8. slightly wider tiles
+   9. lighter tile overlay */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -187,6 +188,16 @@
 /* phones: the tiles a little taller than square */
 @media (max-width: 600px) {
   .look-modern .discover__tile { aspect-ratio: 7 / 8; }
+}
+
+/* 9: tiles – the picture stays clear at the top; the blue only builds up behind the text */
+.look-modern .discover__tile-image img { filter: none; }
+.look-modern .discover__tile:hover .discover__tile-image img { filter: brightness(0.9); }
+.look-modern .discover__tile-overlay {
+  background: linear-gradient(180deg, rgba(19, 59, 92, 0) 35%, rgba(19, 59, 92, 0.42) 60%, rgba(19, 59, 92, 0.85) 100%);
+}
+.look-modern .discover__tile:hover .discover__tile-overlay {
+  background: linear-gradient(180deg, rgba(19, 59, 92, 0.08) 30%, rgba(19, 59, 92, 0.45) 60%, rgba(19, 59, 92, 0.85) 100%);
 }
 
 /* The hint that this is the comparison page */
