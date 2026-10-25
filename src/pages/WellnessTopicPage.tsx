@@ -9,8 +9,10 @@ import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { entryFocal } from '../cms/cmsFocal';
 import { resolveWellnessTopics } from '../lib/wellness';
+import { usePageTop } from '../lib/usePageTop';
 
 export function WellnessTopicPage() {
+  usePageTop();
   const { topicId } = useParams();
   const cms = useCms();
   const hotel = useHotel();
@@ -22,11 +24,10 @@ export function WellnessTopicPage() {
     if (!topic) return;
     const previous = document.title;
     document.title = `${topic.name} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };
-  }, [topic, hotel?.name]);
+  }, [topic?.name, hotel?.name]);
 
   if (!topic) {
     return <Navigate to={cms ? '/cms/wellness' : '/wellness'} replace />;

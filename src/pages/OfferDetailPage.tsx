@@ -10,6 +10,7 @@ import { useHotel, useSection } from '../context/HotelContext';
 import { entryFocal } from '../cms/cmsFocal';
 import { resolveOfferStories } from '../lib/offers';
 import { PLACEHOLDER_IMAGE } from '../lib/media';
+import { usePageTop } from '../lib/usePageTop';
 
 const PAIR_FALLBACK = {
   left: PLACEHOLDER_IMAGE,
@@ -19,6 +20,7 @@ const PAIR_FALLBACK = {
 };
 
 export function OfferDetailPage() {
+  usePageTop();
   const { offerId } = useParams();
   const cms = useCms();
   const hotel = useHotel();
@@ -32,11 +34,10 @@ export function OfferDetailPage() {
     if (!offer) return;
     const previous = document.title;
     document.title = `${offer.title} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };
-  }, [offer, hotel?.name]);
+  }, [offer?.title, hotel?.name]);
 
   if (!offer) {
     return <Navigate to={cms ? '/cms/angebote' : '/angebote'} replace />;

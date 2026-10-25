@@ -13,8 +13,10 @@ import { entryFocal } from '../cms/cmsFocal';
 import { blogHeadings, BLOG_TOPICS, formatBlogDate, resolveBlogPosts } from '../lib/blog';
 import { filterLabel, readFilters } from '../lib/listFilters';
 import { resolveOfferStories } from '../lib/offers';
+import { usePageTop } from '../lib/usePageTop';
 
 export function BlogPostPage() {
+  usePageTop();
   const { postSlug } = useParams();
   const cms = useCms();
   const hotel = useHotel();
@@ -36,11 +38,10 @@ export function BlogPostPage() {
     if (!post) return;
     const previous = document.title;
     document.title = `${post.title} | ${hotel?.name ?? ''}`;
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };
-  }, [post, hotel?.name]);
+  }, [post?.title, hotel?.name]);
 
   if (!post) {
     return <Navigate to={cms ? '/cms/blog' : '/blog'} replace />;

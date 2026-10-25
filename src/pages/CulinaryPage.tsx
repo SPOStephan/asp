@@ -8,6 +8,7 @@ import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { resolveMedia } from '../lib/media';
+import { usePageTop } from '../lib/usePageTop';
 import {
   CULINARY_PAGE_FALLBACK,
   resolveCulinaryRhythm,
@@ -15,6 +16,7 @@ import {
 } from '../lib/culinary';
 
 export function CulinaryPage() {
+  usePageTop();
   const hotel = useHotel();
   const page = useSection('culinary_page');
   const home = useSection('culinary');
@@ -38,8 +40,6 @@ export function CulinaryPage() {
         window.clearTimeout(timer);
       };
     }
-
-    window.scrollTo({ top: 0 });
     return () => {
       document.title = previous;
     };
