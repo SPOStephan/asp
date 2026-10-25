@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatPoints, sized, hideBroken } from '../format';
 import { useProgramName } from '../PortalApp';
 import { usePortal } from '../PortalData';
-import { ArrowLink, HotelsStrip, IconCircle, PortalFooter, sortedTiers } from '../parts';
+import { ArrowLink, HotelsStrip, IconCircle, PortalFooter, sortedTiers, hotelSite } from '../parts';
 import { LoginForm } from './AuthPages';
 
 // Start page before login: what membership brings, the tiers, the hotels – and the login.
@@ -138,7 +138,7 @@ export function LandingPage() {
                 <div className="portal-house__body">
                   <h3 className="heading">{hotel.name}</h3>
                   {hotel.address ? <p className="portal-muted">{hotel.address}</p> : null}
-                  {hotel.domains[0] ? <ArrowLink href={`https://${hotel.domains[0]}`}>Hotel entdecken</ArrowLink> : null}
+                  {hotelSite(hotel) ? <ArrowLink href={hotelSite(hotel)} site>Hotel entdecken</ArrowLink> : null}
                 </div>
               </article>
             ))}

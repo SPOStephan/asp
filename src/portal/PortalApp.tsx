@@ -7,6 +7,7 @@ import { usePortal } from './PortalData';
 import { PortalErrorBoundary } from './PortalErrorBoundary';
 import { PortalFooter } from './parts';
 import { ForgotPage, LoginPage, RegisterPage, ResetPasswordPage } from './pages/AuthPages';
+import { HandoffPage } from './pages/HandoffPage';
 import { BenefitsPage } from './pages/BenefitsPage';
 import { BookPage } from './pages/BookPage';
 import { CardPage } from './pages/CardPage';
@@ -82,6 +83,8 @@ export function PortalApp() {
   if (!ready) return <div className="portal-loading" aria-busy="true" />;
 
   if (location.pathname === '/passwort-neu') return <ResetPasswordPage />;
+  // Sign-in for the hotel websites and the hop to the booking engine (see src/member/handoff.ts).
+  if (location.pathname === '/weiter') return <HandoffPage />;
 
   if (!session) {
     return (

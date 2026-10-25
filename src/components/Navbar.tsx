@@ -5,6 +5,8 @@ import { TextCta } from './TextCta';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { autoMenuGroups } from '../lib/autoMenu';
 import { PORTAL_URL } from '../portal/config';
+import { portalLoginUrl } from '../member/handoff';
+import { useWebsiteMember } from '../member/useMember';
 import { useCms } from '../cms/CmsContext';
 import { toCmsHref } from '../cms/cmsPages';
 import { filterMenuGroups, pageKeyFromHref } from '../lib/musterPages';
@@ -226,6 +228,7 @@ export function Navbar() {
   const barRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const cms = useCms();
+  const member = useWebsiteMember(Boolean(PORTAL_URL) && !cms);
   const data = useSection('navbar') ?? {};
   const hotel = useHotel();
   const chrome = useMobileChrome();
@@ -438,9 +441,19 @@ export function Navbar() {
           ) : (
             <>
               {PORTAL_URL && !cms ? (
-                // Member login of the hotel group's portal (e.g. app.<group>.de).
-                <a className="navbar__account" href={PORTAL_URL} aria-label="Mein Konto" title="Mein Konto">
+                // Member login of the hotel group's portal (e.g. app.<group>.de): signed in there,
+                // the guest is signed in here too after one hop (src/member/handoff.ts).
+                <a
+                  className={`navbar__account${member ? ' navbar__account--in' : ''}`}
+                  href={member ? PORTAL_URL : portalLoginUrl(PORTAL_URL, typeof window === 'undefined' ? '' : window.location.href)}
+                  onClick={(event) => {
+                    if (!member) event.currentTarget.href = portalLoginUrl(PORTAL_URL, window.location.href);
+                  }}
+                  aria-label={member ? `Mein Konto – ${member.firstName}` : 'Anmelden'}
+                  title={member ? 'Mein Konto' : 'Anmelden'}
+                >
                   <UserRound size={19} strokeWidth={1.5} />
+                  {member ? <span className="navbar__account-name">{member.firstName}</span> : null}
                 </a>
               ) : null}
               <div className="navbar__lang" ref={langRef}>

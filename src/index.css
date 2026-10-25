@@ -158,6 +158,12 @@ img { display: block; max-width: 100%; }
 .navbar__logo-image--normal { display: none; }
 .navbar__account { display: grid; place-items: center; width: 36px; height: 36px; margin-right: 6px; color: #fff; border-radius: 50%; transition: color 0.35s ease; }
 .navbar__account:hover { color: var(--accent-300); }
+.navbar__account--in { width: auto; grid-auto-flow: column; gap: 7px; padding: 0 12px 0 10px; border: 1px solid currentColor; border-radius: 999px; text-decoration: none; }
+.navbar__account-name { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+@media (max-width: 760px) {
+  .navbar__account--in { width: 36px; padding: 0; }
+  .navbar__account-name { display: none; }
+}
 .navbar--scrolled .navbar__account,
 .navbar--menu-open .navbar__account { color: var(--primary-700); }
 /* Hotel name while no logo is uploaded. */

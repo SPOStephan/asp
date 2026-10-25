@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { parseStays } from '../src/admin/loyalty/importStays';
 import { isPortalHost } from '../src/portal/config';
+import { allowedBookingTarget, handoffTarget, portalBookingUrl, portalLoginUrl, readHandoff, withMemberCode } from '../src/member/handoff';
 
 // Import of stays from the booking systems (CSV with German headers and formats).
 const csv = `Buchungsnummer;Hotel;E-Mail;Name;Anreise;Abreise;Zimmer;Betrag;Kanal;Status
@@ -41,4 +42,21 @@ assert.match(portalSql, /b\.active AND/, 'only active benefits are public');
 // Sample data lives outside the migrations and is clearly marked.
 const demo = readFileSync(new URL('../supabase/seeds/loyalty-demo.sql', import.meta.url), 'utf8');
 assert.match(demo, /'DEMO-1001'/);
+// One login for all hotel websites: only the group's own addresses, codes never linger.
+assert.equal(handoffTarget('javascript:alert(1)'), null);
+assert.equal(handoffTarget('http://hotel.example/'), null, 'plain http only for local development');
+assert.equal(handoffTarget('https://hotel.example/zimmer#old')?.toString(), 'https://hotel.example/zimmer');
+assert.deepEqual(readHandoff('https://hotel.example/zimmer?x=1#member=abc'), { code: 'abc', clean: 'https://hotel.example/zimmer?x=1' });
+assert.equal(readHandoff('https://hotel.example/#buchung'), null);
+assert.equal(portalLoginUrl('https://app.example', 'https://hotel.example/a?b=1'), 'https://app.example/weiter?to=https%3A%2F%2Fhotel.example%2Fa%3Fb%3D1');
+assert.ok(portalBookingUrl('https://app.example', 'https://book.example/x').includes('buchen=1'));
+const groupHotels = [{ domains: ['hotel.example'], booking_url: 'https://onepagebooking.com/hotel' }, { domains: null, booking_url: 'buchen.other.example' }];
+assert.ok(allowedBookingTarget('https://onepagebooking.com/hotel?adults=2', groupHotels));
+assert.ok(allowedBookingTarget('https://buchen.other.example/', groupHotels));
+assert.equal(allowedBookingTarget('https://evil.example/', groupHotels), null, 'no open redirect');
+assert.equal(withMemberCode(new URL('https://b.example/?adults=2'), 'FRIENDS', 'promo'), 'https://b.example/?adults=2&promo=FRIENDS');
+assert.equal(withMemberCode(new URL('https://b.example/'), ''), 'https://b.example/');
+const handoffApi = readFileSync(new URL('../api/member-handoff.ts', import.meta.url), 'utf8');
+assert.match(handoffApi, /\.contains\('domains', \[host\]\)/, 'codes only for websites of the group');
+assert.match(handoffApi, /\.eq\('organization_id', member\.organization_id\)/);
 console.log('loyalty ok');

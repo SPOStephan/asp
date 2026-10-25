@@ -6,6 +6,9 @@ import { sized, hideBroken } from '../format';
 import { usePortal } from '../PortalData';
 import { portal } from '../portalClient';
 
+// A hotel website the guest came from (see HandoffPage); registration leads back there.
+export const RETURN_KEY = 'portal-return';
+
 // Links in e-mails lead to the web portal; inside the store apps there is no web address.
 function returnUrl() {
   return /^https?:$/.test(window.location.protocol) && !('Capacitor' in window) ? window.location.origin : PORTAL_URL || window.location.origin;
@@ -20,7 +23,7 @@ function translate(message: string) {
   return message;
 }
 
-export function AuthFrame({ title, intro, children }: { title: string; intro?: string; children: ReactNode }) {
+export function AuthFrame({ title, intro, children }: { title: string; intro?: string; children?: ReactNode }) {
   const { hotels } = usePortal();
   const name = useProgramName();
   const picture = hotels.find((hotel) => hotel.image)?.image ?? '';
@@ -93,11 +96,13 @@ export function RegisterPage() {
     if (form.password.length < 8) return setError('Das Passwort ist zu kurz: bitte mindestens 8 Zeichen.');
     setBusy(true);
     setError(null);
+    // Started on a hotel website: the confirmation link leads back there through the portal.
+    const back = sessionStorage.getItem(RETURN_KEY);
     const { data, error: signError } = await portal.auth.signUp({
       email: form.email.trim(),
       password: form.password,
       options: {
-        emailRedirectTo: returnUrl(),
+        emailRedirectTo: back ? `${returnUrl()}/weiter?to=${encodeURIComponent(back)}` : returnUrl(),
         data: { first_name: form.first.trim(), last_name: form.last.trim(), marketing: form.marketing },
       },
     });
@@ -109,6 +114,7 @@ export function RegisterPage() {
     if (data.session) {
       const joinError = await join(form.first.trim(), form.last.trim(), form.marketing);
       if (joinError) setError(joinError);
+      else if (back) window.location.assign(`/weiter?to=${encodeURIComponent(back)}`);
       else navigate('/');
     } else {
       setSent(true);

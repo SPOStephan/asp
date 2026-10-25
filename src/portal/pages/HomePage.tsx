@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatDate, formatPoints, formatShort, nights, sized, hideBroken } from '../format';
 import { usePortal } from '../PortalData';
-import { ArrowLink, BookingSearch, HotelsStrip, IconCircle, NextReward, StatusTracker, sortedTiers, tierClass, upcomingLabel } from '../parts';
+import { ArrowLink, BookingSearch, HotelsStrip, IconCircle, NextReward, StatusTracker, sortedTiers, tierClass, upcomingLabel, hotelSite } from '../parts';
 import type { Member } from '../types';
 
 type InstallPrompt = Event & { prompt: () => Promise<void> };
@@ -89,7 +89,7 @@ export function HomePage() {
               <p className="portal-muted portal-small">Buchungsnummer {next.booking_ref}</p>
               <div className="portal-next__links">
                 <ArrowLink to="/reisen">Alle Reisen</ArrowLink>
-                {hotelOf(next.hotel_id)?.domains[0] ? <ArrowLink href={`https://${hotelOf(next.hotel_id)!.domains[0]}`}>Zum Hotel</ArrowLink> : null}
+                {hotelOf(next.hotel_id) && hotelSite(hotelOf(next.hotel_id)!) ? <ArrowLink href={hotelSite(hotelOf(next.hotel_id)!)} site>Zum Hotel</ArrowLink> : null}
               </div>
             </div>
           </section>
