@@ -120,7 +120,7 @@ assert.match(editor, /Logo weiß \(auf dem Header\)/);
 // Every page of the website can be opened in the CMS (tools, labs and redirects aside).
 const app = readFileSync(new URL('../src/App.tsx', import.meta.url), 'utf8');
 const cmsApp = readFileSync(new URL('../src/cms/CmsApp.tsx', import.meta.url), 'utf8');
-const NOT_CONTENT = /^\/(vorschau|schriften|menue-mobil|mobil-leiste\d*|zimmer-b|zimmer-vergleich\/.*)$/;
+const NOT_CONTENT = /^\/(vorschau|modern|schriften|menue-mobil|mobil-leiste\d*|zimmer-b|zimmer-vergleich\/.*)$/;
 const publicRoutes = [...app.matchAll(/<Route path="([^"*]+)"/g)].map((match) => match[1]).filter((path) => !NOT_CONTENT.test(path));
 const cmsRoutes = new Set([...cmsApp.matchAll(/<Route path="([^"*]+)"/g)].map((match) => match[1]));
 for (const path of publicRoutes) {
