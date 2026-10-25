@@ -6,7 +6,9 @@
    3. one rhythm: the same space between the blocks
    4. fine lines and small, thin icons without circles
    5. small motion: underlines that draw in, buttons that lift
-   6. the booking bar slides in on scroll; quieter field lines */
+   6. the booking bar slides in on scroll; quieter field lines
+   7. few text sizes
+   8. larger tiles */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -133,6 +135,62 @@
 .look-modern .availability-bar__picker.is-open { border-bottom-color: rgba(255, 255, 255, 0.2); }
 .look-modern .availability-bar__picker:hover::after,
 .look-modern .availability-bar__picker.is-open::after { transform: scaleX(1); }
+
+/* 7: few text sizes – one for running text and links, one for small print, one for labels.
+   Links have the size of the text around them. */
+.look-modern {
+  --m-text: 1.0625rem;
+  --m-small: 0.875rem;
+  --m-label: 0.75rem;
+}
+@media (max-width: 760px) {
+  .look-modern { --m-text: 1rem; --m-small: 0.875rem; }
+}
+.look-modern .welcome__text-inner p,
+.look-modern .discover__subtitle,
+.look-modern .hcard__desc,
+.look-modern .generations__subtitle,
+.look-modern .direct-booking__subtitle,
+.look-modern .offers__text,
+.look-modern .offers__details p,
+.look-modern .wellness-scene__copy p:not(.eyebrow),
+.look-modern .newsletter__desc,
+.look-modern .culinary__text p:not(.eyebrow),
+.look-modern .faq__answer p,
+.look-modern .blog-card__excerpt,
+.look-modern .text-cta,
+.look-modern .text-cta__label,
+.look-modern .newsletter__submit { font-size: var(--m-text); }
+.look-modern .welcome__highlight p,
+.look-modern .direct-booking__item-text,
+.look-modern .facts__location-text,
+.look-modern .awards__item p,
+.look-modern .newsletter__note,
+.look-modern .eyebrow,
+.look-modern .offers__title,
+.look-modern .generations__label,
+.look-modern .culinary__toggle,
+.look-modern .facts__label { font-size: var(--m-small); }
+.look-modern .discover__tile-eyebrow,
+.look-modern .blog-card__meta,
+.look-modern .blog-card__meta * { font-size: var(--m-label); }
+@media (max-width: 760px) {
+  .look-modern .welcome__highlight p { font-size: var(--m-text); }
+}
+
+/* 8: the nine tiles larger – nearly the full width, narrow joints, upright pictures */
+.look-modern .discover__grid {
+  width: calc(100% - 32px);
+  gap: 16px;
+}
+.look-modern .discover__tile { aspect-ratio: 4 / 5; }
+.look-modern .discover__tile-content { padding: 36px 34px; }
+.look-modern .discover__tile-title { font-size: clamp(1.5rem, 2.2vw, 2.1rem); }
+@media (max-width: 760px) {
+  .look-modern .discover__grid { width: calc(100% - 16px); gap: 8px; }
+  .look-modern .discover__tile-content { padding: 18px 16px; }
+  .look-modern .discover__tile-title { font-size: 1.3rem; }
+}
 
 /* The hint that this is the comparison page */
 .modern-note {
