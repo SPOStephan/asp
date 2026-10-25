@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useCms } from '../cms/CmsContext';
 import { CmsHeroPan } from '../cms/CmsHeroPan';
 import { CmsSection } from '../cms/CmsSection';
@@ -52,6 +53,8 @@ function useHeroMedia(data: Record<string, unknown>) {
 function HeroFlow() {
   const data = useSection('hero') ?? {};
   const media = useHeroMedia(data);
+  // The comparison page /modern tries a scroll arrow (its booking bar only comes on scroll).
+  const { pathname } = useLocation();
   return (
     <CmsSection sectionKey="hero" label="Hero">
       <section className="hero-flow" id="top">
@@ -69,6 +72,7 @@ function HeroFlow() {
           imageOverlay={<div className="hero__fade" />}
           textTop={heroTextTop(data.text_top)}
           textTopMobile={data.text_top_mobile != null && data.text_top_mobile !== '' ? heroTextTop(data.text_top_mobile) : undefined}
+          scrollHint={pathname === '/modern'}
         />
       </section>
     </CmsSection>

@@ -39,6 +39,8 @@ interface SubpageHeroProps {
   textTop?: number;
   // Own heading position on phones (same share of the screen height); default: textTop.
   textTopMobile?: number;
+  // A gently moving arrow at the bottom of the picture: "scroll on".
+  scrollHint?: boolean;
   children?: ReactNode;
 }
 
@@ -57,6 +59,7 @@ export function SubpageHero({
   imageOverlay,
   textTop = 0.45,
   textTopMobile,
+  scrollHint = false,
   children,
 }: SubpageHeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -163,6 +166,18 @@ export function SubpageHero({
         <div className="subpage-hero__overlay" />
         {imageOverlay}
         {imageFooter ? <div className="subpage-hero__footer">{imageFooter}</div> : null}
+        {scrollHint ? (
+          <button
+            type="button"
+            className="subpage-hero__scroll"
+            aria-label="Nach unten scrollen"
+            onClick={() => window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' })}
+          >
+            <svg viewBox="0 0 24 40" width="28" height="46" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 2v34M4 28l8 8 8-8" />
+            </svg>
+          </button>
+        ) : null}
       </div>
       </CmsHeroPan>
 
