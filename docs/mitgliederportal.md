@@ -15,7 +15,7 @@ iOS- und Android-App in die Stores bringen – alles aus demselben Code.
 | PWA (Manifest, Offline-Hülle, Icons) | `public/portal.webmanifest`, `public/portal-sw.js`, `public/portal-icon-*.png` |
 | Store-Apps | `capacitor.config.json`, `vite.app.config.ts`, `npm run build:app` |
 | Verwaltung | Admin → „Treueprogramm“ (`src/admin/loyalty/`) |
-| Login-Link auf den Hotel-Websites | Personen-Symbol in der Navigationsleiste (wenn `VITE_PORTAL_URL` gesetzt ist) |
+| Ein Login für alle Hotel-Websites | `src/member/`, `api/member-handoff.ts`, Portal-Seite `/weiter` |
 
 ## So funktioniert das Programm
 
@@ -96,3 +96,23 @@ Portal-Konto mit einem fiktiven Gast: Aufenthalte in den Hotels der Gruppe (verg
 eine Stornierung), Boni, eine eingelöste Prämie und Vorteile mit Bildern von den Hotelseiten.
 Adresse des Kontos und Organisation stehen oben in der Datei; ein erneuter Lauf setzt die Daten
 zurück, der Block am Ende entfernt sie wieder. Alles ist markiert (Buchungsnummern `DEMO-…`).
+
+## Ein Login für alle Hotel-Websites
+
+Gäste melden sich immer im Portal an; jede Hotel-Website der Gruppe übernimmt die Anmeldung:
+
+- **Personen-Symbol** auf der Website → Portal `/weiter?to=<Website>` → (falls nötig) Anmeldung →
+  zurück auf die Website, dort ebenfalls angemeldet (Name in der Kopfzeile). Technisch: das Portal
+  holt bei `api/member-handoff` einen einmaligen Anmeldecode (es wird keine Mail verschickt) und
+  hängt ihn als `#member=…` an; die Website meldet sich damit an und entfernt ihn sofort wieder.
+- **Buchen auf der Website:** angemeldete Mitglieder gehen direkt mit Mitgliedercode in die
+  Buchungsstrecke. Alle anderen gehen über `…/weiter?buchen=1`: Ist der Gast im Portal angemeldet
+  (z. B. auf der Website eines anderen Hotels), kommt der Code dazu – sonst geht es ohne Rückfrage
+  sofort weiter.
+- **Links aus dem Portal** zu den Hotels melden den Gast dort gleich mit an (selber Tab).
+- **Welche Adressen erlaubt sind,** steht im Admin: die Domains der aktiven Hotels der Gruppe und
+  ihre Buchungsadressen. Für eine Live-Domain genügt es, sie beim Hotel einzutragen.
+- Voraussetzung auf dem Server: `SUPABASE_SERVICE_ROLE_KEY` im Vercel-Projekt der Websites (nur für
+  den Anmeldecode; niemals mit `VITE_`-Präfix). In Supabase unter Redirect URLs
+  `https://app.<gruppe>.de/**` eintragen, damit Bestätigungsmails nach der Registrierung auf die
+  Website zurückführen.

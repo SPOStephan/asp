@@ -326,6 +326,10 @@ h3.heading { font-size: 1.4rem; line-height: 1.2; margin: 2px 0 8px; }
 .portal-cta p { margin: 0; max-width: 40em; opacity: 0.88; }
 .portal-cta__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 8px; }
 
+/* Hand-over to a hotel website or the booking engine */
+.portal-handoff { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: var(--paper); text-align: center; }
+.portal-handoff p { font-size: 1.4rem; margin: 0; }
+
 /* Footer */
 .portal-footer { background: var(--navy-deep); color: rgba(255, 255, 255, 0.82); }
 .portal-footer__inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px 48px; max-width: calc(var(--page) + 2 * var(--gutter)); margin: 0 auto; padding: 56px var(--gutter) 36px; }

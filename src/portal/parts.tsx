@@ -1,7 +1,9 @@
 import { ArrowUpRight, Search } from 'lucide-react';
-import { useState, type ComponentType, type FormEvent, type ReactNode } from 'react';
+import { useState, type ComponentType, type FormEvent, type MouseEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { bookingUrl } from '../lib/availability';
+import { canonicalOrigin } from '../site/renderSite';
+import { hotelSiteUrl } from './hotelSite';
 import { daysUntil, formatDate, formatPoints, nights, sized, hideBroken } from './format';
 import type { Benefit, PortalHotel, ProgramSettings, Stay, Summary, Tier } from './types';
 
@@ -22,11 +24,27 @@ export function IconCircle({ icon: Icon, small }: { icon: ComponentType<{ size?:
   );
 }
 
+// Address of a hotel's website (its own domain first, as on the website itself).
+export function hotelSite(hotel: PortalHotel) {
+  return hotel.domains?.length ? canonicalOrigin(hotel.domains, '') : '';
+}
+
+// To a hotel website in the same tab; a signed-in member arrives signed in there too.
+export function openHotelSite(event: MouseEvent<HTMLAnchorElement>) {
+  const href = event.currentTarget.href;
+  if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+  event.preventDefault();
+  void hotelSiteUrl(href)
+    .catch(() => href)
+    .then((url) => window.location.assign(url));
+}
+
 // Uppercase link with the arrow in a circle (the websites' "Mehr erfahren" style).
-export function ArrowLink({ to, href, children, light }: { to?: string; href?: string; children: ReactNode; light?: boolean }) {
+export function ArrowLink({ to, href, site, children, light }: { to?: string; href?: string; site?: boolean; children: ReactNode; light?: boolean }) {
   const className = `portal-arrow${light ? ' portal-arrow--light' : ''}`;
   const inner = <>{children}<span className="portal-arrow__circle"><ArrowUpRight size={14} strokeWidth={1.5} /></span></>;
   if (to) return <Link to={to} className={className}>{inner}</Link>;
+  if (site) return <a href={href} className={className} onClick={openHotelSite}>{inner}</a>;
   return <a href={href} className={className} target={href?.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{inner}</a>;
 }
 
@@ -119,7 +137,7 @@ export function NextReward({ summary, benefits }: { summary: Summary; benefits: 
 
 // Booking engine of the hotel with dates, guests and the member rate code.
 export function memberBookingUrl(hotel: PortalHotel, settings: ProgramSettings, query?: { arrival: string | null; departure: string | null; adults: number }) {
-  const base = hotel.booking_url || (hotel.domains[0] ? `https://${hotel.domains[0]}/#buchung` : '');
+  const base = hotel.booking_url || (hotelSite(hotel) ? `${hotelSite(hotel)}/#buchung` : '');
   if (!base) return '';
   const withStay = hotel.booking_url && query ? bookingUrl(base, { ...query, children: 0 }) ?? base : base;
   const code = settings.member_rate_code;
@@ -218,7 +236,7 @@ export function HotelsStrip({ hotels }: { hotels: PortalHotel[] }) {
       <ul>
         {hotels.map((hotel) => (
           <li key={hotel.id}>
-            {hotel.domains[0] ? <a href={`https://${hotel.domains[0]}`} target="_blank" rel="noreferrer" className="heading">{hotel.name}</a> : <span className="heading">{hotel.name}</span>}
+            {hotelSite(hotel) ? <a href={hotelSite(hotel)} onClick={openHotelSite} className="heading">{hotel.name}</a> : <span className="heading">{hotel.name}</span>}
           </li>
         ))}
       </ul>

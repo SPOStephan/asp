@@ -1,6 +1,6 @@
 import { sized, hideBroken } from '../format';
 import { usePortal } from '../PortalData';
-import { ArrowLink, BookingSearch, memberBookingUrl } from '../parts';
+import { ArrowLink, BookingSearch, memberBookingUrl, hotelSite } from '../parts';
 
 export function BookPage() {
   const { hotels, summary } = usePortal();
@@ -31,7 +31,7 @@ export function BookPage() {
                 {hotel.address ? <p className="portal-muted">{hotel.address}</p> : null}
                 <div className="portal-hotel__actions">
                   {href ? <a className="portal-btn portal-btn--small" href={href} target="_blank" rel="noreferrer">Verfügbarkeit prüfen</a> : null}
-                  {hotel.domains[0] ? <ArrowLink href={`https://${hotel.domains[0]}`}>Zur Website</ArrowLink> : null}
+                  {hotelSite(hotel) ? <ArrowLink href={hotelSite(hotel)} site>Zur Website</ArrowLink> : null}
                 </div>
               </div>
             </article>

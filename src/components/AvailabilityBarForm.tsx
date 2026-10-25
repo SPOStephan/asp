@@ -15,6 +15,9 @@ import {
   bookingUrl,
   inquiryMailHref,
 } from '../lib/availability';
+import { memberBookingTarget, useWebsiteMember } from '../member/useMember';
+import { PORTAL_URL } from '../portal/config';
+import { useCms } from '../cms/CmsContext';
 
 interface AvailabilityBarFormProps {
   idPrefix?: string;
@@ -36,6 +39,8 @@ function AvailabilityBarFormModern({
   onSubmitted,
 }: AvailabilityBarFormProps) {
   const hotel = useHotel();
+  const cms = useCms();
+  const member = useWebsiteMember(Boolean(PORTAL_URL) && !cms);
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState<OpenLayer>(null);
   const [query, setQuery] = useState(createAvailabilityQuery);
@@ -96,7 +101,7 @@ function AvailabilityBarFormModern({
       onSubmit={(event) => {
         event.preventDefault();
         const target = bookingUrl(hotel?.booking_url, query);
-        if (target) window.open(target, '_blank', 'noopener');
+        if (target) window.open(cms ? target : memberBookingTarget(target, member, PORTAL_URL), '_blank', 'noopener');
         else if (hotel?.email) window.location.href = inquiryMailHref(hotel.email, query);
         setOpen(null);
         onSubmitted?.();
