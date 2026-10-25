@@ -11,6 +11,8 @@ export async function hotelSiteUrl(returnTo: string) {
     body: JSON.stringify({ returnTo }),
   }).catch(() => null);
   const result = response ? ((await response.json().catch(() => ({}))) as { url?: string; error?: string }) : {};
-  if (!response?.ok || !result.url) throw new Error(result.error || 'Die Anmeldung auf der Hotel-Website hat nicht geklappt.');
+  if (!response?.ok || !result.url) {
+    throw new Error(result.error || `Die Anmeldung auf der Hotel-Website hat nicht geklappt${response ? ` (Fehler ${response.status})` : ''}.`);
+  }
   return result.url;
 }
