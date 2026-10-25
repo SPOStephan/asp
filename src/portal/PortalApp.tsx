@@ -29,10 +29,13 @@ export function useProgramName() {
   return PORTAL_NAME || summary?.program.name || info?.name || 'Mein Konto';
 }
 
-// Every page starts at the top, as on a website.
+// Every page starts at the top, as on a website. The effect must not return scrollTo's result:
+// browser extensions that replace scrollTo may return a value, which React would call on cleanup.
 function ScrollTop() {
   const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return null;
 }
 
