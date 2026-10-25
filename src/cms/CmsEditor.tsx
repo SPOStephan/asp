@@ -7,8 +7,9 @@ import { BLOG_TOPICS, resolveBlogPosts } from '../lib/blog';
 import { readFilters } from '../lib/listFilters';
 import { hasReadMore, placeReadMore, READ_MORE_MARK, stripReadMore } from '../lib/readMore';
 import { ROOM_FILTERS, ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
+import { autoMenuGroups } from '../lib/autoMenu';
 import type { HotelFAQ } from '../lib/supabase';
-import { fieldKind, getPath, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
+import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
 import { keepLiveFocals, readHeroFocal } from './cmsFocal';
 import {
   CMS_DETAIL_LABELS,
@@ -24,6 +25,7 @@ import { isHiddenMetaPath } from './cmsHidden';
 import { CMS_LIST_SHAPES } from './cmsListShapes';
 import { CmsFilterEditor } from './CmsFilterEditor';
 import { CmsIconPicker } from './CmsIconPicker';
+import { CmsEntryEditor, ENTRY_SPECS } from './CmsEntryEditor';
 import { CmsImageField } from './CmsImageField';
 import { CmsLinkPicker } from './CmsLinkPicker';
 import { CmsTextarea } from './CmsTextarea';
@@ -198,9 +200,9 @@ export function CmsEditor() {
         {section === 'welcome' ? <WelcomeFields /> : null}
         {section === 'discover' ? <DiscoverFields /> : null}
         {section === 'rooms_page' && !showEntry ? <RoomsFields /> : null}
-        {showEntry && detail?.section === 'rooms_page' ? <RoomEntryFields key={detail.entryId} entryId={detail.entryId} /> : null}
+        {showEntry && detail && ENTRY_SPECS[detail.section] ? <CmsEntryEditor key={`${detail.section}:${detail.entryId}`} sectionKey={detail.section} entryId={detail.entryId} /> : null}
         {section === 'faq_page' ? <FaqFields /> : null}
-        {showEntry && detail && detail.section !== 'rooms_page' ? (
+        {showEntry && detail && !ENTRY_SPECS[detail.section] ? (
           <EntryFields key={`${detail.section}:${detail.entryId}`} sectionKey={detail.section} entryId={detail.entryId} hub={detail.hub} />
         ) : null}
         {section && !CUSTOM_SECTIONS.has(section) && !showEntry ? <GenericFields key={section} sectionKey={section} /> : null}
@@ -239,6 +241,14 @@ function readBarLinks(value: unknown): BarLink[] {
     : [];
 }
 
+type MenuGroupDraft = { title: string; href: string; links: BarLink[] };
+
+function readMenuGroups(value: unknown): MenuGroupDraft[] {
+  return Array.isArray(value)
+    ? value.filter(isPlainObject).map((group) => ({ title: String(group.title ?? ''), href: String(group.href ?? ''), links: readBarLinks(group.links) }))
+    : [];
+}
+
 // Desktop bar after scrolling: a few chosen pages next to "Menü", and the optional
 // "Anfragen" button (off unless switched on for the hotel).
 const BAR_LINKS_MAX = 6;
@@ -255,8 +265,10 @@ function NavbarFields() {
     cta_href: String(data.cta_href ?? ''),
     bar_voucher_href: String(data.bar_voucher_href ?? ''),
     bar_arrival_href: String(data.bar_arrival_href ?? ''),
+    menu_groups: readMenuGroups(data.menu_groups),
   });
   const [draft, setDraft] = useState(read);
+  const { content } = useHotelContent();
 
   useEffect(() => {
     setDraft(read());
@@ -329,6 +341,12 @@ function NavbarFields() {
         ) : null}
       </fieldset>
 
+      <MenuGroupsEditor
+        groups={draft.menu_groups}
+        auto={() => autoMenuGroups(content?.sections ?? {}).map((group) => ({ title: group.title, href: group.href ?? '', links: group.links }))}
+        onChange={(menu_groups) => setDraft({ ...draft, menu_groups })}
+      />
+
       <fieldset className="cms-fade">
         <legend>„Anfragen“-Button</legend>
         <label className="cms-choice">
@@ -378,6 +396,73 @@ function NavbarFields() {
       </fieldset>
       <SaveBar sectionKey="navbar" onSave={() => cms!.saveSection('navbar', payload)} />
     </form>
+  );
+}
+
+// The big menu behind "Menü": built from the hotel's pages until the team shapes it itself.
+function MenuGroupsEditor({ groups, auto, onChange }: { groups: MenuGroupDraft[]; auto: () => MenuGroupDraft[]; onChange: (groups: MenuGroupDraft[]) => void }) {
+  const setGroup = (index: number, next: Partial<MenuGroupDraft>) => onChange(groups.map((group, at) => (at === index ? { ...group, ...next } : group)));
+  const move = <T,>(list: T[], index: number, step: number) => {
+    const target = index + step;
+    if (target < 0 || target >= list.length) return list;
+    const next = list.slice();
+    [next[index], next[target]] = [next[target], next[index]];
+    return next;
+  };
+  return (
+    <fieldset className="cms-fade" data-cms-panel-focus="menu">
+      <legend>Großes Menü (hinter „Menü“)</legend>
+      {!groups.length ? (
+        <>
+          <p className="cms-muted">Wird automatisch aus Ihren Seiten erstellt: Zimmer, Angebote, Anlässe, Wellness, Kulinarik und Hotel. Neue Einträge erscheinen dort von selbst.</p>
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => onChange(auto())}>
+            Menü selbst gestalten
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="cms-muted">Eigenes Menü: Gruppen und Links in dieser Reihenfolge. Ausgeschaltete Seiten fallen automatisch weg.</p>
+          {groups.map((group, index) => (
+            <div key={index} className="cms-entry__item">
+              <div className="cms-filters__row">
+                <input aria-label="Überschrift der Gruppe" value={group.title} placeholder="Überschrift der Gruppe" onChange={(event) => setGroup(index, { title: event.target.value })} />
+                <button type="button" className="cms-item-move" disabled={index === 0} onClick={() => onChange(move(groups, index, -1))} aria-label="Gruppe nach oben">↑</button>
+                <button type="button" className="cms-item-move" disabled={index === groups.length - 1} onClick={() => onChange(move(groups, index, 1))} aria-label="Gruppe nach unten">↓</button>
+                <button type="button" className="cms-item-move" onClick={() => onChange(groups.filter((_, at) => at !== index))} aria-label={`Gruppe ${group.title} entfernen`}>✕</button>
+              </div>
+              <CmsLinkPicker label="Ziel der Überschrift (optional)" value={group.href} context={group.title} onChange={(href) => setGroup(index, { href })} />
+              <div className="cms-entry__nested">
+                {group.links.map((link, linkIndex) => (
+                  <div key={linkIndex} className="cms-bar-link">
+                    <div className="cms-filters__row">
+                      <input
+                        aria-label="Bezeichnung"
+                        value={link.label}
+                        placeholder="Bezeichnung"
+                        onChange={(event) => setGroup(index, { links: group.links.map((other, at) => (at === linkIndex ? { ...other, label: event.target.value } : other)) })}
+                      />
+                      <button type="button" className="cms-item-move" disabled={linkIndex === 0} onClick={() => setGroup(index, { links: move(group.links, linkIndex, -1) })} aria-label="Nach oben">↑</button>
+                      <button type="button" className="cms-item-move" disabled={linkIndex === group.links.length - 1} onClick={() => setGroup(index, { links: move(group.links, linkIndex, 1) })} aria-label="Nach unten">↓</button>
+                      <button type="button" className="cms-item-move" onClick={() => setGroup(index, { links: group.links.filter((_, at) => at !== linkIndex) })} aria-label={`${link.label || 'Link'} entfernen`}>✕</button>
+                    </div>
+                    <CmsLinkPicker value={link.href} context={link.label} onChange={(href) => setGroup(index, { links: group.links.map((other, at) => (at === linkIndex ? { ...other, href } : other)) })} />
+                  </div>
+                ))}
+                <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setGroup(index, { links: [...group.links, { label: '', href: '' }] })}>
+                  Link hinzufügen
+                </button>
+              </div>
+            </div>
+          ))}
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => onChange([...groups, { title: '', href: '', links: [] }])}>
+            Gruppe hinzufügen
+          </button>
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => onChange([])}>
+            Wieder automatisch aus den Seiten erstellen
+          </button>
+        </>
+      )}
+    </fieldset>
   );
 }
 
@@ -898,119 +983,6 @@ function RoomsFields() {
   );
 }
 
-// One room's own page: every picture (with upload, size advice and alt text) and every text.
-// Changes go straight into the page preview; "Speichern" writes the rooms page.
-function RoomEntryFields({ entryId }: { entryId: string }) {
-  const cms = useCms();
-  const live = useSection('rooms_page') ?? {};
-  const rooms = resolveRooms(live.items as Parameters<typeof resolveRooms>[0]);
-  const room = rooms.find((item) => item.id === entryId);
-  const raw = getPath(live as Record<string, unknown>, `items.${entryId}`);
-  const prefix = `items.${entryId}`;
-  const [detailText, setDetailText] = useState(() => (room?.detail_text ?? []).join('\n\n'));
-  const [amenities, setAmenities] = useState(() => (room?.amenities ?? []).join('\n'));
-  if (!cms) return null;
-  if (!room || !isPlainObject(raw)) {
-    return (
-      <div className="cms-form">
-        <h3>Zimmer</h3>
-        <p className="cms-muted">Dieses Zimmer steht noch nicht in den gespeicherten Daten.</p>
-        <Link className="cms-entry-open" to="/cms/zimmer">Zur Zimmerübersicht</Link>
-      </div>
-    );
-  }
-
-  const text = (key: string) => String(raw[key] ?? '');
-  const set = (key: string, value: unknown) => cms.applyField('rooms_page', `${prefix}.${key}`, value, true);
-  const gallery = room.gallery;
-  const writeGallery = (next: typeof gallery) => cms.applyField('rooms_page', `${prefix}.gallery`, next.map(({ src, alt }) => ({ src, alt })));
-  const move = (from: number, to: number) => {
-    if (to < 0 || to >= gallery.length) return;
-    const next = gallery.slice();
-    const [moved] = next.splice(from, 1);
-    next.splice(to, 0, moved);
-    writeGallery(next);
-  };
-  const addPhoto = () => {
-    // Plain objects first, so the new photo and its alt text have a place to go.
-    writeGallery(gallery);
-    cms.openImage({ section: 'rooms_page', path: `${prefix}.gallery.${gallery.length}.src`, altPath: `${prefix}.gallery.${gallery.length}.alt` });
-  };
-  const paragraphs = (value: string) => value.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
-  const lines = (value: string) => value.split('\n').map((line) => line.trim()).filter(Boolean);
-  const textField = (key: string, label: string) => (
-    <Field focus={`${prefix}.${key}`} label={label} value={text(key)} onChange={(value) => set(key, value)} />
-  );
-
-  return (
-    <form className="cms-form" onSubmit={(event) => event.preventDefault()}>
-      <h3>Zimmer: {room.name}</h3>
-      <Link className="cms-entry-open" to="/cms/zimmer">Zur Zimmerübersicht</Link>
-
-      <fieldset className="cms-tile">
-        <legend>Bilder</legend>
-        <CmsImageField label="Großes Bild oben" value={room.hero_image} alt={room.hero_image_alt} section="rooms_page" path={`${prefix}.hero_image`} />
-        <CmsImageField label="Bild in der Zimmerliste" value={room.image} alt={room.image_alt} section="rooms_page" path={`${prefix}.image`} />
-      </fieldset>
-
-      <fieldset className="cms-tile">
-        <legend>Galerie ({gallery.length} {gallery.length === 1 ? 'Foto' : 'Fotos'})</legend>
-        {gallery.map((photo, index) => (
-          <CmsImageField
-            key={`${index}-${photo.src}`}
-            label={`Foto ${index + 1}`}
-            value={photo.src}
-            alt={photo.alt}
-            section="rooms_page"
-            path={`${prefix}.gallery.${index}.src`}
-          >
-            <button type="button" className="cms-btn cms-btn--ghost" disabled={index === 0} onClick={() => move(index, index - 1)}>Nach vorn</button>
-            <button type="button" className="cms-btn cms-btn--ghost" disabled={index === gallery.length - 1} onClick={() => move(index, index + 1)}>Nach hinten</button>
-            <ItemDeleteButton label={`Foto ${index + 1} entfernen`} onClick={() => writeGallery(gallery.filter((_, other) => other !== index))} />
-          </CmsImageField>
-        ))}
-        <button type="button" className="cms-btn" onClick={addPhoto}>Foto hinzufügen</button>
-      </fieldset>
-
-      <fieldset className="cms-tile">
-        <legend>Texte</legend>
-        {textField('name', 'Name')}
-        {textField('kicker', 'Zeile über dem Namen')}
-        <Field focus={`${prefix}.text`} label="Kurztext (Zimmerliste)" value={text('text')} onChange={(value) => set('text', value)} multiline />
-        <label className="cms-field" data-cms-panel-focus={`${prefix}.detail_text`}>
-          Beschreibung auf der Detailseite (Absätze durch eine Leerzeile trennen)
-          <CmsTextarea
-            value={detailText}
-            minRows={8}
-            placeholder="Beschreibung"
-            onChange={(value) => {
-              setDetailText(value);
-              set('detail_text', paragraphs(value));
-            }}
-          />
-        </label>
-        {textField('size', 'Größe')}
-        {textField('view', 'Ausblick')}
-        {textField('occupancy', 'Belegung')}
-        {textField('price_from', 'Preis ab')}
-        {textField('price_unit', 'Preis-Einheit')}
-        <label className="cms-field">
-          Ausstattung (eine Zeile pro Punkt)
-          <CmsTextarea
-            value={amenities}
-            minRows={5}
-            placeholder="Ausstattung"
-            onChange={(value) => {
-              setAmenities(value);
-              set('amenities', lines(value));
-            }}
-          />
-        </label>
-      </fieldset>
-      <SaveBar sectionKey="rooms_page" onSave={() => cms.saveSection('rooms_page', live as Record<string, unknown>)} />
-    </form>
-  );
-}
 
 function FaqFields() {
   const cms = useCms();

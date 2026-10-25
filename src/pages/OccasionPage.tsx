@@ -127,7 +127,7 @@ export function OccasionPage() {
                   <div className="occasion__tips">
                     {occasion.community.map((tip, index) => (
                       <figure key={`${tip.text}-${index}`} className="occasion__tip" data-cms-focus={`community:${index}`}>
-                        {tip.image ? <img loading="lazy" decoding="async" src={tip.image} alt="" /> : null}
+                        {tip.image ? <img loading="lazy" decoding="async" src={tip.image} alt={tip.image_alt ?? ''} data-cms-path={`${prefix}.community.${index}.image`} data-cms-kind="image" /> : null}
                         <blockquote data-cms-path={`${prefix}.community.${index}.text`}>{tip.text}</blockquote>
                         {tip.author || tip.href ? (
                           <figcaption>

@@ -24,6 +24,7 @@ export interface OccasionCommunityTip {
   author: string;
   href: string;
   image: string;
+  image_alt?: string;
 }
 
 export interface Occasion {
@@ -99,7 +100,7 @@ export function resolveOccasions(items: unknown): Occasion[] {
       ),
       community: list(item.community, (entry) =>
         text(entry.text)
-          ? { text: text(entry.text), author: text(entry.author), href: text(entry.href), image: text(entry.image) }
+          ? { text: text(entry.text), author: text(entry.author), href: text(entry.href), image: text(entry.image), image_alt: text(entry.image_alt) }
           : null,
       ),
       cta: text(item.cta),

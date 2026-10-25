@@ -89,12 +89,13 @@ export function OfferDetailPage() {
             </div>
           </div>
 
+          {/* The picture pair of the start page's "Entdecken" block, shared by all offers. */}
           <Reveal className="discover__feature-pair offer-detail__pair">
-            <div className="discover__feature-image discover__feature-image--left">
-              <img loading="lazy" decoding="async" src={pairLeft} alt={pairLeftAlt} />
+            <div className="discover__feature-image discover__feature-image--left" data-cms-section="discover">
+              <img loading="lazy" decoding="async" src={pairLeft} alt={pairLeftAlt} data-cms-path="feature_image_left" data-cms-kind="image" />
             </div>
-            <div className="discover__feature-image discover__feature-image--right">
-              <img loading="lazy" decoding="async" src={pairRight} alt={pairRightAlt} />
+            <div className="discover__feature-image discover__feature-image--right" data-cms-section="discover">
+              <img loading="lazy" decoding="async" src={pairRight} alt={pairRightAlt} data-cms-path="feature_image_right" data-cms-kind="image" />
             </div>
           </Reveal>
         </div>
