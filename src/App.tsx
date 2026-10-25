@@ -37,7 +37,6 @@ import { OccasionsPage } from './pages/OccasionsPage';
 import { useHotelContent } from './context/HotelContext';
 import { pageKeyFromPath } from './lib/musterPages';
 import { usePhoneChrome } from './lib/phoneChrome';
-import { ModernLookNote } from './components/ModernLookNote';
 import './styles/modern.css';
 
 function RoomCompareRedirect() {
@@ -65,9 +64,10 @@ function App() {
   const adminShell = isAdminHost() || isAdminPath(location.pathname);
   const cmsShell = isCmsPath(location.pathname);
   const isTypePreview = location.pathname === '/vorschau';
-  // A copy of the start page in the modern look, to compare with the current one (see modern.css).
-  const isModern = location.pathname === '/modern';
-  const isHome = location.pathname === '/' || isTypePreview || isModern;
+  // The start page has its own finish (see modern.css): the sans, spaced capitals, the
+  // booking bar that only comes on scroll.
+  const isStart = location.pathname === '/';
+  const isHome = isStart || isTypePreview;
   const isFontLab = location.pathname === '/schriften';
   const isMenuLab = location.pathname === '/menue-mobil';
   const isChromeLab = location.pathname.startsWith('/mobil-leiste');
@@ -79,10 +79,6 @@ function App() {
   const classicHome = isHome && content?.sections.hero?.layout === 'classic';
   const showFixedBar = !adminShell && !cmsShell && !classicHome && !isFontLab && !isMenuLab && !isChromeLab && !isPhone;
   useSiteHead(!adminShell && !cmsShell);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('look-modern-page', isModern);
-  }, [isModern]);
 
   useEffect(() => {
     document.body.classList.toggle('is-phone', !adminShell && !cmsShell && isPhone);
@@ -111,13 +107,14 @@ function App() {
   if (error) return <ErrorScreen message={error} />;
 
   return (
-    <div className={isTypePreview ? 'type-preview' : isModern ? 'look-modern' : undefined}>
+    <div className={isTypePreview ? 'type-preview' : isStart ? 'look-modern' : undefined}>
       <Navbar />
       <PageGate>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/vorschau" element={<HomePage />} />
-          <Route path="/modern" element={<HomePage />} />
+          {/* The former comparison page of the new start page. */}
+          <Route path="/modern" element={<Navigate to="/" replace />} />
           <Route path="/wellness" element={<WellnessPage />} />
           <Route path="/wellness/:topicId" element={<WellnessTopicPage />} />
           <Route path="/anlaesse" element={<OccasionsPage />} />
@@ -147,8 +144,7 @@ function App() {
       </PageGate>
       <Footer />
       {isTypePreview && <TypePreviewHomeNote />}
-      {isModern && <ModernLookNote />}
-      {showFixedBar ? <FixedAvailabilityBar revealOnScroll={isModern} /> : null}
+      {showFixedBar ? <FixedAvailabilityBar revealOnScroll={isStart} /> : null}
       {showDock ? <MobileChromeDock /> : null}
       {!isPhone && !isFontLab && !isMenuLab && !isChromeLab ? <ConciergeDesktop /> : null}
     </div>

@@ -36,9 +36,11 @@ import './cms.css';
 
 function CmsStage() {
   const cms = useCms();
+  const { pathname } = useLocation();
   const phone = cms?.focalPreview === 'mobile';
+  // The start page in its own finish, as on the website (see modern.css).
   return (
-    <div className="cms-stage">
+    <div className={`cms-stage${pathname === '/cms' ? ' look-modern' : ''}`}>
       <Navbar />
       <Routes>
         <Route path="/cms" element={<HomePage />} />
