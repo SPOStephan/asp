@@ -196,7 +196,8 @@ export function CmsImageDialog() {
     setCrop(zoomRect(crop, image.naturalWidth, image.naturalHeight, factor, aspect));
   }
 
-  async function pushUpload(source: HTMLImageElement, sourceCrop: CropRect, knownSource: string | null, name = baseName, altText = alt) {
+  async function pushUpload(source: HTMLImageElement, sourceCrop: CropRect, knownSource: string | null, name = baseName, chosenAlt = alt) {
+    const altText = chosenAlt || contextAlt();
     const base = slugifyFileName(name) || pictureBaseName(altText, hotel?.name);
     const named = (file: File, suffix = '') => new File([file], `${base}${suffix}.${file.name.split('.').pop() || 'webp'}`, { type: file.type });
     if (!hotel) {
@@ -260,6 +261,24 @@ export function CmsImageDialog() {
       .join(' · ');
   }
 
+  // Fallback alt text from where the picture sits: the room, offer or tile it belongs to, or
+  // the block's title – plus the hotel's name ("Junior Suite – Hotel Oversum").
+  function contextAlt() {
+    if (!request) return '';
+    const section = (content?.sections[request.section] ?? {}) as Record<string, unknown>;
+    const parts = request.path.split('.');
+    for (let depth = parts.length - 1; depth > 0; depth -= 1) {
+      const owner = getPath(section, parts.slice(0, depth).join('.'));
+      if (owner && typeof owner === 'object' && !Array.isArray(owner)) {
+        const record = owner as Record<string, unknown>;
+        const name = [record.name, record.title, record.label, record.kicker].find((value) => typeof value === 'string' && value.trim());
+        if (typeof name === 'string') return [name.trim(), hotel?.name].filter(Boolean).join(' – ');
+      }
+    }
+    const title = typeof section.title === 'string' && section.title.trim() ? section.title.trim() : CMS_SECTION_LABELS[request.section] ?? '';
+    return [title, hotel?.name].filter(Boolean).join(' – ');
+  }
+
   // Alt text and file name suggested by the AI; null when it is not available (then the
   // team can still type them). Never blocks the upload for long.
   async function suggestAlt(source: HTMLImageElement, area: CropRect) {
@@ -293,7 +312,9 @@ export function CmsImageDialog() {
       setSourceUrl(null);
       // The AI looks at the picture first: alt text and file name come from what it shows.
       const suggestion = await suggestAlt(next, nextCrop);
-      const altText = suggestion?.alt || alt;
+      // Never without alt text: without an AI answer the place of the picture describes it.
+      const altText = suggestion?.alt || alt || contextAlt();
+      if (!suggestion?.alt && !alt && altText) setAlt(altText);
       const name = pictureBaseName(file.name, suggestion?.fileName, altText, hotel?.name);
       setBaseName(name);
       await pushUpload(next, nextCrop, null, name, altText);

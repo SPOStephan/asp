@@ -10,6 +10,8 @@ export type RoomFilterId = string;
 export interface RoomGalleryImage {
   src: string;
   alt: string;
+  // Where the picture is stored in the room (hero_image, image, gallery.<n>.src), for the CMS.
+  field?: string;
 }
 
 export interface RoomStory {
@@ -192,12 +194,17 @@ export function expandRoomFeatures(room: RoomStory): RoomFeature[] {
   return labels.map((label) => ({ icon: iconForAmenity(label), label }));
 }
 
+// The extra photos of a room, each with its place in the data.
+export function roomGallery(room: RoomStory): RoomGalleryImage[] {
+  return room.gallery.map((slide, index) => ({ ...slide, field: `gallery.${index}.src` }));
+}
+
 export function roomGalleryImages(room: RoomStory): RoomGalleryImage[] {
   const seen = new Set<string>();
   return [
-    { src: room.hero_image || room.image, alt: room.hero_image_alt || room.image_alt },
-    { src: room.image, alt: room.image_alt },
-    ...room.gallery,
+    { src: room.hero_image || room.image, alt: room.hero_image_alt || room.image_alt, field: room.hero_image ? 'hero_image' : 'image' },
+    { src: room.image, alt: room.image_alt, field: 'image' },
+    ...roomGallery(room),
   ].filter((slide) => {
     if (!slide.src || seen.has(slide.src)) return false;
     seen.add(slide.src);

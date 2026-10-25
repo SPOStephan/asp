@@ -8,7 +8,7 @@ import { readFilters } from '../lib/listFilters';
 import { hasReadMore, placeReadMore, READ_MORE_MARK, stripReadMore } from '../lib/readMore';
 import { ROOM_FILTERS, ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import type { HotelFAQ } from '../lib/supabase';
-import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
+import { fieldKind, getPath, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
 import { keepLiveFocals, readHeroFocal } from './cmsFocal';
 import {
   CMS_DETAIL_LABELS,
@@ -197,9 +197,10 @@ export function CmsEditor() {
         {section === 'hero' ? <HeroFields /> : null}
         {section === 'welcome' ? <WelcomeFields /> : null}
         {section === 'discover' ? <DiscoverFields /> : null}
-        {section === 'rooms_page' ? <RoomsFields /> : null}
+        {section === 'rooms_page' && !showEntry ? <RoomsFields /> : null}
+        {showEntry && detail?.section === 'rooms_page' ? <RoomEntryFields key={detail.entryId} entryId={detail.entryId} /> : null}
         {section === 'faq_page' ? <FaqFields /> : null}
-        {showEntry && detail ? (
+        {showEntry && detail && detail.section !== 'rooms_page' ? (
           <EntryFields key={`${detail.section}:${detail.entryId}`} sectionKey={detail.section} entryId={detail.entryId} hub={detail.hub} />
         ) : null}
         {section && !CUSTOM_SECTIONS.has(section) && !showEntry ? <GenericFields key={section} sectionKey={section} /> : null}
@@ -868,6 +869,20 @@ function RoomsFields() {
             ))}
           </select>
         </label>
+        {current ? (
+          <>
+            <Link className="cms-entry-open" to={`/cms/zimmer/${current.id}`}>
+              Detailseite dieses Zimmers bearbeiten (Bilder, Galerie, Beschreibung)
+            </Link>
+            <CmsImageField
+              label="Bild in der Zimmerliste"
+              value={current.image}
+              alt={current.image_alt}
+              section="rooms_page"
+              path={`items.${current.id}.image`}
+            />
+          </>
+        ) : null}
         <Field label="Name" value={roomDraft.name} onChange={(name) => setRoomDraft({ ...roomDraft, name })} path={current ? `items.${current.id}.name` : undefined} />
         <Field label="Kicker" value={roomDraft.kicker} onChange={(kicker) => setRoomDraft({ ...roomDraft, kicker })} />
         <Field label="Text" value={roomDraft.text} onChange={(text) => setRoomDraft({ ...roomDraft, text })} multiline />
@@ -879,6 +894,120 @@ function RoomsFields() {
         <Field label="Ausstattung (eine Zeile pro Punkt)" value={roomDraft.amenities} onChange={(amenities) => setRoomDraft({ ...roomDraft, amenities })} multiline />
       </div>
       <SaveBar sectionKey="rooms_page" onSave={() => cms!.saveSection('rooms_page', payload)} />
+    </form>
+  );
+}
+
+// One room's own page: every picture (with upload, size advice and alt text) and every text.
+// Changes go straight into the page preview; "Speichern" writes the rooms page.
+function RoomEntryFields({ entryId }: { entryId: string }) {
+  const cms = useCms();
+  const live = useSection('rooms_page') ?? {};
+  const rooms = resolveRooms(live.items as Parameters<typeof resolveRooms>[0]);
+  const room = rooms.find((item) => item.id === entryId);
+  const raw = getPath(live as Record<string, unknown>, `items.${entryId}`);
+  const prefix = `items.${entryId}`;
+  const [detailText, setDetailText] = useState(() => (room?.detail_text ?? []).join('\n\n'));
+  const [amenities, setAmenities] = useState(() => (room?.amenities ?? []).join('\n'));
+  if (!cms) return null;
+  if (!room || !isPlainObject(raw)) {
+    return (
+      <div className="cms-form">
+        <h3>Zimmer</h3>
+        <p className="cms-muted">Dieses Zimmer steht noch nicht in den gespeicherten Daten.</p>
+        <Link className="cms-entry-open" to="/cms/zimmer">Zur Zimmerübersicht</Link>
+      </div>
+    );
+  }
+
+  const text = (key: string) => String(raw[key] ?? '');
+  const set = (key: string, value: unknown) => cms.applyField('rooms_page', `${prefix}.${key}`, value, true);
+  const gallery = room.gallery;
+  const writeGallery = (next: typeof gallery) => cms.applyField('rooms_page', `${prefix}.gallery`, next.map(({ src, alt }) => ({ src, alt })));
+  const move = (from: number, to: number) => {
+    if (to < 0 || to >= gallery.length) return;
+    const next = gallery.slice();
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    writeGallery(next);
+  };
+  const addPhoto = () => {
+    // Plain objects first, so the new photo and its alt text have a place to go.
+    writeGallery(gallery);
+    cms.openImage({ section: 'rooms_page', path: `${prefix}.gallery.${gallery.length}.src`, altPath: `${prefix}.gallery.${gallery.length}.alt` });
+  };
+  const paragraphs = (value: string) => value.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+  const lines = (value: string) => value.split('\n').map((line) => line.trim()).filter(Boolean);
+  const textField = (key: string, label: string) => (
+    <Field focus={`${prefix}.${key}`} label={label} value={text(key)} onChange={(value) => set(key, value)} />
+  );
+
+  return (
+    <form className="cms-form" onSubmit={(event) => event.preventDefault()}>
+      <h3>Zimmer: {room.name}</h3>
+      <Link className="cms-entry-open" to="/cms/zimmer">Zur Zimmerübersicht</Link>
+
+      <fieldset className="cms-tile">
+        <legend>Bilder</legend>
+        <CmsImageField label="Großes Bild oben" value={room.hero_image} alt={room.hero_image_alt} section="rooms_page" path={`${prefix}.hero_image`} />
+        <CmsImageField label="Bild in der Zimmerliste" value={room.image} alt={room.image_alt} section="rooms_page" path={`${prefix}.image`} />
+      </fieldset>
+
+      <fieldset className="cms-tile">
+        <legend>Galerie ({gallery.length} {gallery.length === 1 ? 'Foto' : 'Fotos'})</legend>
+        {gallery.map((photo, index) => (
+          <CmsImageField
+            key={`${index}-${photo.src}`}
+            label={`Foto ${index + 1}`}
+            value={photo.src}
+            alt={photo.alt}
+            section="rooms_page"
+            path={`${prefix}.gallery.${index}.src`}
+          >
+            <button type="button" className="cms-btn cms-btn--ghost" disabled={index === 0} onClick={() => move(index, index - 1)}>Nach vorn</button>
+            <button type="button" className="cms-btn cms-btn--ghost" disabled={index === gallery.length - 1} onClick={() => move(index, index + 1)}>Nach hinten</button>
+            <ItemDeleteButton label={`Foto ${index + 1} entfernen`} onClick={() => writeGallery(gallery.filter((_, other) => other !== index))} />
+          </CmsImageField>
+        ))}
+        <button type="button" className="cms-btn" onClick={addPhoto}>Foto hinzufügen</button>
+      </fieldset>
+
+      <fieldset className="cms-tile">
+        <legend>Texte</legend>
+        {textField('name', 'Name')}
+        {textField('kicker', 'Zeile über dem Namen')}
+        <Field focus={`${prefix}.text`} label="Kurztext (Zimmerliste)" value={text('text')} onChange={(value) => set('text', value)} multiline />
+        <label className="cms-field" data-cms-panel-focus={`${prefix}.detail_text`}>
+          Beschreibung auf der Detailseite (Absätze durch eine Leerzeile trennen)
+          <CmsTextarea
+            value={detailText}
+            minRows={8}
+            placeholder="Beschreibung"
+            onChange={(value) => {
+              setDetailText(value);
+              set('detail_text', paragraphs(value));
+            }}
+          />
+        </label>
+        {textField('size', 'Größe')}
+        {textField('view', 'Ausblick')}
+        {textField('occupancy', 'Belegung')}
+        {textField('price_from', 'Preis ab')}
+        {textField('price_unit', 'Preis-Einheit')}
+        <label className="cms-field">
+          Ausstattung (eine Zeile pro Punkt)
+          <CmsTextarea
+            value={amenities}
+            minRows={5}
+            placeholder="Ausstattung"
+            onChange={(value) => {
+              setAmenities(value);
+              set('amenities', lines(value));
+            }}
+          />
+        </label>
+      </fieldset>
+      <SaveBar sectionKey="rooms_page" onSave={() => cms.saveSection('rooms_page', live as Record<string, unknown>)} />
     </form>
   );
 }
