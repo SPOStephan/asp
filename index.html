@@ -10,7 +10,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Inter:wght@300;400;500;600&family=Newsreader:opsz,wght@6..72,300..700&display=swap" rel="stylesheet" />
     <title>Hotel</title>
+    <!-- The readable page in the HTML is for search engines, AI systems and browsers without
+         JavaScript. People with JavaScript see the designed page right away: the readable copy
+         stays hidden until the app replaces it – and comes back if the app cannot start. -->
+    <script>
+      document.documentElement.classList.add('app-loading');
+      setTimeout(function () { if (document.querySelector('#root > .site-core')) document.documentElement.classList.remove('app-loading'); }, 8000);
+    </script>
     <style>
+      .app-loading #root > .site-core { display: none; }
       .site-core { max-width: 960px; margin: 0 auto; padding: 120px 24px 64px; font-family: Inter, system-ui, sans-serif; line-height: 1.6; color: #2a2a2a; }
       .site-core header nav, .site-core footer nav { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 0.9rem; }
       .site-core img { width: 100%; height: auto; }
