@@ -9,7 +9,10 @@
    6. the booking bar slides in on scroll; quieter field lines
    7. few text sizes
    8. slightly wider tiles
-   9. lighter tile overlay */
+   9. lighter tile overlay
+   10. hero heading lower, scroll arrow
+   11. same joint for the picture pair
+   12. buttons in spaced capitals */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -199,6 +202,60 @@
 }
 .look-modern .discover__tile:hover .discover__tile-overlay {
   background: linear-gradient(180deg, rgba(19, 59, 92, 0.08) 30%, rgba(19, 59, 92, 0.45) 60%, rgba(19, 59, 92, 0.85) 100%);
+}
+
+/* 10: hero on desktops – the heading sits a little lower (the booking bar only comes on
+   scroll), a white arrow at the bottom of the picture invites to scroll */
+@media (min-width: 601px) {
+  .look-modern .subpage-hero__clip--white .subpage-hero__text { top: calc(var(--hero-text-top, 45svh) + 7svh); }
+  .look-modern .subpage-hero__clip--dark .subpage-hero__text { top: calc(var(--hero-text-top, 45svh) + 7svh - var(--image-bottom)); }
+}
+.subpage-hero__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 36px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 64px;
+  margin-left: -24px;
+  color: var(--neutral-0);
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.45));
+  opacity: 0.95;
+  animation: modern-scroll-hint 2.4s ease-in-out infinite;
+}
+.subpage-hero__scroll:hover { opacity: 1; }
+@keyframes modern-scroll-hint {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .subpage-hero__scroll { animation: none; }
+}
+/* phones: no arrow – scrolling is obvious there */
+@media (max-width: 600px) {
+  .subpage-hero__scroll { display: none; }
+}
+
+/* 11: the two pictures above the tiles with the same joint as the tiles */
+@media (min-width: 901px) {
+  .look-modern .discover__feature-pair { gap: 2.5vw; }
+}
+@media (max-width: 600px) {
+  .look-modern .discover__feature-pair { gap: 14px; }
+}
+
+/* 12: text in buttons always in spaced capitals */
+.look-modern .btn-primary,
+.look-modern .navbar__cta,
+.look-modern .availability-bar__btn,
+.look-modern .newsletter__submit,
+.look-modern .mobile-chrome__book {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 /* The hint that this is the comparison page */
