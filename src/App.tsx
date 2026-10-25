@@ -148,7 +148,7 @@ function App() {
       <Footer />
       {isTypePreview && <TypePreviewHomeNote />}
       {isModern && <ModernLookNote />}
-      {showFixedBar ? <FixedAvailabilityBar /> : null}
+      {showFixedBar ? <FixedAvailabilityBar revealOnScroll={isModern} /> : null}
       {showDock ? <MobileChromeDock /> : null}
       {!isPhone && !isFontLab && !isMenuLab && !isChromeLab ? <ConciergeDesktop /> : null}
     </div>

@@ -6,7 +6,7 @@
    3. one rhythm: the same space between the blocks
    4. fine lines and small, thin icons without circles
    5. small motion: underlines that draw in, buttons that lift
-   6. the booking bar: lighter, one line of fields with a clear button */
+   6. the booking bar slides in on scroll; quieter field lines */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -23,7 +23,6 @@
 .look-modern .welcome__subtitle,
 .look-modern .offers__title,
 .look-modern .generations__label,
-.look-modern .discover__tile-eyebrow,
 .look-modern .facts__label,
 .look-modern .culinary__toggle,
 .look-modern .welcome__caption-link {
@@ -33,8 +32,7 @@
 }
 .look-modern .eyebrow,
 .look-modern .offers__title,
-.look-modern .generations__label,
-.look-modern .discover__tile-eyebrow { font-size: 0.92rem; font-weight: 500; }
+.look-modern .generations__label { font-size: 0.92rem; font-weight: 500; }
 .look-modern .welcome__subtitle { font-size: 1rem; font-weight: 500; }
 .look-modern .facts__label { font-size: 0.8rem; font-weight: 500; }
 .look-modern .direct-booking__item-text { letter-spacing: 0; font-size: 0.92rem; }
@@ -105,56 +103,36 @@
 .look-modern .btn-primary { transition: transform 0.35s ease, background 0.35s ease, color 0.35s ease; }
 .look-modern .btn-primary:hover { transform: translateY(-2px); }
 
-/* 6: booking bar – solid and calm: fields as segments between hairlines instead of
-   underlined inputs, the value as the main line, the button as a block that closes the bar,
-   contact icons without circles (desktop; phones keep their own bottom bar) */
-@media (min-width: 901px) {
-  .look-modern .availability-bar {
-    background: var(--primary-700, #0f2f4a);
-    backdrop-filter: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-  }
-  .look-modern .availability-bar__form { padding: 0; gap: 0; align-items: stretch; }
-  .look-modern .availability-bar__pickers { gap: 0; }
-  .look-modern .availability-bar__picker {
-    gap: 14px;
-    padding: 18px 24px;
-    border-bottom: 0;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    transition: background 0.3s ease;
-  }
-  .look-modern .availability-bar__picker:first-child { border-left: 0; padding-left: 0; }
-  .look-modern .availability-bar__picker:hover,
-  .look-modern .availability-bar__picker.is-open { background: rgba(255, 255, 255, 0.04); }
-  .look-modern .availability-bar__picker:first-child:hover,
-  .look-modern .availability-bar__picker:first-child.is-open { background: none; }
-  .look-modern .availability-bar__picker-label { color: rgba(255, 255, 255, 0.55); font-weight: 500; }
-  .look-modern .availability-bar__picker-value { font-size: 1.05rem; font-weight: 500; }
-  .look-modern .availability-bar__picker-icon { color: var(--accent-300); }
-  .look-modern .availability-bar__btn {
-    align-self: stretch;
-    gap: 12px;
-    padding: 0 34px;
-    font-size: 0.98rem;
-    transition: background 0.3s ease, gap 0.3s ease;
-  }
-  .look-modern .availability-bar__btn:hover { gap: 16px; }
-  .look-modern .availability-bar__tools {
-    gap: 0;
-    margin-left: 12px;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-  }
-  .look-modern .availability-bar__tool {
-    width: 52px;
-    height: auto;
-    align-self: stretch;
-    border: 0;
-    border-radius: 0;
-    color: rgba(255, 255, 255, 0.75);
-  }
-  .look-modern .availability-bar__tool:hover { background: none; color: var(--accent-300); }
-  .look-modern .availability-bar__chat { align-self: center; margin-left: 12px; }
+/* 6: booking bar – appears only once the visitor scrolls (the hero fills the screen until
+   then); the fields get a quieter line that turns gold from the left on hover */
+.look-modern .availability-bar.is-stuck {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease, box-shadow 0.3s ease;
 }
+.look-modern .availability-bar.is-waiting {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.look-modern .availability-bar__picker {
+  position: relative;
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+.look-modern .availability-bar__picker::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--accent-300);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s ease;
+}
+.look-modern .availability-bar__picker:hover,
+.look-modern .availability-bar__picker.is-open { border-bottom-color: rgba(255, 255, 255, 0.2); }
+.look-modern .availability-bar__picker:hover::after,
+.look-modern .availability-bar__picker.is-open::after { transform: scaleX(1); }
 
 /* The hint that this is the comparison page */
 .modern-note {
