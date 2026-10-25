@@ -13,7 +13,8 @@
    10. hero heading lower, scroll arrow
    11. same joint for the picture pair
    12. buttons in spaced capitals
-   13. tile captions as text links in spaced capitals, without the small line above */
+   13. tile captions as text links in spaced capitals, without the small line above
+   14. all calls to action in spaced capitals */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -141,8 +142,7 @@
 .look-modern .availability-bar__picker:hover::after,
 .look-modern .availability-bar__picker.is-open::after { transform: scaleX(1); }
 
-/* 7: few text sizes – one for running text and links, one for small print, one for labels.
-   Links have the size of the text around them. */
+/* 7: few text sizes – one for running text, one for small print, one for labels */
 .look-modern {
   --m-text: 1.0625rem;
   --m-small: 0.875rem;
@@ -163,8 +163,6 @@
 .look-modern .culinary__text p:not(.eyebrow),
 .look-modern .faq__answer p,
 .look-modern .blog-card__excerpt,
-.look-modern .text-cta,
-.look-modern .text-cta__label,
 .look-modern .newsletter__submit { font-size: var(--m-text); }
 .look-modern .welcome__highlight p,
 .look-modern .direct-booking__item-text,
@@ -306,6 +304,25 @@
 .look-modern .discover__tile-arrow { display: none; }
 /* without the small line above: picture and link speak for themselves */
 .look-modern .discover__tile-eyebrow { display: none; }
+
+/* 14: every call to action in spaced capitals – text links, the tiles, "read more" */
+.look-modern .text-cta,
+.look-modern .text-cta__label,
+.look-modern .culinary__toggle,
+.look-modern .welcome__caption-link,
+.look-modern .faq__more-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+@media (max-width: 600px) {
+  .look-modern .text-cta,
+  .look-modern .text-cta__label,
+  .look-modern .culinary__toggle,
+  .look-modern .welcome__caption-link,
+  .look-modern .faq__more-link { font-size: 0.85rem; letter-spacing: 0.12em; }
+}
 
 /* The hint that this is the comparison page */
 .modern-note {
