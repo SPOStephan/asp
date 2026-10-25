@@ -49,12 +49,28 @@ const EMPTY_BENEFIT: Benefit = { hotel_id: null, kind: 'perk', title: '', descri
 
 export function AdminLoyaltyPage() {
   const { admin } = useAdminAuth();
-  const orgs = managedOrgs(admin);
-  const [orgId, setOrgId] = useState(orgs[0]?.id ?? '');
+  // Platform admins manage every organisation, not only those they are a member of.
+  const [orgs, setOrgs] = useState<Array<{ id: string; name: string }>>([]);
+  const [orgsLoaded, setOrgsLoaded] = useState(false);
+  const [orgId, setOrgId] = useState('');
   const [tab, setTab] = useState<'programm' | 'vorteile' | 'reisen' | 'mitglieder'>('programm');
   const [hotels, setHotels] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!admin) return;
+    if (!admin.platform) {
+      setOrgs(managedOrgs(admin));
+      setOrgsLoaded(true);
+      return;
+    }
+    void supabase.from('organizations').select('id, name').order('name').then(({ data, error: loadError }) => {
+      if (loadError) setError(loadError.message);
+      setOrgs(data ?? []);
+      setOrgsLoaded(true);
+    });
+  }, [admin]);
 
   useEffect(() => {
     if (!orgId && orgs[0]) setOrgId(orgs[0].id);
@@ -65,6 +81,8 @@ export function AdminLoyaltyPage() {
     void supabase.from('hotels').select('id, name, slug').eq('organization_id', orgId).order('name').then(({ data }) => setHotels(data ?? []));
   }, [orgId]);
 
+  if (!orgsLoaded) return null;
+  if (!orgs.length && error) return <p className="admin-error">{error}</p>;
   if (!orgs.length) return <p className="admin-muted">Das Treueprogramm verwalten Inhaber und Admins einer Organisation.</p>;
 
   return (
