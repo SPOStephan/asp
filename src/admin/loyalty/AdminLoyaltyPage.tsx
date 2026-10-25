@@ -9,11 +9,13 @@ type Settings = {
   direct_bonus_percent: number;
   points_valid_months: number;
   tier_window_months: number;
-  stamp_goal: number;
   tiers: Tier[];
   member_rate_code?: string;
   member_rate_param?: string;
   contact_email?: string;
+  terms_url?: string;
+  privacy_url?: string;
+  imprint_url?: string;
 };
 type Benefit = {
   id?: string;
@@ -37,7 +39,6 @@ const DEFAULT_SETTINGS: Settings = {
   direct_bonus_percent: 25,
   points_valid_months: 36,
   tier_window_months: 24,
-  stamp_goal: 10,
   tiers: [
     { id: 'classic', name: 'Classic', min_points: 0 },
     { id: 'silber', name: 'Silber', min_points: 2500 },
@@ -124,7 +125,9 @@ function ProgramForm({ orgId, onError, onNote }: Props) {
     void supabase.from('loyalty_programs').select('name, settings').eq('organization_id', orgId).maybeSingle().then(({ data }) => {
       if (data) {
         setName(data.name);
-        setSettings({ ...DEFAULT_SETTINGS, ...(data.settings as Settings) });
+        // The paper stamp card of earlier versions is gone; its setting is no longer saved.
+        const { stamp_goal: _stamps, ...stored } = data.settings as Settings & { stamp_goal?: number };
+        setSettings({ ...DEFAULT_SETTINGS, ...stored });
       }
     });
   }, [orgId]);
@@ -146,7 +149,6 @@ function ProgramForm({ orgId, onError, onNote }: Props) {
         <label>Punkte pro Euro (Logis)<input type="number" step="0.1" min="0" value={settings.points_per_euro} onChange={(event) => set({ points_per_euro: Number(event.target.value) })} /></label>
         <label>Bonus für Direktbuchungen (%)<input type="number" min="0" value={settings.direct_bonus_percent} onChange={(event) => set({ direct_bonus_percent: Number(event.target.value) })} /></label>
         <label>Punkte gültig (Monate)<input type="number" min="1" value={settings.points_valid_months} onChange={(event) => set({ points_valid_months: Number(event.target.value) })} /></label>
-        <label>Stammgastpass: Stempel bis zur Gratisnacht<input type="number" min="1" value={settings.stamp_goal} onChange={(event) => set({ stamp_goal: Number(event.target.value) })} /></label>
       </fieldset>
       <fieldset>
         <legend>Stufen (Punkte der letzten {settings.tier_window_months} Monate)</legend>
@@ -163,6 +165,12 @@ function ProgramForm({ orgId, onError, onNote }: Props) {
         <label>Mitglieder-Code der Buchungsstrecke<input value={settings.member_rate_code ?? ''} onChange={(event) => set({ member_rate_code: event.target.value })} placeholder="z. B. MEMBER" /></label>
         <label>Parameter in der Buchungs-URL<input value={settings.member_rate_param ?? ''} onChange={(event) => set({ member_rate_param: event.target.value })} placeholder="z. B. code" /></label>
         <label>Kontakt-E-Mail für Mitglieder<input type="email" value={settings.contact_email ?? ''} onChange={(event) => set({ contact_email: event.target.value })} /></label>
+      </fieldset>
+      <fieldset>
+        <legend>Rechtliches (Links im Mitgliederportal)</legend>
+        <label>Teilnahmebedingungen<input type="url" value={settings.terms_url ?? ''} onChange={(event) => set({ terms_url: event.target.value })} placeholder="https://…" /></label>
+        <label>Datenschutz<input type="url" value={settings.privacy_url ?? ''} onChange={(event) => set({ privacy_url: event.target.value })} placeholder="https://…" /></label>
+        <label>Impressum<input type="url" value={settings.imprint_url ?? ''} onChange={(event) => set({ imprint_url: event.target.value })} placeholder="https://…" /></label>
       </fieldset>
       <div className="admin-actions"><button type="submit" className="admin-btn admin-btn--gold">Speichern</button></div>
     </form>

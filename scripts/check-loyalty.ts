@@ -31,4 +31,14 @@ for (const table of ['loyalty_members', 'loyalty_stays', 'loyalty_ledger', 'loya
 assert.match(sql, /loyalty_stays_own ON loyalty_stays FOR SELECT TO authenticated USING \(member_id = auth\.uid\(\)/);
 assert.match(sql, /email_confirmed_at IS NOT NULL/, 'stays are linked only to confirmed e-mail addresses');
 assert.doesNotMatch(sql, /loyalty_ledger_own ON loyalty_ledger FOR (ALL|INSERT)/, 'members cannot book points themselves');
+// The stamp card is gone; the start page never sees the member rate code.
+const portalSql = readFileSync(new URL('../supabase/migrations/20261025090000_033_loyalty_portal.sql', import.meta.url), 'utf8');
+assert.match(portalSql, /settings - 'stamp_goal'/);
+assert.doesNotMatch(portalSql.slice(portalSql.indexOf('CREATE OR REPLACE FUNCTION loyalty_summary')), /stamps/);
+assert.match(portalSql, /- 'member_rate_code' - 'member_rate_param'/, 'the member rate code stays private');
+assert.match(portalSql, /b\.active AND/, 'only active benefits are public');
+
+// Sample data lives outside the migrations and is clearly marked.
+const demo = readFileSync(new URL('../supabase/seeds/loyalty-demo.sql', import.meta.url), 'utf8');
+assert.match(demo, /'DEMO-1001'/);
 console.log('loyalty ok');

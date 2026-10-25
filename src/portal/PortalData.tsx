@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import type { Session } from '@supabase/supabase-js';
 import { PORTAL_ORG } from './config';
 import { portal } from './portalClient';
-import type { Benefit, LedgerRow, PortalHotel, Redemption, Stay, Summary } from './types';
+import type { Benefit, LedgerRow, PortalHotel, PortalInfo, Redemption, Stay, Summary } from './types';
 
 type PortalValue = {
   session: Session | null;
@@ -13,6 +13,7 @@ type PortalValue = {
   benefits: Benefit[];
   redemptions: Redemption[];
   hotels: PortalHotel[];
+  info: PortalInfo | null;
   error: string | null;
   reload: () => Promise<void>;
   join: (firstName: string, lastName: string, marketing: boolean) => Promise<string | null>;
@@ -40,6 +41,7 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   const [benefits, setBenefits] = useState<Benefit[]>([]);
   const [redemptions, setRedemptions] = useState<Redemption[]>([]);
   const [hotels, setHotels] = useState<PortalHotel[]>([]);
+  const [info, setInfo] = useState<PortalInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
@@ -62,9 +64,14 @@ export function PortalProvider({ children }: { children: ReactNode }) {
     setRedemptions((redemptionRows.data ?? []) as Redemption[]);
   }, []);
 
-  const loadHotels = useCallback(async () => {
-    const rows = await portal.rpc('loyalty_portal_hotels', { org_slug: PORTAL_ORG });
+  // Hotels and the programme's public side, also before login (start page).
+  const loadPublic = useCallback(async () => {
+    const [rows, programme] = await Promise.all([
+      portal.rpc('loyalty_portal_hotels', { org_slug: PORTAL_ORG }),
+      portal.rpc('loyalty_portal_info', { org_slug: PORTAL_ORG }),
+    ]);
     setHotels((rows.data ?? []) as PortalHotel[]);
+    setInfo((programme.data as PortalInfo | null) ?? null);
   }, []);
 
   useEffect(() => {
@@ -73,9 +80,9 @@ export function PortalProvider({ children }: { children: ReactNode }) {
       setReady(true);
     });
     const { data } = portal.auth.onAuthStateChange((_event, next) => setSession(next));
-    void loadHotels();
+    void loadPublic();
     return () => data.subscription.unsubscribe();
-  }, [loadHotels]);
+  }, [loadPublic]);
 
   useEffect(() => {
     if (!session) {
@@ -100,7 +107,7 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <PortalContext.Provider value={{ session, ready, summary, stays, ledger, benefits, redemptions, hotels, error, reload, join, signOut }}>
+    <PortalContext.Provider value={{ session, ready, summary, stays, ledger, benefits, redemptions, hotels, info, error, reload, join, signOut }}>
       {children}
     </PortalContext.Provider>
   );

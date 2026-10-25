@@ -23,7 +23,9 @@ export function CardPage() {
   const number = member.member_number.replace(/(\d{4})(?=\d)/g, '$1 ');
   return (
     <div className="portal-page">
-      <h1 className="heading portal-title">Mitgliedskarte</h1>
+      <p className="portal-eyebrow">Beim Check-in</p>
+      <h1 className="heading portal-title">Ihre Mitgliedskarte</h1>
+      <div className="portal-cardpage">
       <div className={`portal-member-card ${tierClass(summary.tier?.id)}`}>
         <div className="portal-member-card__top">
           <span className="heading">{name}</span>
@@ -36,6 +38,7 @@ export function CardPage() {
       <div className="portal-card portal-card--center">
         <Qr value={`MEMBER:${member.member_number}`} />
         <p className="portal-muted">Zeigen Sie den Code beim Check-in – so landen Aufenthalt und Punkte sicher auf Ihrem Konto.</p>
+      </div>
       </div>
     </div>
   );

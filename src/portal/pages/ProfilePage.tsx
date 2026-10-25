@@ -39,7 +39,8 @@ export function ProfilePage() {
 
   return (
     <div className="portal-page">
-      <h1 className="heading portal-title">Profil</h1>
+      <p className="portal-eyebrow">Ihre Daten</p>
+      <h1 className="heading portal-title">Profil <em>&amp; Einstellungen</em></h1>
       {note ? <p className="portal-note-box" role="status">{note}</p> : null}
       <form className="portal-card portal-form" onSubmit={save}>
         <div className="portal-form__row">

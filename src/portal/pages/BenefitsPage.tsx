@@ -29,7 +29,8 @@ export function BenefitsPage() {
 
   return (
     <div className="portal-page">
-      <h1 className="heading portal-title">Ihre Vorteile</h1>
+      <p className="portal-eyebrow">Vorteile & Prämien</p>
+      <h1 className="heading portal-title">Ihre Vorteile <em>&amp; Prämien</em></h1>
       <p className="portal-lead">Sie haben <strong>{formatPoints(summary.balance)} Punkte</strong>. Vorteile mit Stufe gelten automatisch, Prämien lösen Sie mit Punkten ein.</p>
 
       <div className="portal-benefits">

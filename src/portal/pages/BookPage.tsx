@@ -1,19 +1,6 @@
 import { sized, hideBroken } from '../format';
 import { usePortal } from '../PortalData';
-import type { PortalHotel } from '../types';
-
-// The hotel's booking engine with the member rate code, if the programme has one.
-function memberBookingUrl(hotel: PortalHotel, code?: string, param?: string) {
-  const base = hotel.booking_url || (hotel.domains[0] ? `https://${hotel.domains[0]}/#buchung` : '');
-  if (!base || !code) return base;
-  try {
-    const url = new URL(base);
-    url.searchParams.set(param || 'code', code);
-    return url.toString();
-  } catch {
-    return base;
-  }
-}
+import { ArrowLink, BookingSearch, memberBookingUrl } from '../parts';
 
 export function BookPage() {
   const { hotels, summary } = usePortal();
@@ -24,15 +11,17 @@ export function BookPage() {
 
   return (
     <div className="portal-page">
-      <h1 className="heading portal-title">Buchen zum Mitgliederpreis</h1>
+      <p className="portal-eyebrow">Buchen</p>
+      <h1 className="heading portal-title">Zum Mitgliederpreis <em>direkt bei uns</em></h1>
       <p className="portal-lead">
         Als Mitglied buchen Sie direkt bei uns zu Vorzugskonditionen und sammeln die vollen Punkte
         {settings.direct_bonus_percent ? ` – plus ${settings.direct_bonus_percent} % Bonus für Direktbuchungen` : ''}.
         {code ? <> Ihr Mitgliedercode <strong className="portal-inline-code">{code}</strong> ist beim Buchen schon eingetragen.</> : null}
       </p>
+      <BookingSearch hotels={hotels} settings={settings} favourite={favourite} />
       <div className="portal-hotels">
         {sorted.map((hotel) => {
-          const href = memberBookingUrl(hotel, code, settings.member_rate_param);
+          const href = memberBookingUrl(hotel, settings);
           return (
             <article key={hotel.id} className="portal-hotel">
               <div className="portal-hotel__picture">{hotel.image ? <img src={sized(hotel.image, 800)} alt="" loading="lazy" onError={hideBroken} /> : null}</div>
@@ -42,7 +31,7 @@ export function BookPage() {
                 {hotel.address ? <p className="portal-muted">{hotel.address}</p> : null}
                 <div className="portal-hotel__actions">
                   {href ? <a className="portal-btn portal-btn--small" href={href} target="_blank" rel="noreferrer">Verfügbarkeit prüfen</a> : null}
-                  {hotel.domains[0] ? <a className="portal-link" href={`https://${hotel.domains[0]}`} target="_blank" rel="noreferrer">Zur Website</a> : null}
+                  {hotel.domains[0] ? <ArrowLink href={`https://${hotel.domains[0]}`}>Zur Website</ArrowLink> : null}
                 </div>
               </div>
             </article>

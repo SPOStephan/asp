@@ -5,12 +5,15 @@ export type ProgramSettings = {
   direct_bonus_percent?: number;
   points_valid_months?: number;
   tier_window_months?: number;
-  stamp_goal?: number;
   tiers?: Tier[];
   // Member rate: code and the parameter the booking engine expects (e.g. "code", "promo").
   member_rate_code?: string;
   member_rate_param?: string;
   contact_email?: string;
+  // Legal pages of the programme, linked in the portal's footer.
+  terms_url?: string;
+  privacy_url?: string;
+  imprint_url?: string;
 };
 
 export type Member = {
@@ -33,7 +36,7 @@ export type Summary = {
   qualifying_points: number;
   tier: Tier | null;
   next_tier: Tier | null;
-  stamps: { count: number; goal: number; completed_cards: number };
+  stats?: { stays: number; nights: number; hotels: number; upcoming: number };
 };
 
 export type Stay = {
@@ -75,4 +78,11 @@ export type PortalHotel = {
   booking_url: string | null;
   address: string | null;
   image: string;
+};
+
+// What the start page shows before login (programme, public settings, active benefits).
+export type PortalInfo = {
+  name: string | null;
+  settings: ProgramSettings | null;
+  benefits: Array<Omit<Benefit, 'link' | 'valid_until'>>;
 };
