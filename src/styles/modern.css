@@ -1,58 +1,26 @@
 /* Modern look for the start page – only on /modern, next to the current page for comparison.
    Draft 2, "quiet luxury": the layout, the collages, square corners and flat surfaces stay.
    What changes is the finish:
-   1. type: larger, finer, tighter serif headlines; a modern sans for text, buttons and small
-      lines; sentence case instead of spaced-out capitals
-   3. one rhythm: the same space between all blocks, one size for all section headlines
+   1. type: the serif headlines stay as they are; a modern sans for text, buttons and small
+      lines, mostly in sentence case instead of spaced-out capitals
+   3. one rhythm: the same space between the blocks
    4. fine lines and small, thin icons without circles
-   5. small motion: underlines that draw in, arrows that move on */
+   5. small motion: underlines that draw in, buttons that lift
+   6. the booking bar: lighter, one line of fields with a clear button */
 
 .look-modern {
   --font-body: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --m-space: clamp(96px, 9vw, 144px);
   --m-line: rgba(19, 59, 92, 0.1);
-  --m-h2: clamp(2.8rem, 5.2vw, 5rem);
   font-family: var(--font-body);
   font-size: 16.5px;
   line-height: 1.7;
 }
 
-/* 1: headlines – the serif stays, finer and tighter */
-.look-modern .welcome__title,
-.look-modern .culinary__title,
-.look-modern .generations__title,
-.look-modern .highlights__title,
-.look-modern .discover__title,
-.look-modern .direct-booking__title,
-.look-modern .offers__headline,
-.look-modern .facts__title,
-.look-modern .faq__title,
-.look-modern .newsletter__title,
-.look-modern .home-blog__title {
-  font-size: var(--m-h2);
-  font-weight: 300;
-  line-height: 1.04;
-  letter-spacing: -0.028em;
-}
-.look-modern .hero__title,
-.look-modern .subpage-hero__title {
-  font-weight: 300;
-  letter-spacing: -0.03em;
-}
-.look-modern .hcard__title,
-.look-modern .discover__tile-title,
-.look-modern .direct-booking__item-title,
-.look-modern .faq__item summary,
-.look-modern .generations__caption,
-.look-modern .facts__value,
-.look-modern .offers__subtitle { font-weight: 400; letter-spacing: -0.012em; }
-
 /* 1: small lines in the sans and in sentence case */
 .look-modern .eyebrow,
-.look-modern .hero__subtitle,
-.look-modern .subpage-hero__subtitle,
+/* the hero subtitle keeps its spaced capitals */
 .look-modern .welcome__subtitle,
-.look-modern .welcome__highlight h3,
 .look-modern .offers__title,
 .look-modern .generations__label,
 .look-modern .discover__tile-eyebrow,
@@ -67,15 +35,7 @@
 .look-modern .offers__title,
 .look-modern .generations__label,
 .look-modern .discover__tile-eyebrow { font-size: 0.92rem; font-weight: 500; }
-.look-modern .hero__subtitle,
-.look-modern .subpage-hero__subtitle { font-size: clamp(1rem, 1.3vw, 1.15rem); font-weight: 500; }
 .look-modern .welcome__subtitle { font-size: 1rem; font-weight: 500; }
-.look-modern .welcome__highlight h3 {
-  font-family: var(--font-heading);
-  font-size: 1.4rem;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-}
 .look-modern .facts__label { font-size: 0.8rem; font-weight: 500; }
 .look-modern .direct-booking__item-text { letter-spacing: 0; font-size: 0.92rem; }
 
@@ -113,7 +73,6 @@
 .look-modern .faq,
 .look-modern .home-blog,
 .look-modern .newsletter { padding-top: var(--m-space); padding-bottom: var(--m-space); }
-.look-modern .welcome { padding-top: var(--m-space); }
 .look-modern .discover,
 .look-modern .impressions { padding-bottom: var(--m-space); }
 
@@ -141,24 +100,61 @@
 }
 .look-modern .facts__icon svg,
 .look-modern .direct-booking__icon svg { width: 18px; height: 18px; }
-.look-modern .text-cta__arrow {
-  width: auto;
-  height: auto;
-  border: 0;
-  border-radius: 0;
-}
-.look-modern .text-cta__arrow svg { width: 16px; height: 16px; }
-.look-modern .text-cta:hover .text-cta__arrow,
-.look-modern .text-cta--on-dark:hover .text-cta__arrow {
-  background: none;
-  color: inherit;
-  transform: translateX(5px);
-}
-
 /* 5: links underline as they are hovered, buttons lift slightly */
 .look-modern .text-cta__label::after { bottom: -4px; }
 .look-modern .btn-primary { transition: transform 0.35s ease, background 0.35s ease, color 0.35s ease; }
 .look-modern .btn-primary:hover { transform: translateY(-2px); }
+
+/* 6: booking bar – solid and calm: fields as segments between hairlines instead of
+   underlined inputs, the value as the main line, the button as a block that closes the bar,
+   contact icons without circles (desktop; phones keep their own bottom bar) */
+@media (min-width: 901px) {
+  .look-modern .availability-bar {
+    background: var(--primary-700, #0f2f4a);
+    backdrop-filter: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .look-modern .availability-bar__form { padding: 0; gap: 0; align-items: stretch; }
+  .look-modern .availability-bar__pickers { gap: 0; }
+  .look-modern .availability-bar__picker {
+    gap: 14px;
+    padding: 18px 24px;
+    border-bottom: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    transition: background 0.3s ease;
+  }
+  .look-modern .availability-bar__picker:first-child { border-left: 0; padding-left: 0; }
+  .look-modern .availability-bar__picker:hover,
+  .look-modern .availability-bar__picker.is-open { background: rgba(255, 255, 255, 0.04); }
+  .look-modern .availability-bar__picker:first-child:hover,
+  .look-modern .availability-bar__picker:first-child.is-open { background: none; }
+  .look-modern .availability-bar__picker-label { color: rgba(255, 255, 255, 0.55); font-weight: 500; }
+  .look-modern .availability-bar__picker-value { font-size: 1.05rem; font-weight: 500; }
+  .look-modern .availability-bar__picker-icon { color: var(--accent-300); }
+  .look-modern .availability-bar__btn {
+    align-self: stretch;
+    gap: 12px;
+    padding: 0 34px;
+    font-size: 0.98rem;
+    transition: background 0.3s ease, gap 0.3s ease;
+  }
+  .look-modern .availability-bar__btn:hover { gap: 16px; }
+  .look-modern .availability-bar__tools {
+    gap: 0;
+    margin-left: 12px;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .look-modern .availability-bar__tool {
+    width: 52px;
+    height: auto;
+    align-self: stretch;
+    border: 0;
+    border-radius: 0;
+    color: rgba(255, 255, 255, 0.75);
+  }
+  .look-modern .availability-bar__tool:hover { background: none; color: var(--accent-300); }
+  .look-modern .availability-bar__chat { align-self: center; margin-left: 12px; }
+}
 
 /* The hint that this is the comparison page */
 .modern-note {
