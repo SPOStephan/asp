@@ -4,6 +4,7 @@ import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-route
 import { PORTAL_NAME } from './config';
 import { formatPoints } from './format';
 import { usePortal } from './PortalData';
+import { PortalErrorBoundary } from './PortalErrorBoundary';
 import { PortalFooter } from './parts';
 import { ForgotPage, LoginPage, RegisterPage, ResetPasswordPage } from './pages/AuthPages';
 import { BenefitsPage } from './pages/BenefitsPage';
@@ -38,6 +39,7 @@ function ScrollTop() {
 function Shell({ children }: { children: ReactNode }) {
   const name = useProgramName();
   const { summary } = usePortal();
+  const { pathname } = useLocation();
   return (
     <div className="portal">
       <ScrollTop />
@@ -56,7 +58,7 @@ function Shell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="portal-main">{children}</main>
+      <main className="portal-main"><PortalErrorBoundary resetKey={pathname}>{children}</PortalErrorBoundary></main>
       <PortalFooter name={name} settings={summary?.program.settings} />
       <nav className="portal-tabs" aria-label="Bereiche">
         {TABS.map((tab) => (

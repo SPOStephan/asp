@@ -2,15 +2,18 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { PortalApp } from './PortalApp';
+import { PortalErrorBoundary } from './PortalErrorBoundary';
 import { PortalProvider } from './PortalData';
 import './portal.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <PortalProvider>
-        <PortalApp />
-      </PortalProvider>
+      <PortalErrorBoundary>
+        <PortalProvider>
+          <PortalApp />
+        </PortalProvider>
+      </PortalErrorBoundary>
     </BrowserRouter>
   </StrictMode>,
 );
