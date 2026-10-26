@@ -19,7 +19,7 @@ import {
   matchesCmsEntry,
   sectionDraft,
 } from './cmsPages';
-import { heroTextTop } from '../components/Hero';
+import { HOME_TEXT_TOP_MOBILE, heroTextTop } from '../components/Hero';
 import { useCms } from './CmsContext';
 import { isHiddenMetaPath } from './cmsHidden';
 import { CMS_LIST_SHAPES } from './cmsListShapes';
@@ -542,9 +542,9 @@ function HeroFields() {
             <input
               type="checkbox"
               checked={draft.text_top_mobile != null}
-              onChange={(event) => setDraft({ ...draft, text_top_mobile: event.target.checked ? draft.text_top : null })}
+              onChange={(event) => setDraft({ ...draft, text_top_mobile: event.target.checked ? HOME_TEXT_TOP_MOBILE : null })}
             />
-            Auf Handys eigene Position
+            Auf Handys eigene Position (sonst {HOME_TEXT_TOP_MOBILE} % von oben, wie bei allen Hotels)
           </label>
           {draft.text_top_mobile != null ? (
             <label className="cms-field">

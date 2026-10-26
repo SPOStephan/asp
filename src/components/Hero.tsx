@@ -20,6 +20,8 @@ export function fadeStrength(value: unknown) {
 
 // Heading position on the home picture, % of the screen height from the top.
 export const HOME_TEXT_TOP = 55;
+// Phones: the heading a little lower, for every hotel without its own phone position.
+export const HOME_TEXT_TOP_MOBILE = 64;
 
 export function heroTextTop(value: unknown) {
   const number = Number(value);
@@ -71,7 +73,7 @@ function HeroFlow() {
           style={media.fadeVars}
           imageOverlay={<div className="hero__fade" />}
           textTop={heroTextTop(data.text_top)}
-          textTopMobile={data.text_top_mobile != null && data.text_top_mobile !== '' ? heroTextTop(data.text_top_mobile) : undefined}
+          textTopMobile={data.text_top_mobile != null && data.text_top_mobile !== '' ? heroTextTop(data.text_top_mobile) : HOME_TEXT_TOP_MOBILE / 100}
           scrollHint={pathname === '/'}
         />
       </section>
