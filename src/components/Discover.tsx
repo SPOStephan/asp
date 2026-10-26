@@ -55,7 +55,7 @@ export function Discover() {
                   <p className="discover__tile-eyebrow" data-cms-path={`tiles.${i}.eyebrow`}>{tile.eyebrow}</p>
                   <h3 className="discover__tile-title">
                     <span className="discover__tile-label" data-cms-path={`tiles.${i}.title`}>{tile.title}</span>
-                    {/* Arrow next to the title, shown where the tiles look like text links (/modern). */}
+                    {/* Arrow next to the title, like the other calls to action (tiles.css). */}
                     <span className="discover__tile-go" aria-hidden="true">
                       <ArrowUpRight size={14} strokeWidth={1.6} />
                     </span>
