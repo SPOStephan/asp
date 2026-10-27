@@ -7,6 +7,7 @@ import { occasionHref, OCCASIONS_PAGE_FALLBACK, resolveOccasions } from '../lib/
 import { OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
 import { genericSectionKey, pageKeyFromHref, SYSTEM_TEMPLATES } from '../lib/pageTemplates';
 import { formatRoomPriceDetail, resolveRooms, ROOMS_PAGE_FALLBACK, roomHref } from '../lib/rooms';
+import { offerDetails, pricesShown } from '../lib/prices';
 import {
   resolveWellnessChapters,
   resolveWellnessTopics,
@@ -98,6 +99,11 @@ export class SiteModel {
 
   section(key: string): Section | undefined {
     return this.content.sections[key];
+  }
+
+  // Fixed prices switched off in the CMS (see lib/prices).
+  get showPrices() {
+    return pricesShown(this.section('offers_page'));
   }
 
   isAvailable(key: string | null) {
@@ -349,7 +355,7 @@ export class SiteModel {
         items: resolveOfferStories(s('offers_page')?.items, offers!.items).map((offer) => ({
           title: offer.title,
           text: words(offer.subtitle, offer.text),
-          facts: texts(offer.details),
+          facts: texts(offerDetails(offer.details, this.showPrices)),
           href: this.isAvailable('angebote') ? offerHref(offer.id) : undefined,
         })),
       });
@@ -462,7 +468,7 @@ export class SiteModel {
     if (!hidden(page, 'list')) {
       blocks.push({
         heading: 'Zimmer und Suiten',
-        items: rooms.map((room) => ({ title: room.name, text: words(room.kicker, room.text), facts: roomFacts(room), href: roomHref(room.id) })),
+        items: rooms.map((room) => ({ title: room.name, text: words(room.kicker, room.text), facts: roomFacts(room, this.showPrices), href: roomHref(room.id) })),
       });
     }
     if (!hidden(page, 'price_note')) blocks.push({ text: texts(page?.price_note ?? ROOMS_PAGE_FALLBACK.price_note) });
@@ -487,7 +493,7 @@ export class SiteModel {
       crumbs: [{ label: pageTitle('zimmer'), href: '/zimmer' }],
       blocks: [
         { text: texts(room.detail_text) },
-        { heading: 'Auf einen Blick', items: roomFacts(room).map((fact) => ({ title: fact })) },
+        { heading: 'Auf einen Blick', items: roomFacts(room, this.showPrices).map((fact) => ({ title: fact })) },
         { heading: 'Ausstattung', items: room.amenities.map((amenity) => ({ title: amenity })) },
       ],
       jsonLd: [
@@ -659,7 +665,7 @@ export class SiteModel {
         items: offers.map((offer) => ({
           title: offer.title,
           text: words(offer.subtitle, offer.text),
-          facts: texts(offer.details, offer.travel_period ? `${offer.travel_period_label || 'Reisezeitraum'}: ${offer.travel_period}` : ''),
+          facts: texts(offerDetails(offer.details, this.showPrices), offer.travel_period ? `${offer.travel_period_label || 'Reisezeitraum'}: ${offer.travel_period}` : ''),
           href: offerHref(offer.id),
         })),
       });
@@ -687,7 +693,7 @@ export class SiteModel {
         { text: texts(offer.detail_text) },
         {
           heading: 'Auf einen Blick',
-          items: texts(offer.details, offer.travel_period ? `${offer.travel_period_label || 'Reisezeitraum'}: ${offer.travel_period}` : '').map(
+          items: texts(offerDetails(offer.details, this.showPrices), offer.travel_period ? `${offer.travel_period_label || 'Reisezeitraum'}: ${offer.travel_period}` : '').map(
             (title) => ({ title }),
           ),
         },
@@ -835,12 +841,12 @@ function itemsOf(list: unknown, titleKey: string, textKey?: string): ContentItem
     .filter((item) => item.title);
 }
 
-function roomFacts(room: ReturnType<typeof resolveRooms>[number]) {
+function roomFacts(room: ReturnType<typeof resolveRooms>[number], showPrices: boolean) {
   return texts(
     room.size ? `Größe: ${room.size}` : '',
     room.view ? `Ausblick: ${room.view}` : '',
     room.occupancy ? `Belegung: ${room.occupancy}` : '',
-    room.price_from ? `Preis: ab ${formatRoomPriceDetail(room)}` : '',
+    room.price_from && showPrices ? `Preis: ab ${formatRoomPriceDetail(room)}` : '',
   );
 }
 

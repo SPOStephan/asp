@@ -38,6 +38,7 @@ import { useHotelContent } from './context/HotelContext';
 import { pageKeyFromPath } from './lib/musterPages';
 import { usePhoneChrome } from './lib/phoneChrome';
 import './styles/modern.css';
+import './styles/tiles.css';
 
 function RoomCompareRedirect() {
   const { roomId } = useParams();

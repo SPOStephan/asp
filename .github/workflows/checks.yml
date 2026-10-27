@@ -22,7 +22,7 @@ jobs:
       - name: Inhalte und CMS
         run: |
           for check in check-cms-focal check-cms-hide check-cms-icons check-cms-images check-cms-parts check-cms-placeholders \
-                       check-media check-media-sources check-neutral-defaults check-site check-filters check-loyalty; do
+                       check-media check-media-sources check-neutral-defaults check-site check-filters check-loyalty check-prices; do
             echo "== $check"
             npx --yes tsx "scripts/$check.ts"
           done
