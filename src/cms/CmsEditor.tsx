@@ -20,6 +20,7 @@ import {
   sectionDraft,
 } from './cmsPages';
 import { HOME_TEXT_TOP_MOBILE, heroTextTop } from '../components/Hero';
+import { pricesShown } from '../lib/prices';
 import { useCms } from './CmsContext';
 import { isHiddenMetaPath } from './cmsHidden';
 import { CMS_LIST_SHAPES } from './cmsListShapes';
@@ -1202,6 +1203,24 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
       ) : null}
       {entries.length === 0 ? <p className="cms-muted">Dieser Block hat noch keine CMS-Felder.</p> : null}
       {sectionKey === 'blog_page' ? <BlogTopicFields draft={draft} setDraft={setDraft} /> : null}
+      {sectionKey === 'offers_page' ? (
+        // One switch for the whole hotel, e.g. for houses that only work with daily prices.
+        <fieldset className="cms-fade" data-cms-panel-focus="show_prices">
+          <legend>Preise</legend>
+          <label className="cms-choice">
+            <input
+              type="checkbox"
+              checked={pricesShown(draft)}
+              onChange={(event) => setDraft({ ...draft, show_prices: event.target.checked })}
+            />
+            Preise anzeigen
+          </label>
+          <p className="cms-muted">
+            Aus: Bei den Angeboten entfallen alle Zeilen mit einem Betrag (z. B. „ab 276,50 Euro p. P.“), bei den Zimmern der
+            Preis ab. Gilt auf der ganzen Website, auch für Suchmaschinen und den Chat. Die Preise bleiben gespeichert.
+          </p>
+        </fieldset>
+      ) : null}
       {(SECTION_SLIDERS[sectionKey] ?? []).map((slider) => {
         const current = Math.min(100, Math.max(0, Number(draft[slider.key]) || 0));
         return (
@@ -1216,7 +1235,7 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
         );
       })}
       {entries.map(([key, value]) =>
-        key === 'icon_color' || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : key.endsWith('_href') && typeof value === 'string' ? (
+        key === 'icon_color' || key === 'show_prices' || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : key.endsWith('_href') && typeof value === 'string' ? (
           // Button targets of a section (e.g. "Alle Impressionen"): choose a page or address.
           <CmsLinkPicker key={key} label={key} value={value} onChange={(next) => setDraft({ ...draft, [key]: next })} />
         ) : (

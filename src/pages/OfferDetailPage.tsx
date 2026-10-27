@@ -7,6 +7,7 @@ import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { offerDetails, pricesShown } from '../lib/prices';
 import { entryFocal } from '../cms/cmsFocal';
 import { resolveOfferStories } from '../lib/offers';
 import { PLACEHOLDER_IMAGE } from '../lib/media';
@@ -44,8 +45,9 @@ export function OfferDetailPage() {
   }
 
   const prefix = `items.${offer.id}`;
-  const stayLabel = offer.details[0] ?? 'Aufenthalt';
-  const stayValue = offer.details.slice(1).join(' · ') || offer.details[0];
+  const details = offerDetails(offer.details, pricesShown(page));
+  const stayLabel = details.length > 1 ? details[0] : 'Aufenthalt';
+  const stayValue = details.length > 1 ? details.slice(1).join(' · ') : details[0] ?? '';
   const pairLeft = discover?.feature_image_left ?? PAIR_FALLBACK.left;
   const pairLeftAlt = discover?.feature_image_left_alt || PAIR_FALLBACK.leftAlt;
   const pairRight = discover?.feature_image_right ?? PAIR_FALLBACK.right;
@@ -59,7 +61,7 @@ export function OfferDetailPage() {
         imageAlt={offer.hero_image_alt}
         eyebrow={offer.title}
         title={offer.subtitle}
-        subtitle={offer.details.join(' · ')}
+        subtitle={details.join(' · ')}
         focal={entryFocal(page?.items, offer.id)}
         cms={{
           image: `${prefix}.hero_image`,

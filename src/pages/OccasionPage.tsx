@@ -7,6 +7,7 @@ import { IncludeList } from '../components/IncludeList';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { offerDetails, pricesShown } from '../lib/prices';
 import { entryFocal } from '../cms/cmsFocal';
 import { resolveOccasions } from '../lib/occasions';
 import { offerHref, resolveOfferStories } from '../lib/offers';
@@ -101,7 +102,9 @@ export function OccasionPage() {
                         <span className="occasion__offer-body">
                           <span className="occasion__offer-title heading-font">{link.label || offer!.title}</span>
                           {offer!.subtitle ? <span className="occasion__offer-sub">{offer!.subtitle}</span> : null}
-                          {offer!.details.length ? <span className="occasion__offer-meta">{offer!.details.join(' · ')}</span> : null}
+                          {offerDetails(offer!.details, pricesShown(offersPage)).length ? (
+                            <span className="occasion__offer-meta">{offerDetails(offer!.details, pricesShown(offersPage)).join(' · ')}</span>
+                          ) : null}
                         </span>
                       </a>
                     ))}

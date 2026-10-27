@@ -7,6 +7,7 @@ import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
+import { offerDetails, pricesShown } from '../lib/prices';
 import { resolveMedia } from '../lib/media';
 import { OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
 import { usePageTop } from '../lib/usePageTop';
@@ -59,9 +60,9 @@ export function OffersPage() {
                     <h2 className="offers-page__name heading-font" data-cms-path={`items.${item.id}.subtitle`}>{item.subtitle}</h2>
                     <p className="offers-page__text" data-cms-path={`items.${item.id}.text`}>{item.text}</p>
                     <IncludeList items={item.includes} />
-                    {item.details.length ? (
+                    {offerDetails(item.details, pricesShown(page)).length ? (
                       <div className="offers-page__meta">
-                        {item.details.map((detail) => (
+                        {offerDetails(item.details, pricesShown(page)).map((detail) => (
                           <p key={detail}>{detail}</p>
                         ))}
                       </div>
