@@ -1,6 +1,12 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useCms } from './CmsContext';
 import { fieldElement } from './cmsSelect';
+import { serializeLinked } from './CmsLinkText';
+
+// The text of the element as stored: with its links when it has any (src/lib/inlineLinks.ts).
+function storedText(el: HTMLElement) {
+  return el.querySelector('[data-md-href]') ? serializeLinked(el) : el.innerText;
+}
 
 export function CmsInlineEdit() {
   const cms = useCms();
@@ -18,11 +24,11 @@ export function CmsInlineEdit() {
     el.dataset.cmsEditing = 'true';
     el.contentEditable = 'true';
     el.focus();
-    setText(el.innerText);
+    setText(storedText(el));
     setBox(el.getBoundingClientRect());
 
     function onInput() {
-      if (el instanceof HTMLElement) setText(el.innerText);
+      if (el instanceof HTMLElement) setText(storedText(el));
     }
     function onKey(event: KeyboardEvent) {
       if (event.key === 'Escape') {
@@ -31,7 +37,7 @@ export function CmsInlineEdit() {
       }
       if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        cms?.commitInline(el.innerText);
+        cms?.commitInline(storedText(el));
       }
     }
     el.addEventListener('input', onInput);

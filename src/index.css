@@ -4410,6 +4410,10 @@ body.room-lightbox-open .availability-bar__slot {
 }
 /* Cut set by hand ("[weiterlesen]", phones): the rest is hidden, not clipped by lines. */
 .welcome__text--cut:not(.welcome__text--open) .welcome__rest { display: none; }
+/* The rest after the phone mark ("[weiterlesen]") folds on phones only */
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) {
+  .welcome__text--cut:not(.welcome__text--open) .welcome__rest-phone { display: none; }
+}
 /* CMS: where the welcome text folds on phones. */
 .welcome__mark {
   display: inline-block;

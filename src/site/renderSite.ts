@@ -2,6 +2,7 @@ import { onPlatformDomain, PLATFORM_DOMAIN } from '../config/product';
 import type { ContentBlock, PageModel, SiteLink, SiteModel } from './pageModel';
 import type { HotelContent } from './siteData';
 import { cdnSrcSet, HERO_SIZES } from '../lib/media';
+import { parseInline } from '../lib/inlineLinks';
 
 // Paths that are tools, not content: never indexed, served as the plain app.
 const PRIVATE_PATHS = /^\/(admin|cms|vorschau|modern|benchmark|benchmark-vergleich|schriften|menue-mobil|mobil-leiste\d*)(\/|$)/;
@@ -23,6 +24,13 @@ export function escapeHtml(value: string) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// A CMS text with its links ([Text](/pfad), src/lib/inlineLinks.ts) as HTML.
+export function inlineHtml(value: string) {
+  return parseInline(value)
+    .map((part) => ('href' in part ? linkHtml({ label: part.text, href: part.href }) : escapeHtml(part.text)))
+    .join('');
+}
+
 // JSON inside <script> must not be able to close the tag.
 export function scriptJson(value: unknown) {
   return JSON.stringify(value).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
@@ -36,12 +44,12 @@ function linkHtml(link: SiteLink) {
 function blockHtml(block: ContentBlock) {
   const parts: string[] = [];
   if (block.heading) parts.push(`<h2>${escapeHtml(block.heading)}</h2>`);
-  for (const text of block.text ?? []) parts.push(`<p>${escapeHtml(text)}</p>`);
+  for (const text of block.text ?? []) parts.push(`<p>${inlineHtml(text)}</p>`);
   if (block.items?.length) {
     const items = block.items.map((item) => {
       const title = item.href ? linkHtml({ label: item.title, href: item.href }) : escapeHtml(item.title);
       const facts = item.facts?.length ? `<ul>${item.facts.map((fact) => `<li>${escapeHtml(fact)}</li>`).join('')}</ul>` : '';
-      const text = item.text ? `<p>${escapeHtml(item.text)}</p>` : '';
+      const text = item.text ? `<p>${inlineHtml(item.text)}</p>` : '';
       // Plain list entries stay list entries; only items with their own content get a heading.
       if (!text && !facts && !item.href) return `<li>${title}</li>`;
       return `<li><h3>${title}</h3>${text}${facts}</li>`;
@@ -70,7 +78,7 @@ export function contentCoreHtml(model: PageModel, site: SiteModel) {
     '<article>',
     model.eyebrow ? `<p>${escapeHtml(model.eyebrow)}</p>` : '',
     `<h1>${escapeHtml(model.h1)}</h1>`,
-    model.lead ? `<p>${escapeHtml(model.lead)}</p>` : '',
+    model.lead ? `<p>${inlineHtml(model.lead)}</p>` : '',
     model.image ? `<img src="${escapeHtml(model.image)}" alt="${escapeHtml(model.h1)}" width="1200" height="675">` : '',
     ...model.blocks.map(blockHtml),
     '</article>',

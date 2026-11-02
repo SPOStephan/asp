@@ -182,6 +182,41 @@ export default async function handler(request: Request) {
         for (const hotelId of hotelIds) await allowed(client, 'can_edit_hotel', { hotel: hotelId });
         return anonymizeChat(client, config, defaults, (rows ?? []).map((row) => row.id as string));
       }
+      case 'suggest-link': {
+        // CMS: which page of the website a marked word or sentence should link to. Only
+        // pages from the list the CMS sends are possible answers.
+        const hotelId = String(input.hotelId ?? '');
+        await allowed(client, 'can_edit_hotel', { hotel: hotelId });
+        const hotel = await loadHotel(client, hotelId);
+        const settings = await resolveSettings(client, hotel.organization_id, hotel.id, defaults);
+        const pages = (Array.isArray(input.pages) ? input.pages : [])
+          .filter((page: { href?: unknown }) => typeof page?.href === 'string')
+          .slice(0, 120)
+          .map((page: { href: string; label?: unknown; group?: unknown }) => ({ href: page.href, label: String(page.label ?? '').slice(0, 80), group: String(page.group ?? '').slice(0, 40) }));
+        if (!pages.length) return { href: null };
+        const list = pages.map((page: { href: string; label: string; group: string }) => `${page.href} – ${page.group}: ${page.label}`).join('\n');
+        const result = await complete(needAi(), {
+          model: requireModel(settings, 'helper'),
+          messages: [
+            {
+              role: 'system',
+              content:
+                'Du wählst für einen markierten Text auf der Website eines Hotels die passende Zielseite für einen internen Link. ' +
+                'Antworte nur mit der Adresse (beginnt mit /) aus der Liste, sonst mit "-". Bevorzuge die genaueste Seite ' +
+                '(ein bestimmtes Zimmer oder Thema vor der Übersicht), wenn der Text genau das meint.',
+            },
+            {
+              role: 'user',
+              content: `Hotel: ${hotel.name}\nMarkierter Text: "${String(input.text ?? '').slice(0, 300)}"\nSatz: "${String(input.context ?? '').slice(0, 600)}"\n\nSeiten:\n${list}`,
+            },
+          ],
+          maxTokens: 40,
+          temperature: 0,
+        });
+        const answer = result.text.trim().split(/\s/)[0] ?? '';
+        const href = pages.some((page: { href: string }) => page.href === answer) ? answer : null;
+        return { href, model: result.model };
+      }
       case 'run-check': {
         return runCheck(client, needAi(), String(input.checkId ?? ''), host, defaults, input.model ? String(input.model) : undefined);
       }
