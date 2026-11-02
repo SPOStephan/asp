@@ -681,3 +681,31 @@ body.cms-on .cms-part.is-hidden > :not(.cms-block__chrome) {
 .cms-blocks__head h1 { font-family: var(--font-heading); font-weight: 300; font-size: 2.4rem; margin: 0 0 8px; color: var(--primary-700); }
 .cms-blocks__head p { margin: 0; color: var(--neutral-600); }
 .cms-blocks .page-blocks__item + .page-blocks__item { border-top: 1px dashed rgba(19, 59, 92, 0.25); }
+
+/* Building blocks: insert markers and placed blocks in the preview */
+.block-marker { position: relative; display: flex; justify-content: center; padding: 6px 0; opacity: 0.35; transition: opacity 0.2s ease; }
+.block-marker::before { content: ''; position: absolute; left: 5%; right: 5%; top: 50%; border-top: 1px dashed rgba(19, 59, 92, 0.45); }
+.block-marker:hover, .block-marker:focus-within { opacity: 1; }
+.block-marker__add {
+  position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+  font: 600 0.72rem/1.4 'Manrope', var(--font-body); letter-spacing: 0.08em;
+  color: var(--primary-700); background: #fff; border: 1px solid rgba(19, 59, 92, 0.35); border-radius: 999px; cursor: pointer;
+}
+.block-marker__menu {
+  position: absolute; top: calc(100% - 2px); z-index: 50; min-width: 320px; padding: 10px 12px;
+  background: #fff; border: 1px solid rgba(19, 59, 92, 0.2); box-shadow: 0 10px 28px rgba(10, 32, 50, 0.16);
+  font: 0.82rem/1.4 'Manrope', var(--font-body); color: var(--neutral-800);
+}
+.block-marker__row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.block-marker__row + .block-marker__row { border-top: 1px solid rgba(19, 59, 92, 0.1); }
+.block-marker__row strong { flex: 1; font-weight: 600; }
+.block-marker__row button { padding: 3px 9px; border: 1px solid rgba(19, 59, 92, 0.3); background: none; cursor: pointer; font: inherit; font-size: 0.75rem; }
+.block-placed { position: relative; outline: 1px dashed rgba(149, 118, 64, 0.6); outline-offset: -1px; }
+.block-placed__bar {
+  position: absolute; top: 8px; right: 8px; z-index: 20; display: flex; align-items: center; gap: 10px;
+  padding: 4px 6px 4px 10px; background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(149, 118, 64, 0.5);
+  font: 0.72rem/1.4 'Manrope', var(--font-body); color: var(--neutral-800);
+}
+.block-placed__bar button { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid rgba(19, 59, 92, 0.3); background: none; cursor: pointer; font: inherit; }
+.cms-placements { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cms-placements li { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.82rem; }

@@ -9,6 +9,9 @@ export type HotelContent = {
   sections: Record<string, Record<string, any>>;
   faqs: HotelFAQ[];
   pages: Record<string, boolean>;
+  // Brand assets of the hotel group (e.g. the crest), see migration 034. Optional: missing
+  // before that migration.
+  brand?: { crest_image?: string };
 };
 
 import { REFERENCE_HOTEL_SLUG } from '../config/product';
@@ -58,11 +61,15 @@ export async function loadSiteContentById(client: SupabaseClient, hotelId: strin
 
 async function loadHotelSiteContent(client: SupabaseClient, resolvedHotel: Hotel): Promise<HotelContent> {
   const hotelId = resolvedHotel.id;
-  const [sectionsResult, faqsResult, pagesResult] = await Promise.all([
+  const [sectionsResult, faqsResult, pagesResult, brandResult] = await Promise.all([
     client.from('hotel_sections').select('section_key, data').eq('hotel_id', hotelId),
     client.from('hotel_faqs').select('*').eq('hotel_id', hotelId).order('sort_order', { ascending: true }),
     client.from('hotel_pages').select('page_key, enabled').eq('hotel_id', hotelId),
+    // Before migration 034 the function is missing: then there is simply no group brand.
+    Promise.resolve(client.rpc('organization_brand', { p_hotel: hotelId })).catch(() => ({ data: null })),
   ]);
+  const brandData = (brandResult as { data?: unknown }).data;
+  const brand = brandData && typeof brandData === 'object' && !Array.isArray(brandData) ? (brandData as { crest_image?: string }) : {};
 
   const pages: Record<string, boolean> = {};
   for (const row of pagesResult.data ?? []) {
@@ -74,5 +81,6 @@ async function loadHotelSiteContent(client: SupabaseClient, resolvedHotel: Hotel
     sections: normalizeSections((sectionsResult.data as HotelSection[] | null) ?? []),
     faqs: (faqsResult.data as HotelFAQ[] | null) ?? [],
     pages,
+    brand,
   };
 }

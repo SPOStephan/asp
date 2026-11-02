@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { BLOCK_KEYS, BLOCK_LIBRARY, BLOCK_PLACES, blockPages } from '../lib/blocks';
+import { BLOCK_KEYS, blockPlacements, pageName } from '../lib/blocks';
 import { Trash2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
@@ -9,7 +9,7 @@ import { readFilters } from '../lib/listFilters';
 import { hasReadMore, placeReadMore, READ_MORE_MARK, stripReadMore } from '../lib/readMore';
 import { ROOM_FILTERS, ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import { autoMenuGroups } from '../lib/autoMenu';
-import type { HotelFAQ } from '../lib/supabase';
+import { supabase, type HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
 import { keepLiveFocals, readHeroFocal } from './cmsFocal';
 import {
@@ -238,6 +238,42 @@ function SaveBar({ sectionKey, onSave }: { sectionKey: string; onSave: () => Pro
   return null;
 }
 
+// The crest for the whole group: one click copies this hotel's crest to every hotel of the
+// group (they show it unless they set their own). Owners/admins of the group only.
+function GroupCrestField({ value }: { value: string }) {
+  const hotel = useHotel();
+  const { content } = useHotelContent();
+  const [state, setState] = useState<'idle' | 'busy' | 'done' | 'denied' | 'error'>('idle');
+  const group = content?.brand?.crest_image ?? '';
+  const share = async () => {
+    if (!hotel || !value) return;
+    setState('busy');
+    const { data, error } = await supabase.rpc('set_organization_brand', { p_hotel: hotel.id, p_key: 'crest_image', p_value: value });
+    setState(error ? 'error' : data === true ? 'done' : 'denied');
+  };
+  return (
+    <div className="cms-fade" data-cms-panel-focus="crest_group">
+      <p className="cms-muted">
+        {group
+          ? value && value !== group
+            ? 'Für die Gruppe ist ein anderes Wappen hinterlegt; dieses Hotel zeigt sein eigenes.'
+            : value
+              ? 'Dieses Wappen gilt für alle Hotels der Gruppe.'
+              : 'Das Wappen der Gruppe wird verwendet (oben ein eigenes hochladen, um es nur hier zu ersetzen).'
+          : 'Für die Gruppe ist noch kein Wappen hinterlegt.'}
+      </p>
+      {value && value !== group ? (
+        <button type="button" className="cms-btn cms-btn--ghost" disabled={state === 'busy'} onClick={() => void share()}>
+          Für alle Hotels der Gruppe übernehmen
+        </button>
+      ) : null}
+      {state === 'done' ? <p className="cms-muted">Übernommen – die anderen Hotels zeigen es nach dem nächsten Laden.</p> : null}
+      {state === 'denied' ? <p className="cms-error">Nur Inhaber und Admins der Gruppe können das Gruppen-Wappen setzen.</p> : null}
+      {state === 'error' ? <p className="cms-error">Ging nicht – ist die Datenbank-Änderung 034 schon eingespielt?</p> : null}
+    </div>
+  );
+}
+
 type BarLink = { label: string; href: string };
 
 function readBarLinks(value: unknown): BarLink[] {
@@ -310,9 +346,11 @@ function NavbarFields() {
       </p>
       <CmsImageField focus="logo" label="Logo weiß (auf dem Header)" value={String(data.logo_white || draft.logo_white)} section="navbar" path="logo_white" />
       <CmsImageField focus="logo" label="Logo farbig (helle Leiste)" value={String(data.logo_normal || draft.logo_normal)} section="navbar" path="logo_normal" />
-      {/* Crest or signet as a quiet decoration (e.g. below "Direktbuchung"); purely decorative,
-          so it has no alt text of its own. Best as a transparent PNG in one colour. */}
+      {/* The group's crest (part of every hotel logo of the group) as a quiet decoration;
+          purely decorative, so no alt text. Best as a transparent PNG in one colour. Kept once
+          for the whole group (migration 034); a hotel may set its own here. */}
       <CmsImageField focus="crest" label="Wappen / Signet (dezente Grafik, transparentes PNG)" value={String(data.crest_image ?? '')} section="navbar" path="crest_image" />
+      <GroupCrestField value={String(data.crest_image ?? '')} />
 
       <fieldset className="cms-fade">
         <legend>Menüpunkte in der Leiste (Desktop)</legend>
@@ -1243,7 +1281,7 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
         );
       })}
       {entries.map(([key, value]) =>
-        key === 'icon_color' || key === 'show_prices' || (BLOCK_KEYS.has(sectionKey) && key === 'pages') || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : key.endsWith('_href') && typeof value === 'string' ? (
+        key === 'icon_color' || key === 'show_prices' || (BLOCK_KEYS.has(sectionKey) && (key === 'pages' || key === 'placements')) || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : key.endsWith('_href') && typeof value === 'string' ? (
           // Button targets of a section (e.g. "Alle Impressionen"): choose a page or address.
           <CmsLinkPicker key={key} label={key} value={value} onChange={(next) => setDraft({ ...draft, [key]: next })} />
         ) : (
@@ -1262,9 +1300,8 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
   );
 }
 
-// Building blocks: on which pages the block appears (src/lib/blocks.ts).
+// Building blocks: where the block stands (placed on the pages with "+ Baustein einfügen").
 function BlockPlacesField({
-  sectionKey,
   draft,
   setDraft,
 }: {
@@ -1272,23 +1309,32 @@ function BlockPlacesField({
   draft: Record<string, unknown>;
   setDraft: (next: Record<string, unknown>) => void;
 }) {
-  const def = BLOCK_LIBRARY.find((block) => block.key === sectionKey);
-  if (!def) return null;
-  const pages = blockPages(def, draft);
-  const toggle = (path: string, on: boolean) => {
-    const next = on ? [...pages.filter((item) => item !== path), path] : pages.filter((item) => item !== path);
-    setDraft({ ...draft, pages: BLOCK_PLACES.map((place) => place.path).filter((item) => next.includes(item)) });
+  const placements = blockPlacements(draft);
+  const remove = (index: number) => {
+    const next: Record<string, unknown> = { ...draft, placements: placements.filter((_, at) => at !== index) };
+    delete next.pages;
+    setDraft(next);
   };
   return (
-    <fieldset className="cms-fade" data-cms-panel-focus="pages">
-      <legend>Erscheint auf</legend>
-      <p className="cms-muted">Baustein aus der Bibliothek: einmal gepflegt, auf allen gewählten Seiten gleich. Auf Unterseiten steht er am Ende, über dem Footer.</p>
-      {BLOCK_PLACES.map((place) => (
-        <label key={place.path} className="cms-choice">
-          <input type="checkbox" checked={pages.includes(place.path)} onChange={(event) => toggle(place.path, event.target.checked)} />
-          {place.label}
-        </label>
-      ))}
+    <fieldset className="cms-fade" data-cms-panel-focus="placements">
+      <legend>Steht auf</legend>
+      <p className="cms-muted">
+        Baustein aus der Bibliothek: einmal gepflegt, überall gleich. Einfügen auf einer Seite an der gewünschten Stelle über „+ Baustein einfügen“.
+      </p>
+      {placements.length ? (
+        <ul className="cms-placements">
+          {placements.map((item, index) => (
+            <li key={`${item.page}:${item.after}`}>
+              {pageName(item.page)} – {item.after === 'end' ? 'am Ende' : `nach „${item.label || item.after}“`}
+              <button type="button" className="cms-btn cms-btn--ghost" onClick={() => remove(index)}>
+                entfernen
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="cms-muted">Noch auf keiner Seite.</p>
+      )}
     </fieldset>
   );
 }

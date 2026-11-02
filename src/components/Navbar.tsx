@@ -17,6 +17,7 @@ import { MUSTER_MEDIA, NAVBAR_CTA, resolveMedia } from '../lib/media';
 import { menuGroupHref } from '../lib/wellness';
 import { useBench } from '../context/BenchContext';
 import { BENCH_PREFIX, toBenchHref } from '../lib/benchmark';
+import { BenchCrest } from '../benchmark/BenchCrest';
 import { externalProps, useContactLinks } from '../lib/contactLinks';
 
 interface NavLink {
@@ -595,6 +596,8 @@ export function Navbar() {
               />
             ) : (
               <div className="navbar__panel-inner">
+                {/* Benchmark: the group's crest as a watermark in the corner of the open menu */}
+                {bench ? <BenchCrest className="bench-crest--menu" /> : null}
                 {menuGroups.map((group) => {
                   const groupHref = menuGroupHref(group.title, group.href);
                   return (
