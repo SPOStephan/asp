@@ -6,7 +6,7 @@
   position: fixed;
   left: 16px;
   bottom: 96px;
-  z-index: 1200;
+  z-index: 990; /* below the bars and their sheets */
   display: flex;
   align-items: center;
   gap: 2px;
@@ -54,14 +54,15 @@ body.has-mobile-dock .bench-switch { bottom: calc(96px + env(safe-area-inset-bot
 .bench-compare__frame iframe { display: block; border: 0; transform-origin: 0 0; }
 
 /* ---------- Hero: a slow, light zoom of the picture (Forsthofgut) ---------- */
+/* Clearly visible from the first second: fast at the start, then settling (ease-out), to 1.2. */
 @keyframes bench-hero-zoom {
   from { scale: 1; }
-  to { scale: 1.12; }
+  to { scale: 1.2; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .look-bench .subpage-hero__image img,
   .look-bench .hero__bg img {
-    animation: bench-hero-zoom 25s linear both;
+    animation: bench-hero-zoom 14s cubic-bezier(0.22, 0.61, 0.36, 1) both;
     will-change: scale;
   }
 }
@@ -187,3 +188,45 @@ body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
 /* Alone (no "Anfragen" for this hotel), "Buchen" is the one solid button */
 .bench-stay__book--solid { background: var(--primary-700, #133b5c); color: #fff; }
 .bench-stay__book--solid:hover { background: var(--accent-400); border-color: var(--accent-400); color: #fff; }
+
+/* ---------- Phone: the bottom bar light as well ---------- */
+.look-bench .mobile-chrome__dock {
+  background: rgba(250, 248, 245, 0.97);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(19, 59, 92, 0.12);
+  box-shadow: 0 -6px 18px rgba(10, 32, 50, 0.06);
+}
+.look-bench .mobile-chrome__dock > a,
+.look-bench .mobile-chrome__dock > button {
+  color: var(--primary-700, #133b5c);
+  border-right-color: rgba(19, 59, 92, 0.12);
+}
+.look-bench .mobile-chrome__dock > .mobile-chrome__book {
+  height: 42px;
+  margin: 7px 10px 7px 8px;
+  align-self: center;
+  background: var(--primary-700, #133b5c);
+  color: #fff;
+  font-family: 'Manrope', var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+.look-bench .mobile-chrome__dock.is-booking { background: rgba(250, 248, 245, 0.97); }
+.look-bench .mobile-chrome__dock > .mobile-chrome__book.is-on { background: var(--accent-400); }
+.look-bench .mobile-chrome__dock > .mobile-chrome__cancel { color: var(--primary-700, #133b5c); }
+/* The booking sheet that opens above it, light too */
+.look-bench .mobile-chrome__query {
+  background: rgba(250, 248, 245, 0.98);
+  border-top: 1px solid rgba(19, 59, 92, 0.12);
+  box-shadow: 0 -10px 24px rgba(10, 32, 50, 0.08);
+}
+.look-bench .mobile-chrome__query .availability-bar__picker {
+  color: var(--primary-700, #133b5c);
+  border-bottom-color: rgba(19, 59, 92, 0.22);
+}
+.look-bench .mobile-chrome__query .availability-bar__picker-label { color: rgba(19, 59, 92, 0.6); }
+.look-bench .mobile-chrome__query .availability-bar__picker-icon,
+.look-bench .mobile-chrome__query .availability-bar__picker-chevron { color: var(--accent-400); }
+.look-bench .mobile-chrome__query .availability-bar__picker-value { color: var(--primary-700, #133b5c); }
+.look-bench .mobile-chrome__query .availability-layer { border-color: rgba(19, 59, 92, 0.12); box-shadow: none; }
