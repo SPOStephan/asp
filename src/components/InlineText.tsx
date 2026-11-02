@@ -13,6 +13,7 @@ export function InlineText({ text }: { text: string }) {
             key={index}
             className="text-link"
             href={part.href}
+            data-md-href={part.href}
             {...(/^https?:\/\//i.test(part.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
           >
             {part.text}

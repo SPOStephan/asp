@@ -78,8 +78,7 @@ function WelcomeCopy({ paragraphs, foldFrom = -1 }: { paragraphs: Array<{ text: 
     const foldedPhone = !editing && marked && index > markAt;
     return (
       <p key={paragraph.path} data-cms-path={paragraph.path} className={foldedAll ? 'welcome__rest' : foldedPhone ? 'welcome__rest-phone' : undefined}>
-        {/* In the CMS the link marks stay readable and editable as text. */}
-        {editing ? paragraph.text : <InlineText text={paragraph.text} />}
+        <InlineText text={paragraph.text} />
       </p>
     );
   };

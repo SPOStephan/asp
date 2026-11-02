@@ -709,3 +709,24 @@ body.cms-on .cms-part.is-hidden > :not(.cms-block__chrome) {
 .block-placed__bar button { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid rgba(19, 59, 92, 0.3); background: none; cursor: pointer; font: inherit; }
 .cms-placements { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .cms-placements li { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.82rem; }
+
+/* Text field with links (CmsLinkText): mark words, "Verlinken" */
+.cms-linktext__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 6px; }
+.cms-linktext__bar .cms-btn { display: inline-flex; align-items: center; gap: 6px; }
+.cms-linktext__input {
+  min-height: 7.5em; padding: 8px 10px; border: 1px solid #cfd6dc; border-radius: 4px; background: #fff;
+  font: inherit; font-size: 0.9rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; outline: none;
+}
+.cms-linktext__input:focus { border-color: var(--primary-500, #1d5a8a); box-shadow: 0 0 0 2px rgba(29, 90, 138, 0.15); }
+.cms-linktext__link { color: var(--primary-700, #133b5c); text-decoration: underline; text-decoration-color: #b8964f; text-underline-offset: 3px; background: rgba(184, 150, 79, 0.12); }
+.cms-linktext__panel { margin-top: 8px; padding: 10px 12px; border: 1px solid #d9d2c4; background: #fbf9f5; display: grid; gap: 8px; }
+.cms-linktext__panel p { margin: 0; font-size: 0.85rem; }
+.cms-linktext__panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.cms-linktext__panel li button {
+  width: 100%; display: grid; grid-template-columns: auto 1fr; column-gap: 6px; align-items: center; text-align: left;
+  padding: 6px 8px; border: 1px solid #e3ddd0; background: #fff; cursor: pointer; font: inherit; font-size: 0.85rem;
+}
+.cms-linktext__panel li button:hover { border-color: #b8964f; }
+.cms-linktext__panel li button > span { grid-column: 2; font-weight: 600; }
+.cms-linktext__panel li button > svg { grid-column: 1; grid-row: 1; color: #b8964f; }
+.cms-linktext__panel li button small { grid-column: 2; color: #6b7680; font-size: 0.75rem; }

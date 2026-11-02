@@ -29,6 +29,7 @@ import { CmsFilterEditor } from './CmsFilterEditor';
 import { CmsIconPicker } from './CmsIconPicker';
 import { CmsEntryEditor, ENTRY_SPECS } from './CmsEntryEditor';
 import { CmsImageField } from './CmsImageField';
+import { CmsLinkText } from './CmsLinkText';
 import { CmsLinkPicker } from './CmsLinkPicker';
 import { CmsTextarea } from './CmsTextarea';
 import { CMS_SECTION_LABELS, describeSelection } from './cmsSelect';
@@ -670,9 +671,6 @@ function WelcomeFields() {
   useLivePreview('welcome', payload);
   // Where the cursor last stood in one of the two paragraphs (for the read-more mark).
   const [caret, setCaret] = useState<{ key: string; position: number } | null>(null);
-  const rememberCaret = (key: string) => (event: { target: EventTarget }) => {
-    if (event.target instanceof HTMLTextAreaElement) setCaret({ key, position: event.target.selectionStart });
-  };
 
   return (
     <form className="cms-form" onSubmit={(event) => event.preventDefault()}>
@@ -681,17 +679,12 @@ function WelcomeFields() {
       <Field focus="title" path="title_word_normal" label="Wort normal" value={draft.title_word_normal} onChange={(title_word_normal) => setDraft({ ...draft, title_word_normal })} />
       <Field focus="title" path="title_word_script" label="Wort Schreibschrift" value={draft.title_word_script} onChange={(title_word_script) => setDraft({ ...draft, title_word_script })} />
       <Field focus="subtitle" path="subtitle" label="Untertitel" value={draft.subtitle} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
-      <div onKeyUpCapture={rememberCaret('text_paragraph1')} onClickCapture={rememberCaret('text_paragraph1')} onSelectCapture={rememberCaret('text_paragraph1')}>
-        <Field focus="text" path="text_paragraph1" label="Absatz 1" value={draft.text_paragraph1} onChange={(text_paragraph1) => setDraft({ ...draft, text_paragraph1 })} multiline />
-      </div>
-      <div onKeyUpCapture={rememberCaret('text_paragraph2')} onClickCapture={rememberCaret('text_paragraph2')} onSelectCapture={rememberCaret('text_paragraph2')}>
-        <Field focus="text" path="text_paragraph2" label="Absatz 2" value={draft.text_paragraph2} onChange={(text_paragraph2) => setDraft({ ...draft, text_paragraph2 })} multiline />
-      </div>
-      <Field focus="text" path="text_facts" label="Mehr über das Haus (hinter „Weiterlesen“, mit Links)" value={draft.text_facts} onChange={(text_facts) => setDraft({ ...draft, text_facts })} multiline />
+      <CmsLinkText focus="text" path="text_paragraph1" label="Absatz 1" value={draft.text_paragraph1} onChange={(text_paragraph1) => setDraft((current) => ({ ...current, text_paragraph1 }))} onCaret={(position) => setCaret({ key: 'text_paragraph1', position })} />
+      <CmsLinkText focus="text" path="text_paragraph2" label="Absatz 2" value={draft.text_paragraph2} onChange={(text_paragraph2) => setDraft((current) => ({ ...current, text_paragraph2 }))} onCaret={(position) => setCaret({ key: 'text_paragraph2', position })} />
+      <CmsLinkText focus="text" path="text_facts" label="Mehr über das Haus (hinter „Weiterlesen“)" value={draft.text_facts} onChange={(text_facts) => setDraft((current) => ({ ...current, text_facts }))} />
       <p className="cms-muted">
         Ein Absatz mit den wichtigsten Fakten und Links auf die Seiten der Website – hilft Suchmaschinen und KI-Antworten. Er
-        steht hinter „Weiterlesen“ und bleibt für Suchmaschinen und KI vollständig lesbar. Link schreiben: [Zimmer &amp; Suiten](/zimmer).
-        Vorerst nur unter /benchmark zu sehen.
+        steht hinter „Weiterlesen“ und bleibt für Suchmaschinen und KI vollständig lesbar. Vorerst nur unter /benchmark zu sehen.
       </p>
       <fieldset className="cms-fade">
         <legend>Kürzung auf Handys</legend>
