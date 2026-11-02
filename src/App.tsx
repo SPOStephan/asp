@@ -44,6 +44,7 @@ import { pageKeyFromPath } from './lib/musterPages';
 import { usePhoneChrome } from './lib/phoneChrome';
 import './styles/modern.css';
 import './styles/tiles.css';
+import './styles/look.css';
 
 function RoomCompareRedirect() {
   const { roomId } = useParams();
@@ -121,7 +122,7 @@ function App() {
 
   return (
     <BenchContext.Provider value={bench}>
-    <div className={[isTypePreview ? 'type-preview' : isStart ? 'look-modern' : '', bench ? 'look-bench' : '', bench && new URLSearchParams(location.search).get('kacheln') !== 'a' ? 'bench-tiles-b' : ''].filter(Boolean).join(' ') || undefined}>
+    <div className={[isTypePreview ? 'type-preview' : isStart ? 'look-modern' : '', bench ? 'look-bench' : ''].filter(Boolean).join(' ') || undefined}>
       <Navbar />
       <PageGate>
         <Routes location={siteLocation}>

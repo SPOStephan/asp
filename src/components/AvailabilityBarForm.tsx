@@ -19,8 +19,7 @@ import { memberBookingTarget, useWebsiteMember } from '../member/useMember';
 import { PORTAL_URL } from '../portal/config';
 import { useCms } from '../cms/CmsContext';
 import { NAVBAR_CTA, resolveMedia } from '../lib/media';
-import { useBench } from '../context/BenchContext';
-import { BenchStay } from '../benchmark/BenchStay';
+import { StayBar } from './StayBar';
 
 interface AvailabilityBarFormProps {
   idPrefix?: string;
@@ -83,7 +82,6 @@ function AvailabilityBarFormModern({
   }, [open, variant]);
 
   const sheet = variant === 'sheet';
-  const bench = useBench();
 
   const toggle = (layer: Exclude<OpenLayer, null>) => {
     setOpen((current) => (current === layer ? null : layer));
@@ -134,9 +132,9 @@ function AvailabilityBarFormModern({
         />
       ) : null}
 
-      {bench && !sheet ? (
-        // Benchmark: a light bar like a caption – stay as text, "Buchen" and "Anfragen".
-        <BenchStay
+      {!sheet ? (
+        // A light bar like a caption – stay as text, "Buchen" and "Anfragen".
+        <StayBar
           query={query}
           open={open}
           onToggle={toggle}
@@ -156,7 +154,7 @@ function AvailabilityBarFormModern({
       <input type="hidden" name="adults" value={String(query.adults)} />
       <input type="hidden" name="children" value={String(query.children)} />
 
-      {bench && !sheet ? null : (<>
+      {!sheet ? null : (<>
       <div className="availability-bar__pickers">
         <button
           type="button"

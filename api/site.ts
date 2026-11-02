@@ -51,6 +51,18 @@ function text(body: string, type: string, tag: string, status = 200) {
   return new Response(body, { status, headers: { 'Content-Type': `${type}; charset=utf-8`, 'Cache-Control': CACHE, 'Vercel-Cache-Tag': tag } });
 }
 
+// The group's crest when it is stored in the database as a data: address (migration 034).
+async function crestFile(client: ReturnType<typeof createClient>, hotelId: string, tag: string) {
+  const { data } = await client.rpc('organization_brand', { p_hotel: hotelId });
+  const raw = data && typeof data === 'object' ? String((data as { crest_image?: string }).crest_image ?? '') : '';
+  const match = raw.match(/^data:(image\/[a-z+.-]+);base64,(.+)$/i);
+  if (!match) return new Response('Not found', { status: 404 });
+  const bytes = Uint8Array.from(atob(match[2]), (char) => char.charCodeAt(0));
+  return new Response(bytes, {
+    headers: { 'Content-Type': match[1], 'Cache-Control': 'public, max-age=86400, s-maxage=604800', 'Vercel-Cache-Tag': tag },
+  });
+}
+
 export default async function handler(request: Request) {
   if (request.headers.get(TEMPLATE_HEADER)) return new Response('Not found', { status: 404 });
   const url = new URL(request.url);
@@ -89,6 +101,7 @@ export default async function handler(request: Request) {
   const tag = siteCacheTag(content.hotel.id);
   const site = new SiteModel(content, canonicalOrigin(content.hotel.domains, host), `https://${host}`);
 
+  if (file === 'crest') return crestFile(client, content.hotel.id, tag);
   if (file === 'robots') return text(robotsTxt(site), 'text/plain', tag);
   if (file === 'sitemap') return text(sitemapXml(site), 'application/xml', tag);
   if (file === 'llms') return text(llmsTxt(site), 'text/markdown', tag);

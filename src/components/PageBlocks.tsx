@@ -5,7 +5,7 @@ import { useCms } from '../cms/CmsContext';
 import { useHotelContent } from '../context/HotelContext';
 import { BLOCK_LIBRARY, blockPlacements, kindPattern, pageMatches, pageName, type Placement } from '../lib/blocks';
 import { findPageMain, pageParts, removeSlots, slotAfter } from '../lib/pageParts';
-import { DayStory } from '../benchmark/DayStory';
+import { DayStory } from './DayStory';
 import { Generations } from './Generations';
 
 const RENDER: Record<string, () => ReactNode> = {

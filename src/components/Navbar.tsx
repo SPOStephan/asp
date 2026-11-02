@@ -17,7 +17,7 @@ import { MUSTER_MEDIA, NAVBAR_CTA, resolveMedia } from '../lib/media';
 import { menuGroupHref } from '../lib/wellness';
 import { useBench } from '../context/BenchContext';
 import { BENCH_PREFIX, toBenchHref } from '../lib/benchmark';
-import { BenchCrest } from '../benchmark/BenchCrest';
+import { Crest } from './Crest';
 import { externalProps, useContactLinks } from '../lib/contactLinks';
 
 interface NavLink {
@@ -454,8 +454,8 @@ export function Navbar() {
             </button>
           ) : (
             <>
-              {bench && !compact ? (
-                // Benchmark: the contact icons sit in the top bar instead of the booking bar.
+              {!compact ? (
+                // The contact icons sit in the top bar instead of the booking bar.
                 <div className="navbar__contact" aria-label="Kontakt">
                   {contact.mail ? (
                     <a href={contact.mail} aria-label="E-Mail schreiben" title="E-Mail">
@@ -596,8 +596,8 @@ export function Navbar() {
               />
             ) : (
               <div className="navbar__panel-inner">
-                {/* Benchmark: the group's crest as a watermark in the corner of the open menu */}
-                {bench ? <BenchCrest className="bench-crest--menu" /> : null}
+                {/* The group's crest as a watermark in the corner of the open menu */}
+                <Crest className="crest-mark--menu" />
                 {menuGroups.map((group) => {
                   const groupHref = menuGroupHref(group.title, group.href);
                   return (

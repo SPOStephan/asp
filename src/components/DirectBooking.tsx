@@ -4,8 +4,7 @@ import { Reveal } from './Reveal';
 import { CmsGlyph } from '../cms/CmsGlyph';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
-import { useBench } from '../context/BenchContext';
-import { BenchCrest } from '../benchmark/BenchCrest';
+import { Crest } from './Crest';
 
 interface BenefitItem {
   icon: string;
@@ -26,7 +25,6 @@ const FALLBACK: { eyebrow: string; title: string; subtitle: string; cta_text: st
 
 export function DirectBooking() {
   const editing = Boolean(useCms());
-  const bench = useBench();
   const cms = useSection('direct_booking');
   const data: Record<string, any> = cms ?? FALLBACK;
   const items: BenefitItem[] = data.items ?? FALLBACK.items;
@@ -36,8 +34,8 @@ export function DirectBooking() {
   return (
     <CmsSection sectionKey="direct_booking" label="Direktbuchung">
     <section className="direct-booking" id="direktbuchung" aria-label="Vorteile der Direktbuchung">
-      {/* Benchmark: the upper part of the hotel's crest, quiet, in the free corner below the title */}
-      {bench ? <BenchCrest className="bench-crest--direct" /> : null}
+      {/* The upper part of the group's crest, quiet, in the free corner below the title */}
+      <Crest className="crest-mark--direct" />
       <div className="direct-booking__inner">
         <Reveal>
           <div className="direct-booking__intro" data-cms-focus="title">
