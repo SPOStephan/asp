@@ -269,14 +269,16 @@ body.has-fixed-bar { padding-bottom: 66px; }
 .direct-booking__inner { position: relative; z-index: 1; }
 .crest-mark { position: absolute; pointer-events: none; overflow: hidden; }
 .crest-mark img { display: block; width: 100%; height: auto; }
-/* Direktbuchung: the upper part (rays and helmet) rises from the lower edge, bottom left */
+/* Direktbuchung: only the upper right quarter of the crest, large, in the lower left corner –
+   cut by the left and the lower edge of the section, as if the crest stood just outside */
 .crest-mark--direct {
-  left: 5%;
+  left: 0;
   bottom: 0;
-  width: min(30vw, 440px);
-  aspect-ratio: 900 / 430; /* the upper ~40 % of the crest */
-  opacity: 0.13;
+  width: min(36vw, 540px);
+  aspect-ratio: 909 / 1054; /* a quarter of the crest has the crest's proportions */
+  opacity: 0.11;
 }
+.crest-mark--direct img { width: 200%; max-width: none; margin-left: -100%; }
 @media (max-width: 800px) { .crest-mark--direct { display: none; } }
 /* Footer: large and very faint behind the dark footer, right */
 .footer { position: relative; overflow: hidden; }
