@@ -283,16 +283,17 @@ body.has-fixed-bar { padding-bottom: 66px; }
   flex: 1 1 auto;
   min-height: 180px;
   width: calc(100% + 5vw);
-  margin: 40px 0 -112px -5vw; /* to the left edge and into the lower padding */
+  /* to the left edge, and past the lower edge (the section cuts it off): no gap at the bottom */
+  margin: 40px 0 -200px -5vw;
   opacity: 0.11;
 }
-/* The crest twice the height of the corner: its upper right quarter fills the corner */
+/* The crest larger than the corner: its upper right part fills it to the right and bottom */
 .crest-mark--direct img {
   position: absolute;
   left: 0;
   top: 0;
   width: auto;
-  height: 200%;
+  height: 230%;
   max-width: none;
   transform: translateX(-50%);
 }
