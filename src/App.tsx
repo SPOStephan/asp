@@ -120,7 +120,7 @@ function App() {
 
   return (
     <BenchContext.Provider value={bench}>
-    <div className={[isTypePreview ? 'type-preview' : isStart ? 'look-modern' : '', bench ? 'look-bench' : '', bench && new URLSearchParams(location.search).get('kacheln') === 'b' ? 'bench-tiles-b' : ''].filter(Boolean).join(' ') || undefined}>
+    <div className={[isTypePreview ? 'type-preview' : isStart ? 'look-modern' : '', bench ? 'look-bench' : '', bench && new URLSearchParams(location.search).get('kacheln') !== 'a' ? 'bench-tiles-b' : ''].filter(Boolean).join(' ') || undefined}>
       <Navbar />
       <PageGate>
         <Routes location={siteLocation}>
