@@ -18,6 +18,7 @@ import {
 import { memberBookingTarget, useWebsiteMember } from '../member/useMember';
 import { PORTAL_URL } from '../portal/config';
 import { useCms } from '../cms/CmsContext';
+import { NAVBAR_CTA, resolveMedia } from '../lib/media';
 import { useBench } from '../context/BenchContext';
 import { BenchStay } from '../benchmark/BenchStay';
 
@@ -141,7 +142,13 @@ function AvailabilityBarFormModern({
           onToggle={toggle}
           guestsId={guestsId}
           datesId={datesId}
-          inquiryHref={hotel?.email ? inquiryMailHref(hotel.email, query) : ''}
+          // "Anfragen" only for hotels that switched it on in the CMS (Logo & Leiste),
+          // with their own label and target, like the top bar.
+          inquiry={
+            bar.show_inquire === true
+              ? { label: resolveMedia(bar.cta_text, NAVBAR_CTA.inquire), href: resolveMedia(bar.cta_href, '') }
+              : null
+          }
         />
       ) : null}
       <input type="hidden" name="arrival" value={query.arrival ?? ''} />

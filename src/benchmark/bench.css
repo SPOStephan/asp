@@ -184,3 +184,6 @@ body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
   .day-story__next { display: none; }
   .day-story__nav { margin-top: 24px; }
 }
+/* Alone (no "Anfragen" for this hotel), "Buchen" is the one solid button */
+.bench-stay__book--solid { background: var(--primary-700, #133b5c); color: #fff; }
+.bench-stay__book--solid:hover { background: var(--accent-400); border-color: var(--accent-400); color: #fff; }

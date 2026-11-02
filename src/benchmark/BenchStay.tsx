@@ -20,14 +20,14 @@ export function BenchStay({
   onToggle,
   guestsId,
   datesId,
-  inquiryHref,
+  inquiry,
 }: {
   query: AvailabilityQuery;
   open: 'dates' | 'guests' | null;
   onToggle: (layer: 'dates' | 'guests') => void;
   guestsId: string;
   datesId: string;
-  inquiryHref: string;
+  inquiry: { label: string; href: string } | null;
 }) {
   return (
     <div className="bench-stay">
@@ -63,12 +63,12 @@ export function BenchStay({
         <span className="bench-stay__dash" aria-hidden="true">–</span>
         <StayDate value={query.departure} placeholder="Abreise" />
       </button>
-      <button type="submit" className="bench-stay__book">
+      <button type="submit" className={`bench-stay__book${inquiry?.href ? '' : ' bench-stay__book--solid'}`}>
         Buchen
       </button>
-      {inquiryHref ? (
-        <a className="bench-stay__ask" href={inquiryHref}>
-          Anfragen
+      {inquiry?.href ? (
+        <a className="bench-stay__ask" href={inquiry.href}>
+          {inquiry.label}
         </a>
       ) : null}
       <span className="bench-stay__chat">
