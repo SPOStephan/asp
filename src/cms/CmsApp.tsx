@@ -24,6 +24,8 @@ import { WellnessPage } from '../pages/WellnessPage';
 import { WellnessTopicPage } from '../pages/WellnessTopicPage';
 import { OccasionPage } from '../pages/OccasionPage';
 import { OccasionsPage } from '../pages/OccasionsPage';
+import { PageBlocks } from '../components/PageBlocks';
+import { cmsPublicPath } from './cmsHost';
 import { cmsFrameDevice, isCmsFrame, isCmsFrameSearch, toCmsFrameHref } from './cmsFrame';
 import { CmsEditor } from './CmsEditor';
 import { CmsErrorBoundary } from './CmsErrorBoundary';
@@ -61,11 +63,25 @@ function CmsStage() {
         <Route path="/cms/datenschutz" element={<LegalPage pageKey="datenschutz" />} />
         <Route path="/cms/agb" element={<LegalPage pageKey="agb" />} />
         <Route path="/cms/seite/:slug" element={<GenericHotelPage />} />
+        {/* Building blocks (Bausteine): every block once, to edit it and pick its pages. */}
+        <Route
+          path="/cms/bausteine"
+          element={
+            <main className="cms-blocks">
+              <header className="cms-blocks__head">
+                <h1>Bausteine</h1>
+                <p>Jeder Baustein wird hier einmal gepflegt. Im Bearbeitungsfeld unter „Erscheint auf“ wählen, auf welchen Seiten er erscheint – Änderungen gelten überall.</p>
+              </header>
+              <PageBlocks pathname="/cms/bausteine" all />
+            </main>
+          }
+        />
         <Route
           path="*"
           element={<Navigate to={isCmsFrame() ? toCmsFrameHref('/cms', cmsFrameDevice()) : '/cms'} replace />}
         />
       </Routes>
+      {pathname !== '/cms' && pathname !== '/cms/bausteine' ? <PageBlocks pathname={cmsPublicPath(pathname)} /> : null}
       <Footer />
       {phone ? <MobileChromeDock /> : null}
     </div>
