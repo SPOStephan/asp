@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   BENCH_COMPARE_PATH,
   benchPublicPath,
-  benchSeen,
   inFrame,
   isBenchPath,
   markBenchSeen,
@@ -64,14 +63,12 @@ function useKeptScroll(pathname: string) {
   }, [pathname]);
 }
 
-// Small "Vorher | Nachher" switch, bottom left. Shows on the benchmark pages and – in the same
-// browser tab, after the benchmark was opened once – on the normal pages, never inside the
-// side-by-side view and never in the CMS.
+// Small "Vorher | Nachher" switch, bottom left – only on the benchmark pages, never on the
+// normal pages, inside the side-by-side view or in the CMS.
 export function BenchSwitch() {
   const { pathname, search, hash } = useLocation();
   const navigate = useNavigate();
   const bench = isBenchPath(pathname);
-  const [seen] = useState(() => bench || benchSeen());
   const framed = inFrame();
 
   useBenchLinks(bench);
@@ -81,7 +78,8 @@ export function BenchSwitch() {
     if (bench) markBenchSeen();
   }, [bench]);
 
-  if (framed || (!bench && !seen)) return null;
+  // Only inside the benchmark copy; the normal pages never show it.
+  if (framed || !bench) return null;
 
   const page = benchPublicPath(pathname);
   const go = (toBench: boolean) => {
