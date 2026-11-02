@@ -269,16 +269,33 @@ body.has-fixed-bar { padding-bottom: 66px; }
 .direct-booking__inner { position: relative; z-index: 1; }
 .crest-mark { position: absolute; pointer-events: none; overflow: hidden; }
 .crest-mark img { display: block; width: 100%; height: auto; }
-/* Direktbuchung: only the upper right quarter of the crest, large, in the lower left corner –
-   cut by the left and the lower edge of the section, as if the crest stood just outside */
+/* Direktbuchung: only the upper right quarter of the crest, as large as the free corner below
+   the text allows – it starts under the link and is cut by the left and lower edge of the
+   section, as if the crest stood just outside. The left column reaches down to the end of the
+   list, the crest fills what is left of it. */
+@media (min-width: 801px) {
+  .direct-booking__inner { align-items: stretch; }
+  .direct-booking__inner > .reveal:first-child { display: flex; flex-direction: column; }
+  .direct-booking__intro { flex: 1; display: flex; flex-direction: column; }
+}
 .crest-mark--direct {
-  left: 0;
-  bottom: 0;
-  width: min(36vw, 540px);
-  aspect-ratio: 909 / 1054; /* a quarter of the crest has the crest's proportions */
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 180px;
+  width: calc(100% + 5vw);
+  margin: 40px 0 -112px -5vw; /* to the left edge and into the lower padding */
   opacity: 0.11;
 }
-.crest-mark--direct img { width: 200%; max-width: none; margin-left: -100%; }
+/* The crest twice the height of the corner: its upper right quarter fills the corner */
+.crest-mark--direct img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: auto;
+  height: 200%;
+  max-width: none;
+  transform: translateX(-50%);
+}
 @media (max-width: 800px) { .crest-mark--direct { display: none; } }
 /* Footer: large and very faint behind the dark footer, right */
 .footer { position: relative; overflow: hidden; }
