@@ -343,3 +343,22 @@ body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
   opacity: 0.13;
 }
 @media (max-width: 800px) { .bench-crest--direct { display: none; } }
+/* Footer: large and very faint behind the dark footer, right */
+.look-bench .footer { position: relative; overflow: hidden; }
+.look-bench .footer__inner { position: relative; z-index: 1; }
+.bench-crest--footer {
+  right: -4%;
+  top: 50%;
+  width: min(42vw, 620px);
+  transform: translateY(-50%);
+  opacity: 0.06;
+}
+/* Open menu (desktop): watermark in the lower right corner of the menu area */
+.look-bench .navbar__panel-inner { position: relative; }
+.bench-crest--menu {
+  right: 0;
+  bottom: 0;
+  width: min(22vw, 300px);
+  opacity: 0.08;
+}
+@media (max-width: 900px) { .bench-crest--footer { width: 90vw; right: -30%; } }

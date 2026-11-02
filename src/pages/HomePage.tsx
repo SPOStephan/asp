@@ -4,7 +4,6 @@ import { DirectBooking } from '../components/DirectBooking';
 import { Discover } from '../components/Discover';
 import { Facts } from '../components/Facts';
 import { FAQ } from '../components/FAQ';
-import { Generations } from '../components/Generations';
 import { Hero } from '../components/Hero';
 import { Highlights } from '../components/Highlights';
 import { Impressions } from '../components/Impressions';
@@ -13,16 +12,10 @@ import { Newsletter } from '../components/Newsletter';
 import { Offers } from '../components/Offers';
 import { Welcome } from '../components/Welcome';
 import { Wellness } from '../components/Wellness';
-import { useBench } from '../context/BenchContext';
-import { DayStory } from '../benchmark/DayStory';
-import { useBlockOnHome } from '../components/PageBlocks';
 
 export function HomePage() {
-  // Building blocks (src/lib/blocks.ts) keep their place here while the start page is
-  // ticked for them in the CMS. The benchmark copy shows the start page without them.
-  const bench = useBench();
-  const dayStory = useBlockOnHome('day_story') && !bench;
-  const generations = useBlockOnHome('generations') && !bench;
+  // "Ein Tag im Hotel" and "Für jeden Anlass" are building blocks now (src/lib/blocks.ts):
+  // placed in the CMS wherever wanted, on this page too.
   return (
     <main>
       <Hero />
@@ -31,10 +24,8 @@ export function HomePage() {
       <DirectBooking />
       <Offers />
       <Wellness />
-      {dayStory ? <DayStory /> : null}
       <Highlights />
       <Culinary />
-      {generations ? <Generations /> : null}
       <Awards />
       <Impressions />
       <Facts />

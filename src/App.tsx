@@ -38,7 +38,7 @@ import { useHotelContent } from './context/HotelContext';
 import { BenchContext } from './context/BenchContext';
 import { BenchComparePage } from './benchmark/BenchComparePage';
 import { BenchSwitch } from './benchmark/BenchSwitch';
-import { PageBlocks } from './components/PageBlocks';
+import { BlockPlacer } from './components/PageBlocks';
 import { BENCH_COMPARE_PATH, benchPublicPath, isBenchPath } from './lib/benchmark';
 import { pageKeyFromPath } from './lib/musterPages';
 import { usePhoneChrome } from './lib/phoneChrome';
@@ -156,7 +156,7 @@ function App() {
           <Route path="/mobil-leiste4" element={<MobileChromeLab4 />} />
         </Routes>
       </PageGate>
-      {sitePath !== '/' ? <PageBlocks pathname={sitePath} /> : null}
+      <BlockPlacer pathname={sitePath} />
       <Footer />
       {isTypePreview && <TypePreviewHomeNote />}
       {showFixedBar ? <FixedAvailabilityBar revealOnScroll={isStart} /> : null}

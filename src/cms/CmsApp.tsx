@@ -24,7 +24,7 @@ import { WellnessPage } from '../pages/WellnessPage';
 import { WellnessTopicPage } from '../pages/WellnessTopicPage';
 import { OccasionPage } from '../pages/OccasionPage';
 import { OccasionsPage } from '../pages/OccasionsPage';
-import { PageBlocks } from '../components/PageBlocks';
+import { BlockLibrary, BlockPlacer } from '../components/PageBlocks';
 import { cmsPublicPath } from './cmsHost';
 import { cmsFrameDevice, isCmsFrame, isCmsFrameSearch, toCmsFrameHref } from './cmsFrame';
 import { CmsEditor } from './CmsEditor';
@@ -70,9 +70,9 @@ function CmsStage() {
             <main className="cms-blocks">
               <header className="cms-blocks__head">
                 <h1>Bausteine</h1>
-                <p>Jeder Baustein wird hier einmal gepflegt. Im Bearbeitungsfeld unter „Erscheint auf“ wählen, auf welchen Seiten er erscheint – Änderungen gelten überall.</p>
+                <p>Jeder Baustein wird hier einmal gepflegt; Änderungen gelten überall, wo er steht. Einfügen auf einer Seite: dort an der gewünschten Stelle „+ Baustein einfügen“.</p>
               </header>
-              <PageBlocks pathname="/cms/bausteine" all />
+              <BlockLibrary />
             </main>
           }
         />
@@ -81,7 +81,7 @@ function CmsStage() {
           element={<Navigate to={isCmsFrame() ? toCmsFrameHref('/cms', cmsFrameDevice()) : '/cms'} replace />}
         />
       </Routes>
-      {pathname !== '/cms' && pathname !== '/cms/bausteine' ? <PageBlocks pathname={cmsPublicPath(pathname)} /> : null}
+      {pathname !== '/cms/bausteine' ? <BlockPlacer pathname={cmsPublicPath(pathname)} /> : null}
       <Footer />
       {phone ? <MobileChromeDock /> : null}
     </div>
