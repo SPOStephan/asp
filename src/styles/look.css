@@ -43,6 +43,8 @@
   border-top: 1px solid rgba(19, 59, 92, 0.12);
   box-shadow: none;
 }
+/* No shadow: the base style (.availability-bar.is-stuck) would otherwise win over the rule above */
+.availability-bar.is-stuck { box-shadow: none; }
 body.has-fixed-bar { padding-bottom: 66px; }
 .availability-bar__form--modern { padding: 10px 0; justify-content: center; }
 .stay-bar {
