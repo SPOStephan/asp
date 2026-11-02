@@ -201,20 +201,58 @@ body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
   color: var(--primary-700, #133b5c);
   border-right-color: rgba(19, 59, 92, 0.12);
 }
+.look-bench .mobile-chrome__dock {
+  /* menu · call · Buchen · chat: the chat sits in the bar instead of floating above it */
+  grid-template-columns: 56px 56px 1fr 56px;
+}
+/* "Buchen" as quiet spaced capitals with a thin gold line, no block of colour */
 .look-bench .mobile-chrome__dock > .mobile-chrome__book {
-  height: 42px;
-  margin: 7px 10px 7px 8px;
-  align-self: center;
-  background: var(--primary-700, #133b5c);
-  color: #fff;
+  position: relative;
+  background: none;
+  color: var(--primary-700, #133b5c);
   font-family: 'Manrope', var(--font-body);
   font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.24em;
 }
-.look-bench .mobile-chrome__dock.is-booking { background: rgba(250, 248, 245, 0.97); }
-.look-bench .mobile-chrome__dock > .mobile-chrome__book.is-on { background: var(--accent-400); }
+.look-bench .mobile-chrome__dock > .mobile-chrome__book::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 15px;
+  width: 28px;
+  height: 1px;
+  background: var(--accent-400);
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+.look-bench .mobile-chrome__dock > .mobile-chrome__book:active::after { width: 64px; }
 .look-bench .mobile-chrome__dock > .mobile-chrome__cancel { color: var(--primary-700, #133b5c); }
+/* While the booking sheet is open, "Buchen" sends it: then it is the one filled field */
+.look-bench .mobile-chrome__dock.is-booking {
+  grid-template-columns: 56px 1fr 56px;
+  background: rgba(250, 248, 245, 0.97);
+}
+.look-bench .mobile-chrome__dock > .mobile-chrome__book.is-on {
+  background: var(--primary-700, #133b5c);
+  color: #fff;
+}
+.look-bench .mobile-chrome__dock > .mobile-chrome__book.is-on::after { display: none; }
+/* The chat: last field of the bar, gold symbol, no floating circle */
+.look-bench .mobile-chrome__fab {
+  right: 0;
+  bottom: env(safe-area-inset-bottom, 0px);
+  width: 56px;
+  height: 56px;
+  border-radius: 0;
+  background: none;
+  color: var(--accent-400);
+  border-left: 1px solid rgba(19, 59, 92, 0.12);
+  box-shadow: none;
+}
+.look-bench .mobile-chrome__fab.is-on { outline: 0; background: var(--accent-400); color: #fff; }
+.look-bench .mobile-chrome__query .availability-bar__form,
+.look-bench .mobile-chrome__query .availability-bar__form--sheet { margin-right: 5%; }
 /* The booking sheet that opens above it, light too */
 .look-bench .mobile-chrome__query {
   background: rgba(250, 248, 245, 0.98);
