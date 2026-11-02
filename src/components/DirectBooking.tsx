@@ -34,8 +34,6 @@ export function DirectBooking() {
   return (
     <CmsSection sectionKey="direct_booking" label="Direktbuchung">
     <section className="direct-booking" id="direktbuchung" aria-label="Vorteile der Direktbuchung">
-      {/* The upper part of the group's crest, quiet, in the free corner below the title */}
-      <Crest className="crest-mark--direct" />
       <div className="direct-booking__inner">
         <Reveal>
           <div className="direct-booking__intro" data-cms-focus="title">
@@ -47,6 +45,9 @@ export function DirectBooking() {
                 {data.cta_text}
               </TextCta>
             ) : null}
+            {/* The upper right quarter of the group's crest fills the free corner below the
+                text: it starts under the link and runs to the left and lower edge. */}
+            <Crest className="crest-mark--direct" />
           </div>
         </Reveal>
 
