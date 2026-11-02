@@ -5,9 +5,12 @@ import { MUSTER_MEDIA, resolveDiscoverTiles, resolveMedia } from '../lib/media';
 import { remapSiteHref } from '../lib/links';
 import { ScriptWords } from './ScriptWords';
 import { Reveal } from './Reveal';
+import { useBench } from '../context/BenchContext';
+import { BenchTileRow } from '../benchmark/BenchTileRow';
 
 export function Discover() {
   const data = useSection('discover');
+  const bench = useBench();
 
   if (!data) return null;
 
@@ -68,6 +71,7 @@ export function Discover() {
             </Reveal>
           ))}
         </div>
+        {bench ? <BenchTileRow tiles={resolveDiscoverTiles(data.tiles)} /> : null}
       </CmsPart>
     </section>
     </CmsSection>
