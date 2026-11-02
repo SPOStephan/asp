@@ -261,6 +261,71 @@ body.has-fixed-bar { padding-bottom: 66px; }
   .discover .discover__grid > .is-career { display: none; }
 }
 
+/* ---------- The same editorial tiles everywhere ----------
+   Wellness and occasions pages, the excursion pictures of the start page ("Strand / Ausflugs-
+   ziele") and the block "Für jeden Anlass": clean picture, the link below it in spaced
+   capitals with the arrow in a circle (dark on light), even rows. */
+:root {
+  --tile-arrow-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23133b5c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7M7 7h10v10'/%3E%3C/svg%3E");
+}
+/* Wellness and occasions pages */
+.wellness-hub__tiles { row-gap: 4vw; column-gap: 2.5vw; }
+a.wellness-tile { aspect-ratio: auto; overflow: visible; background: none; }
+a.wellness-tile .wellness-tile__image { position: relative; inset: auto; aspect-ratio: 5 / 4; overflow: hidden; }
+a.wellness-tile .wellness-tile__overlay { display: none; }
+a.wellness-tile .wellness-tile__content { position: static; padding: 18px 0 0; }
+/* Start page: excursion pictures */
+.culinary__images { row-gap: 4vw; column-gap: 2.5vw; }
+a.culinary__img-block { height: auto; overflow: visible; }
+a.culinary__img-block img { height: auto; aspect-ratio: 5 / 4; }
+a.culinary__img-block:hover img { transform: none; }
+a.culinary__img-block .culinary__img-label { position: static; padding: 18px 0 0; background: none; }
+/* "Für jeden Anlass": an even grid instead of the mosaic */
+.generations .generations__masonry {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: none;
+  grid-auto-rows: auto;
+  row-gap: 4vw;
+  column-gap: 2.5vw;
+}
+.generations .generations__masonry--2,
+.generations .generations__masonry--4 { grid-template-columns: repeat(2, 1fr); }
+.generations .generations__masonry--1 { grid-template-columns: minmax(0, 640px); justify-content: center; }
+.generations .generations__masonry .generations__item { grid-column: auto; grid-row: auto; overflow: visible; background: none; }
+.generations .generations__item img { height: auto; aspect-ratio: 5 / 4; }
+.generations .generations__item:hover img { transform: none; }
+.generations .generations__overlay { position: static; padding: 18px 0 0; background: none; }
+/* The pictures zoom gently inside their frame on hover */
+a.wellness-tile:hover .wellness-tile__image img { transform: scale(1.05); }
+/* The link below the picture: dark, arrow in a circle dark on light, gold on hover */
+a.wellness-tile .wellness-tile__name,
+a.culinary__img-block .culinary__img-label h3,
+.generations .generations__overlay .generations__label { color: var(--primary-700, #133b5c); }
+a.wellness-tile .wellness-tile__name::after,
+a.culinary__img-block .culinary__img-label h3::after,
+.generations .generations__item--link .generations__label::after {
+  border-color: rgba(19, 59, 92, 0.35);
+  background-image: var(--tile-arrow-dark);
+}
+a.wellness-tile:hover .wellness-tile__name::after,
+a.culinary__img-block:hover .culinary__img-label h3::after,
+.generations .generations__item--link:hover .generations__label::after {
+  background-image: var(--tile-arrow);
+  border-color: var(--accent-400);
+}
+@media (max-width: 900px) {
+  .generations .generations__masonry { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .wellness-hub__tiles, .culinary__images, .generations .generations__masonry { grid-template-columns: 1fr 1fr; row-gap: 22px; column-gap: 14px; }
+  a.wellness-tile .wellness-tile__image,
+  a.culinary__img-block img,
+  .generations .generations__item img { aspect-ratio: 7 / 8; }
+  a.wellness-tile .wellness-tile__content,
+  a.culinary__img-block .culinary__img-label,
+  .generations .generations__overlay { padding-top: 10px; }
+}
+
 /* ---------- Crest as a quiet graphic ---------- */
 .direct-booking { position: relative; overflow: hidden; }
 .direct-booking__inner { position: relative; z-index: 1; }
