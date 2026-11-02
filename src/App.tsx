@@ -35,9 +35,14 @@ import { WellnessTopicPage } from './pages/WellnessTopicPage';
 import { OccasionPage } from './pages/OccasionPage';
 import { OccasionsPage } from './pages/OccasionsPage';
 import { useHotelContent } from './context/HotelContext';
+import { BenchContext } from './context/BenchContext';
+import { BenchComparePage } from './benchmark/BenchComparePage';
+import { BenchSwitch } from './benchmark/BenchSwitch';
+import { BENCH_COMPARE_PATH, benchPublicPath, isBenchPath } from './lib/benchmark';
 import { pageKeyFromPath } from './lib/musterPages';
 import { usePhoneChrome } from './lib/phoneChrome';
 import './styles/modern.css';
+import './styles/tiles.css';
 
 function RoomCompareRedirect() {
   const { roomId } = useParams();
@@ -47,7 +52,7 @@ function RoomCompareRedirect() {
 function PageGate({ children }: { children: ReactNode }) {
   const location = useLocation();
   const { isPageEnabled } = useHotelContent();
-  const key = pageKeyFromPath(location.pathname);
+  const key = pageKeyFromPath(benchPublicPath(location.pathname));
   if (key && !isPageEnabled(key)) {
     return (
       <main className="cms-missing">
@@ -63,10 +68,14 @@ function App() {
   const location = useLocation();
   const adminShell = isAdminHost() || isAdminPath(location.pathname);
   const cmsShell = isCmsPath(location.pathname);
+  // The benchmark copy (/benchmark/…) shows the same pages with the benchmark design on.
+  const bench = isBenchPath(location.pathname);
+  const sitePath = benchPublicPath(location.pathname);
+  const siteLocation = bench ? { ...location, pathname: sitePath } : location;
   const isTypePreview = location.pathname === '/vorschau';
   // The start page has its own finish (see modern.css): the sans, spaced capitals, the
   // booking bar that only comes on scroll.
-  const isStart = location.pathname === '/';
+  const isStart = sitePath === '/';
   const isHome = isStart || isTypePreview;
   const isFontLab = location.pathname === '/schriften';
   const isMenuLab = location.pathname === '/menue-mobil';
@@ -91,6 +100,9 @@ function App() {
     };
   }, [adminShell, cmsShell, isPhone, showFixedBar, showDock]);
 
+  if (location.pathname === BENCH_COMPARE_PATH) {
+    return <BenchComparePage />;
+  }
   if (isAdminHost() && location.pathname === '/') {
     return <Navigate to="/admin" replace />;
   }
@@ -107,10 +119,11 @@ function App() {
   if (error) return <ErrorScreen message={error} />;
 
   return (
-    <div className={isTypePreview ? 'type-preview' : isStart ? 'look-modern' : undefined}>
+    <BenchContext.Provider value={bench}>
+    <div className={[isTypePreview ? 'type-preview' : isStart ? 'look-modern' : '', bench ? 'look-bench' : ''].filter(Boolean).join(' ') || undefined}>
       <Navbar />
       <PageGate>
-        <Routes>
+        <Routes location={siteLocation}>
           <Route path="/" element={<HomePage />} />
           <Route path="/vorschau" element={<HomePage />} />
           {/* The former comparison page of the new start page. */}
@@ -147,7 +160,9 @@ function App() {
       {showFixedBar ? <FixedAvailabilityBar revealOnScroll={isStart} /> : null}
       {showDock ? <MobileChromeDock /> : null}
       {!isPhone && !isFontLab && !isMenuLab && !isChromeLab ? <ConciergeDesktop /> : null}
+      <BenchSwitch />
     </div>
+    </BenchContext.Provider>
   );
 }
 

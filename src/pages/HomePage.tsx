@@ -13,8 +13,14 @@ import { Newsletter } from '../components/Newsletter';
 import { Offers } from '../components/Offers';
 import { Welcome } from '../components/Welcome';
 import { Wellness } from '../components/Wellness';
+import { useCms } from '../cms/CmsContext';
+import { useBench } from '../context/BenchContext';
+import { DayStory } from '../benchmark/DayStory';
 
 export function HomePage() {
+  // Benchmark sections: only in the benchmark copy, and in the CMS so they can be filled.
+  const bench = useBench();
+  const cms = useCms();
   return (
     <main>
       <Hero />
@@ -23,6 +29,7 @@ export function HomePage() {
       <DirectBooking />
       <Offers />
       <Wellness />
+      {bench || cms ? <DayStory /> : null}
       <Highlights />
       <Culinary />
       <Generations />

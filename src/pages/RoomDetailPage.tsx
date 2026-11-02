@@ -9,6 +9,7 @@ import { SubpageHero } from '../components/SubpageHero';
 import { TextCta } from '../components/TextCta';
 import { entryFocal } from '../cms/cmsFocal';
 import { useHotel, useSection } from '../context/HotelContext';
+import { pricesShown } from '../lib/prices';
 import { expandRoomFeatures, formatRoomPriceDetail, resolveRooms, roomGallery } from '../lib/rooms';
 import { usePageTop } from '../lib/usePageTop';
 
@@ -18,6 +19,7 @@ export function RoomDetailPage() {
   const cms = useCms();
   const hotel = useHotel();
   const page = useSection('rooms_page');
+  const offersPage = useSection('offers_page');
   const items = resolveRooms(page?.items);
   const room = items.find((item) => item.id === roomId);
   const pair = room ? roomGallery(room).slice(0, 2) : [];
@@ -77,8 +79,12 @@ export function RoomDetailPage() {
                 </div>
               </div>
               <div className="room-detail__book">
-                <p className="room-detail__book-label">Preis</p>
-                <p className="room-detail__book-price heading-font">{formatRoomPriceDetail(room)}</p>
+                {room.price_from && pricesShown(offersPage) ? (
+                  <>
+                    <p className="room-detail__book-label">Preis</p>
+                    <p className="room-detail__book-price heading-font">{formatRoomPriceDetail(room)}</p>
+                  </>
+                ) : null}
                 <div className="room-detail__links">
                   <TextCta href="#buchung">Jetzt buchen</TextCta>
                   <TextCta href="/zimmer">Alle Zimmer</TextCta>

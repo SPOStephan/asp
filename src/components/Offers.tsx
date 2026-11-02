@@ -4,6 +4,7 @@ import { useCms } from '../cms/CmsContext';
 import { Reveal } from './Reveal';
 import { TextCta } from './TextCta';
 import { useSection } from '../context/HotelContext';
+import { offerDetails, pricesShown } from '../lib/prices';
 
 const OFFER_TEXT = '';
 
@@ -91,10 +92,12 @@ function OfferVisual({
 export function Offers() {
   const editing = Boolean(useCms());
   const cms = useSection('offers');
+  const showPrices = pricesShown(useSection('offers_page'));
   const data: Record<string, any> = cms ?? FALLBACK;
   const items: OfferItem[] = (data.items ?? FALLBACK.items).map((item, index) => ({
     ...item,
     text: item.text ?? FALLBACK.items[index]?.text ?? OFFER_TEXT,
+    details: item.details ? offerDetails(item.details, showPrices) : item.details,
   }));
   const headline = offerHeadline(data);
 

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { TextCta } from './TextCta';
+import { useSection } from '../context/HotelContext';
+import { pricesShown } from '../lib/prices';
 import { formatRoomPriceDetail, roomGallery, roomHref, type RoomStory } from '../lib/rooms';
 
 interface RoomOverlapCardProps {
@@ -18,6 +20,7 @@ function slidesFor(room: RoomStory) {
 }
 
 export function RoomOverlapCard({ room, reverse = false }: RoomOverlapCardProps) {
+  const showPrice = Boolean(room.price_from) && pricesShown(useSection('offers_page'));
   const slides = slidesFor(room);
   const [index, setIndex] = useState(0);
   const amenities = room.amenities.slice(0, 3);
@@ -90,8 +93,12 @@ export function RoomOverlapCard({ room, reverse = false }: RoomOverlapCardProps)
           </ul>
         ) : null}
         <div className="rooms-overlap__book">
-          <p className="rooms-overlap__book-label">Preis</p>
-          <p className="rooms-overlap__book-price heading-font">{formatRoomPriceDetail(room)}</p>
+          {showPrice ? (
+            <>
+              <p className="rooms-overlap__book-label">Preis</p>
+              <p className="rooms-overlap__book-price heading-font">{formatRoomPriceDetail(room)}</p>
+            </>
+          ) : null}
           <div className="rooms-overlap__links">
             <TextCta href="#buchung">Jetzt buchen</TextCta>
             <TextCta href={roomHref(room.id)}>Details</TextCta>

@@ -32,6 +32,7 @@ export const CMS_SECTION_LABELS: Record<string, string> = {
   generations: 'Generationen',
   awards: 'Awards',
   impressions: 'Impressionen',
+  day_story: 'Ein Tag im Hotel (Benchmark)',
   facts: 'Fakten',
   faq_home_section: 'FAQ',
   blog_page: 'Journal',

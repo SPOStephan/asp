@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, House, UserRound, X } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Gift, House, Mail, MapPin, Phone, UserRound, X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { autoMenuGroups } from '../lib/autoMenu';
@@ -15,6 +15,9 @@ import { remapSiteHref } from '../lib/links';
 import { isBookingHash, usePhoneChrome } from '../lib/phoneChrome';
 import { MUSTER_MEDIA, NAVBAR_CTA, resolveMedia } from '../lib/media';
 import { menuGroupHref } from '../lib/wellness';
+import { useBench } from '../context/BenchContext';
+import { BENCH_PREFIX, toBenchHref } from '../lib/benchmark';
+import { externalProps, useContactLinks } from '../lib/contactLinks';
 
 interface NavLink {
   label: string;
@@ -233,6 +236,16 @@ export function Navbar() {
   const hotel = useHotel();
   const chrome = useMobileChrome();
   const isPhone = usePhoneChrome();
+  const bench = useBench();
+  const contact = useContactLinks();
+  const { pathname } = useLocation();
+  // Benchmark: every link stays in the copy of the website.
+  const siteHref = (href: string) => (bench ? toBenchHref(href) : href);
+
+  // A link followed elsewhere (e.g. inside the benchmark) closes the menu as well.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -314,7 +327,7 @@ export function Navbar() {
       return;
     }
     if (target.startsWith('#')) {
-      const homePath = cms ? '/cms' : '/';
+      const homePath = cms ? '/cms' : bench ? BENCH_PREFIX : '/';
       if (window.location.pathname !== homePath) {
         navigate(homePath);
         setTimeout(() => {
@@ -324,7 +337,7 @@ export function Navbar() {
         document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      const next = new URL(cms ? toCmsHref(target) : target, window.location.origin);
+      const next = new URL(cms ? toCmsHref(target) : siteHref(target), window.location.origin);
       navigate(`${next.pathname}${next.hash}`);
       if (!next.hash) {
         window.scrollTo({ top: 0 });
@@ -405,7 +418,7 @@ export function Navbar() {
             e.preventDefault();
             if (cms) return;
             setMenuOpen(false);
-            navigate('/');
+            navigate(siteHref('/'));
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
@@ -440,6 +453,31 @@ export function Navbar() {
             </button>
           ) : (
             <>
+              {bench && !compact ? (
+                // Benchmark: the contact icons sit in the top bar instead of the booking bar.
+                <div className="navbar__contact" aria-label="Kontakt">
+                  {contact.mail ? (
+                    <a href={contact.mail} aria-label="E-Mail schreiben" title="E-Mail">
+                      <Mail size={18} strokeWidth={1.4} />
+                    </a>
+                  ) : null}
+                  {contact.phone ? (
+                    <a href={contact.phone} aria-label="Anrufen" title="Anrufen">
+                      <Phone size={18} strokeWidth={1.4} />
+                    </a>
+                  ) : null}
+                  {contact.arrival ? (
+                    <a href={contact.arrival} aria-label="Anreise und Lage" title="Anreise" {...externalProps(contact.arrival)}>
+                      <MapPin size={18} strokeWidth={1.4} />
+                    </a>
+                  ) : null}
+                  {contact.voucher ? (
+                    <a href={contact.voucher} aria-label="Gutscheine" title="Gutscheine" {...externalProps(contact.voucher)}>
+                      <Gift size={18} strokeWidth={1.4} />
+                    </a>
+                  ) : null}
+                </div>
+              ) : null}
               {PORTAL_URL && !cms ? (
                 // Member login of the hotel group's portal (e.g. app.<group>.de): signed in there,
                 // the guest is signed in here too after one hop (src/member/handoff.ts).
