@@ -6,7 +6,6 @@ import { remapSiteHref } from '../lib/links';
 import { ScriptWords } from './ScriptWords';
 import { Reveal } from './Reveal';
 import { useBench } from '../context/BenchContext';
-import { BenchTileRow } from '../benchmark/BenchTileRow';
 
 export function Discover() {
   const data = useSection('discover');
@@ -43,7 +42,12 @@ export function Discover() {
 
         <div className="discover__grid">
           {resolveDiscoverTiles(data.tiles).map((tile, i) => (
-            <Reveal key={tile.id} delay={i * 70}>
+            <Reveal
+              key={tile.id}
+              delay={i * 70}
+              // Benchmark: the career tile leaves the phone grid, so the rows of two come out even.
+              className={bench && /karriere|jobs|stellen/i.test(`${tile.title} ${tile.href}`) ? 'is-career' : ''}
+            >
               <a
                 className="discover__tile"
                 href={remapSiteHref(tile.href, tile.title)}
@@ -71,7 +75,6 @@ export function Discover() {
             </Reveal>
           ))}
         </div>
-        {bench ? <BenchTileRow tiles={resolveDiscoverTiles(data.tiles)} /> : null}
       </CmsPart>
     </section>
     </CmsSection>

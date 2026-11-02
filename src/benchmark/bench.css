@@ -270,10 +270,9 @@ body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
 .look-bench .mobile-chrome__query .availability-layer { border-color: rgba(19, 59, 92, 0.12); box-shadow: none; }
 
 /* ---------- Start page tiles: taller (5:4) and fresher ----------
-   Variant A (default): picture with the text on it, new effects – the picture unveils
-   from below as it scrolls in, on hover a gold line runs along the lower edge.
-   Variant B (/benchmark?kacheln=b): editorial – clean picture, text below it, the middle
-   column set lower like a magazine page. */
+   Variant B (default, chosen): editorial – clean picture, the link below it, even rows.
+   Variant A (/benchmark?kacheln=a): picture with the text on it; the picture unveils from
+   below as it scrolls in, on hover a gold line runs along the lower edge. */
 @media (min-width: 901px) {
   .look-bench .discover__tile { aspect-ratio: 5 / 4; height: auto; }
 }
@@ -318,7 +317,6 @@ body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
 .look-bench.bench-tiles-b .discover__tile-go { color: var(--primary-700, #133b5c); border-color: rgba(19, 59, 92, 0.35); }
 @media (min-width: 901px) {
   .look-bench.bench-tiles-b .discover__grid { row-gap: 4vw; }
-  .look-bench.bench-tiles-b .discover__grid > :nth-child(3n + 2) { margin-top: 5vw; margin-bottom: -5vw; }
 }
 @media (max-width: 600px) {
   .look-bench.bench-tiles-b .discover__tile-content { padding-top: 10px; }
@@ -326,38 +324,7 @@ body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
 }
 .look-bench.bench-tiles-b .discover__tile:hover .discover__tile-go { color: #fff; border-color: var(--accent-400); }
 
-/* ---------- G66: tiles as an offset row of portraits (Der Öschberghof) ---------- */
-.bench-row { width: calc(100% - 5vw); margin: 7vw auto 0; }
-.bench-row__note {
-  margin: 0 0 28px; text-align: center;
-  font-family: 'Manrope', var(--font-body); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
-  color: rgba(19, 59, 92, 0.45);
-}
-.bench-row__grid { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 1.6vw; row-gap: 3.2vw; padding-bottom: 3vw; }
-.bench-row__grid > .bench-row__cell { min-width: 0; }
-/* every second picture a little lower */
-.bench-row__grid > .bench-row__cell:nth-child(even) { margin-top: 3vw; margin-bottom: -3vw; }
-.bench-row__tile { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; background: var(--neutral-900); }
-.bench-row__tile img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
-.bench-row__tile::before {
-  content: ''; position: absolute; inset: 0 0 auto 0; height: 38%; z-index: 1;
-  background: linear-gradient(180deg, rgba(19, 59, 92, 0.42), rgba(19, 59, 92, 0));
-  pointer-events: none;
-}
-.bench-row__label {
-  position: absolute; top: 22px; right: 22px; z-index: 2; max-width: 80%; text-align: right;
-  font-family: 'Manrope', var(--font-body); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
-  line-height: 1.35; color: #fff;
-}
-.bench-row__label::after {
-  content: ''; display: block; height: 1px; margin: 8px 0 0 auto; width: 0; background: currentColor;
-  transition: width 0.45s ease;
-}
-.bench-row__tile:hover img { transform: scale(1.05); }
-.bench-row__tile:hover .bench-row__label::after { width: 100%; }
-@media (max-width: 900px) {
-  .bench-row__grid { grid-template-columns: repeat(2, 1fr); column-gap: 14px; row-gap: 22px; }
-  .bench-row__grid > .bench-row__cell:nth-child(even) { margin-top: 36px; margin-bottom: -36px; }
-  .bench-row { width: calc(100% - 28px); margin-top: 72px; }
-  .bench-row__label { top: 14px; right: 14px; font-size: 0.7rem; letter-spacing: 0.12em; }
+/* Phones: without the career tile the rows of two come out even */
+@media (max-width: 600px) {
+  .look-bench .discover__grid > .is-career { display: none; }
 }
