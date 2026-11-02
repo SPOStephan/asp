@@ -4,6 +4,8 @@ import type { Hotel, HotelFAQ, HotelSection } from '../lib/supabase';
 
 // Everything the site shows for one hotel. The browser and the server renderer
 // load it the same way, so this file is the only place that knows the database.
+export const BRAND_CREST_PATH = '/marke/wappen';
+
 export type HotelContent = {
   hotel: Hotel;
   sections: Record<string, Record<string, any>>;
@@ -69,7 +71,10 @@ async function loadHotelSiteContent(client: SupabaseClient, resolvedHotel: Hotel
     Promise.resolve(client.rpc('organization_brand', { p_hotel: hotelId })).catch(() => ({ data: null })),
   ]);
   const brandData = (brandResult as { data?: unknown }).data;
-  const brand = brandData && typeof brandData === 'object' && !Array.isArray(brandData) ? (brandData as { crest_image?: string }) : {};
+  const brand = brandData && typeof brandData === 'object' && !Array.isArray(brandData) ? { ...(brandData as { crest_image?: string }) } : {};
+  // A crest stored directly in the database (data: address) is served as its own file, so the
+  // page itself stays small (api/site.ts, file=crest).
+  if (brand.crest_image?.startsWith('data:')) brand.crest_image = BRAND_CREST_PATH;
 
   const pages: Record<string, boolean> = {};
   for (const row of pagesResult.data ?? []) {

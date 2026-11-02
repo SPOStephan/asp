@@ -39,7 +39,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-// Benchmark (limehome): every amenity gets the icon that fits it, instead of the same
+// Idea from the benchmark (limehome): every amenity gets the icon that fits it, instead of the same
 // sparkle for everything the short list in src/lib/rooms.ts does not know. Order matters:
 // the first match wins ("Wohnzimmer mit Sofa und Schreibtisch" is the sofa).
 const RULES: Array<[RegExp, LucideIcon]> = [
@@ -82,7 +82,7 @@ const RULES: Array<[RegExp, LucideIcon]> = [
   [/spa|wellness/, Sparkles],
 ];
 
-export function benchAmenityIcon(label: string): LucideIcon | null {
+export function amenityIcon(label: string): LucideIcon | null {
   const value = label.toLowerCase();
   for (const [re, icon] of RULES) if (re.test(value)) return icon;
   return null;

@@ -14,8 +14,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { AmenityIcon, RoomFeature } from '../lib/rooms';
-import { useBench } from '../context/BenchContext';
-import { benchAmenityIcon } from '../benchmark/benchAmenityIcon';
+import { amenityIcon } from '../lib/amenityIcons';
 
 const ICONS: Record<AmenityIcon, LucideIcon> = {
   bed: BedDouble,
@@ -38,13 +37,12 @@ interface RoomAmenityGridProps {
 }
 
 export function RoomAmenityGrid({ items, color }: RoomAmenityGridProps) {
-  const bench = useBench();
   if (!items.length) return null;
 
   return (
     <ul className="room-amenities" aria-label="Ausstattung">
       {items.map((item) => {
-        const Icon = (bench && benchAmenityIcon(item.label)) || ICONS[item.icon];
+        const Icon = amenityIcon(item.label) || ICONS[item.icon];
         return (
           <li key={item.label} className="room-amenities__item" style={color ? { color } : undefined}>
             <Icon size={22} strokeWidth={1.4} aria-hidden="true" />

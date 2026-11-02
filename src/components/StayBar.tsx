@@ -5,16 +5,16 @@ const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 
 
 // "2 Nov 2026": the day strong, month and year light – like a caption, without fields.
 function StayDate({ value, placeholder }: { value: string | null; placeholder: string }) {
-  if (!value) return <span className="bench-stay__empty">{placeholder}</span>;
+  if (!value) return <span className="stay-bar__empty">{placeholder}</span>;
   const [year, month, day] = value.split('-').map(Number);
   return (
-    <span className="bench-stay__date">
+    <span className="stay-bar__date">
       <b>{day}</b> {MONTHS[month - 1]} {year}
     </span>
   );
 }
 
-export function BenchStay({
+export function StayBar({
   query,
   open,
   onToggle,
@@ -30,17 +30,17 @@ export function BenchStay({
   inquiry: { label: string; href: string } | null;
 }) {
   return (
-    <div className="bench-stay">
+    <div className="stay-bar">
       <button
         type="button"
         id={guestsId}
-        className={`bench-stay__pick${open === 'guests' ? ' is-open' : ''}`}
+        className={`stay-bar__pick${open === 'guests' ? ' is-open' : ''}`}
         aria-expanded={open === 'guests'}
         aria-haspopup="dialog"
         aria-label={`Zahl der Gäste: ${formatGuestSummary(query.adults, query.children)}`}
         onClick={() => onToggle('guests')}
       >
-        <span className="bench-stay__date">
+        <span className="stay-bar__date">
           <b>{query.adults}</b> {query.adults === 1 ? 'Erwachsener' : 'Erwachsene'}
           {query.children ? (
             <>
@@ -53,25 +53,25 @@ export function BenchStay({
       <button
         type="button"
         id={datesId}
-        className={`bench-stay__pick${open === 'dates' ? ' is-open' : ''}`}
+        className={`stay-bar__pick${open === 'dates' ? ' is-open' : ''}`}
         aria-expanded={open === 'dates'}
         aria-haspopup="dialog"
         aria-label="Reisezeitraum wählen"
         onClick={() => onToggle('dates')}
       >
         <StayDate value={query.arrival} placeholder="Anreise" />
-        <span className="bench-stay__dash" aria-hidden="true">–</span>
+        <span className="stay-bar__dash" aria-hidden="true">–</span>
         <StayDate value={query.departure} placeholder="Abreise" />
       </button>
-      <button type="submit" className={`bench-stay__book${inquiry?.href ? '' : ' bench-stay__book--solid'}`}>
+      <button type="submit" className={`stay-bar__book${inquiry?.href ? '' : ' stay-bar__book--solid'}`}>
         Buchen
       </button>
       {inquiry?.href ? (
-        <a className="bench-stay__ask" href={inquiry.href}>
+        <a className="stay-bar__ask" href={inquiry.href}>
           {inquiry.label}
         </a>
       ) : null}
-      <span className="bench-stay__chat">
+      <span className="stay-bar__chat">
         <ConciergeButton />
       </span>
     </div>

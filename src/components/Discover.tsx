@@ -5,11 +5,9 @@ import { MUSTER_MEDIA, resolveDiscoverTiles, resolveMedia } from '../lib/media';
 import { remapSiteHref } from '../lib/links';
 import { ScriptWords } from './ScriptWords';
 import { Reveal } from './Reveal';
-import { useBench } from '../context/BenchContext';
 
 export function Discover() {
   const data = useSection('discover');
-  const bench = useBench();
 
   if (!data) return null;
 
@@ -45,8 +43,8 @@ export function Discover() {
             <Reveal
               key={tile.id}
               delay={i * 70}
-              // Benchmark: the career tile leaves the phone grid, so the rows of two come out even.
-              className={bench && /karriere|jobs|stellen/i.test(`${tile.title} ${tile.href}`) ? 'is-career' : ''}
+              // The career tile leaves the phone grid, so the rows of two come out even.
+              className={/karriere|jobs|stellen/i.test(`${tile.title} ${tile.href}`) ? 'is-career' : ''}
             >
               <a
                 className="discover__tile"

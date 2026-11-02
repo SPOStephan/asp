@@ -4,8 +4,7 @@ import { FOOTER_FALLBACK } from '../cms/cmsPages';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { MUSTER_MEDIA, resolveMedia } from '../lib/media';
 import { remapSiteHref } from '../lib/links';
-import { useBench } from '../context/BenchContext';
-import { BenchCrest } from '../benchmark/BenchCrest';
+import { Crest } from './Crest';
 
 interface FooterLink {
   label: string;
@@ -16,7 +15,6 @@ export function Footer() {
   const stored = useSection('footer');
   const navbar = useSection('navbar');
   const hotel = useHotel();
-  const bench = useBench();
   const { isPageEnabled } = useHotelContent();
   const data = { ...FOOTER_FALLBACK, ...stored };
 
@@ -28,8 +26,8 @@ export function Footer() {
   return (
     <CmsSection sectionKey="footer" label="Footer">
     <footer className="footer" id="buchung">
-      {/* Benchmark: the group's crest large and faint behind the footer */}
-      {bench ? <BenchCrest className="bench-crest--footer" /> : null}
+      {/* The group's crest large and faint behind the footer */}
+      <Crest className="crest-mark--footer" />
       <div className="footer__inner">
         <div className="footer__top">
           <div className="footer__brand">

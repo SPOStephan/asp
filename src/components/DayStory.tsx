@@ -4,7 +4,6 @@ import { CmsSection } from '../cms/CmsSection';
 import { useCms } from '../cms/CmsContext';
 import { useSection } from '../context/HotelContext';
 import { PLACEHOLDER_IMAGE } from '../lib/media';
-import './bench.css';
 
 interface DayItem {
   time?: string;
@@ -17,7 +16,7 @@ interface DayItem {
 
 const pad = (value: number) => String(value).padStart(2, '0');
 
-// Benchmark idea (Hotel Hubertus, G136): "Ein Tag in unserem Hotel" – the day as stations,
+// Idea from the benchmark (Hotel Hubertus, G136): "Ein Tag in unserem Hotel" – the day as stations,
 // each with time, short text and picture; the next picture peeks in at the right. All texts
 // and pictures come from the CMS section "day_story"; without entries nothing is shown
 // (in the CMS an empty frame invites to fill it).
