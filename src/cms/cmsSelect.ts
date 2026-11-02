@@ -29,7 +29,7 @@ export const CMS_SECTION_LABELS: Record<string, string> = {
   wellness: 'Wellness',
   highlights: 'Highlights',
   culinary: 'Kulinarik',
-  generations: 'Generationen',
+  generations: 'Für jeden Anlass',
   awards: 'Awards',
   impressions: 'Impressionen',
   day_story: 'Ein Tag im Hotel (Benchmark)',

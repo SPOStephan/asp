@@ -13,14 +13,16 @@ import { Newsletter } from '../components/Newsletter';
 import { Offers } from '../components/Offers';
 import { Welcome } from '../components/Welcome';
 import { Wellness } from '../components/Wellness';
-import { useCms } from '../cms/CmsContext';
 import { useBench } from '../context/BenchContext';
 import { DayStory } from '../benchmark/DayStory';
+import { useBlockOnHome } from '../components/PageBlocks';
 
 export function HomePage() {
-  // Benchmark sections: only in the benchmark copy, and in the CMS so they can be filled.
+  // Building blocks (src/lib/blocks.ts) keep their place here while the start page is
+  // ticked for them in the CMS. The benchmark copy shows the start page without them.
   const bench = useBench();
-  const cms = useCms();
+  const dayStory = useBlockOnHome('day_story') && !bench;
+  const generations = useBlockOnHome('generations') && !bench;
   return (
     <main>
       <Hero />
@@ -29,10 +31,10 @@ export function HomePage() {
       <DirectBooking />
       <Offers />
       <Wellness />
-      {bench || cms ? <DayStory /> : null}
+      {dayStory ? <DayStory /> : null}
       <Highlights />
       <Culinary />
-      <Generations />
+      {generations ? <Generations /> : null}
       <Awards />
       <Impressions />
       <Facts />

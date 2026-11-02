@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { BLOCK_KEYS, BLOCK_LIBRARY, BLOCK_PLACES, blockPages } from '../lib/blocks';
 import { Trash2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
@@ -191,6 +192,9 @@ export function CmsEditor() {
                 {key}
               </Link>
             ))}
+          <Link to="/cms/bausteine" aria-current={location.pathname === '/cms/bausteine' ? 'page' : undefined}>
+            Bausteine
+          </Link>
           <a href="/">Öffentliche Seite</a>
         </nav>
       </header>
@@ -306,6 +310,9 @@ function NavbarFields() {
       </p>
       <CmsImageField focus="logo" label="Logo weiß (auf dem Header)" value={String(data.logo_white || draft.logo_white)} section="navbar" path="logo_white" />
       <CmsImageField focus="logo" label="Logo farbig (helle Leiste)" value={String(data.logo_normal || draft.logo_normal)} section="navbar" path="logo_normal" />
+      {/* Crest or signet as a quiet decoration (e.g. below "Direktbuchung"); purely decorative,
+          so it has no alt text of its own. Best as a transparent PNG in one colour. */}
+      <CmsImageField focus="crest" label="Wappen / Signet (dezente Grafik, transparentes PNG)" value={String(data.crest_image ?? '')} section="navbar" path="crest_image" />
 
       <fieldset className="cms-fade">
         <legend>Menüpunkte in der Leiste (Desktop)</legend>
@@ -1221,6 +1228,7 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
           </p>
         </fieldset>
       ) : null}
+      {BLOCK_KEYS.has(sectionKey) ? <BlockPlacesField sectionKey={sectionKey} draft={draft} setDraft={setDraft} /> : null}
       {(SECTION_SLIDERS[sectionKey] ?? []).map((slider) => {
         const current = Math.min(100, Math.max(0, Number(draft[slider.key]) || 0));
         return (
@@ -1235,7 +1243,7 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
         );
       })}
       {entries.map(([key, value]) =>
-        key === 'icon_color' || key === 'show_prices' || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : key.endsWith('_href') && typeof value === 'string' ? (
+        key === 'icon_color' || key === 'show_prices' || (BLOCK_KEYS.has(sectionKey) && key === 'pages') || (sectionKey === 'blog_page' && key === 'filters') || SECTION_SLIDERS[sectionKey]?.some((slider) => slider.key === key) ? null : key.endsWith('_href') && typeof value === 'string' ? (
           // Button targets of a section (e.g. "Alle Impressionen"): choose a page or address.
           <CmsLinkPicker key={key} label={key} value={value} onChange={(next) => setDraft({ ...draft, [key]: next })} />
         ) : (
@@ -1251,6 +1259,37 @@ function GenericFields({ sectionKey }: { sectionKey: string }) {
       )}
       <SaveBar sectionKey={sectionKey} onSave={() => cms!.saveSection(sectionKey, payload)} />
     </form>
+  );
+}
+
+// Building blocks: on which pages the block appears (src/lib/blocks.ts).
+function BlockPlacesField({
+  sectionKey,
+  draft,
+  setDraft,
+}: {
+  sectionKey: string;
+  draft: Record<string, unknown>;
+  setDraft: (next: Record<string, unknown>) => void;
+}) {
+  const def = BLOCK_LIBRARY.find((block) => block.key === sectionKey);
+  if (!def) return null;
+  const pages = blockPages(def, draft);
+  const toggle = (path: string, on: boolean) => {
+    const next = on ? [...pages.filter((item) => item !== path), path] : pages.filter((item) => item !== path);
+    setDraft({ ...draft, pages: BLOCK_PLACES.map((place) => place.path).filter((item) => next.includes(item)) });
+  };
+  return (
+    <fieldset className="cms-fade" data-cms-panel-focus="pages">
+      <legend>Erscheint auf</legend>
+      <p className="cms-muted">Baustein aus der Bibliothek: einmal gepflegt, auf allen gewählten Seiten gleich. Auf Unterseiten steht er am Ende, über dem Footer.</p>
+      {BLOCK_PLACES.map((place) => (
+        <label key={place.path} className="cms-choice">
+          <input type="checkbox" checked={pages.includes(place.path)} onChange={(event) => toggle(place.path, event.target.checked)} />
+          {place.label}
+        </label>
+      ))}
+    </fieldset>
   );
 }
 

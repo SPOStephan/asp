@@ -23,7 +23,7 @@ export function Generations() {
   const images: GenImage[] = data.images ?? [];
 
   return (
-    <CmsSection sectionKey="generations" label="Generationen">
+    <CmsSection sectionKey="generations" label="Für jeden Anlass">
     <section className="generations" id="suiten">
       <div className="container">
         <Reveal>

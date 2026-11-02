@@ -328,3 +328,18 @@ body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
 @media (max-width: 600px) {
   .look-bench .discover__grid > .is-career { display: none; }
 }
+
+/* ---------- Crest as a quiet graphic ---------- */
+.look-bench .direct-booking { position: relative; overflow: hidden; }
+.look-bench .direct-booking__inner { position: relative; z-index: 1; }
+.bench-crest { position: absolute; pointer-events: none; overflow: hidden; }
+.bench-crest img { display: block; width: 100%; height: auto; }
+/* Direktbuchung: the upper part (rays and helmet) rises from the lower edge, bottom left */
+.bench-crest--direct {
+  left: 5%;
+  bottom: 0;
+  width: min(30vw, 440px);
+  aspect-ratio: 900 / 430; /* the upper ~40 % of the crest */
+  opacity: 0.13;
+}
+@media (max-width: 800px) { .bench-crest--direct { display: none; } }
