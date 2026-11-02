@@ -18,6 +18,8 @@ import {
 import { memberBookingTarget, useWebsiteMember } from '../member/useMember';
 import { PORTAL_URL } from '../portal/config';
 import { useCms } from '../cms/CmsContext';
+import { useBench } from '../context/BenchContext';
+import { BenchStay } from '../benchmark/BenchStay';
 
 interface AvailabilityBarFormProps {
   idPrefix?: string;
@@ -80,6 +82,7 @@ function AvailabilityBarFormModern({
   }, [open, variant]);
 
   const sheet = variant === 'sheet';
+  const bench = useBench();
 
   const toggle = (layer: Exclude<OpenLayer, null>) => {
     setOpen((current) => (current === layer ? null : layer));
@@ -130,11 +133,23 @@ function AvailabilityBarFormModern({
         />
       ) : null}
 
+      {bench && !sheet ? (
+        // Benchmark: a light bar like a caption – stay as text, "Buchen" and "Anfragen".
+        <BenchStay
+          query={query}
+          open={open}
+          onToggle={toggle}
+          guestsId={guestsId}
+          datesId={datesId}
+          inquiryHref={hotel?.email ? inquiryMailHref(hotel.email, query) : ''}
+        />
+      ) : null}
       <input type="hidden" name="arrival" value={query.arrival ?? ''} />
       <input type="hidden" name="departure" value={query.departure ?? ''} />
       <input type="hidden" name="adults" value={String(query.adults)} />
       <input type="hidden" name="children" value={String(query.children)} />
 
+      {bench && !sheet ? null : (<>
       <div className="availability-bar__pickers">
         <button
           type="button"
@@ -214,6 +229,7 @@ function AvailabilityBarFormModern({
           <ConciergeButton />
         </>
       )}
+      </>)}
     </form>
   );
 }

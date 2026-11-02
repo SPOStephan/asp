@@ -14,6 +14,12 @@ export function FixedAvailabilityBar({ revealOnScroll = false }: { revealOnScrol
   }, [revealOnScroll]);
 
   const waiting = revealOnScroll && !scrolled;
+  // Lets the top bar know whether the booking bar is on screen yet (benchmark: the top
+  // "Buchen" only shows while the bar waits).
+  useEffect(() => {
+    document.body.classList.toggle('bar-waiting', waiting);
+    return () => document.body.classList.remove('bar-waiting');
+  }, [waiting]);
   return (
     <div id="buchung-fixed" className={`availability-bar is-stuck${waiting ? ' is-waiting' : ''}`}>
       <AvailabilityBarForm idPrefix="fixed-" />

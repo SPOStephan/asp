@@ -1,0 +1,186 @@
+/* Benchmark copy of the website (/benchmark): everything here is scoped to .look-bench, so the
+   live pages stay exactly as they are. Ideas from the competitor benchmark, see the report. */
+
+/* ---------- Before/after switch (bottom left) ---------- */
+.bench-switch {
+  position: fixed;
+  left: 16px;
+  bottom: 96px;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(19, 59, 92, 0.18);
+  box-shadow: 0 6px 18px rgba(10, 32, 50, 0.14);
+  font-family: 'Manrope', 'Inter', sans-serif;
+}
+body.has-mobile-dock .bench-switch { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+.bench-switch button,
+.bench-switch a {
+  padding: 7px 11px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-700, #133b5c);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+}
+.bench-switch button[aria-pressed='true'] { background: var(--primary-700, #133b5c); color: #fff; }
+.bench-switch__pair { border-left: 1px solid rgba(19, 59, 92, 0.18) !important; }
+@media (max-width: 600px) { .bench-switch__pair { display: none; } }
+
+/* ---------- Side-by-side page ---------- */
+.bench-compare { min-height: 100vh; background: #e9e6e1; font-family: 'Manrope', 'Inter', sans-serif; }
+.bench-compare__bar {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px;
+  padding: 12px 16px; background: #fff; border-bottom: 1px solid #d9d4cc; font-size: 0.85rem;
+}
+.bench-compare__bar label { display: flex; align-items: center; gap: 8px; }
+.bench-compare__bar input:not([type='checkbox']) { width: 220px; padding: 6px 8px; border: 1px solid #c9c2b6; font: inherit; }
+.bench-compare__bar a { color: var(--primary-700, #133b5c); }
+.bench-compare__seg { display: flex; border: 1px solid #c9c2b6; }
+.bench-compare__seg button { padding: 6px 12px; background: none; border: 0; font: inherit; cursor: pointer; }
+.bench-compare__seg button[aria-pressed='true'] { background: var(--primary-700, #133b5c); color: #fff; }
+.bench-compare__stage { display: flex; justify-content: center; gap: 12px; padding: 12px; }
+.bench-compare__side { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.bench-compare__side figcaption { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #5b6670; }
+.bench-compare__frame { overflow: hidden; background: #fff; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); }
+.bench-compare__frame iframe { display: block; border: 0; transform-origin: 0 0; }
+
+/* ---------- Hero: a slow, light zoom of the picture (Forsthofgut) ---------- */
+@keyframes bench-hero-zoom {
+  from { scale: 1; }
+  to { scale: 1.12; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .look-bench .subpage-hero__image img,
+  .look-bench .hero__bg img {
+    animation: bench-hero-zoom 25s linear both;
+    will-change: scale;
+  }
+}
+
+/* ---------- Top bar (desktop): only "Menü", logo and contact icons ---------- */
+@media (min-width: 901px) {
+  .look-bench .navbar__links { display: none; }
+  /* "Buchen" at the top only while the booking bar is not on screen yet */
+  .look-bench .navbar__actions { display: none; }
+  body.bar-waiting .look-bench .navbar__actions { display: flex; }
+}
+.look-bench .navbar__contact { display: flex; align-items: center; gap: 4px; margin-right: 4px; }
+.look-bench .navbar__contact a {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  color: #fff; transition: color 0.35s ease;
+}
+.look-bench .navbar__contact a:hover { color: var(--accent-300); }
+.look-bench .navbar--scrolled .navbar__contact a,
+.look-bench .navbar--menu-open .navbar__contact a { color: var(--primary-700); }
+.look-bench .navbar--scrolled .navbar__contact a:hover { color: var(--accent-400); }
+
+/* ---------- Booking bar: light like a caption (Forsthofgut) ---------- */
+.look-bench .availability-bar.is-stuck {
+  background: rgba(250, 248, 245, 0.97);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(19, 59, 92, 0.12);
+  box-shadow: none;
+}
+body.has-fixed-bar:has(.look-bench) { padding-bottom: 66px; }
+.look-bench .availability-bar__form--modern { padding: 10px 0; justify-content: center; }
+.bench-stay {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  width: 100%;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  color: var(--primary-700, #133b5c);
+}
+.bench-stay__pick {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 8px 12px;
+  background: none; border: 0; border-bottom: 1px solid transparent;
+  color: inherit; font: inherit; cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+.bench-stay__pick:hover,
+.bench-stay__pick.is-open { border-bottom-color: var(--accent-400); }
+.bench-stay__date { font-size: 0.95rem; font-weight: 300; letter-spacing: 0.12em; white-space: nowrap; }
+.bench-stay__date b { font-weight: 700; letter-spacing: 0.04em; }
+.bench-stay__empty { font-size: 0.9rem; font-weight: 300; letter-spacing: 0.12em; color: rgba(19, 59, 92, 0.6); }
+.bench-stay__dash { font-weight: 300; color: rgba(19, 59, 92, 0.5); }
+.bench-stay__book,
+.bench-stay__ask {
+  display: inline-grid; place-items: center;
+  min-width: 150px; height: 42px; padding: 0 22px;
+  font-family: inherit; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  text-decoration: none; cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.bench-stay__book { margin-left: 18px; background: transparent; color: var(--primary-700, #133b5c); border: 1px solid var(--primary-700, #133b5c); }
+.bench-stay__book:hover { background: var(--primary-700, #133b5c); color: #fff; }
+.bench-stay__ask { background: var(--primary-700, #133b5c); color: #fff; border: 1px solid var(--primary-700, #133b5c); }
+.bench-stay__ask:hover { background: var(--accent-400); border-color: var(--accent-400); }
+/* The chat stays, smaller and quieter, at the right edge of the bar */
+.bench-stay__chat { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+.look-bench .bench-stay__chat .availability-bar__chat {
+  display: grid; width: 46px; height: 46px; margin: 0;
+  box-shadow: none; border-color: transparent;
+}
+.look-bench .bench-stay__chat .availability-bar__chat-icon { width: 26px; height: 26px; }
+/* The layers (calendar, guests) open above the light bar as before */
+.look-bench .availability-bar.is-stuck .availability-layer { color: var(--neutral-900); }
+
+/* ---------- "Ein Tag in unserem Hotel" (Hotel Hubertus) ---------- */
+.day-story { padding: 110px 0 120px; background: var(--neutral-50, #faf8f5); overflow: hidden; }
+.day-story__head { width: 90%; margin: 0 auto 48px; }
+.day-story__title { font-size: clamp(2rem, 3.6vw, 3rem); font-weight: 300; margin: 10px 0 0; }
+.day-story__stage {
+  display: grid;
+  grid-template-columns: minmax(0, 46fr) minmax(0, 30fr) minmax(0, 18fr);
+  gap: 56px;
+  align-items: center;
+  padding-left: 5%;
+}
+.day-story__image { margin: 0; aspect-ratio: 16 / 10; overflow: hidden; }
+.day-story__image img { width: 100%; height: 100%; object-fit: cover; animation: day-story-in 0.7s ease both; }
+.day-story__copy { animation: day-story-in 0.7s ease both; }
+@keyframes day-story-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .day-story__image img, .day-story__copy { animation: none; }
+}
+.day-story__time {
+  display: flex; align-items: baseline; gap: 12px; margin: 0;
+  font-family: var(--font-heading); font-weight: 300; font-size: clamp(3rem, 5vw, 4.4rem); line-height: 1;
+  color: var(--primary-700, #133b5c);
+}
+.day-story__time small {
+  font-family: 'Manrope', var(--font-body); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent-400);
+}
+.day-story__name {
+  margin: 22px 0 10px;
+  font-family: 'Manrope', var(--font-body); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--neutral-900);
+}
+.day-story__text { margin: 0; max-width: 34ch; font-size: 1rem; line-height: 1.75; color: var(--neutral-600, #4f5a63); }
+.day-story__nav { display: flex; align-items: center; gap: 18px; margin-top: 34px; }
+.day-story__nav button {
+  display: grid; place-items: center; width: 42px; height: 42px;
+  border: 1px solid rgba(19, 59, 92, 0.25); border-radius: 50%; color: var(--primary-700, #133b5c);
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.day-story__nav button:hover { background: var(--primary-700, #133b5c); border-color: var(--primary-700, #133b5c); color: #fff; }
+.day-story__count { font-family: 'Manrope', var(--font-body); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.2em; color: var(--neutral-600, #4f5a63); }
+.day-story__next { height: 100%; max-height: 420px; padding: 0; overflow: hidden; opacity: 0.85; transition: opacity 0.3s ease; }
+.day-story__next:hover { opacity: 1; }
+.day-story__next img { width: 100%; height: 100%; min-height: 300px; object-fit: cover; }
+.day-story__empty { width: 90%; margin: 0 auto; padding: 40px; border: 1px dashed rgba(19, 59, 92, 0.3); color: var(--neutral-600, #4f5a63); }
+@media (max-width: 900px) {
+  .day-story { padding: 72px 0 80px; }
+  .day-story__stage { grid-template-columns: 1fr; gap: 26px; padding: 0 5%; }
+  .day-story__next { display: none; }
+  .day-story__nav { margin-top: 24px; }
+}

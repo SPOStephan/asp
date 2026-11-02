@@ -56,6 +56,8 @@ const CULINARY_FALLBACK = {
 export const CMS_SECTION_FALLBACKS: Record<string, Record<string, unknown>> = {
   // Phones show the impressions one below the other unless this is switched on.
   impressions: { mobile_grid: false },
+  // Benchmark idea (Hotel Hubertus): the day in the hotel as a slider of stations.
+  day_story: { eyebrow: 'Ein Tag im Hotel', title: 'Ein Tag in unserem Hotel', items: [] },
   culinary: CULINARY_FALLBACK,
   wellness_page: WELLNESS_PAGE_FALLBACK,
   culinary_page: CULINARY_PAGE_FALLBACK,
