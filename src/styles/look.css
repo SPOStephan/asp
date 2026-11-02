@@ -379,3 +379,17 @@ a.culinary__img-block:hover .culinary__img-label h3::after,
   opacity: 0.08;
 }
 @media (max-width: 900px) { .crest-mark--footer { width: 90vw; right: -30%; } }
+
+/* ---------- Links inside CMS texts ([Text](/pfad)) ----------
+   Quiet: the text colour with a fine gold line below, gold on hover – no loud underlines. */
+.text-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(149, 118, 64, 0.45);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.25s ease, text-decoration-color 0.25s ease;
+}
+.text-link:hover { color: var(--accent-500); text-decoration-color: currentColor; }
+/* "Weiterlesen" below the welcome text on every device */
+.welcome__more { margin: 6px auto 0; }

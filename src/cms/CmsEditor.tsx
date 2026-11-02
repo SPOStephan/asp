@@ -651,6 +651,7 @@ function WelcomeFields() {
     subtitle: String(data.subtitle ?? ''),
     text_paragraph1: String(data.text_paragraph1 ?? ''),
     text_paragraph2: String(data.text_paragraph2 ?? ''),
+    text_facts: String(data.text_facts ?? ''),
   });
 
   useEffect(() => {
@@ -661,6 +662,7 @@ function WelcomeFields() {
       subtitle: String(data.subtitle ?? ''),
       text_paragraph1: String(data.text_paragraph1 ?? ''),
       text_paragraph2: String(data.text_paragraph2 ?? ''),
+      text_facts: String(data.text_facts ?? ''),
     });
   }, [cms?.draftTick]);
 
@@ -685,6 +687,12 @@ function WelcomeFields() {
       <div onKeyUpCapture={rememberCaret('text_paragraph2')} onClickCapture={rememberCaret('text_paragraph2')} onSelectCapture={rememberCaret('text_paragraph2')}>
         <Field focus="text" path="text_paragraph2" label="Absatz 2" value={draft.text_paragraph2} onChange={(text_paragraph2) => setDraft({ ...draft, text_paragraph2 })} multiline />
       </div>
+      <Field focus="text" path="text_facts" label="Mehr über das Haus (hinter „Weiterlesen“, mit Links)" value={draft.text_facts} onChange={(text_facts) => setDraft({ ...draft, text_facts })} multiline />
+      <p className="cms-muted">
+        Ein Absatz mit den wichtigsten Fakten und Links auf die Seiten der Website – hilft Suchmaschinen und KI-Antworten. Er
+        steht hinter „Weiterlesen“ und bleibt für Suchmaschinen und KI vollständig lesbar. Link schreiben: [Zimmer &amp; Suiten](/zimmer).
+        Vorerst nur unter /benchmark zu sehen.
+      </p>
       <fieldset className="cms-fade">
         <legend>Kürzung auf Handys</legend>
         <p className="cms-muted">

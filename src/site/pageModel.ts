@@ -1,4 +1,5 @@
 import { BLOG_PAGE_FALLBACK, blogHref, latestBlogPosts, resolveBlogPosts } from '../lib/blog';
+import { stripInline } from '../lib/inlineLinks';
 import { CULINARY_PAGE_FALLBACK, resolveCulinaryRhythm, resolveCulinaryVenues } from '../lib/culinary';
 import { IMPRESSIONS_PAGE_FALLBACK, resolveImpressions } from '../lib/impressions';
 import { remapSiteHref } from '../lib/links';
@@ -254,7 +255,7 @@ export class SiteModel {
     // A real sentence describes a page better than a short tagline like "Meer · Ruhe · Weite".
     const candidates = [input.lead ?? '', ...input.blocks.flatMap((block) => [...(block.text ?? []), ...(block.items ?? []).map((item) => item.text ?? '')])];
     const firstText = candidates.find((text) => str(text).length >= 60) || input.lead || candidates.find(Boolean) || '';
-    const description = clip(input.description || (home ? str(hotel.seo_description) : '') || firstText || hotel.name);
+    const description = clip(stripInline(input.description || (home ? str(hotel.seo_description) : '') || firstText || hotel.name));
     const breadcrumbs = home ? [] : [{ label: 'Startseite', href: '/' }, ...(input.crumbs ?? []), { label: input.h1, href: path }];
     const jsonLd: Record<string, unknown>[] = [
       this.hotelJsonLd(),
