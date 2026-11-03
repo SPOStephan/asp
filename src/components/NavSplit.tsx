@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { remapSiteHref } from '../lib/links';
 import { menuPreview } from '../lib/menuPreview';
 import { Crest } from './Crest';
@@ -7,12 +6,13 @@ import { Crest } from './Crest';
 type Link = { label: string; href: string };
 type Group = { title: string; href?: string; links: Link[] };
 
-// Menu variant /navi02 (desktop): one calm screen in three parts.
-//   left   – the main areas, large, one below the other (hover, focus or arrow keys choose)
-//   middle – what the chosen area holds; areas without sub-pages show their line instead
-//   right  – the picture of the chosen area, changing softly
-// Below: the service row. Every area keeps its own page link; nothing needs a second click to
-// be found, and the picture tells at a glance where a click leads.
+// Menu variant /navi02 (desktop): calm and spacious.
+//   left  – the main areas one below the other, in the spaced capitals of the site
+//   next  – a fine line leads from the chosen area to its pages, which stand at its height;
+//           areas without pages show the line of their page there
+//   right – the picture of the chosen area, below it the service row
+// The chosen area stays chosen until another one is chosen (nothing closes when the mouse
+// leaves); on touch screens the first tap shows an area's pages, the second opens the area.
 export function NavSplit({
   groups,
   service,
@@ -27,9 +27,19 @@ export function NavSplit({
   onNavigate: (href: string, label?: string) => void;
 }) {
   const [active, setActive] = useState(0);
+  const [offset, setOffset] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
-  const group = groups[Math.min(active, groups.length - 1)];
+  const canHover = typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches;
+  const index = Math.max(0, Math.min(active, groups.length - 1));
+  const group = groups[index];
   const previews = groups.map((item) => menuPreview(groupHref(item), item.title, sections));
+
+  // The pages of the chosen area stand at its height.
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    const item = list?.children[index] as HTMLElement | undefined;
+    setOffset(list && item ? item.getBoundingClientRect().top - list.getBoundingClientRect().top : 0);
+  }, [index, groups.length]);
 
   // Arrow keys move through the areas, like a list.
   useEffect(() => {
@@ -48,9 +58,9 @@ export function NavSplit({
 
   if (!group) return null;
   const href = groupHref(group);
-  const preview = previews[Math.min(active, groups.length - 1)];
   const links = group.links.filter((link) => remapSiteHref(link.href, link.label) !== href);
-  const go = (target: string, label?: string) => (event: React.MouseEvent) => {
+  const teaser = links.length ? '' : previews[index].teaser;
+  const go = (target: string, label?: string) => (event: { preventDefault: () => void }) => {
     event.preventDefault();
     onNavigate(target, label);
   };
@@ -58,36 +68,66 @@ export function NavSplit({
   return (
     <div className="nav-split">
       <Crest className="crest-mark--menu" />
-      <ul className="nav-split__areas" ref={listRef} aria-label="Bereiche">
-        {groups.map((item, index) => {
-          const target = groupHref(item);
-          return (
-            <li key={item.title}>
-              <a
-                className={`nav-split__area heading-font${index === active ? ' is-active' : ''}`}
-                href={target ?? '#'}
-                aria-current={index === active ? 'true' : undefined}
-                onMouseEnter={() => setActive(index)}
-                onFocus={() => setActive(index)}
-                onClick={(event) => {
-                  event.preventDefault();
-                  if (target) onNavigate(target, item.title);
-                  else setActive(index);
-                }}
-              >
-                <span className="nav-split__num">{String(index + 1).padStart(2, '0')}</span>
-                {item.title}
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="nav-split__menu">
+        <ul className="nav-split__areas" ref={listRef} aria-label="Bereiche">
+          {groups.map((item, at) => {
+            const target = groupHref(item);
+            const hasPages = item.links.some((link) => remapSiteHref(link.href, link.label) !== target);
+            return (
+              <li key={item.title}>
+                <a
+                  className={`nav-split__area${at === index ? ' is-active' : ''}`}
+                  href={target ?? '#'}
+                  aria-current={at === index ? 'true' : undefined}
+                  onMouseEnter={() => setActive(at)}
+                  onFocus={() => setActive(at)}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    // Touch: first show what the area holds, then open it.
+                    if (!canHover && hasPages && at !== index) {
+                      setActive(at);
+                      return;
+                    }
+                    if (target) onNavigate(target, item.title);
+                    else setActive(at);
+                  }}
+                >
+                  <span>{item.title}</span>
+                  <i className="nav-split__rule" aria-hidden="true" />
+                </a>
+              </li>
+            );
+          })}
+        </ul>
 
-      <div className="nav-split__detail" key={group.title}>
-        <p className="nav-split__kicker">{group.title}</p>
-        {links.length ? (
-          <ul className="nav-split__links">
-            {links.map((link) => (
+        <div className="nav-split__pages" style={{ paddingTop: offset }}>
+          <div className="nav-split__pages-inner" key={group.title}>
+            {links.length ? (
+              <ul aria-label={group.title}>
+                {links.map((link) => (
+                  <li key={`${link.label}-${link.href}`}>
+                    <a href={remapSiteHref(link.href, link.label)} onClick={go(link.href, link.label)}>
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : teaser ? (
+              <p className="nav-split__teaser">{teaser}</p>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="nav-split__side">
+        <figure className="nav-split__picture" aria-hidden="true">
+          {previews.map((item, at) =>
+            item.image ? <img key={`${at}-${item.image}`} src={item.image} alt="" className={at === index ? 'is-active' : ''} loading="lazy" decoding="async" /> : null,
+          )}
+        </figure>
+        {service.length ? (
+          <ul className="nav-split__service" aria-label="Service">
+            {service.map((link) => (
               <li key={`${link.label}-${link.href}`}>
                 <a href={remapSiteHref(link.href, link.label)} onClick={go(link.href, link.label)}>
                   {link.label}
@@ -95,36 +135,8 @@ export function NavSplit({
               </li>
             ))}
           </ul>
-        ) : preview.teaser ? (
-          <p className="nav-split__teaser heading-font">{preview.teaser}</p>
-        ) : null}
-        {href ? (
-          <a className="text-cta nav-split__all" href={href} onClick={go(href, group.title)}>
-            <span className="text-cta__label">{links.length ? 'ZUR ÜBERSICHT' : 'ZUR SEITE'}</span>
-            <span className="text-cta__arrow" aria-hidden="true">
-              <ArrowUpRight size={14} strokeWidth={1.6} />
-            </span>
-          </a>
         ) : null}
       </div>
-
-      <figure className="nav-split__picture" aria-hidden="true">
-        {previews.map((item, index) =>
-          item.image ? <img key={`${index}-${item.image}`} src={item.image} alt="" className={index === active ? 'is-active' : ''} loading="lazy" decoding="async" /> : null,
-        )}
-      </figure>
-
-      {service.length ? (
-        <ul className="navbar__service nav-split__service" aria-label="Service">
-          {service.map((link) => (
-            <li key={`${link.label}-${link.href}`}>
-              <a href={remapSiteHref(link.href, link.label)} onClick={go(link.href, link.label)}>
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   );
 }

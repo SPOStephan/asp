@@ -118,23 +118,23 @@ function CompactMenu({
       <div className="navbar__steps-body">
         {group ? (
           <>
-            <h2 className="navbar__group-title">{group.title}</h2>
+            {/* The heading is the way to the group's page (no second entry of the same name). */}
+            {groupHref ? (
+              <a
+                className="navbar__group-title"
+                href={groupHref}
+                onClick={(event) => {
+                  event.preventDefault();
+                  onNavigate(groupHref, group.title);
+                }}
+              >
+                {group.title}
+                <ChevronRight size={18} strokeWidth={1.6} aria-hidden="true" />
+              </a>
+            ) : (
+              <h2 className="navbar__group-title">{group.title}</h2>
+            )}
             <ul className="navbar__group-links">
-              {groupHref &&
-              !group.links.some((link) => remapSiteHref(link.href, link.label) === groupHref) ? (
-                <li>
-                  <a
-                    className="navbar__hub"
-                    href={groupHref}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      onNavigate(groupHref, group.title);
-                    }}
-                  >
-                    {group.title}
-                  </a>
-                </li>
-              ) : null}
               {group.links.map((link) => (
                 <li key={`${group.title}-${link.label}`}>
                   <a
@@ -679,23 +679,11 @@ export function Navbar() {
                       ) : (
                         <h2 className="navbar__group-title">{group.title}</h2>
                       )}
-                      {groupHref && !group.links.some((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)) ? (
+                      {groupHref && !group.links.some((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)) &&
+                      menuPreview(groupHref, group.title, content?.sections ?? {}).teaser ? (
                         // A group without links of its own (Kulinarik …): the line of its page
-                        // and the way there, so it does not stand alone.
-                        <div className="navbar__group-teaser">
-                          {menuPreview(groupHref, group.title, content?.sections ?? {}).teaser ? (
-                            <p>{menuPreview(groupHref, group.title, content?.sections ?? {}).teaser}</p>
-                          ) : null}
-                          <a
-                            href={groupHref}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleNavClick(groupHref, group.title);
-                            }}
-                          >
-                            ZUR SEITE
-                          </a>
-                        </div>
+                        // below the title, which is the link.
+                        <p className="navbar__group-teaser">{menuPreview(groupHref, group.title, content?.sections ?? {}).teaser}</p>
                       ) : null}
                       <ul className="navbar__group-links">
                         {group.links.filter((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)).map((link) => (
