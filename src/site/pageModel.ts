@@ -1,10 +1,14 @@
 import { BLOG_PAGE_FALLBACK, blogHref, latestBlogPosts, resolveBlogPosts } from '../lib/blog';
 import { stripInline } from '../lib/inlineLinks';
 import { CULINARY_PAGE_FALLBACK, resolveCulinaryRhythm, resolveCulinaryVenues } from '../lib/culinary';
+import { blockPlacements, pageMatches } from '../lib/blocks';
+import { ABOUT_PAGE_FALLBACK, ABOUT_PATH, aboutFaqs, resolveAreas, resolveChapters, resolveFigures, resolveHosts } from '../lib/aboutPage';
+import { ARRIVAL_PAGE_FALLBACK, ARRIVAL_PATH, arrivalFaqs, resolveWays } from '../lib/arrivalPage';
 import { IMPRESSIONS_PAGE_FALLBACK, resolveImpressions } from '../lib/impressions';
 import { remapSiteHref } from '../lib/links';
 import { resolveDiscoverTiles } from '../lib/media';
-import { occasionHref, OCCASIONS_PAGE_FALLBACK, resolveOccasions } from '../lib/occasions';
+import { OCCASIONS_PAGE_FALLBACK } from '../lib/occasions';
+import { EVENTS_PAGE_KEY, topicArea, topicHref, type TopicArea, type TopicAreaKey } from '../lib/topicAreas';
 import { OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
 import { genericSectionKey, pageKeyFromHref, SYSTEM_TEMPLATES } from '../lib/pageTemplates';
 import { formatRoomPriceDetail, resolveRooms, ROOMS_PAGE_FALLBACK, roomHref } from '../lib/rooms';
@@ -136,6 +140,11 @@ export class SiteModel {
     const links: SiteLink[] = [{ label: 'Startseite', href: '/' }];
     for (const template of SYSTEM_TEMPLATES) {
       if (template.template_key === 'home' || !this.isAvailable(template.template_key)) continue;
+      if (template.template_key === EVENTS_PAGE_KEY) {
+        const events = this.area('events');
+        links.push({ label: events.title, href: events.basePath });
+        continue;
+      }
       links.push({ label: template.title, href: template.path_prefix });
     }
     for (const [key, on] of Object.entries(this.content.pages)) {
@@ -157,10 +166,10 @@ export class SiteModel {
         links.push({ label: topic.name, href: wellnessTopicHref(topic.id) });
       }
     }
-    if (this.isAvailable('anlaesse')) {
-      for (const occasion of resolveOccasions(sections.occasions_page?.items)) {
-        links.push({ label: occasion.name, href: occasionHref(occasion.id) });
-      }
+    for (const [key, pageKey] of [['region', 'anlaesse'], ['events', EVENTS_PAGE_KEY]] as const) {
+      if (!this.isAvailable(pageKey)) continue;
+      const area = this.area(key);
+      for (const item of area.items) links.push({ label: item.name, href: topicHref(area, item.id) });
     }
     if (this.isAvailable('angebote')) {
       for (const offer of resolveOfferStories(sections.offers_page?.items, sections.offers?.items)) {
@@ -219,14 +228,25 @@ export class SiteModel {
         return this.isAvailable('wellness') ? (second ? this.wellnessTopic(second) : this.wellness()) : this.notFound(clean);
       case 'kulinarik':
         return this.isAvailable('kulinarik') && !second ? this.culinary() : this.notFound(clean);
-      case 'anlaesse':
-        return this.isAvailable('anlaesse') ? (second ? this.occasion(second) : this.occasions()) : this.notFound(clean);
+      case 'region':
+        return this.isAvailable('anlaesse') ? (second ? this.occasion('region', second) : this.occasions('region')) : this.notFound(clean);
+      case 'tagen':
+      case 'feiern':
+      case 'tagen-und-feiern': {
+        // Only at the address the hotel chose (/tagen, /feiern or /tagen-und-feiern).
+        if (!this.isAvailable(EVENTS_PAGE_KEY) || this.area('events').basePath !== `/${first}`) return this.notFound(clean);
+        return second ? this.occasion('events', second) : this.occasions('events');
+      }
       case 'angebote':
         return this.isAvailable('angebote') ? (second ? this.offer(second) : this.offers()) : this.notFound(clean);
       case 'blog':
         return this.isAvailable('blog') ? (second ? this.post(second) : this.blog()) : this.notFound(clean);
       case 'impressionen':
         return this.isAvailable('impressionen') && !second ? this.impressions() : this.notFound(clean);
+      case 'ueber-uns':
+        return this.isAvailable('ueber-uns') && !second ? this.aboutPage() : this.notFound(clean);
+      case 'anreise':
+        return this.isAvailable('anreise') && !second ? this.arrivalPage() : this.notFound(clean);
       case 'faqs':
         return this.isAvailable('faqs') && !second ? this.faqPage() : this.notFound(clean);
       case 'impressum':
@@ -572,31 +592,38 @@ export class SiteModel {
     });
   }
 
-  private occasions(): PageModel {
-    const page = this.section('occasions_page');
-    const data: Section = { ...OCCASIONS_PAGE_FALLBACK, ...page };
-    const occasions = resolveOccasions(data.items);
+  area(key: TopicAreaKey): TopicArea {
+    const section = key === 'events' ? 'events_page' : 'occasions_page';
+    return topicArea(key, this.section(section), this.hotel.email);
+  }
+
+  // The hub of an area: the region or meetings/celebrations (lib/topicAreas.ts).
+  private occasions(key: TopicAreaKey): PageModel {
+    const area = this.area(key);
+    const page = this.section(area.section);
+    const data: Section = { ...(key === 'region' ? OCCASIONS_PAGE_FALLBACK : {}), ...page };
     const blocks: ContentBlock[] = [];
     if (str(data.intro)) blocks.push({ text: texts(data.intro) });
     blocks.push({
-      heading: str(data.title) || pageTitle('anlaesse'),
-      items: occasions.map((occasion) => ({ title: occasion.name, text: words(occasion.kicker, occasion.summary), href: occasionHref(occasion.id) })),
+      heading: area.title,
+      items: area.items.map((item) => ({ title: item.name, text: words(item.kicker, item.summary), href: topicHref(area, item.id) })),
     });
-    return this.build('/anlaesse', {
+    return this.build(area.basePath, {
       eyebrow: str(data.eyebrow) || undefined,
-      h1: str(data.title) || pageTitle('anlaesse'),
+      h1: area.title,
       lead: str(data.subtitle) || undefined,
-      image: str(data.hero_image) || occasions[0]?.hero_image || undefined,
+      image: str(data.hero_image) || area.items[0]?.hero_image || undefined,
       blocks,
     });
   }
 
-  private occasion(id: string): PageModel {
-    const occasion = resolveOccasions(this.section('occasions_page')?.items).find((item) => item.id === id);
-    if (!occasion) return this.notFound(occasionHref(id));
+  private occasion(key: TopicAreaKey, id: string): PageModel {
+    const area = this.area(key);
+    const occasion = area.items.find((item) => item.id === id);
+    if (!occasion) return this.notFound(topicHref(area, id));
     const blocks: ContentBlock[] = [{ text: texts(occasion.text) }];
     if (occasion.details.length) blocks.push({ heading: 'Auf einen Blick', items: occasion.details.map((fact) => ({ title: fact.label, text: fact.value })) });
-    if (occasion.includes.length) blocks.push({ heading: 'Das erwartet Sie', items: occasion.includes.map((item) => ({ title: item })) });
+    if (occasion.includes.length) blocks.push({ heading: key === 'events' ? 'Im Angebot enthalten' : 'Das erwartet Sie', items: occasion.includes.map((item) => ({ title: item })) });
     if (occasion.links.length) {
       blocks.push({
         heading: 'Passend dazu',
@@ -612,12 +639,12 @@ export class SiteModel {
     if (occasion.faqs.length) {
       blocks.push({ heading: 'Gut zu wissen', items: occasion.faqs.map((faq) => ({ title: faq.question, text: faq.answer })) });
     }
-    return this.build(occasionHref(occasion.id), {
+    return this.build(topicHref(area, occasion.id), {
       eyebrow: occasion.kicker || undefined,
       h1: occasion.name,
       lead: occasion.summary || undefined,
       image: occasion.hero_image || undefined,
-      crumbs: [{ label: str(this.section('occasions_page')?.title) || pageTitle('anlaesse'), href: '/anlaesse' }],
+      crumbs: [{ label: area.title, href: area.basePath }],
       blocks,
       jsonLd: occasion.faqs.length ? [faqJsonLd(occasion.faqs)] : [],
     });
@@ -781,6 +808,91 @@ export class SiteModel {
     const note = this.note(page, IMPRESSIONS_PAGE_FALLBACK);
     if (note) blocks.push(note);
     return this.build('/impressionen', { ...this.head(page, IMPRESSIONS_PAGE_FALLBACK), blocks });
+  }
+
+  // Building blocks placed on a page ("Ein Tag im Hotel"), as text for search engines.
+  private placedBlocks(path: string): ContentBlock[] {
+    const day = this.section('day_story');
+    const items: Section[] = Array.isArray(day?.items) ? day.items : [];
+    if (hidden(day) || !items.length || !blockPlacements(day).some((place) => pageMatches(place.page, path))) return [];
+    return [
+      {
+        heading: str(day?.title) || 'Ein Tag in unserem Hotel',
+        items: items.map((item) => ({ title: words(item.time, item.unit, item.title), text: str(item.text) })).filter((item) => item.title),
+      },
+    ];
+  }
+
+  // "Über uns": the house as a whole, so search engines and AI answers find the figures, the
+  // history, the hosts and the group in one place.
+  private aboutPage(): PageModel {
+    const page = this.section('about_page');
+    const data: Section = { ...ABOUT_PAGE_FALLBACK, ...page };
+    const blocks: ContentBlock[] = [];
+    if (!hidden(page, 'intro') && str(data.intro)) blocks.push({ text: texts(stripInline(String(data.intro))) });
+    const figures = resolveFigures(data.figures);
+    if (!hidden(page, 'figures') && figures.length) {
+      blocks.push({ heading: str(data.figures_title), items: figures.map((figure) => ({ title: figure.value, text: figure.label })) });
+    }
+    blocks.push(...this.placedBlocks(ABOUT_PATH));
+    const chapters = resolveChapters(data.story);
+    if (!hidden(page, 'story') && chapters.length) {
+      blocks.push({
+        heading: str(data.story_title),
+        text: texts(stripInline(str(data.story_intro)), data.story_quote ? `„${str(data.story_quote)}“ ${str(data.story_quote_source)}` : ''),
+        items: chapters.map((chapter) => ({ title: words(chapter.year, chapter.title), text: stripInline(chapter.text) })),
+      });
+    }
+    const hosts = resolveHosts(data.hosts);
+    if (!hidden(page, 'hosts') && hosts.length) {
+      blocks.push({
+        heading: str(data.hosts_title),
+        text: texts(stripInline(str(data.hosts_intro))),
+        items: hosts.map((host) => ({ title: [host.name, host.role].filter(Boolean).join(', '), text: stripInline(host.text) || undefined })),
+      });
+    }
+    if (!hidden(page, 'group') && (str(data.group_title) || str(data.group_text))) {
+      const href = str(data.group_href);
+      blocks.push({
+        heading: str(data.group_title),
+        text: texts(stripInline(str(data.group_text))),
+        links: href ? [{ label: str(data.group_cta) || str(data.group_title), href: /^https?:/i.test(href) ? href : this.linkable(href) }].filter((link) => link.href) : undefined,
+      });
+    }
+    const areas = resolveAreas(data.areas, this.content.sections, (key) => this.isAvailable(key));
+    if (!hidden(page, 'areas') && areas.length) {
+      blocks.push({ heading: str(data.areas_title), links: areas.map((area) => ({ label: area.title, href: this.linkable(area.href) })).filter((link) => link.href) });
+    }
+    const faqs = hidden(page, 'faq') ? [] : aboutFaqs(this.content.faqs, data.faq_ids);
+    if (faqs.length) blocks.push({ heading: str(data.faq_title), items: faqs.map((faq) => ({ title: faq.question, text: faq.answer })) });
+    return this.build(ABOUT_PATH, {
+      ...this.head(page, ABOUT_PAGE_FALLBACK),
+      eyebrow: str(data.eyebrow) || this.hotel.name,
+      blocks,
+      jsonLd: faqs.length ? [faqJsonLd(faqs)] : [],
+    });
+  }
+
+  // "Anreise": address, ways and the questions about arriving – a page of its own, so the
+  // question "how do I get to …" finds a clear answer.
+  private arrivalPage(): PageModel {
+    const page = this.section('arrival_page');
+    const data: Section = { ...ARRIVAL_PAGE_FALLBACK, ...page };
+    const blocks: ContentBlock[] = [{ heading: 'Adresse', text: texts(this.hotel.name, this.hotel.address, this.hotel.phone ? `Telefon ${this.hotel.phone}` : '') }];
+    if (!hidden(page, 'intro') && str(data.intro)) blocks.push({ text: texts(stripInline(String(data.intro))) });
+    const ways = resolveWays(data.ways);
+    if (!hidden(page, 'ways') && ways.length) {
+      blocks.push({ heading: str(data.ways_title), items: ways.map((way) => ({ title: way.title, text: stripInline(way.text) })) });
+    }
+    blocks.push(...this.placedBlocks(ARRIVAL_PATH));
+    const faqs = hidden(page, 'faq') ? [] : arrivalFaqs(this.content.faqs, data.faq_ids);
+    if (faqs.length) blocks.push({ heading: str(data.faq_title), items: faqs.map((faq) => ({ title: faq.question, text: faq.answer })) });
+    return this.build(ARRIVAL_PATH, {
+      ...this.head(page, ARRIVAL_PAGE_FALLBACK),
+      title: str(data.eyebrow) || 'Anreise',
+      blocks,
+      jsonLd: faqs.length ? [faqJsonLd(faqs)] : [],
+    });
   }
 
   private faqPage(): PageModel {

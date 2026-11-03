@@ -5,11 +5,14 @@ import type { CmsLinkTarget } from './cmsLinkTargets';
 // ("Suite", "Sauna", "Frühstück" …). The AI suggestion comes on top when it answers.
 
 const TOPICS: Array<{ href: string; words: string[] }> = [
+  { href: '/ueber-uns', words: ['über uns', 'geschichte', 'tradition', 'familie dr', 'eigentümer', 'gastgeber', 'team', 'hotelgruppe'] },
+  { href: '/anreise', words: ['anreise', 'anfahrt', 'lage', 'adresse', 'bahn', 'auto', 'route', 'parken', 'parkplatz', 'tiefgarage'] },
   { href: '/zimmer', words: ['zimmer', 'suite', 'suiten', 'doppelzimmer', 'einzelzimmer', 'apartment', 'übernacht', 'schlafen', 'unterkunft', 'balkon', 'meerblick'] },
   { href: '/wellness', words: ['wellness', 'spa', 'sauna', 'saunen', 'schwimmbad', 'pool', 'massage', 'kosmetik', 'thalasso', 'dampfbad', 'entspann', 'ruheraum', 'anwendung'] },
   { href: '/kulinarik', words: ['restaurant', 'kulinar', 'frühstück', 'abendessen', 'essen', 'küche', 'bar', 'halbpension', 'genuss', 'speise', 'menü', 'bistro'] },
   { href: '/angebote', words: ['angebot', 'arrangement', 'pauschale', 'paket', 'special', 'urlaub buchen'] },
-  { href: '/anlaesse', words: ['anlass', 'anlässe', 'familie', 'kinder', 'hund', 'zu zweit', 'romantik', 'aktiv', 'radfahren'] },
+  { href: '/tagen', words: ['tagung', 'tagen', 'seminar', 'meeting', 'konferenz', 'feier', 'hochzeit', 'geburtstag', 'familienfeier', 'incentive'] },
+  { href: '/region', words: ['region', 'umgebung', 'ausflug', 'strand', 'natur', 'veranstaltung', 'familie', 'kinder', 'hund', 'aktiv', 'radfahren', 'wandern'] },
   { href: '/impressionen', words: ['bilder', 'fotos', 'impression', 'video', 'galerie'] },
   { href: '/faqs', words: ['frage', 'faq', 'anreise', 'check-in', 'check-out', 'parken', 'parkplatz', 'tiefgarage', 'haustier'] },
   { href: '/blog', words: ['blog', 'journal', 'tipp', 'ausflug', 'ausflüge', 'umgebung'] },

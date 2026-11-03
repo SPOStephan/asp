@@ -1,7 +1,6 @@
-import { culinaryVenueHref, resolveCulinaryVenues } from './culinary';
-import { occasionHref, resolveOccasions } from './occasions';
-import { offerHref, resolveOfferStories } from './offers';
-import { resolveRooms, roomHref } from './rooms';
+import { readFilters } from './listFilters';
+import { offerTopicHref, resolveOfferStories } from './offers';
+import { topicArea, topicHref } from './topicAreas';
 import { resolveWellnessTopics, wellnessTopicHref } from './wellness';
 
 type Link = { label: string; href: string };
@@ -17,45 +16,53 @@ function named<T>(items: T[], label: (item: T) => string, href: (item: T) => str
 }
 
 // The menu of a hotel without its own: built from its own pages and entries, so it never
-// shows another hotel's rooms, spa or restaurants. Pages that are switched off drop out later.
-export function autoMenuGroups(sections: Record<string, Record<string, any>>): AutoMenuGroup[] {
-  const groups: AutoMenuGroup[] = [
+// shows another hotel's rooms, spa or topics. Pages that are switched off drop out later
+// (filterMenuGroups). The title of a group leads to its page; the links below never repeat it.
+//   Hotel          → "Über uns" (if switched on): rooms, arrival, questions, pictures
+//   Angebote       → the themes of the offers ("Wellness-Angebote" …), not single offers
+//   Wellness       → its topic pages
+//   Kulinarik      → its page
+//   Tagen & Feiern → named as the hotel offers it ("Tagen", "Feiern" …), with its topic pages
+//   Region         → "Urlaub in …" with its topic pages
+// The service links (vouchers, journal …) sit in a row below the groups (autoServiceLinks).
+export function autoMenuGroups(
+  sections: Record<string, Record<string, any>>,
+  enabled: (key: string) => boolean = () => true,
+): AutoMenuGroup[] {
+  const about = enabled('ueber-uns');
+  const offers = resolveOfferStories(sections.offers_page?.items, sections.offers?.items);
+  const themes = (readFilters(sections.offers_page?.filters) ?? []).filter((theme) => offers.some((offer) => offer.topics.includes(theme.id)));
+  const events = topicArea('events', sections.events_page);
+  const region = topicArea('region', sections.occasions_page);
+  return [
     {
-      title: 'Zimmer & Suiten',
-      href: '/zimmer',
-      links: [{ label: 'Alle Zimmer & Suiten', href: '/zimmer' }, ...named(resolveRooms(sections.rooms_page?.items), (room) => room.name, (room) => roomHref(room.id))],
-    },
-    {
-      title: 'Angebote',
-      href: '/angebote',
+      title: 'Hotel',
+      ...(about ? { href: '/ueber-uns' } : {}),
       links: [
-        { label: 'Alle Angebote', href: '/angebote' },
-        ...named(resolveOfferStories(sections.offers_page?.items, sections.offers?.items), (offer) => offer.title, (offer) => offerHref(offer.id)),
+        { label: 'Zimmer & Suiten', href: '/zimmer' },
+        { label: 'Anreise', href: '/anreise' },
+        { label: 'FAQ', href: '/faqs' },
+        { label: 'Impressionen', href: '/impressionen' },
       ],
     },
-    {
-      title: 'Anlässe',
-      href: '/anlaesse',
-      links: [{ label: 'Alle Anlässe', href: '/anlaesse' }, ...named(resolveOccasions(sections.occasions_page?.items), (item) => item.name, (item) => occasionHref(item.id))],
-    },
+    { title: 'Angebote', href: '/angebote', links: named(themes, (theme) => theme.label, (theme) => offerTopicHref(theme.id)) },
     {
       title: 'Wellness',
       href: '/wellness',
-      links: [{ label: 'Wellness', href: '/wellness' }, ...named(resolveWellnessTopics(sections.wellness_page?.items), (topic) => topic.name, (topic) => wellnessTopicHref(topic.id))],
+      links: named(resolveWellnessTopics(sections.wellness_page?.items), (topic) => topic.name, (topic) => wellnessTopicHref(topic.id)),
     },
-    {
-      title: 'Kulinarik',
-      href: '/kulinarik',
-      links: [{ label: 'Kulinarik', href: '/kulinarik' }, ...named(resolveCulinaryVenues(sections.culinary_page?.items), (venue) => venue.name, (venue) => culinaryVenueHref(venue.id))],
-    },
-    {
-      title: 'Hotel',
-      links: [
-        { label: 'Impressionen', href: '/impressionen' },
-        { label: 'Journal', href: '/blog' },
-        { label: 'FAQ', href: '/faqs' },
-      ],
-    },
+    { title: 'Kulinarik', href: '/kulinarik', links: [] },
+    { title: events.title, href: events.basePath, links: named(events.items, (item) => item.name, (item) => topicHref(events, item.id)) },
+    { title: region.title, href: region.basePath, links: named(region.items, (item) => item.name, (item) => topicHref(region, item.id)) },
   ];
-  return groups;
+}
+
+// The row below the groups: vouchers (with a shop address), newsletter, journal. Stammgastpass,
+// career and the like are added in the CMS (Logo & Leiste → Service-Zeile).
+export function autoServiceLinks(sections: Record<string, Record<string, any>>, voucherHref = ''): Link[] {
+  return [
+    ...(voucherHref ? [{ label: 'Gutscheine', href: voucherHref }] : []),
+    ...(sections.newsletter && sections.newsletter.hidden !== true ? [{ label: 'Newsletter', href: '#newsletter' }] : []),
+    { label: 'Journal', href: '/blog' },
+  ];
 }

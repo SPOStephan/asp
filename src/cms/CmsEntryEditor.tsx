@@ -28,6 +28,7 @@ export type EntryFieldSpec =
   | { kind: 'gallery'; key: string; label: string }
   | { kind: 'blocks'; key: string; label: string }
   | { kind: 'topic'; key: string; label: string }
+  | { kind: 'choice'; key: string; label: string; options: Array<{ value: string; label: string }> }
   | { kind: 'promo'; key: string; label: string };
 
 export type EntrySpec = { title: string; hub: string; hubLabel: string; pictures: EntryFieldSpec[]; texts: EntryFieldSpec[] };
@@ -117,9 +118,9 @@ export const ENTRY_SPECS: Record<string, EntrySpec> = {
     ],
   },
   occasions_page: {
-    title: 'Anlass',
-    hub: '/cms/anlaesse',
-    hubLabel: 'Zur Anlass-Übersicht',
+    title: 'Region-Thema',
+    hub: '/cms/region',
+    hubLabel: 'Zur Übersicht der Region',
     pictures: [
       { kind: 'image', key: 'hero_image', label: 'Großes Bild oben' },
       { kind: 'image', key: 'image', label: 'Bild in der Übersicht' },
@@ -147,6 +148,37 @@ export const ENTRY_SPECS: Record<string, EntrySpec> = {
       },
       { kind: 'text', key: 'cta', label: 'Text des Buttons' },
       { kind: 'text', key: 'cta_href', label: 'Ziel des Buttons' },
+    ],
+  },
+  events_page: {
+    title: 'Tagung oder Feier',
+    hub: '/cms/tagen',
+    hubLabel: 'Zur Übersicht Tagen & Feiern',
+    pictures: [
+      { kind: 'image', key: 'hero_image', label: 'Großes Bild oben' },
+      { kind: 'image', key: 'image', label: 'Bild in der Übersicht' },
+    ],
+    texts: [
+      {
+        kind: 'choice',
+        key: 'kind',
+        label: 'Gehört zu',
+        options: [
+          { value: 'tagen', label: 'Tagen' },
+          { value: 'feiern', label: 'Feiern' },
+          { value: '', label: 'Beides' },
+        ],
+      },
+      { kind: 'text', key: 'name', label: 'Name' },
+      { kind: 'text', key: 'kicker', label: 'Zeile über dem Namen' },
+      { kind: 'text', key: 'summary', label: 'Kurztext (Übersicht)', long: true },
+      { kind: 'paragraphs', key: 'text', label: 'Beschreibung' },
+      { kind: 'list', key: 'details', label: 'Eckdaten (z. B. Größe, Personen, Ausstattung)', item: 'Angabe', fields: FACTS },
+      { kind: 'lines', key: 'includes', label: 'Im Angebot enthalten' },
+      { kind: 'list', key: 'links', label: 'Passende Seiten', item: 'Link', fields: [{ key: 'label', label: 'Text' }, { key: 'href', label: 'Ziel', link: true }] },
+      { kind: 'list', key: 'faqs', label: 'Häufige Fragen', item: 'Frage', fields: [{ key: 'question', label: 'Frage' }, { key: 'answer', label: 'Antwort', long: true }] },
+      { kind: 'text', key: 'cta', label: 'Text des Buttons (leer: wie in der Übersicht)' },
+      { kind: 'text', key: 'cta_href', label: 'Ziel des Buttons (leer: E-Mail ans Hotel)' },
     ],
   },
   blog_page: {
@@ -450,6 +482,16 @@ export function CmsEntryEditor({ sectionKey, entryId }: { sectionKey: string; en
             <select value={asText(value(field.key))} onChange={(event) => set(field.key, event.target.value, false)}>
               <option value="">– ohne Thema –</option>
               {topics.map((topic) => <option key={topic.id} value={topic.id}>{topic.label}</option>)}
+            </select>
+          </label>
+        );
+      }
+      case 'choice': {
+        return (
+          <label key={path} className="cms-field" data-cms-panel-focus={path}>
+            {field.label}
+            <select value={asText(value(field.key))} onChange={(event) => set(field.key, event.target.value, false)}>
+              {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </label>
         );

@@ -6,37 +6,48 @@ import { CmsSection } from '../cms/CmsSection';
 import { Reveal } from '../components/Reveal';
 import { SubpageHero } from '../components/SubpageHero';
 import { useHotel, useSection } from '../context/HotelContext';
-import { occasionHref, OCCASIONS_PAGE_FALLBACK, resolveOccasions } from '../lib/occasions';
+import { OCCASIONS_PAGE_FALLBACK } from '../lib/occasions';
+import { EVENTS_PAGE_FALLBACK, topicArea, topicHref, type TopicAreaKey } from '../lib/topicAreas';
+import { Navigate, useLocation } from 'react-router-dom';
 import { usePageTop } from '../lib/usePageTop';
 
-export function OccasionsPage() {
+// The hub of an area: the region ("Urlaub in …") or meetings/celebrations (lib/topicAreas.ts).
+export function OccasionsPage({ area: areaKey = 'region' }: { area?: TopicAreaKey }) {
   usePageTop();
   const cms = useCms();
   const hotel = useHotel();
-  const page = useSection('occasions_page');
-  const data = { ...OCCASIONS_PAGE_FALLBACK, ...page };
-  const occasions = resolveOccasions(data.items);
+  const { pathname } = useLocation();
+  const sectionKey = areaKey === 'events' ? 'events_page' : 'occasions_page';
+  const page = useSection(sectionKey);
+  const area = topicArea(areaKey, page, hotel?.email);
+  const data = { ...(areaKey === 'events' ? EVENTS_PAGE_FALLBACK : OCCASIONS_PAGE_FALLBACK), ...page, title: area.title };
+  const occasions = area.items;
+  const occasionHref = (id: string) => topicHref(area, id);
+  const wrongAddress = pathname !== area.basePath && pathname !== `/cms${area.basePath}`;
   const hero = String(data.hero_image || occasions[0]?.hero_image || '');
 
   useEffect(() => {
     const previous = document.title;
-    document.title = `${data.title || 'Anlässe'} | ${hotel?.name ?? ''}`;
+    document.title = `${data.title || area.title} | ${hotel?.name ?? ''}`;
     return () => {
       document.title = previous;
     };
   }, [data.title, hotel?.name]);
 
+  // The hotel's own address (only meetings: /tagen, not /tagen-und-feiern).
+  if (wrongAddress) return <Navigate to={cms ? `/cms${area.basePath}` : area.basePath} replace />;
+
   return (
-    <CmsSection sectionKey="occasions_page" label="Anlässe">
+    <CmsSection sectionKey={sectionKey} label={areaKey === 'events' ? area.title : 'Region'}>
       <main>
         <SubpageHero
           image={hero}
           imageAlt={String(data.hero_image_alt || data.title)}
           eyebrow={String(data.eyebrow || '')}
-          title={String(data.title || 'Anlässe')}
+          title={String(data.title || area.title)}
           subtitle={String(data.subtitle || '')}
           focal={page?.hero_focal}
-          cms={{ section: 'occasions_page' }}
+          cms={{ section: sectionKey }}
         >
           <div className="wellness-hub">
             {data.intro || cms ? (
@@ -44,7 +55,7 @@ export function OccasionsPage() {
                 {String(data.intro || '')}
               </p>
             ) : null}
-            <section className="wellness-hub__tiles occasions__tiles" aria-label="Anlässe">
+            <section className="wellness-hub__tiles occasions__tiles" aria-label="Region">
               {occasions.map((occasion, index) => (
                 <Reveal key={occasion.id} delay={index * 50}>
                   <a

@@ -19,7 +19,7 @@ function isOurs(el: Element) {
 }
 
 function unwrap(el: Element): Element {
-  if (!el.classList.contains('cms-block')) return el;
+  if (!el.classList.contains('cms-block') && !el.classList.contains('cms-part')) return el;
   return [...el.children].find((child) => !child.classList.contains('cms-block__chrome') && !isOurs(child)) ?? el;
 }
 

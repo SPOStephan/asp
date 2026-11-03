@@ -1,5 +1,17 @@
-// Occasion pages ("Für jeden Anlass"): one hub at /anlaesse and a detail page per occasion
-// (e.g. with dog, as a couple, with the family). All content comes from the CMS.
+// The region ("Urlaub in St. Peter-Ording", "Urlaub im Sauerland" – named per hotel): one hub at
+// /region and a page per topic (beach and nature, excursions, events, with dog, with the
+// family …). Started as the occasion pages (/anlaesse, CMS section "occasions_page"); the old
+// addresses lead here. All content comes from the CMS.
+
+export const REGION_PATH = '/region';
+const OLD_REGION_PATH = '/anlaesse';
+
+// Links saved with the old address ("/anlaesse/mit-hund") lead to the region.
+export function remapRegionHref(href: string) {
+  return href === OLD_REGION_PATH || href.startsWith(`${OLD_REGION_PATH}/`) || href.startsWith(`${OLD_REGION_PATH}#`) || href.startsWith(`${OLD_REGION_PATH}?`)
+    ? `${REGION_PATH}${href.slice(OLD_REGION_PATH.length)}`
+    : href;
+}
 
 export interface OccasionFact {
   label: string;
@@ -45,11 +57,13 @@ export interface Occasion {
   image_alt: string;
   hero_image: string;
   hero_image_alt: string;
+  // Meetings and celebrations: "tagen" or "feiern" (see lib/topicAreas.ts); empty elsewhere.
+  kind: string;
 }
 
 export const OCCASIONS_PAGE_FALLBACK = {
-  eyebrow: 'Für jeden Anlass',
-  title: 'Anlässe',
+  eyebrow: '',
+  title: 'Urlaub in der Region',
   subtitle: '',
   intro: '',
   hero_image: '',
@@ -109,10 +123,11 @@ export function resolveOccasions(items: unknown): Occasion[] {
       image_alt: text(item.image_alt) || name,
       hero_image: text(item.hero_image) || image,
       hero_image_alt: text(item.hero_image_alt) || text(item.image_alt) || name,
+      kind: text(item.kind),
     };
   });
 }
 
 export function occasionHref(id: string) {
-  return `/anlaesse/${id}`;
+  return `${REGION_PATH}/${id}`;
 }

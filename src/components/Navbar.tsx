@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Gift, House, Mail, MapPin, Phone, UserRound, X } from 'lucide-react';
 import { TextCta } from './TextCta';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
-import { autoMenuGroups } from '../lib/autoMenu';
+import { autoMenuGroups, autoServiceLinks } from '../lib/autoMenu';
 import { PORTAL_URL } from '../portal/config';
 import { portalLoginUrl } from '../member/handoff';
 import { useWebsiteMember } from '../member/useMember';
@@ -41,6 +41,14 @@ const FALLBACK_LANGUAGES: LanguageOption[] = [
   { code: 'en', label: 'EN' },
 ];
 
+// A link that leads where the group title already leads ("Zimmer & Suiten" under the title
+// "Zimmer & Suiten") is left out: the title is that link.
+function sameTarget(href: string, groupHref?: string) {
+  if (!groupHref) return false;
+  const clean = (value: string) => value.replace(/\/+(?=$|[?#])/, '') || '/';
+  return clean(href) === clean(groupHref);
+}
+
 function mobileGroupHref(title: string, href?: string) {
   const known = menuGroupHref(title, href);
   if (known) return known;
@@ -51,6 +59,7 @@ function mobileGroupHref(title: string, href?: string) {
 
 function CompactMenu({
   groups,
+  service,
   openGroup,
   onOpenGroup,
   onNavigate,
@@ -67,6 +76,7 @@ function CompactMenu({
   phoneChrome,
 }: {
   groups: MenuGroup[];
+  service: NavLink[];
   openGroup: string | null;
   onOpenGroup: (title: string | null) => void;
   onNavigate: (href: string, label?: string) => void;
@@ -160,20 +170,39 @@ function CompactMenu({
                         {item.title}
                       </button>
                     )}
-                    <button
-                      type="button"
-                      className="navbar__more"
-                      aria-label={`${item.title}: Unterpunkte`}
-                      onClick={() => onOpenGroup(item.title)}
-                    >
-                      <ChevronRight size={18} strokeWidth={1.5} />
-                    </button>
+                    {hub && !item.links.length ? null : (
+                      <button
+                        type="button"
+                        className="navbar__more"
+                        aria-label={`${item.title}: Unterpunkte`}
+                        onClick={() => onOpenGroup(item.title)}
+                      >
+                        <ChevronRight size={18} strokeWidth={1.5} />
+                      </button>
+                    )}
                   </div>
                 </li>
               );
             })}
           </ul>
         )}
+        {!group && service.length ? (
+          <ul className="navbar__service navbar__service--steps" aria-label="Service">
+            {service.map((link) => (
+              <li key={`${link.label}-${link.href}`}>
+                <a
+                  href={link.href}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    onNavigate(link.href, link.label);
+                  }}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : null}
         {phoneChrome ? (
           <div className="navbar__tools">
             <button
@@ -327,6 +356,11 @@ export function Navbar() {
       chrome.openBook();
       return;
     }
+    // Other websites (e.g. the voucher shop) open in a new tab.
+    if (/^https?:\/\//i.test(target)) {
+      window.open(target, '_blank', 'noopener,noreferrer');
+      return;
+    }
     if (target.startsWith('#')) {
       const homePath = cms ? '/cms' : bench ? BENCH_PREFIX : '/';
       if (window.location.pathname !== homePath) {
@@ -353,9 +387,15 @@ export function Navbar() {
     return !key || isPageEnabled(key);
   });
   const menuGroups: MenuGroup[] = filterMenuGroups(
-    data.menu_groups?.length ? data.menu_groups : autoMenuGroups(content?.sections ?? {}),
+    data.menu_groups?.length ? data.menu_groups : autoMenuGroups(content?.sections ?? {}, isPageEnabled),
     isPageEnabled,
   );
+  // The row below the groups: vouchers, newsletter, journal, own entries (CMS).
+  const ownService = ((data.menu_service ?? []) as NavLink[]).filter((link) => link?.label?.trim() && link.href?.trim());
+  const serviceLinks: NavLink[] = (ownService.length ? ownService : autoServiceLinks(content?.sections ?? {}, contact.voucher)).filter((link) => {
+    const key = pageKeyFromHref(remapSiteHref(link.href, link.label));
+    return !key || isPageEnabled(key);
+  });
   const languages: LanguageOption[] = data.languages?.length ? data.languages : FALLBACK_LANGUAGES;
   const currentLang = languages.find((item) => item.code === lang) ?? languages[0];
   const lightBar = (!isPhone && scrolled) || menuOpen;
@@ -468,7 +508,18 @@ export function Navbar() {
                     </a>
                   ) : null}
                   {contact.arrival ? (
-                    <a href={contact.arrival} aria-label="Anreise und Lage" title="Anreise" {...externalProps(contact.arrival)}>
+                    <a
+                      href={contact.arrival.startsWith('/') ? siteHref(contact.arrival) : contact.arrival}
+                      aria-label="Anreise und Lage"
+                      title="Anreise & Lage"
+                      {...externalProps(contact.arrival)}
+                      onClick={(event) => {
+                        // On the website's own page (hotel page, "Anreise & Lage"): no reload.
+                        if (!contact.arrival.startsWith('/')) return;
+                        event.preventDefault();
+                        handleNavClick(contact.arrival);
+                      }}
+                    >
                       <MapPin size={18} strokeWidth={1.4} />
                     </a>
                   ) : null}
@@ -572,6 +623,7 @@ export function Navbar() {
             {compact ? (
               <CompactMenu
                 groups={menuGroups}
+                service={serviceLinks}
                 openGroup={openGroup}
                 onOpenGroup={setOpenGroup}
                 onNavigate={handleNavClick}
@@ -617,7 +669,7 @@ export function Navbar() {
                         <h2 className="navbar__group-title">{group.title}</h2>
                       )}
                       <ul className="navbar__group-links">
-                        {group.links.map((link) => (
+                        {group.links.filter((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)).map((link) => (
                           <li key={`${group.title}-${link.label}`}>
                             <a
                               href={remapSiteHref(link.href, link.label)}
@@ -634,6 +686,23 @@ export function Navbar() {
                     </div>
                   );
                 })}
+                {serviceLinks.length ? (
+                  <ul className="navbar__service" aria-label="Service">
+                    {serviceLinks.map((link) => (
+                      <li key={`${link.label}-${link.href}`}>
+                        <a
+                          href={remapSiteHref(link.href, link.label)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleNavClick(link.href, link.label);
+                          }}
+                        >
+                          {link.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
             )}
           </div>

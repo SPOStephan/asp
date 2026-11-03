@@ -1,17 +1,23 @@
 import { BLOG_PAGE_FALLBACK } from '../lib/blog';
 import { CULINARY_PAGE_FALLBACK, culinaryTileHref } from '../lib/culinary';
+import { ABOUT_PAGE_FALLBACK } from '../lib/aboutPage';
+import { ARRIVAL_PAGE_FALLBACK } from '../lib/arrivalPage';
 import { IMPRESSIONS_PAGE_FALLBACK } from '../lib/impressions';
 import { OCCASIONS_PAGE_FALLBACK } from '../lib/occasions';
+import { EVENTS_PAGE_FALLBACK } from '../lib/topicAreas';
 import { OFFERS_PAGE_FALLBACK } from '../lib/offers';
 import { WELLNESS_PAGE_FALLBACK } from '../lib/wellness';
 
 export const CMS_EDITOR_PAGES = [
   { label: 'Start', to: '/cms', publicPath: '/' },
+  { label: 'Über uns', to: '/cms/ueber-uns', publicPath: '/ueber-uns' },
+  { label: 'Anreise', to: '/cms/anreise', publicPath: '/anreise' },
   { label: 'Zimmer', to: '/cms/zimmer', publicPath: '/zimmer' },
   { label: 'Wellness', to: '/cms/wellness', publicPath: '/wellness' },
   { label: 'Kulinarik', to: '/cms/kulinarik', publicPath: '/kulinarik' },
   { label: 'Angebote', to: '/cms/angebote', publicPath: '/angebote' },
-  { label: 'Anlässe', to: '/cms/anlaesse', publicPath: '/anlaesse' },
+  { label: 'Region', to: '/cms/region', publicPath: '/region' },
+  { label: 'Tagen & Feiern', to: '/cms/tagen', publicPath: '/tagen' },
   { label: 'Blog', to: '/cms/blog', publicPath: '/blog' },
   { label: 'Impressionen', to: '/cms/impressionen', publicPath: '/impressionen' },
   { label: 'FAQ', to: '/cms/faqs', publicPath: '/faqs' },
@@ -65,7 +71,10 @@ export const CMS_SECTION_FALLBACKS: Record<string, Record<string, unknown>> = {
   blog_page: BLOG_PAGE_FALLBACK,
   impressions_page: IMPRESSIONS_PAGE_FALLBACK,
   occasions_page: OCCASIONS_PAGE_FALLBACK,
+  events_page: EVENTS_PAGE_FALLBACK,
   faq_page: FAQ_PAGE_FALLBACK,
+  about_page: ABOUT_PAGE_FALLBACK,
+  arrival_page: ARRIVAL_PAGE_FALLBACK,
   footer: FOOTER_FALLBACK,
 };
 
@@ -73,12 +82,13 @@ export const CMS_DETAIL_LABELS: Record<string, string> = {
   blog_page: 'Beitrag',
   offers_page: 'Angebot',
   wellness_page: 'Wellness-Seite',
-  occasions_page: 'Anlass',
+  occasions_page: 'Region-Thema',
+  events_page: 'Tagung oder Feier',
   rooms_page: 'Zimmer',
 };
 
 export type CmsDetail = {
-  section: 'blog_page' | 'offers_page' | 'wellness_page' | 'occasions_page' | 'rooms_page';
+  section: 'blog_page' | 'offers_page' | 'wellness_page' | 'occasions_page' | 'events_page' | 'rooms_page';
   entryId: string;
   hub: string;
 };
@@ -103,6 +113,8 @@ export function toCmsHref(href: string) {
   const { pathname, search, hash } = splitHref(href);
   if (pathname === '/' || pathname === '') return `/cms${search}${hash}`;
   if (pathname === '/seite' || pathname.startsWith('/seite/')) return `/cms${pathname}${search}${hash}`;
+  // Meetings/celebrations have three possible addresses (lib/topicAreas.ts).
+  if (/^\/(feiern|tagen-und-feiern)(\/|$)/.test(pathname)) return `/cms${pathname}${search}${hash}`;
   const match = [...CMS_EDITOR_PAGES]
     .filter((page) => page.publicPath !== '/' && (pathname === page.publicPath || pathname.startsWith(`${page.publicPath}/`)))
     .sort((a, b) => b.publicPath.length - a.publicPath.length)[0];
@@ -115,7 +127,8 @@ export function cmsDetailFromPath(pathname: string): CmsDetail | null {
     { section: 'blog_page', hub: '/cms/blog', re: /^\/cms\/blog\/([^/]+)$/ },
     { section: 'offers_page', hub: '/cms/angebote', re: /^\/cms\/angebote\/([^/]+)$/ },
     { section: 'wellness_page', hub: '/cms/wellness', re: /^\/cms\/wellness\/([^/]+)$/ },
-    { section: 'occasions_page', hub: '/cms/anlaesse', re: /^\/cms\/anlaesse\/([^/]+)$/ },
+    { section: 'occasions_page', hub: '/cms/region', re: /^\/cms\/region\/([^/]+)$/ },
+    { section: 'events_page', hub: '/cms/tagen', re: /^\/cms\/(?:tagen|feiern|tagen-und-feiern)\/([^/]+)$/ },
     { section: 'rooms_page', hub: '/cms/zimmer', re: /^\/cms\/zimmer\/([^/]+)$/ },
   ];
   for (const pattern of patterns) {
@@ -134,7 +147,8 @@ export function cmsEntryHref(section: string, item: Record<string, unknown>): st
   if (section === 'blog_page') return `/cms/blog/${slug}`;
   if (section === 'offers_page') return `/cms/angebote/${id || slug}`;
   if (section === 'wellness_page') return `/cms/wellness/${id || slug}`;
-  if (section === 'occasions_page') return `/cms/anlaesse/${id || slug}`;
+  if (section === 'occasions_page') return `/cms/region/${id || slug}`;
+  if (section === 'events_page') return `/cms/tagen/${id || slug}`;
   if (section === 'rooms_page') return `/cms/zimmer/${id || slug}`;
   return null;
 }

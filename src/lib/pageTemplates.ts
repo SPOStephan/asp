@@ -8,6 +8,8 @@ export type PageLayoutKey =
   | 'impressions'
   | 'occasions'
   | 'faq'
+  | 'about'
+  | 'arrival'
   | 'legal'
   | 'generic';
 
@@ -85,6 +87,36 @@ export const SYSTEM_TEMPLATES: PageTemplate[] = [
     default_selected: true,
     required: true,
     sort_order: 10,
+  },
+  {
+    template_key: 'ueber-uns',
+    title: 'Über uns',
+    description: 'Das Haus als Ganzes: Einleitung, Zahlen, Geschichte, Gastgeber & Team, Hotelgruppe, Fragen zum Haus.',
+    path_prefix: '/ueber-uns',
+    tags: ['hotel', 'geschichte', 'team'],
+    preview_url: null,
+    kind: 'system',
+    layout_key: 'about',
+    section_keys: ['about_page'],
+    skeleton: emptySections(['about_page']),
+    default_selected: false,
+    required: false,
+    sort_order: 15,
+  },
+  {
+    template_key: 'anreise',
+    title: 'Anreise',
+    description: 'Adresse, Route, Anreisewege, Karte und Fragen zu Anreise und Parken.',
+    path_prefix: '/anreise',
+    tags: ['anreise', 'lage', 'service'],
+    preview_url: null,
+    kind: 'system',
+    layout_key: 'arrival',
+    section_keys: ['arrival_page'],
+    skeleton: emptySections(['arrival_page']),
+    default_selected: false,
+    required: false,
+    sort_order: 16,
   },
   {
     template_key: 'zimmer',
@@ -193,9 +225,9 @@ export const SYSTEM_TEMPLATES: PageTemplate[] = [
   },
   {
     template_key: 'anlaesse',
-    title: 'Anlässe',
-    description: 'Übersicht und eine Seite je Anlass (z. B. mit Hund, zu zweit, mit der Familie).',
-    path_prefix: '/anlaesse',
+    title: 'Region',
+    description: 'Urlaub in der Region: Übersicht und eine Seite je Thema (z. B. Strand & Natur, Ausflugsziele, Veranstaltungen, mit Hund, mit der Familie).',
+    path_prefix: '/region',
     tags: ['anlass', 'zielgruppe'],
     preview_url: null,
     kind: 'system',
@@ -205,6 +237,21 @@ export const SYSTEM_TEMPLATES: PageTemplate[] = [
     default_selected: false,
     required: false,
     sort_order: 85,
+  },
+  {
+    template_key: 'tagen',
+    title: 'Tagen & Feiern',
+    description: 'Tagungen und/oder Feiern – je Hotel wählbar (Adresse /tagen, /feiern oder /tagen-und-feiern): Übersicht und eine Seite je Thema (Räume, Pauschalen, Technik, Hochzeiten …).',
+    path_prefix: '/tagen',
+    tags: ['tagung', 'feier', 'hochzeit', 'meeting'],
+    preview_url: null,
+    kind: 'system',
+    layout_key: 'occasions',
+    section_keys: ['events_page'],
+    skeleton: emptySections(['events_page']),
+    default_selected: false,
+    required: false,
+    sort_order: 87,
   },
   {
     template_key: 'impressionen',
@@ -384,9 +431,16 @@ function splitPath(pathname: string) {
   return path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
 }
 
+// Pages with more than one address: meetings and celebrations live at /tagen, /feiern or
+// /tagen-und-feiern, depending on what the hotel offers (lib/topicAreas.ts).
+const PATH_ALIASES: Record<string, string> = { '/feiern': '/tagen', '/tagen-und-feiern': '/tagen' };
+
 export function pageKeyFromPath(pathname: string, templates: PageTemplate[] = SYSTEM_TEMPLATES): string | null {
-  const path = splitPath(pathname);
+  let path = splitPath(pathname);
   if (path === '/' || path === '') return 'home';
+  for (const [alias, target] of Object.entries(PATH_ALIASES)) {
+    if (path === alias || path.startsWith(`${alias}/`)) path = `${target}${path.slice(alias.length)}`;
+  }
   const seite = path.match(/^\/seite\/([^/]+)/);
   if (seite) return seite[1];
   const match = [...templates]

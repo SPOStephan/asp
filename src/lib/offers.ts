@@ -19,6 +19,8 @@ export interface OfferStory {
   image_alt: string;
   hero_image: string;
   hero_image_alt: string;
+  // Themes of the offer (ids of offers_page.filters), e.g. "wellness" – one offer can have several.
+  topics: string[];
 }
 
 // Neutral start for a hotel without its own offers: no other hotel's arrangements.
@@ -49,6 +51,7 @@ const EMPTY_OFFER: OfferStory = {
   image_alt: '',
   hero_image: PLACEHOLDER_IMAGE,
   hero_image_alt: '',
+  topics: [],
 };
 
 export function slugify(value: string) {
@@ -88,8 +91,17 @@ export function resolveOfferStories(
       image_alt: item.image_alt || item.image_primary_alt || fallback.image_alt,
       hero_image: resolveMedia(item.hero_image || item.image || item.image_primary, fallback.hero_image),
       hero_image_alt: item.hero_image_alt || item.image_alt || fallback.hero_image_alt,
+      topics: Array.isArray(item.topics) ? item.topics.filter((topic): topic is string => typeof topic === 'string' && topic.trim() !== '') : [],
     };
   });
+}
+
+// The themes of the offers page ("Wellness-Angebote", "Besondere Angebote" …): every hotel
+// names its own; the menu can lead to one with /angebote?thema=<id>.
+export const OFFER_TOPIC_PARAM = 'thema';
+
+export function offerTopicHref(id: string) {
+  return `/angebote?${OFFER_TOPIC_PARAM}=${encodeURIComponent(id)}`;
 }
 
 export function offerHref(id: string) {

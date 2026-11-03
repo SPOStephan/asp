@@ -9,7 +9,9 @@ import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { offerDetails, pricesShown } from '../lib/prices';
 import { resolveMedia } from '../lib/media';
-import { OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
+import { OFFER_TOPIC_PARAM, OFFERS_PAGE_FALLBACK, offerHref, resolveOfferStories } from '../lib/offers';
+import { ALL_FILTER } from '../lib/listFilters';
+import { ListFilterBar, useListFilter } from '../components/ListFilterBar';
 import { usePageTop } from '../lib/usePageTop';
 
 export function OffersPage() {
@@ -19,7 +21,11 @@ export function OffersPage() {
   const page = useSection('offers_page');
   const homeOffers = useSection('offers');
   const data = page ?? OFFERS_PAGE_FALLBACK;
-  const items = resolveOfferStories(data.items, homeOffers?.items);
+  const all = resolveOfferStories(data.items, homeOffers?.items);
+  // Themes ("Wellness-Angebote" …): the menu leads here with ?thema=…
+  const topicFilter = useListFilter(page, [], all.map((item) => item.topics), OFFER_TOPIC_PARAM);
+  const topic = topicFilter.active;
+  const items = topic === ALL_FILTER ? all : all.filter((item) => item.topics.includes(topic));
 
   useEffect(() => {
     const previous = document.title;
@@ -48,11 +54,17 @@ export function OffersPage() {
             {data.intro || editing ? <p className="offers-page__intro" data-cms-focus="intro" data-cms-path="intro">{data.intro}</p> : null}
           </CmsPart>
 
+          <CmsPart sectionKey="offers_page" part="filters" label="Themen">
+            {topicFilter.switchedOn || editing ? (
+              <ListFilterBar filters={topicFilter.filters} active={topic} onChange={topicFilter.setActive} className="blog-page__filter" label="Themen" />
+            ) : null}
+          </CmsPart>
+
           <CmsPart sectionKey="offers_page" part="list" label="Angebote">
             <section className="offers-page__pair" aria-label="Aktuelle Angebote">
               {items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 80}>
-                  <article className="offers-page__story" id={item.id} data-cms-focus={`items:${index}`}>
+                  <article className="offers-page__story" id={item.id} data-cms-focus={`items:${all.indexOf(item)}`}>
                     <figure className="offers-page__photo" data-cms-path={`items.${item.id}.image`} data-cms-kind="image">
                       <img loading="lazy" decoding="async" src={item.image} alt={item.image_alt} />
                     </figure>

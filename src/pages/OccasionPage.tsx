@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 import { useCms } from '../cms/CmsContext';
 import { toCmsHref } from '../cms/cmsPages';
 import { CmsSection } from '../cms/CmsSection';
@@ -9,19 +9,23 @@ import { TextCta } from '../components/TextCta';
 import { useHotel, useSection } from '../context/HotelContext';
 import { offerDetails, pricesShown } from '../lib/prices';
 import { entryFocal } from '../cms/cmsFocal';
-import { resolveOccasions } from '../lib/occasions';
+import { topicArea, topicHref, type TopicAreaKey } from '../lib/topicAreas';
 import { offerHref, resolveOfferStories } from '../lib/offers';
 import { usePageTop } from '../lib/usePageTop';
 
-export function OccasionPage() {
+// One topic page of an area (region topic, meeting or celebration – see lib/topicAreas.ts).
+export function OccasionPage({ area: areaKey = 'region' }: { area?: TopicAreaKey }) {
   usePageTop();
   const { occasionId } = useParams();
+  const { pathname } = useLocation();
   const cms = useCms();
   const hotel = useHotel();
-  const page = useSection('occasions_page');
+  const sectionKey = areaKey === 'events' ? 'events_page' : 'occasions_page';
+  const page = useSection(sectionKey);
+  const area = topicArea(areaKey, page, hotel?.email);
   const offersPage = useSection('offers_page');
   const homeOffers = useSection('offers');
-  const occasion = resolveOccasions(page?.items).find((item) => item.id === occasionId);
+  const occasion = area.items.find((item) => item.id === occasionId);
 
   useEffect(() => {
     if (!occasion) return;
@@ -33,8 +37,11 @@ export function OccasionPage() {
   }, [occasion?.name, hotel?.name]);
 
   if (!occasion) {
-    return <Navigate to={cms ? '/cms/anlaesse' : '/anlaesse'} replace />;
+    return <Navigate to={cms ? `/cms${area.basePath}` : area.basePath} replace />;
   }
+  // The hotel's own address (e.g. /tagen/raeume, not /feiern/raeume).
+  const own = topicHref(area, occasion.id);
+  if (pathname !== own && pathname !== `/cms${own}`) return <Navigate to={cms ? `/cms${own}` : own} replace />;
 
   const prefix = `items.${occasion.id}`;
   // Links to offers show as offer cards; everything else as a text link.
@@ -49,7 +56,7 @@ export function OccasionPage() {
   const hrefFor = (href: string) => (cms ? toCmsHref(href) : href);
 
   return (
-    <CmsSection sectionKey="occasions_page" label="Anlass">
+    <CmsSection sectionKey={sectionKey} label={area.key === 'events' ? area.title : 'Region-Thema'}>
       <main>
         <SubpageHero
           image={occasion.hero_image}
@@ -63,7 +70,7 @@ export function OccasionPage() {
             eyebrow: `${prefix}.kicker`,
             title: `${prefix}.name`,
             subtitle: `${prefix}.summary`,
-            section: 'occasions_page',
+            section: sectionKey,
             focalPath: `${prefix}.hero_focal`,
           }}
         >
@@ -162,8 +169,8 @@ export function OccasionPage() {
               ) : null}
 
               <div className="wellness-topic__links occasion__cta">
-                <TextCta href={occasion.cta_href || '#buchung'}>{occasion.cta || 'Jetzt buchen'}</TextCta>
-                <TextCta href="/anlaesse">Alle Anlässe</TextCta>
+                <TextCta href={occasion.cta_href || area.cta.href}>{(occasion.cta || area.cta.label).toUpperCase()}</TextCta>
+                <TextCta href={area.basePath}>{area.title.toUpperCase()}</TextCta>
               </div>
             </div>
           </div>
