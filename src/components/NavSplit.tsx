@@ -9,7 +9,6 @@ type Group = { title: string; href?: string; links: Link[] };
 // Menu variant /navi02 (desktop): calm and spacious.
 //   left  – the main areas one below the other, in the spaced capitals of the site
 //   next  – a fine line leads from the chosen area to its pages, which stand at its height;
-//           areas without pages show the line of their page there
 //   right – the picture of the chosen area, below it the service row
 // The chosen area stays chosen until another one is chosen (nothing closes when the mouse
 // leaves); on touch screens the first tap shows an area's pages, the second opens the area.
@@ -59,7 +58,6 @@ export function NavSplit({
   if (!group) return null;
   const href = groupHref(group);
   const links = group.links.filter((link) => remapSiteHref(link.href, link.label) !== href);
-  const teaser = links.length ? '' : previews[index].teaser;
   const go = (target: string, label?: string) => (event: { preventDefault: () => void }) => {
     event.preventDefault();
     onNavigate(target, label);
@@ -102,6 +100,7 @@ export function NavSplit({
 
         <div className="nav-split__pages" style={{ paddingTop: offset }}>
           <div className="nav-split__pages-inner" key={group.title}>
+            {/* Only what can be clicked: an area without pages shows nothing here. */}
             {links.length ? (
               <ul aria-label={group.title}>
                 {links.map((link) => (
@@ -112,8 +111,6 @@ export function NavSplit({
                   </li>
                 ))}
               </ul>
-            ) : teaser ? (
-              <p className="nav-split__teaser">{teaser}</p>
             ) : null}
           </div>
         </div>

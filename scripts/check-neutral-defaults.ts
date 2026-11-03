@@ -47,6 +47,9 @@ assert.deepEqual(themed.find((group) => group.title === 'Angebote')?.links, [{ l
 // Meetings/celebrations named and addressed as the hotel offers them.
 const party = autoMenuGroups({ events_page: { mode: 'feiern', items: [{ id: 'h', kind: 'feiern', name: 'Hochzeiten' }, { id: 't', kind: 'tagen', name: 'Räume' }] } });
 assert.deepEqual(party.find((group) => group.href === '/feiern'), { title: 'Feiern', href: '/feiern', links: [{ label: 'Hochzeiten', href: '/feiern/h' }] });
+// Kulinarik: the main (first) restaurant, at its place on the culinary page – nothing else.
+const food = autoMenuGroups({ culinary_page: { items: [{ id: 'haupt', name: 'Restaurant Eins' }, { id: 'bar', name: 'Bar' }] } });
+assert.deepEqual(food.find((group) => group.title === 'Kulinarik')?.links, [{ label: 'Restaurant Eins', href: '/kulinarik#haupt' }]);
 // Without "Über uns" the "Hotel" group has no page of its own.
 assert.equal(autoMenuGroups({}, (key) => key !== 'ueber-uns').find((group) => group.title === 'Hotel')?.href, undefined);
 console.log('neutral defaults ok');
