@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight, Gift, House, Mail, MapPin, Phone, UserRound,
 import { TextCta } from './TextCta';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { autoMenuGroups, autoServiceLinks } from '../lib/autoMenu';
+import { menuPreview } from '../lib/menuPreview';
+import { NavSplit } from './NavSplit';
 import { PORTAL_URL } from '../portal/config';
 import { portalLoginUrl } from '../member/handoff';
 import { useWebsiteMember } from '../member/useMember';
@@ -15,8 +17,8 @@ import { remapSiteHref } from '../lib/links';
 import { isBookingHash, usePhoneChrome } from '../lib/phoneChrome';
 import { MUSTER_MEDIA, NAVBAR_CTA, resolveMedia } from '../lib/media';
 import { menuGroupHref } from '../lib/wellness';
-import { useBench } from '../context/BenchContext';
-import { BENCH_PREFIX, toBenchHref } from '../lib/benchmark';
+import { useNavVariant, useSitePrefix } from '../context/BenchContext';
+import { toBenchHref } from '../lib/benchmark';
 import { Crest } from './Crest';
 import { externalProps, useContactLinks } from '../lib/contactLinks';
 
@@ -266,11 +268,12 @@ export function Navbar() {
   const hotel = useHotel();
   const chrome = useMobileChrome();
   const isPhone = usePhoneChrome();
-  const bench = useBench();
+  const prefix = useSitePrefix();
+  const navVariant = useNavVariant();
   const contact = useContactLinks();
   const { pathname } = useLocation();
   // Benchmark: every link stays in the copy of the website.
-  const siteHref = (href: string) => (bench ? toBenchHref(href) : href);
+  const siteHref = (href: string) => (prefix ? toBenchHref(href, prefix) : href);
 
   // A link followed elsewhere (e.g. inside the benchmark) closes the menu as well.
   useEffect(() => {
@@ -362,7 +365,7 @@ export function Navbar() {
       return;
     }
     if (target.startsWith('#')) {
-      const homePath = cms ? '/cms' : bench ? BENCH_PREFIX : '/';
+      const homePath = cms ? '/cms' : prefix ?? '/';
       if (window.location.pathname !== homePath) {
         navigate(homePath);
         setTimeout(() => {
@@ -406,7 +409,7 @@ export function Navbar() {
 
   return (
     <nav
-      className={`navbar${!isPhone && scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}${isPhone ? ' navbar--phone' : ''}${isPhone && scrolled && !menuOpen ? ' navbar--away' : ''}`}
+      className={`navbar${navVariant ? ` navbar--${navVariant}` : ''}${!isPhone && scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}${isPhone ? ' navbar--phone' : ''}${isPhone && scrolled && !menuOpen ? ' navbar--away' : ''}`}
       aria-label="Hauptnavigation"
       ref={barRef}
       data-cms-section="navbar"
@@ -646,6 +649,14 @@ export function Navbar() {
                 onLang={setLang}
                 phoneChrome={isPhone}
               />
+            ) : navVariant === 'navi02' ? (
+              <NavSplit
+                groups={menuGroups}
+                service={serviceLinks}
+                sections={content?.sections ?? {}}
+                groupHref={(group) => menuGroupHref(group.title, group.href)}
+                onNavigate={handleNavClick}
+              />
             ) : (
               <div className="navbar__panel-inner">
                 {/* The group's crest as a watermark in the corner of the open menu */}
@@ -668,6 +679,24 @@ export function Navbar() {
                       ) : (
                         <h2 className="navbar__group-title">{group.title}</h2>
                       )}
+                      {groupHref && !group.links.some((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)) ? (
+                        // A group without links of its own (Kulinarik …): the line of its page
+                        // and the way there, so it does not stand alone.
+                        <div className="navbar__group-teaser">
+                          {menuPreview(groupHref, group.title, content?.sections ?? {}).teaser ? (
+                            <p>{menuPreview(groupHref, group.title, content?.sections ?? {}).teaser}</p>
+                          ) : null}
+                          <a
+                            href={groupHref}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleNavClick(groupHref, group.title);
+                            }}
+                          >
+                            ZUR SEITE
+                          </a>
+                        </div>
+                      ) : null}
                       <ul className="navbar__group-links">
                         {group.links.filter((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)).map((link) => (
                           <li key={`${group.title}-${link.label}`}>

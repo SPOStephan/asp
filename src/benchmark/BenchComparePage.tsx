@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { benchPublicPath, markBenchSeen, toBenchHref } from '../lib/benchmark';
+import { benchPublicPath, markBenchSeen, sitePrefix, toBenchHref } from '../lib/benchmark';
 import './bench.css';
 
 type Device = 'desktop' | 'phone';
@@ -14,6 +14,8 @@ const SIZES: Record<Device, { width: number; height: number }> = {
 export function BenchComparePage() {
   const [params, setParams] = useSearchParams();
   const page = benchPublicPath(params.get('seite') || '/');
+  // Which copy to compare with: the benchmark or a variant (/navi01 …).
+  const copy = sitePrefix(params.get('kopie') || '') ?? undefined;
   const device: Device = params.get('geraet') === 'handy' ? 'phone' : 'desktop';
   const [sync, setSync] = useState(true);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -112,12 +114,12 @@ export function BenchComparePage() {
           <input type="checkbox" checked={sync} onChange={(event) => setSync(event.target.checked)} />
           gemeinsam scrollen
         </label>
-        <a href={toBenchHref(page)}>Nur Nachher öffnen</a>
+        <a href={toBenchHref(page, copy)}>Nur Nachher öffnen</a>
       </header>
       <div className="bench-compare__stage" ref={stageRef}>
         {[
           { ref: left, src: page, label: 'Vorher' },
-          { ref: right, src: toBenchHref(page), label: 'Nachher' },
+          { ref: right, src: toBenchHref(page, copy), label: 'Nachher' },
         ].map((side) => (
           <figure key={side.label} className="bench-compare__side">
             <figcaption>{side.label}</figcaption>

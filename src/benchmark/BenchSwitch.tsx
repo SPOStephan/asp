@@ -5,6 +5,7 @@ import {
   benchPublicPath,
   inFrame,
   isBenchPath,
+  sitePrefix,
   markBenchSeen,
   toBenchHref,
 } from '../lib/benchmark';
@@ -102,7 +103,7 @@ export function BenchSwitch() {
       <button type="button" aria-pressed={bench} onClick={() => go(true)}>
         Nachher
       </button>
-      <a href={`${BENCH_COMPARE_PATH}?seite=${encodeURIComponent(page)}`} className="bench-switch__pair" title="Beide Fassungen nebeneinander">
+      <a href={`${BENCH_COMPARE_PATH}?seite=${encodeURIComponent(page)}&kopie=${encodeURIComponent(sitePrefix(pathname) ?? '')}`} className="bench-switch__pair" title="Beide Fassungen nebeneinander">
         Nebeneinander
       </a>
     </div>
