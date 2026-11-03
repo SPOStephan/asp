@@ -5,7 +5,7 @@ import { cdnSrcSet, HERO_SIZES } from '../lib/media';
 import { parseInline } from '../lib/inlineLinks';
 
 // Paths that are tools, not content: never indexed, served as the plain app.
-const PRIVATE_PATHS = /^\/(admin|cms|vorschau|modern|benchmark|benchmark-vergleich|schriften|menue-mobil|mobil-leiste\d*)(\/|$)/;
+const PRIVATE_PATHS = /^\/(admin|cms|vorschau|modern|benchmark|benchmark-vergleich|navi01|navi02|schriften|menue-mobil|mobil-leiste\d*)(\/|$)/;
 
 export function isPrivatePath(path: string) {
   return PRIVATE_PATHS.test(path);

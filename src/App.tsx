@@ -41,7 +41,7 @@ import { BenchContext } from './context/BenchContext';
 import { BenchComparePage } from './benchmark/BenchComparePage';
 import { BenchSwitch } from './benchmark/BenchSwitch';
 import { BlockPlacer } from './components/PageBlocks';
-import { BENCH_COMPARE_PATH, benchPublicPath, isBenchPath } from './lib/benchmark';
+import { BENCH_COMPARE_PATH, BENCH_PREFIX, benchPublicPath, isBenchPath, sitePrefix } from './lib/benchmark';
 import { pageKeyFromPath } from './lib/musterPages';
 import { usePhoneChrome } from './lib/phoneChrome';
 import './styles/modern.css';
@@ -80,6 +80,7 @@ function App() {
   const cmsShell = isCmsPath(location.pathname);
   // The benchmark copy (/benchmark/…) shows the same pages with the benchmark design on.
   const bench = isBenchPath(location.pathname);
+  const prefix = sitePrefix(location.pathname);
   const sitePath = benchPublicPath(location.pathname);
   const siteLocation = bench ? { ...location, pathname: sitePath } : location;
   const isTypePreview = location.pathname === '/vorschau';
@@ -129,8 +130,8 @@ function App() {
   if (error) return <ErrorScreen message={error} />;
 
   return (
-    <BenchContext.Provider value={bench}>
-    <div className={[isTypePreview ? 'type-preview' : isStart ? 'look-modern' : '', bench ? 'look-bench' : ''].filter(Boolean).join(' ') || undefined}>
+    <BenchContext.Provider value={prefix}>
+    <div className={[isTypePreview ? 'type-preview' : isStart ? 'look-modern' : '', prefix === BENCH_PREFIX ? 'look-bench' : ''].filter(Boolean).join(' ') || undefined}>
       <Navbar />
       <PageGate>
         <Routes location={siteLocation}>

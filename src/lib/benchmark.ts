@@ -6,22 +6,40 @@ export const BENCH_PREFIX = '/benchmark';
 export const BENCH_COMPARE_PATH = '/benchmark-vergleich';
 const SEEN_KEY = 'bench-seen';
 
+// Further copies of the website to try one idea at a time, e.g. a different main menu:
+//   /navi01 – the menu groups in the plain capitals instead of the script
+//   /navi02 – another architecture of the desktop menu
+export const VARIANT_PREFIXES = ['/navi01', '/navi02'] as const;
+export type SitePrefix = typeof BENCH_PREFIX | (typeof VARIANT_PREFIXES)[number];
+const PREFIXES: SitePrefix[] = [BENCH_PREFIX, ...VARIANT_PREFIXES];
+
+// The copy an address belongs to ("/navi01/zimmer" → "/navi01"), or null for the live pages.
+export function sitePrefix(pathname: string): SitePrefix | null {
+  return PREFIXES.find((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)) ?? null;
+}
+
 export function isBenchPath(pathname: string) {
-  return pathname === BENCH_PREFIX || pathname.startsWith(`${BENCH_PREFIX}/`);
+  return sitePrefix(pathname) !== null;
 }
 
 // /benchmark/zimmer → /zimmer
 export function benchPublicPath(pathname: string) {
-  if (!isBenchPath(pathname)) return pathname;
-  return pathname.slice(BENCH_PREFIX.length) || '/';
+  const prefix = sitePrefix(pathname);
+  if (!prefix) return pathname;
+  return pathname.slice(prefix.length) || '/';
 }
 
-// /zimmer → /benchmark/zimmer (hashes, mail and phone links stay as they are)
-export function toBenchHref(href: string) {
+function currentPrefix(): SitePrefix {
+  return (typeof window !== 'undefined' && sitePrefix(window.location.pathname)) || BENCH_PREFIX;
+}
+
+// /zimmer → /benchmark/zimmer, or into the copy that is open (hashes, mail and phone links
+// stay as they are)
+export function toBenchHref(href: string, prefix: SitePrefix = currentPrefix()) {
   if (!href || href.startsWith('#') || /^(mailto|tel|https?):/i.test(href)) return href;
   if (!href.startsWith('/')) return href;
   if (isBenchPath(href.split(/[?#]/)[0])) return href;
-  return href === '/' ? BENCH_PREFIX : `${BENCH_PREFIX}${href.startsWith('/?') || href.startsWith('/#') ? href.slice(1) : href}`;
+  return href === '/' ? prefix : `${prefix}${href.startsWith('/?') || href.startsWith('/#') ? href.slice(1) : href}`;
 }
 
 // The before/after switch also shows on the normal pages, but only in a browser tab that has
