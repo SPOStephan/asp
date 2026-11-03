@@ -3,9 +3,8 @@ import { resolveOfferStories } from './offers';
 import { EVENTS_PATHS } from './topicAreas';
 import { resolveWellnessMedia } from './wellness';
 
-// What the open menu can show about a group's page: a short line and its picture – taken
-// from that page's own head (title, subtitle, picture), so it is always the hotel's own.
-// Used for groups without links of their own (Kulinarik …) and by the menu variant /navi02.
+// The picture of a menu group's page (from that page's own head), for the menu variant
+// /navi02 – always the hotel's own.
 
 type Sections = Record<string, Record<string, any> | undefined>;
 

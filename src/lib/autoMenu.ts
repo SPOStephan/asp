@@ -1,3 +1,4 @@
+import { culinaryVenueHref, resolveCulinaryVenues } from './culinary';
 import { readFilters } from './listFilters';
 import { offerTopicHref, resolveOfferStories } from './offers';
 import { topicArea, topicHref } from './topicAreas';
@@ -21,7 +22,7 @@ function named<T>(items: T[], label: (item: T) => string, href: (item: T) => str
 //   Hotel          → "Über uns" (if switched on): rooms, arrival, questions, pictures
 //   Angebote       → the themes of the offers ("Wellness-Angebote" …), not single offers
 //   Wellness       → its topic pages
-//   Kulinarik      → its page
+//   Kulinarik      → its page, with its main restaurant
 //   Tagen & Feiern → named as the hotel offers it ("Tagen", "Feiern" …), with its topic pages
 //   Region         → "Urlaub in …" with its topic pages
 // The service links (vouchers, journal …) sit in a row below the groups (autoServiceLinks).
@@ -51,7 +52,13 @@ export function autoMenuGroups(
       href: '/wellness',
       links: named(resolveWellnessTopics(sections.wellness_page?.items), (topic) => topic.name, (topic) => wellnessTopicHref(topic.id)),
     },
-    { title: 'Kulinarik', href: '/kulinarik', links: [] },
+    // The first restaurant of the culinary page (the main one); it leads to its place on that
+    // page. Bars and lounges get no entry of their own.
+    {
+      title: 'Kulinarik',
+      href: '/kulinarik',
+      links: named(resolveCulinaryVenues(sections.culinary_page?.items).slice(0, 1), (venue) => venue.name, (venue) => culinaryVenueHref(venue.id)),
+    },
     { title: events.title, href: events.basePath, links: named(events.items, (item) => item.name, (item) => topicHref(events, item.id)) },
     { title: region.title, href: region.basePath, links: named(region.items, (item) => item.name, (item) => topicHref(region, item.id)) },
   ];

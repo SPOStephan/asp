@@ -437,17 +437,6 @@ a.culinary__img-block:hover .culinary__img-label h3::after,
 .navbar__steps a.navbar__group-title { display: inline-flex; align-items: center; gap: 10px; }
 .navbar__steps a.navbar__group-title svg { color: var(--accent-400); }
 
-/* A menu group without links of its own (Kulinarik …): the line of its page below the title
-   (the title itself is the link) */
-.navbar__group-teaser {
-  margin: 0 0 14px;
-  max-width: 22em;
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  line-height: 1.4;
-  color: var(--neutral-600);
-}
-
 /* ---------- Menu variant /navi01 ----------
    The group titles in the same spaced capitals as the links below them, only larger –
    instead of the script. */
@@ -532,15 +521,6 @@ a.culinary__img-block:hover .culinary__img-label h3::after,
 }
 .nav-split__pages a:hover,
 .nav-split__pages a:focus-visible { color: var(--accent-500); }
-.nav-split__teaser {
-  margin: 0;
-  padding-top: 10px;
-  max-width: 16em;
-  font-family: var(--font-heading);
-  font-size: 1.3rem;
-  line-height: 1.35;
-  color: var(--neutral-700);
-}
 .nav-split__side { display: flex; flex-direction: column; gap: 28px; }
 .nav-split__picture {
   position: relative;

@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight, Gift, House, Mail, MapPin, Phone, UserRound,
 import { TextCta } from './TextCta';
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
 import { autoMenuGroups, autoServiceLinks } from '../lib/autoMenu';
-import { menuPreview } from '../lib/menuPreview';
 import { NavSplit } from './NavSplit';
 import { PORTAL_URL } from '../portal/config';
 import { portalLoginUrl } from '../member/handoff';
@@ -679,12 +678,6 @@ export function Navbar() {
                       ) : (
                         <h2 className="navbar__group-title">{group.title}</h2>
                       )}
-                      {groupHref && !group.links.some((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)) &&
-                      menuPreview(groupHref, group.title, content?.sections ?? {}).teaser ? (
-                        // A group without links of its own (Kulinarik …): the line of its page
-                        // below the title, which is the link.
-                        <p className="navbar__group-teaser">{menuPreview(groupHref, group.title, content?.sections ?? {}).teaser}</p>
-                      ) : null}
                       <ul className="navbar__group-links">
                         {group.links.filter((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)).map((link) => (
                           <li key={`${group.title}-${link.label}`}>
