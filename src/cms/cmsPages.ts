@@ -1,5 +1,6 @@
 import { BLOG_PAGE_FALLBACK } from '../lib/blog';
 import { CULINARY_PAGE_FALLBACK, culinaryTileHref } from '../lib/culinary';
+import { HOTEL_PAGE_FALLBACK } from '../lib/hotelPage';
 import { IMPRESSIONS_PAGE_FALLBACK } from '../lib/impressions';
 import { OCCASIONS_PAGE_FALLBACK } from '../lib/occasions';
 import { OFFERS_PAGE_FALLBACK } from '../lib/offers';
@@ -7,6 +8,7 @@ import { WELLNESS_PAGE_FALLBACK } from '../lib/wellness';
 
 export const CMS_EDITOR_PAGES = [
   { label: 'Start', to: '/cms', publicPath: '/' },
+  { label: 'Hotel', to: '/cms/hotel', publicPath: '/hotel' },
   { label: 'Zimmer', to: '/cms/zimmer', publicPath: '/zimmer' },
   { label: 'Wellness', to: '/cms/wellness', publicPath: '/wellness' },
   { label: 'Kulinarik', to: '/cms/kulinarik', publicPath: '/kulinarik' },
@@ -66,6 +68,7 @@ export const CMS_SECTION_FALLBACKS: Record<string, Record<string, unknown>> = {
   impressions_page: IMPRESSIONS_PAGE_FALLBACK,
   occasions_page: OCCASIONS_PAGE_FALLBACK,
   faq_page: FAQ_PAGE_FALLBACK,
+  hotel_page: HOTEL_PAGE_FALLBACK,
   footer: FOOTER_FALLBACK,
 };
 

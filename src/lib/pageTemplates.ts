@@ -8,6 +8,7 @@ export type PageLayoutKey =
   | 'impressions'
   | 'occasions'
   | 'faq'
+  | 'hotel'
   | 'legal'
   | 'generic';
 
@@ -85,6 +86,21 @@ export const SYSTEM_TEMPLATES: PageTemplate[] = [
     default_selected: true,
     required: true,
     sort_order: 10,
+  },
+  {
+    template_key: 'hotel',
+    title: 'Hotel',
+    description: 'Das Haus als Ganzes: Einleitung, Zahlen, Geschichte, Anreise & Lage, Fragen zum Haus.',
+    path_prefix: '/hotel',
+    tags: ['hotel', 'geschichte', 'anreise'],
+    preview_url: null,
+    kind: 'system',
+    layout_key: 'hotel',
+    section_keys: ['hotel_page'],
+    skeleton: emptySections(['hotel_page']),
+    default_selected: false,
+    required: false,
+    sort_order: 15,
   },
   {
     template_key: 'zimmer',

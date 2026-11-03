@@ -5,6 +5,7 @@ import type { CmsLinkTarget } from './cmsLinkTargets';
 // ("Suite", "Sauna", "Frühstück" …). The AI suggestion comes on top when it answers.
 
 const TOPICS: Array<{ href: string; words: string[] }> = [
+  { href: '/hotel', words: ['hotel', 'haus', 'geschichte', 'tradition', 'familie dr', 'eigentümer', 'anreise', 'lage', 'adresse', 'anfahrt'] },
   { href: '/zimmer', words: ['zimmer', 'suite', 'suiten', 'doppelzimmer', 'einzelzimmer', 'apartment', 'übernacht', 'schlafen', 'unterkunft', 'balkon', 'meerblick'] },
   { href: '/wellness', words: ['wellness', 'spa', 'sauna', 'saunen', 'schwimmbad', 'pool', 'massage', 'kosmetik', 'thalasso', 'dampfbad', 'entspann', 'ruheraum', 'anwendung'] },
   { href: '/kulinarik', words: ['restaurant', 'kulinar', 'frühstück', 'abendessen', 'essen', 'küche', 'bar', 'halbpension', 'genuss', 'speise', 'menü', 'bistro'] },

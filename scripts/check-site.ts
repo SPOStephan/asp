@@ -54,6 +54,34 @@ assert.ok(firstRoom);
 assert.ok(site.page(firstRoom.href!).jsonLd.some((data) => data['@type'] === 'HotelRoom'));
 assert.equal(site.page('/seite/hunde').h1, 'Urlaub mit Hund');
 
+// The hotel page: only when switched on; history, arrival and its questions as text.
+assert.equal(site.page('/hotel').status, 404, 'the hotel page is off until switched on');
+const withHotel = new SiteModel(
+  {
+    ...content,
+    pages: { ...content.pages, hotel: true },
+    sections: {
+      ...content.sections,
+      hotel_page: {
+        title: 'Unser Haus',
+        intro: 'Seit 1900 am [Deich](/zimmer).',
+        story: [{ year: '1900', title: 'Eröffnung', text: 'Das Haus öffnet.' }],
+        arrival_ways: [{ title: 'Mit der Bahn', text: 'Bis Ort Bahnhof.' }],
+        faq_ids: ['f'],
+      },
+      day_story: { title: 'Ein Tag', items: [{ time: '7.00', unit: 'Uhr', title: 'Frühstück', text: 'Am Fenster.' }], placements: [{ page: '/hotel', after: 'zahlen' }] },
+    },
+  } as unknown as HotelContent,
+  'https://www.strandhotel-test.de',
+);
+const hotelPage = withHotel.page('/hotel');
+assert.equal(hotelPage.status, 200);
+assert.equal(hotelPage.h1, 'Unser Haus');
+const hotelText = JSON.stringify(hotelPage.blocks);
+for (const part of ['Seit 1900 am Deich.', 'Eröffnung', 'Mit der Bahn', 'Wann Check-in?', 'Frühstück', 'Deich 1, 25826 Ort']) assert.ok(hotelText.includes(part), `hotel page lacks ${part}`);
+assert.ok(hotelPage.jsonLd.some((data) => data['@type'] === 'FAQPage'));
+assert.ok(withHotel.allPaths().some((link) => link.href === '/hotel'));
+
 const template = '<!doctype html><html><head><title>Hotel</title></head><body><div id="root"></div><script type="module" src="/a.js"></script></body></html>';
 const html = renderPage(template, home, site, content);
 assert.match(html, /<title>Strandhotel Test an der Nordsee<\/title>/);

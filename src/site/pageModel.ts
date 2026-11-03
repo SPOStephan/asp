@@ -1,6 +1,8 @@
 import { BLOG_PAGE_FALLBACK, blogHref, latestBlogPosts, resolveBlogPosts } from '../lib/blog';
 import { stripInline } from '../lib/inlineLinks';
 import { CULINARY_PAGE_FALLBACK, resolveCulinaryRhythm, resolveCulinaryVenues } from '../lib/culinary';
+import { blockPlacements, pageMatches } from '../lib/blocks';
+import { HOTEL_PAGE_FALLBACK, HOTEL_PATH, hotelFaqs, resolveAreas, resolveChapters, resolveFigures, resolveWays } from '../lib/hotelPage';
 import { IMPRESSIONS_PAGE_FALLBACK, resolveImpressions } from '../lib/impressions';
 import { remapSiteHref } from '../lib/links';
 import { resolveDiscoverTiles } from '../lib/media';
@@ -227,6 +229,8 @@ export class SiteModel {
         return this.isAvailable('blog') ? (second ? this.post(second) : this.blog()) : this.notFound(clean);
       case 'impressionen':
         return this.isAvailable('impressionen') && !second ? this.impressions() : this.notFound(clean);
+      case 'hotel':
+        return this.isAvailable('hotel') && !second ? this.hotelPage() : this.notFound(clean);
       case 'faqs':
         return this.isAvailable('faqs') && !second ? this.faqPage() : this.notFound(clean);
       case 'impressum':
@@ -781,6 +785,55 @@ export class SiteModel {
     const note = this.note(page, IMPRESSIONS_PAGE_FALLBACK);
     if (note) blocks.push(note);
     return this.build('/impressionen', { ...this.head(page, IMPRESSIONS_PAGE_FALLBACK), blocks });
+  }
+
+  // The house as a whole: all its parts as text, so search engines and AI answers find the
+  // figures, the history and the way there in one place.
+  private hotelPage(): PageModel {
+    const page = this.section('hotel_page');
+    const data: Section = { ...HOTEL_PAGE_FALLBACK, ...page };
+    const blocks: ContentBlock[] = [];
+    if (!hidden(page, 'intro') && str(data.intro)) blocks.push({ text: texts(stripInline(String(data.intro))) });
+    const figures = resolveFigures(data.figures);
+    if (!hidden(page, 'figures') && figures.length) {
+      blocks.push({ heading: str(data.figures_title), items: figures.map((figure) => ({ title: figure.value, text: figure.label })) });
+    }
+    const day = this.section('day_story');
+    const dayItems: Section[] = Array.isArray(day?.items) ? day.items : [];
+    if (!hidden(day) && dayItems.length && blockPlacements(day).some((place) => pageMatches(place.page, HOTEL_PATH))) {
+      blocks.push({
+        heading: str(day?.title) || 'Ein Tag in unserem Hotel',
+        items: dayItems.map((item) => ({ title: words(item.time, item.unit, item.title), text: str(item.text) })).filter((item) => item.title),
+      });
+    }
+    const chapters = resolveChapters(data.story);
+    if (!hidden(page, 'story') && chapters.length) {
+      blocks.push({
+        heading: str(data.story_title),
+        text: texts(stripInline(str(data.story_intro)), data.story_quote ? `„${str(data.story_quote)}“ ${str(data.story_quote_source)}` : ''),
+        items: chapters.map((chapter) => ({ title: words(chapter.year, chapter.title), text: stripInline(chapter.text) })),
+      });
+    }
+    const areas = resolveAreas(data.areas, this.content.sections, (key) => this.isAvailable(key));
+    if (!hidden(page, 'areas') && areas.length) {
+      blocks.push({ heading: str(data.areas_title), links: areas.map((area) => ({ label: area.title, href: this.linkable(area.href) })).filter((link) => link.href) });
+    }
+    const ways = resolveWays(data.arrival_ways);
+    if (!hidden(page, 'arrival') && (ways.length || str(this.hotel.address))) {
+      blocks.push({
+        heading: words(data.arrival_eyebrow) || 'Anreise & Lage',
+        text: texts(words(this.hotel.name, this.hotel.address), stripInline(str(data.arrival_intro))),
+        items: ways.map((way) => ({ title: way.title, text: stripInline(way.text) })),
+      });
+    }
+    const faqs = hidden(page, 'faq') ? [] : hotelFaqs(this.content.faqs, data.faq_ids);
+    if (faqs.length) blocks.push({ heading: str(data.faq_title), items: faqs.map((faq) => ({ title: faq.question, text: faq.answer })) });
+    return this.build(HOTEL_PATH, {
+      ...this.head(page, HOTEL_PAGE_FALLBACK),
+      eyebrow: str(data.eyebrow) || this.hotel.name,
+      blocks,
+      jsonLd: faqs.length ? [faqJsonLd(faqs)] : [],
+    });
   }
 
   private faqPage(): PageModel {

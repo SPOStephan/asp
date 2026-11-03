@@ -41,6 +41,14 @@ const FALLBACK_LANGUAGES: LanguageOption[] = [
   { code: 'en', label: 'EN' },
 ];
 
+// A link that leads where the group title already leads ("Zimmer & Suiten" under the title
+// "Zimmer & Suiten") is left out: the title is that link.
+function sameTarget(href: string, groupHref?: string) {
+  if (!groupHref) return false;
+  const clean = (value: string) => value.replace(/\/+(?=$|[?#])/, '') || '/';
+  return clean(href) === clean(groupHref);
+}
+
 function mobileGroupHref(title: string, href?: string) {
   const known = menuGroupHref(title, href);
   if (known) return known;
@@ -327,6 +335,11 @@ export function Navbar() {
       chrome.openBook();
       return;
     }
+    // Other websites (e.g. the voucher shop) open in a new tab.
+    if (/^https?:\/\//i.test(target)) {
+      window.open(target, '_blank', 'noopener,noreferrer');
+      return;
+    }
     if (target.startsWith('#')) {
       const homePath = cms ? '/cms' : bench ? BENCH_PREFIX : '/';
       if (window.location.pathname !== homePath) {
@@ -353,7 +366,7 @@ export function Navbar() {
     return !key || isPageEnabled(key);
   });
   const menuGroups: MenuGroup[] = filterMenuGroups(
-    data.menu_groups?.length ? data.menu_groups : autoMenuGroups(content?.sections ?? {}),
+    data.menu_groups?.length ? data.menu_groups : autoMenuGroups(content?.sections ?? {}, isPageEnabled, contact.voucher),
     isPageEnabled,
   );
   const languages: LanguageOption[] = data.languages?.length ? data.languages : FALLBACK_LANGUAGES;
@@ -468,7 +481,18 @@ export function Navbar() {
                     </a>
                   ) : null}
                   {contact.arrival ? (
-                    <a href={contact.arrival} aria-label="Anreise und Lage" title="Anreise" {...externalProps(contact.arrival)}>
+                    <a
+                      href={contact.arrival.startsWith('/') ? siteHref(contact.arrival) : contact.arrival}
+                      aria-label="Anreise und Lage"
+                      title="Anreise & Lage"
+                      {...externalProps(contact.arrival)}
+                      onClick={(event) => {
+                        // On the website's own page (hotel page, "Anreise & Lage"): no reload.
+                        if (!contact.arrival.startsWith('/')) return;
+                        event.preventDefault();
+                        handleNavClick(contact.arrival);
+                      }}
+                    >
                       <MapPin size={18} strokeWidth={1.4} />
                     </a>
                   ) : null}
@@ -617,7 +641,7 @@ export function Navbar() {
                         <h2 className="navbar__group-title">{group.title}</h2>
                       )}
                       <ul className="navbar__group-links">
-                        {group.links.map((link) => (
+                        {group.links.filter((link) => !sameTarget(remapSiteHref(link.href, link.label), groupHref)).map((link) => (
                           <li key={`${group.title}-${link.label}`}>
                             <a
                               href={remapSiteHref(link.href, link.label)}

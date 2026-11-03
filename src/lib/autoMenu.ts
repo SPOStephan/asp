@@ -1,7 +1,6 @@
 import { culinaryVenueHref, resolveCulinaryVenues } from './culinary';
 import { occasionHref, resolveOccasions } from './occasions';
 import { offerHref, resolveOfferStories } from './offers';
-import { resolveRooms, roomHref } from './rooms';
 import { resolveWellnessTopics, wellnessTopicHref } from './wellness';
 
 type Link = { label: string; href: string };
@@ -17,41 +16,51 @@ function named<T>(items: T[], label: (item: T) => string, href: (item: T) => str
 }
 
 // The menu of a hotel without its own: built from its own pages and entries, so it never
-// shows another hotel's rooms, spa or restaurants. Pages that are switched off drop out later.
-export function autoMenuGroups(sections: Record<string, Record<string, any>>): AutoMenuGroup[] {
+// shows another hotel's rooms, spa or restaurants. Pages that are switched off drop out later
+// (filterMenuGroups). The title of a group leads to its page; the links below never repeat it.
+//   Hotel     → the hotel page (if switched on): rooms, pictures, journal, questions
+//   Wellness, Kulinarik, Angebote, Anlässe → their pages with their entries
+//   Service   → vouchers (with a shop address), journal, questions
+export function autoMenuGroups(
+  sections: Record<string, Record<string, any>>,
+  enabled: (key: string) => boolean = () => true,
+  voucherHref = '',
+): AutoMenuGroup[] {
+  const hotelPage = enabled('hotel');
   const groups: AutoMenuGroup[] = [
     {
-      title: 'Zimmer & Suiten',
-      href: '/zimmer',
-      links: [{ label: 'Alle Zimmer & Suiten', href: '/zimmer' }, ...named(resolveRooms(sections.rooms_page?.items), (room) => room.name, (room) => roomHref(room.id))],
-    },
-    {
-      title: 'Angebote',
-      href: '/angebote',
+      title: 'Hotel',
+      ...(hotelPage ? { href: '/hotel' } : {}),
       links: [
-        { label: 'Alle Angebote', href: '/angebote' },
-        ...named(resolveOfferStories(sections.offers_page?.items, sections.offers?.items), (offer) => offer.title, (offer) => offerHref(offer.id)),
+        { label: 'Zimmer & Suiten', href: '/zimmer' },
+        ...(hotelPage ? [{ label: 'Geschichte', href: '/hotel#geschichte' }, { label: 'Anreise & Lage', href: '/hotel#anreise' }] : []),
+        { label: 'Impressionen', href: '/impressionen' },
       ],
-    },
-    {
-      title: 'Anlässe',
-      href: '/anlaesse',
-      links: [{ label: 'Alle Anlässe', href: '/anlaesse' }, ...named(resolveOccasions(sections.occasions_page?.items), (item) => item.name, (item) => occasionHref(item.id))],
     },
     {
       title: 'Wellness',
       href: '/wellness',
-      links: [{ label: 'Wellness', href: '/wellness' }, ...named(resolveWellnessTopics(sections.wellness_page?.items), (topic) => topic.name, (topic) => wellnessTopicHref(topic.id))],
+      links: named(resolveWellnessTopics(sections.wellness_page?.items), (topic) => topic.name, (topic) => wellnessTopicHref(topic.id)),
     },
     {
       title: 'Kulinarik',
       href: '/kulinarik',
-      links: [{ label: 'Kulinarik', href: '/kulinarik' }, ...named(resolveCulinaryVenues(sections.culinary_page?.items), (venue) => venue.name, (venue) => culinaryVenueHref(venue.id))],
+      links: named(resolveCulinaryVenues(sections.culinary_page?.items), (venue) => venue.name, (venue) => culinaryVenueHref(venue.id)),
     },
     {
-      title: 'Hotel',
+      title: 'Angebote',
+      href: '/angebote',
+      links: named(resolveOfferStories(sections.offers_page?.items, sections.offers?.items), (offer) => offer.title, (offer) => offerHref(offer.id)),
+    },
+    {
+      title: 'Anlässe',
+      href: '/anlaesse',
+      links: named(resolveOccasions(sections.occasions_page?.items), (item) => item.name, (item) => occasionHref(item.id)),
+    },
+    {
+      title: 'Service',
       links: [
-        { label: 'Impressionen', href: '/impressionen' },
+        ...(voucherHref ? [{ label: 'Gutscheine', href: voucherHref }] : []),
         { label: 'Journal', href: '/blog' },
         { label: 'FAQ', href: '/faqs' },
       ],

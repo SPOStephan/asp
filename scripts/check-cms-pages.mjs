@@ -8,6 +8,7 @@ function splitHref(href) {
 
 const CMS_EDITOR_PAGES = [
   { to: '/cms', publicPath: '/' },
+  { to: '/cms/hotel', publicPath: '/hotel' },
   { to: '/cms/zimmer', publicPath: '/zimmer' },
   { to: '/cms/wellness', publicPath: '/wellness' },
   { to: '/cms/kulinarik', publicPath: '/kulinarik' },

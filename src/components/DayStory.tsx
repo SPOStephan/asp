@@ -37,7 +37,7 @@ export function DayStory() {
 
   return (
     <CmsSection sectionKey="day_story" label="Ein Tag im Hotel">
-      <section className="day-story" aria-roledescription="Karussell" aria-label={data?.title || 'Ein Tag in unserem Hotel'}>
+      <section className="day-story" id="ein-tag" aria-roledescription="Karussell" aria-label={data?.title || 'Ein Tag in unserem Hotel'}>
         <div className="day-story__head">
           {data?.eyebrow ? <p className="eyebrow" data-cms-path="eyebrow">{data.eyebrow}</p> : null}
           <h2 className="day-story__title heading-font" data-cms-path="title">{data?.title || 'Ein Tag in unserem Hotel'}</h2>

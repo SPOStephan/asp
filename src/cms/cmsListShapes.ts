@@ -13,5 +13,9 @@ export const CMS_LIST_SHAPES: Record<string, Record<string, unknown>> = {
   'occasions_page:items': { id: '', name: '', kicker: '', summary: '', text: [''], details: [], includes: [], links: [], faqs: [], community: [], cta: '', cta_href: '', image: '', image_alt: '', hero_image: '', hero_image_alt: '' },
   'direct_booking:items': { icon: 'BadgeCheck', title: '', text: '' },
   'offers:items': { title: '', subtitle: '', text: '', details: [], links: [], image_primary: '', image_primary_alt: '', image_secondary: '', image_secondary_alt: '' },
+  'hotel_page:figures': { value: '', label: '' },
+  'hotel_page:story': { year: '', title: '', text: '' },
+  'hotel_page:areas': { title: '', text: '', href: '', image: '', image_alt: '' },
+  'hotel_page:arrival_ways': { title: '', text: '' },
   'discover:tiles': { id: '', image: '', eyebrow: '', title: '', href: '' },
 };

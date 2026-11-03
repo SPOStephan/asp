@@ -54,6 +54,7 @@ export function kindPattern(pathname: string): string | null {
 
 const PAGE_NAMES: Record<string, string> = {
   '/': 'Startseite',
+  '/hotel': 'Hotel',
   '/zimmer': 'Zimmer',
   '/wellness': 'Wellness',
   '/kulinarik': 'Kulinarik',

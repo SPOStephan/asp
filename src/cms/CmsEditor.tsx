@@ -9,6 +9,7 @@ import { readFilters } from '../lib/listFilters';
 import { hasReadMore, placeReadMore, READ_MORE_MARK, stripReadMore } from '../lib/readMore';
 import { ROOM_FILTERS, ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import { autoMenuGroups } from '../lib/autoMenu';
+import { resolveAreas } from '../lib/hotelPage';
 import { supabase, type HotelFAQ } from '../lib/supabase';
 import { fieldKind, isLongText, isPlainObject, keepLiveMedia, shouldPublishPreview } from './cmsDraft';
 import { keepLiveFocals, readHeroFocal } from './cmsFocal';
@@ -34,7 +35,7 @@ import { CmsLinkPicker } from './CmsLinkPicker';
 import { CmsTextarea } from './CmsTextarea';
 import { CMS_SECTION_LABELS, describeSelection } from './cmsSelect';
 
-const CUSTOM_SECTIONS = new Set(['navbar', 'hero', 'welcome', 'discover', 'rooms_page', 'faq_page']);
+const CUSTOM_SECTIONS = new Set(['navbar', 'hero', 'welcome', 'discover', 'rooms_page', 'faq_page', 'hotel_page']);
 
 function useLivePreview(sectionKey: string, payload: Record<string, unknown>) {
   const cms = useCms();
@@ -208,6 +209,7 @@ export function CmsEditor() {
         {section === 'rooms_page' && !showEntry ? <RoomsFields /> : null}
         {showEntry && detail && ENTRY_SPECS[detail.section] ? <CmsEntryEditor key={`${detail.section}:${detail.entryId}`} sectionKey={detail.section} entryId={detail.entryId} /> : null}
         {section === 'faq_page' ? <FaqFields /> : null}
+        {section === 'hotel_page' ? <HotelPageFields /> : null}
         {showEntry && detail && !ENTRY_SPECS[detail.section] ? (
           <EntryFields key={`${detail.section}:${detail.entryId}`} sectionKey={detail.section} entryId={detail.entryId} hub={detail.hub} />
         ) : null}
@@ -390,7 +392,7 @@ function NavbarFields() {
 
       <MenuGroupsEditor
         groups={draft.menu_groups}
-        auto={() => autoMenuGroups(content?.sections ?? {}).map((group) => ({ title: group.title, href: group.href ?? '', links: group.links }))}
+        auto={() => autoMenuGroups(content?.sections ?? {}, (key) => key === 'home' || content?.pages[key] === true, draft.bar_voucher_href.trim()).map((group) => ({ title: group.title, href: group.href ?? '', links: group.links }))}
         onChange={(menu_groups) => setDraft({ ...draft, menu_groups })}
       />
 
@@ -433,11 +435,15 @@ function NavbarFields() {
           onChange={(bar_arrival_href) => setDraft({ ...draft, bar_arrival_href })}
         />
         <p className="cms-muted">
-          {draft.bar_arrival_href ? '' : 'Ohne eigenes Ziel öffnet das Symbol die Hoteladresse in Google Maps.'}
+          {draft.bar_arrival_href
+            ? ''
+            : content?.pages.hotel === true
+              ? 'Ohne eigenes Ziel führt das Symbol zu „Anreise & Lage“ auf der Hotel-Seite (dort auch „Route planen“ mit Google Maps).'
+              : 'Ohne eigenes Ziel öffnet das Symbol die Hoteladresse in Google Maps.'}
         </p>
         {draft.bar_arrival_href ? (
           <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setDraft({ ...draft, bar_arrival_href: '' })}>
-            Zurück zu Google Maps
+            {content?.pages.hotel === true ? 'Zurück zur Hotel-Seite' : 'Zurück zu Google Maps'}
           </button>
         ) : null}
       </fieldset>
@@ -1030,6 +1036,256 @@ function RoomsFields() {
   );
 }
 
+
+type HotelListField = { key: string; label: string; long?: boolean; link?: boolean; image?: boolean };
+
+// One list of the hotel page (figures, chapters, tiles, ways) with plain German labels.
+function HotelListEditor({
+  title,
+  path,
+  items,
+  fields,
+  addLabel,
+  onChange,
+}: {
+  title: string;
+  path: string;
+  items: Record<string, unknown>[];
+  fields: HotelListField[];
+  addLabel: string;
+  onChange: (items: Record<string, unknown>[]) => void;
+}) {
+  const set = (index: number, key: string, value: unknown) => onChange(items.map((item, at) => (at === index ? { ...item, [key]: value } : item)));
+  const move = (index: number, step: number) => {
+    const to = index + step;
+    if (to < 0 || to >= items.length) return;
+    const copy = items.slice();
+    [copy[index], copy[to]] = [copy[to], copy[index]];
+    onChange(copy);
+  };
+  return (
+    <div className="cms-list">
+      {items.map((item, index) => (
+        <fieldset key={`${path}-${index}`} className="cms-tile" data-cms-panel-focus={`${path}:${index}`}>
+          <legend>
+            {title} {index + 1}
+          </legend>
+          <ItemDeleteButton label={`${title} ${index + 1} löschen`} onClick={() => onChange(items.filter((_, at) => at !== index))} />
+          {fields.map((field) =>
+            field.image ? (
+              <CmsImageField
+                key={field.key}
+                label={field.label}
+                value={String(item[field.key] ?? '')}
+                alt={String(item[`${field.key}_alt`] ?? '')}
+                section="hotel_page"
+                path={`${path}.${index}.${field.key}`}
+              />
+            ) : field.link ? (
+              <CmsLinkPicker
+                key={field.key}
+                label={field.label}
+                value={String(item[field.key] ?? '')}
+                context={String(item.title ?? '')}
+                onChange={(next) => set(index, field.key, next)}
+              />
+            ) : (
+              <Field
+                key={field.key}
+                label={field.label}
+                value={String(item[field.key] ?? '')}
+                multiline={field.long}
+                onChange={(next) => set(index, field.key, next)}
+              />
+            ),
+          )}
+          <div className="cms-modal__actions">
+            <button type="button" className="cms-btn cms-btn--ghost" disabled={index === 0} onClick={() => move(index, -1)}>
+              Nach oben
+            </button>
+            <button type="button" className="cms-btn cms-btn--ghost" disabled={index === items.length - 1} onClick={() => move(index, 1)}>
+              Nach unten
+            </button>
+          </div>
+        </fieldset>
+      ))}
+      <button
+        type="button"
+        className="cms-btn cms-btn--ghost"
+        onClick={() => onChange([...items, Object.fromEntries(fields.flatMap((field) => (field.image ? [[field.key, ''], [`${field.key}_alt`, '']] : [[field.key, '']])))])}
+      >
+        + {addLabel}
+      </button>
+    </div>
+  );
+}
+
+function hotelList(value: unknown): Record<string, unknown>[] {
+  return Array.isArray(value) ? value.filter((item): item is Record<string, unknown> => isPlainObject(item)) : [];
+}
+
+// The hotel page (/hotel): every part with German labels; the questions are ticked from the FAQ.
+function HotelPageFields() {
+  const cms = useCms();
+  const { content, isPageEnabled } = useHotelContent();
+  const data = useSection('hotel_page');
+  const read = () => sectionDraft('hotel_page', data);
+  const [draft, setDraft] = useState<Record<string, unknown>>(read);
+
+  useEffect(() => {
+    setDraft(read());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cms?.draftTick]);
+
+  const payload = keepLiveFocals(keepLiveMedia({ ...read(), ...draft }, data), data);
+  useLivePreview('hotel_page', payload);
+  const text = (key: string) => String(draft[key] ?? '');
+  const put = (key: string) => (value: unknown) => setDraft((current) => ({ ...current, [key]: value }));
+  const faqIds = Array.isArray(draft.faq_ids) ? (draft.faq_ids as unknown[]).filter((id): id is string => typeof id === 'string') : [];
+  const areas = hotelList(draft.areas);
+
+  return (
+    <form className="cms-form" onSubmit={(event) => event.preventDefault()}>
+      <h3>Hotel-Seite</h3>
+      <p className="cms-muted">
+        Das Haus als Ganzes – für Gäste, Suchmaschinen und KI-Antworten. Nur Fakten eintragen, die stimmen; leere Teile
+        erscheinen nicht auf der Website. „Ein Tag im Hotel“ setzen Sie mit „+ Baustein einfügen“ an die gewünschte Stelle.
+      </p>
+
+      <fieldset className="cms-fade" data-cms-panel-focus="head">
+        <legend>Kopf</legend>
+        <Field focus="head" label="Dachzeile (leer: Name des Hotels)" value={text('eyebrow')} onChange={put('eyebrow')} />
+        <Field focus="title" label="Titel" value={text('title')} onChange={put('title')} />
+        <Field focus="subtitle" label="Untertitel" value={text('subtitle')} onChange={put('subtitle')} />
+        <CmsImageField label="Bild oben" value={text('hero_image')} alt={text('hero_image_alt')} section="hotel_page" path="hero_image" />
+      </fieldset>
+
+      <CmsLinkText focus="intro" path="intro" label="Einleitung" value={text('intro')} onChange={put('intro')} />
+
+      <fieldset className="cms-fade" data-cms-panel-focus="figures">
+        <legend>Das Haus in Zahlen</legend>
+        <Field label="Überschrift" value={text('figures_title')} onChange={put('figures_title')} />
+        <HotelListEditor
+          title="Zahl"
+          path="figures"
+          items={hotelList(draft.figures)}
+          fields={[
+            { key: 'value', label: 'Zahl oder Jahr (z. B. 1890)' },
+            { key: 'label', label: 'Was sie bedeutet' },
+          ]}
+          addLabel="Zahl hinzufügen"
+          onChange={put('figures')}
+        />
+      </fieldset>
+
+      <fieldset className="cms-fade" data-cms-panel-focus="story">
+        <legend>Geschichte</legend>
+        <Field label="Dachzeile" value={text('story_eyebrow')} onChange={put('story_eyebrow')} />
+        <Field label="Überschrift" value={text('story_title')} onChange={put('story_title')} />
+        <CmsLinkText path="story_intro" label="Einleitung der Geschichte" value={text('story_intro')} onChange={put('story_intro')} />
+        <HotelListEditor
+          title="Station"
+          path="story"
+          items={hotelList(draft.story)}
+          fields={[
+            { key: 'year', label: 'Jahr' },
+            { key: 'title', label: 'Überschrift' },
+            { key: 'text', label: 'Text', long: true },
+          ]}
+          addLabel="Station hinzufügen"
+          onChange={put('story')}
+        />
+        <Field label="Zitat (ohne Anführungszeichen)" value={text('story_quote')} multiline onChange={put('story_quote')} />
+        <Field label="Quelle des Zitats" value={text('story_quote_source')} onChange={put('story_quote_source')} />
+      </fieldset>
+
+      <fieldset className="cms-fade" data-cms-panel-focus="areas">
+        <legend>Das Haus entdecken (Kacheln)</legend>
+        <Field label="Überschrift" value={text('areas_title')} onChange={put('areas_title')} />
+        {areas.length ? null : (
+          <>
+            <p className="cms-muted">
+              Ohne eigene Kacheln erscheinen automatisch die freigeschalteten Seiten (Zimmer, Wellness, Kulinarik, Impressionen)
+              mit dem Bild ihres Seitenkopfs.
+            </p>
+            <button
+              type="button"
+              className="cms-btn cms-btn--ghost"
+              onClick={() => put('areas')(resolveAreas([], content?.sections ?? {}, isPageEnabled).map((area) => ({ ...area })))}
+            >
+              Kacheln übernehmen und anpassen
+            </button>
+          </>
+        )}
+        {areas.length ? (
+          <HotelListEditor
+            title="Kachel"
+            path="areas"
+            items={areas}
+            fields={[
+              { key: 'title', label: 'Titel' },
+              { key: 'text', label: 'Unterzeile' },
+              { key: 'href', label: 'Ziel', link: true },
+              { key: 'image', label: 'Bild', image: true },
+            ]}
+            addLabel="Kachel hinzufügen"
+            onChange={put('areas')}
+          />
+        ) : null}
+      </fieldset>
+
+      <fieldset className="cms-fade" data-cms-panel-focus="arrival">
+        <legend>Anreise &amp; Lage</legend>
+        <p className="cms-muted">
+          Adresse und Telefon kommen aus den Stammdaten des Hotels. Das Karten-Symbol oben im Header führt hierher.
+        </p>
+        <Field label="Dachzeile" value={text('arrival_eyebrow')} onChange={put('arrival_eyebrow')} />
+        <Field label="Überschrift" value={text('arrival_title')} onChange={put('arrival_title')} />
+        <Field label="Button zu Google Maps" value={text('route_label')} onChange={put('route_label')} />
+        <CmsLinkText path="arrival_intro" label="Text zur Lage" value={text('arrival_intro')} onChange={put('arrival_intro')} />
+        <HotelListEditor
+          title="Weg"
+          path="arrival_ways"
+          items={hotelList(draft.arrival_ways)}
+          fields={[
+            { key: 'title', label: 'Überschrift (z. B. Mit dem Auto)' },
+            { key: 'text', label: 'Beschreibung', long: true },
+          ]}
+          addLabel="Weg hinzufügen"
+          onChange={put('arrival_ways')}
+        />
+        <CmsImageField label="Bild für die Karte (vor dem Laden der Karte)" value={text('map_image')} alt={text('map_image_alt')} section="hotel_page" path="map_image" />
+        <p className="cms-muted">Ohne Bild erscheint eine neutrale Fläche. Die Google-Karte lädt erst nach einem Klick des Gastes.</p>
+      </fieldset>
+
+      <fieldset className="cms-fade" data-cms-panel-focus="faq_ids">
+        <legend>Häufige Fragen zum Haus</legend>
+        <Field label="Überschrift" value={text('faq_title')} onChange={put('faq_title')} />
+        <p className="cms-muted">
+          Angehakte Fragen erscheinen hier (Pflege der Fragen unter „FAQ“). Keine angehakt: die Fragen der Startseite.
+        </p>
+        {(content?.faqs ?? []).map((faq) => (
+          <label key={faq.id} className="cms-choice">
+            <input
+              type="checkbox"
+              checked={faqIds.includes(faq.id)}
+              onChange={(event) =>
+                put('faq_ids')(
+                  event.target.checked
+                    ? (content?.faqs ?? []).map((item) => item.id).filter((id) => id === faq.id || faqIds.includes(id))
+                    : faqIds.filter((id) => id !== faq.id),
+                )
+              }
+            />
+            {faq.question} <small className="cms-muted">({faq.category})</small>
+          </label>
+        ))}
+      </fieldset>
+
+      <SaveBar sectionKey="hotel_page" onSave={() => cms!.saveSection('hotel_page', payload)} />
+    </form>
+  );
+}
 
 function FaqFields() {
   const cms = useCms();
