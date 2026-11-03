@@ -309,6 +309,7 @@ function NavbarFields() {
     logo_normal: String(data.logo_normal ?? ''),
     links: readBarLinks(data.links),
     show_inquire: data.show_inquire === true,
+    menu_style: data.menu_style === 'columns' ? 'columns' : 'split',
     cta_text: String(data.cta_text ?? ''),
     cta_href: String(data.cta_href ?? ''),
     bar_voucher_href: String(data.bar_voucher_href ?? ''),
@@ -427,6 +428,19 @@ function NavbarFields() {
         <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setDraft({ ...draft, menu_service: [...draft.menu_service, { label: '', href: '' }] })}>
           Eintrag hinzufügen
         </button>
+      </fieldset>
+
+      <fieldset className="cms-fade" data-cms-panel-focus="menu_style">
+        <legend>Menü auf dem Desktop</legend>
+        <label className="cms-choice">
+          <input type="radio" name="menu-style" checked={draft.menu_style !== 'columns'} onChange={() => setDraft({ ...draft, menu_style: 'split' })} />
+          Bild-Menü (Standard): Bereiche links, ihre Seiten daneben, Bild rechts
+        </label>
+        <label className="cms-choice">
+          <input type="radio" name="menu-style" checked={draft.menu_style === 'columns'} onChange={() => setDraft({ ...draft, menu_style: 'columns' })} />
+          Spalten (Ausweichlösung): alle Bereiche mit ihren Seiten auf einen Blick
+        </label>
+        <p className="cms-muted">Auf Handys gilt immer das Handy-Menü. Vergleich: Adresse /navi01 zeigt die Spalten.</p>
       </fieldset>
 
       <fieldset className="cms-fade">

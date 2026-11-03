@@ -6,7 +6,7 @@ import { Crest } from './Crest';
 type Link = { label: string; href: string };
 type Group = { title: string; href?: string; links: Link[] };
 
-// Menu variant /navi02 (desktop): calm and spacious.
+// The desktop menu (first tried as /navi02): calm and spacious.
 //   left  – the main areas one below the other, in the spaced capitals of the site
 //   next  – a fine line leads from the chosen area to its pages, which stand at its height;
 //   right – the picture of the chosen area, below it the service row
