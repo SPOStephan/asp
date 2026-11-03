@@ -269,6 +269,9 @@ export function Navbar() {
   const isPhone = usePhoneChrome();
   const prefix = useSitePrefix();
   const navVariant = useNavVariant();
+  // Desktop menu: the picture menu (areas left, their pages, picture right) – or, as fallback
+  // if guests find it harder to use, the columns (CMS: Logo & Leiste → Menü auf dem Desktop).
+  // /navi01 always shows the columns, to compare.
   const contact = useContactLinks();
   const { pathname } = useLocation();
   // Benchmark: every link stays in the copy of the website.
@@ -398,6 +401,7 @@ export function Navbar() {
     const key = pageKeyFromHref(remapSiteHref(link.href, link.label));
     return !key || isPageEnabled(key);
   });
+  const menuStyle: 'split' | 'columns' = navVariant === 'navi01' || data.menu_style === 'columns' ? 'columns' : 'split';
   const languages: LanguageOption[] = data.languages?.length ? data.languages : FALLBACK_LANGUAGES;
   const currentLang = languages.find((item) => item.code === lang) ?? languages[0];
   const lightBar = (!isPhone && scrolled) || menuOpen;
@@ -408,7 +412,7 @@ export function Navbar() {
 
   return (
     <nav
-      className={`navbar${navVariant ? ` navbar--${navVariant}` : ''}${!isPhone && scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}${isPhone ? ' navbar--phone' : ''}${isPhone && scrolled && !menuOpen ? ' navbar--away' : ''}`}
+      className={`navbar navbar--${menuStyle}${!isPhone && scrolled ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--menu-open' : ''}${isPhone ? ' navbar--phone' : ''}${isPhone && scrolled && !menuOpen ? ' navbar--away' : ''}`}
       aria-label="Hauptnavigation"
       ref={barRef}
       data-cms-section="navbar"
@@ -648,7 +652,7 @@ export function Navbar() {
                 onLang={setLang}
                 phoneChrome={isPhone}
               />
-            ) : navVariant === 'navi02' ? (
+            ) : menuStyle === 'split' ? (
               <NavSplit
                 groups={menuGroups}
                 service={serviceLinks}

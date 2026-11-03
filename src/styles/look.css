@@ -437,10 +437,10 @@ a.culinary__img-block:hover .culinary__img-label h3::after,
 .navbar__steps a.navbar__group-title { display: inline-flex; align-items: center; gap: 10px; }
 .navbar__steps a.navbar__group-title svg { color: var(--accent-400); }
 
-/* ---------- Menu variant /navi01 ----------
+/* ---------- Columns menu (fallback; /navi01 shows it) ----------
    The group titles in the same spaced capitals as the links below them, only larger –
    instead of the script. */
-.navbar--navi01 .navbar__group-title {
+.navbar--columns .navbar__group-title {
   font-family: var(--font-body);
   font-size: clamp(1rem, 1.15vw, 1.2rem);
   font-weight: 500;
@@ -452,12 +452,12 @@ a.culinary__img-block:hover .culinary__img-label h3::after,
   margin-bottom: 20px;
   border-bottom: 1px solid var(--accent-300);
 }
-.navbar--navi01 a.navbar__group-title:hover { color: var(--accent-400); }
-.navbar--navi01 .navbar__group-links a { color: var(--neutral-600); }
-.navbar--navi01 .navbar__roots a,
-.navbar--navi01 .navbar__roots button:not(.navbar__more) { letter-spacing: 0.2em; }
+.navbar--columns a.navbar__group-title:hover { color: var(--accent-400); }
+.navbar--columns .navbar__group-links a { color: var(--neutral-600); }
+.navbar--columns .navbar__roots a,
+.navbar--columns .navbar__roots button:not(.navbar__more) { letter-spacing: 0.2em; }
 
-/* ---------- Menu variant /navi02 (desktop) ----------
+/* ---------- Picture menu (desktop standard; first tried as /navi02) ----------
    Calm and spacious: the areas in the spaced capitals on the left, a fine line from the chosen
    one to its pages at its height, its picture on the right with the service row below.
    Sizes and contrast chosen to stay easy to read. */

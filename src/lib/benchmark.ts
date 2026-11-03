@@ -7,8 +7,8 @@ export const BENCH_COMPARE_PATH = '/benchmark-vergleich';
 const SEEN_KEY = 'bench-seen';
 
 // Further copies of the website to try one idea at a time, e.g. a different main menu:
-//   /navi01 – the menu groups in the plain capitals instead of the script
-//   /navi02 – another architecture of the desktop menu
+//   /navi01 – the columns menu (fallback to the picture menu, which is the standard now)
+//   /navi02 – the picture menu as it was tried (now the same as the live pages)
 export const VARIANT_PREFIXES = ['/navi01', '/navi02'] as const;
 export type SitePrefix = typeof BENCH_PREFIX | (typeof VARIANT_PREFIXES)[number];
 const PREFIXES: SitePrefix[] = [BENCH_PREFIX, ...VARIANT_PREFIXES];
