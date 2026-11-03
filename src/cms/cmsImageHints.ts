@@ -51,8 +51,9 @@ export function imageHint(section: string, path: string): ImageHint {
   if (section === 'occasions_page' && leaf === 'image') return TILE;
   if (section === 'highlights' && leaf === 'image') return PHOTO;
   if (section === 'day_story' && leaf === 'image') return LAND_16_10;
-  if (section === 'hotel_page' && leaf === 'map_image') return PORTRAIT;
-  if (section === 'hotel_page' && leaf === 'image') return PHOTO;
+  if (section === 'arrival_page' && leaf === 'map_image') return PORTRAIT;
+  if (section === 'about_page' && path.includes('hosts.') && leaf === 'image') return PORTRAIT;
+  if (section === 'about_page' && leaf === 'image') return PHOTO;
   if (section === 'generations' && (leaf === 'image' || leaf === 'src')) return PHOTO;
   if (section === 'awards' && (leaf === 'src' || leaf === 'image')) return TILE;
   if (leaf === 'hero_image') return WIDE;

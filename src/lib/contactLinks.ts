@@ -1,5 +1,5 @@
 import { useHotel, useHotelContent, useSection } from '../context/HotelContext';
-import { ARRIVAL_HREF, mapsSearchHref } from './hotelPage';
+import { ARRIVAL_PATH, mapsSearchHref } from './arrivalPage';
 
 export interface ContactLinks {
   mail: string;
@@ -9,7 +9,7 @@ export interface ContactLinks {
 }
 
 // Mail, phone, arrival and vouchers of the hotel, as set in the CMS (Logo & Leiste). Vouchers
-// only with a link. Arrival: an own target if set, else "Anreise & Lage" on the hotel page,
+// only with a link. Arrival: an own target if set, else the arrival page (if switched on),
 // else the address in Google Maps.
 export function useContactLinks(): ContactLinks {
   const hotel = useHotel();
@@ -21,7 +21,7 @@ export function useContactLinks(): ContactLinks {
   return {
     mail: hotel?.email ? `mailto:${hotel.email}` : '',
     phone: hotel?.phone ? `tel:${hotel.phone.replace(/\s/g, '')}` : '',
-    arrival: ownArrival || (isPageEnabled('hotel') ? ARRIVAL_HREF : maps),
+    arrival: ownArrival || (isPageEnabled('anreise') ? ARRIVAL_PATH : maps),
     voucher,
   };
 }

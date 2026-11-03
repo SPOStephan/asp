@@ -5,7 +5,8 @@ import { AdminApp } from './admin/AdminApp';
 import { isAdminHost, isAdminPath } from './admin/adminHost';
 import { CmsApp } from './cms/CmsApp';
 import { isCmsPath } from './cms/cmsHost';
-import { HotelPage } from './pages/HotelPage';
+import { AboutPage } from './pages/AboutPage';
+import { ArrivalPage } from './pages/ArrivalPage';
 import { FAQPage } from './pages/FAQPage';
 import { GenericHotelPage } from './pages/GenericHotelPage';
 import { LegalPage } from './pages/LegalPage';
@@ -50,6 +51,12 @@ import './styles/look.css';
 function RoomCompareRedirect() {
   const { roomId } = useParams();
   return <Navigate to={roomId ? `/zimmer/${roomId}` : '/zimmer'} replace />;
+}
+
+// The region pages started as "Anlässe" (/anlaesse/…): old links lead to the same page.
+function OldRegionRedirect() {
+  const { occasionId } = useParams();
+  return <Navigate to={occasionId ? `/region/${occasionId}` : '/region'} replace />;
 }
 
 function PageGate({ children }: { children: ReactNode }) {
@@ -133,8 +140,16 @@ function App() {
           <Route path="/modern" element={<Navigate to="/" replace />} />
           <Route path="/wellness" element={<WellnessPage />} />
           <Route path="/wellness/:topicId" element={<WellnessTopicPage />} />
-          <Route path="/anlaesse" element={<OccasionsPage />} />
-          <Route path="/anlaesse/:occasionId" element={<OccasionPage />} />
+          <Route path="/region" element={<OccasionsPage />} />
+          <Route path="/region/:occasionId" element={<OccasionPage />} />
+          <Route path="/tagen" element={<OccasionsPage area="events" />} />
+          <Route path="/tagen/:occasionId" element={<OccasionPage area="events" />} />
+          <Route path="/feiern" element={<OccasionsPage area="events" />} />
+          <Route path="/feiern/:occasionId" element={<OccasionPage area="events" />} />
+          <Route path="/tagen-und-feiern" element={<OccasionsPage area="events" />} />
+          <Route path="/tagen-und-feiern/:occasionId" element={<OccasionPage area="events" />} />
+          <Route path="/anlaesse" element={<Navigate to="/region" replace />} />
+          <Route path="/anlaesse/:occasionId" element={<OldRegionRedirect />} />
           <Route path="/angebote" element={<OffersPage />} />
           <Route path="/angebote/:offerId" element={<OfferDetailPage />} />
           <Route path="/zimmer" element={<RoomsCardsPage />} />
@@ -146,7 +161,8 @@ function App() {
           <Route path="/blog/:postSlug" element={<BlogPostPage />} />
           <Route path="/impressionen" element={<ImpressionsPage />} />
           <Route path="/faqs" element={<FAQPage />} />
-          <Route path="/hotel" element={<HotelPage />} />
+          <Route path="/ueber-uns" element={<AboutPage />} />
+          <Route path="/anreise" element={<ArrivalPage />} />
           <Route path="/impressum" element={<LegalPage pageKey="impressum" />} />
           <Route path="/datenschutz" element={<LegalPage pageKey="datenschutz" />} />
           <Route path="/agb" element={<LegalPage pageKey="agb" />} />

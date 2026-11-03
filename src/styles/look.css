@@ -395,3 +395,27 @@ a.culinary__img-block:hover .culinary__img-label h3::after,
 .text-link:hover { color: var(--accent-500); text-decoration-color: currentColor; }
 /* "Weiterlesen" below the welcome text on every device */
 .welcome__more { margin: 6px auto 0; }
+
+/* ---------- Service row below the menu groups ----------
+   Vouchers, newsletter, journal, own entries (CMS: Logo & Leiste → Service-Zeile): one quiet
+   row across the open menu, below the groups; on phones below the list of groups. */
+.navbar__service {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 36px;
+  margin: 0;
+  padding: 28px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--neutral-200);
+}
+.navbar__service a {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+  transition: color var(--transition);
+}
+.navbar__service a:hover { color: var(--accent-400); }
+.navbar__service--steps { gap: 14px 28px; margin-top: 8px; padding-top: 22px; border-top: 0; }

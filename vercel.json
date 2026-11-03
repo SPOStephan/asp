@@ -2,6 +2,10 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "framework": "vite",
+  "redirects": [
+    { "source": "/anlaesse", "destination": "/region", "permanent": true },
+    { "source": "/anlaesse/:topic", "destination": "/region/:topic", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/robots.txt", "destination": "/api/site?file=robots" },
     { "source": "/sitemap.xml", "destination": "/api/site?file=sitemap" },

@@ -54,33 +54,60 @@ assert.ok(firstRoom);
 assert.ok(site.page(firstRoom.href!).jsonLd.some((data) => data['@type'] === 'HotelRoom'));
 assert.equal(site.page('/seite/hunde').h1, 'Urlaub mit Hund');
 
-// The hotel page: only when switched on; history, arrival and its questions as text.
-assert.equal(site.page('/hotel').status, 404, 'the hotel page is off until switched on');
-const withHotel = new SiteModel(
+// "Über uns" and "Anreise": only when switched on; history, ways and their questions as text.
+assert.equal(site.page('/ueber-uns').status, 404, 'about page is off until switched on');
+assert.equal(site.page('/anreise').status, 404, 'arrival page is off until switched on');
+const withPages = new SiteModel(
   {
     ...content,
-    pages: { ...content.pages, hotel: true },
+    faqs: [...content.faqs, { id: 'p', hotel_id: 'h1', category: 'Anreise & Parken', question: 'Wo parken?', answer: 'In der Garage.', sort_order: 1, show_on_home: false }],
+    pages: { ...content.pages, 'ueber-uns': true, anreise: true, anlaesse: true, tagen: true },
     sections: {
       ...content.sections,
-      hotel_page: {
+      about_page: {
         title: 'Unser Haus',
         intro: 'Seit 1900 am [Deich](/zimmer).',
         story: [{ year: '1900', title: 'Eröffnung', text: 'Das Haus öffnet.' }],
-        arrival_ways: [{ title: 'Mit der Bahn', text: 'Bis Ort Bahnhof.' }],
+        hosts: [{ name: 'Erika Muster', role: 'Direktorin' }],
         faq_ids: ['f'],
       },
-      day_story: { title: 'Ein Tag', items: [{ time: '7.00', unit: 'Uhr', title: 'Frühstück', text: 'Am Fenster.' }], placements: [{ page: '/hotel', after: 'zahlen' }] },
+      arrival_page: { ways: [{ title: 'Mit der Bahn', text: 'Bis Ort Bahnhof.' }] },
+      day_story: { title: 'Ein Tag', items: [{ time: '7.00', unit: 'Uhr', title: 'Frühstück', text: 'Am Fenster.' }], placements: [{ page: '/ueber-uns', after: 'zahlen' }] },
+      occasions_page: { title: 'Urlaub am Deich', items: [{ id: 'strand', name: 'Strand & Natur', summary: 'Wattwandern.' }] },
+      events_page: {
+        mode: 'tagen',
+        items: [
+          { id: 'raeume', kind: 'tagen', name: 'Tagungsräume' },
+          { id: 'hochzeit', kind: 'feiern', name: 'Hochzeiten' },
+        ],
+      },
     },
   } as unknown as HotelContent,
   'https://www.strandhotel-test.de',
 );
-const hotelPage = withHotel.page('/hotel');
-assert.equal(hotelPage.status, 200);
-assert.equal(hotelPage.h1, 'Unser Haus');
-const hotelText = JSON.stringify(hotelPage.blocks);
-for (const part of ['Seit 1900 am Deich.', 'Eröffnung', 'Mit der Bahn', 'Wann Check-in?', 'Frühstück', 'Deich 1, 25826 Ort']) assert.ok(hotelText.includes(part), `hotel page lacks ${part}`);
-assert.ok(hotelPage.jsonLd.some((data) => data['@type'] === 'FAQPage'));
-assert.ok(withHotel.allPaths().some((link) => link.href === '/hotel'));
+const about = withPages.page('/ueber-uns');
+assert.equal(about.status, 200);
+assert.equal(about.h1, 'Unser Haus');
+const aboutText = JSON.stringify(about.blocks);
+for (const part of ['Seit 1900 am Deich.', 'Eröffnung', 'Erika Muster, Direktorin', 'Wann Check-in?', 'Frühstück']) assert.ok(aboutText.includes(part), `about page lacks ${part}`);
+assert.ok(about.jsonLd.some((data) => data['@type'] === 'FAQPage'));
+const arrival = withPages.page('/anreise');
+assert.equal(arrival.status, 200);
+const arrivalText = JSON.stringify(arrival.blocks);
+for (const part of ['Deich 1, 25826 Ort', 'Mit der Bahn', 'Wo parken?']) assert.ok(arrivalText.includes(part), `arrival page lacks ${part}`);
+// The region (formerly "Anlässe") at /region.
+assert.equal(withPages.page('/region').h1, 'Urlaub am Deich');
+assert.equal(withPages.page('/region/strand').status, 200);
+assert.equal(withPages.page('/anlaesse/strand').status, 404, 'old address is a redirect (vercel.json), not a page');
+// Meetings only: /tagen with the meeting topics; /feiern and the celebration topic do not exist.
+assert.equal(withPages.page('/tagen').h1, 'Tagen');
+assert.equal(withPages.page('/tagen/raeume').status, 200);
+assert.equal(withPages.page('/tagen/hochzeit').status, 404);
+assert.equal(withPages.page('/feiern').status, 404);
+assert.equal(withPages.page('/tagen-und-feiern').status, 404);
+const paths = withPages.allPaths().map((link) => link.href);
+for (const path of ['/ueber-uns', '/anreise', '/region', '/region/strand', '/tagen', '/tagen/raeume']) assert.ok(paths.includes(path), `sitemap lacks ${path}`);
+assert.ok(!paths.includes('/tagen/hochzeit'));
 
 const template = '<!doctype html><html><head><title>Hotel</title></head><body><div id="root"></div><script type="module" src="/a.js"></script></body></html>';
 const html = renderPage(template, home, site, content);

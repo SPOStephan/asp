@@ -11,7 +11,8 @@ import { Navbar } from '../components/Navbar';
 import { BlogPage } from '../pages/BlogPage';
 import { BlogPostPage } from '../pages/BlogPostPage';
 import { CulinaryPage } from '../pages/CulinaryPage';
-import { HotelPage } from '../pages/HotelPage';
+import { AboutPage } from '../pages/AboutPage';
+import { ArrivalPage } from '../pages/ArrivalPage';
 import { FAQPage } from '../pages/FAQPage';
 import { GenericHotelPage } from '../pages/GenericHotelPage';
 import { LegalPage } from '../pages/LegalPage';
@@ -50,8 +51,14 @@ function CmsStage() {
         <Route path="/cms/zimmer" element={<RoomsCardsPage />} />
         <Route path="/cms/zimmer/:roomId" element={<RoomDetailPage />} />
         <Route path="/cms/wellness/:topicId" element={<WellnessTopicPage />} />
-        <Route path="/cms/anlaesse" element={<OccasionsPage />} />
-        <Route path="/cms/anlaesse/:occasionId" element={<OccasionPage />} />
+        <Route path="/cms/region" element={<OccasionsPage />} />
+        <Route path="/cms/region/:occasionId" element={<OccasionPage />} />
+        <Route path="/cms/tagen" element={<OccasionsPage area="events" />} />
+        <Route path="/cms/tagen/:occasionId" element={<OccasionPage area="events" />} />
+        <Route path="/cms/feiern" element={<OccasionsPage area="events" />} />
+        <Route path="/cms/feiern/:occasionId" element={<OccasionPage area="events" />} />
+        <Route path="/cms/tagen-und-feiern" element={<OccasionsPage area="events" />} />
+        <Route path="/cms/tagen-und-feiern/:occasionId" element={<OccasionPage area="events" />} />
         <Route path="/cms/wellness" element={<WellnessPage />} />
         <Route path="/cms/kulinarik" element={<CulinaryPage />} />
         <Route path="/cms/angebote/:offerId" element={<OfferDetailPage />} />
@@ -60,7 +67,8 @@ function CmsStage() {
         <Route path="/cms/blog" element={<BlogPage />} />
         <Route path="/cms/impressionen" element={<ImpressionsPage />} />
         <Route path="/cms/faqs" element={<FAQPage />} />
-        <Route path="/cms/hotel" element={<HotelPage />} />
+        <Route path="/cms/ueber-uns" element={<AboutPage />} />
+        <Route path="/cms/anreise" element={<ArrivalPage />} />
         <Route path="/cms/impressum" element={<LegalPage pageKey="impressum" />} />
         <Route path="/cms/datenschutz" element={<LegalPage pageKey="datenschutz" />} />
         <Route path="/cms/agb" element={<LegalPage pageKey="agb" />} />
