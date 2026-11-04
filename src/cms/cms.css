@@ -730,3 +730,6 @@ body.cms-on .cms-part.is-hidden > :not(.cms-block__chrome) {
 .cms-linktext__panel li button > span { grid-column: 2; font-weight: 600; }
 .cms-linktext__panel li button > svg { grid-column: 1; grid-row: 1; color: #b8964f; }
 .cms-linktext__panel li button small { grid-column: 2; color: #6b7680; font-size: 0.75rem; }
+
+/* Navigation → Bilder im Menü: the picture shown now (head of the page) when none is chosen */
+.cms-menu-image__current { display: block; width: 160px; aspect-ratio: 3 / 2; object-fit: cover; margin-top: 6px; opacity: 0.8; }

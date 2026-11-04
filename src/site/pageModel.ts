@@ -346,7 +346,7 @@ export class SiteModel {
     if (visible('welcome')) {
       blocks.push({
         heading: words(welcome!.title_line1, welcome!.title_word_normal, welcome!.title_word_script),
-        text: texts(welcome!.subtitle, stripReadMore(str(welcome!.text_paragraph1)), stripReadMore(str(welcome!.text_paragraph2))),
+        text: texts(welcome!.subtitle, stripReadMore(str(welcome!.text_paragraph1)), stripReadMore(str(welcome!.text_paragraph2)), str(welcome!.text_facts)),
       });
     }
     const strip = s('highlight_strip');

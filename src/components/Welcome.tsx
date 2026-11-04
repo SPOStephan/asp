@@ -7,7 +7,6 @@ import { hasReadMore, READ_MORE_MARK, splitReadMore } from '../lib/readMore';
 import { HighlightStrip } from './HighlightStrip';
 import { Reveal } from './Reveal';
 import { InlineText } from './InlineText';
-import { useBench } from '../context/BenchContext';
 import { TextCta } from './TextCta';
 
 // Phones show the welcome text shortened. Where "[weiterlesen]" stands in the text, the cut
@@ -108,19 +107,16 @@ export function Welcome() {
   // With the hero in sub-page style its heading lands here and becomes the page's first
   // heading, so the welcome heading would repeat it.
   const heroLeads = useSection('hero')?.layout !== 'classic';
-  const bench = useBench();
-  const editing = Boolean(useCms());
-
   if (!data) return null;
 
   const paragraphs = [
     data.text_paragraph1 ? { text: String(data.text_paragraph1), path: 'text_paragraph1' } : null,
     data.text_paragraph2 ? { text: String(data.text_paragraph2), path: 'text_paragraph2' } : null,
   ].filter((item): item is { text: string; path: string } => Boolean(item));
-  // The facts paragraph with links to the pages of the website (SEO/GEO), behind
-  // "Weiterlesen". For now only in the benchmark copy and the CMS.
+  // The facts paragraph with links to the pages of the website (SEO/GEO): in the page from
+  // the start, for visitors behind "Weiterlesen" on every device.
   const facts = typeof data.text_facts === 'string' ? data.text_facts.trim() : '';
-  const foldFrom = facts && (bench || editing) ? paragraphs.length : -1;
+  const foldFrom = facts ? paragraphs.length : -1;
   if (foldFrom >= 0) paragraphs.push({ text: facts, path: 'text_facts' });
 
   return (

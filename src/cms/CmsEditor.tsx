@@ -11,6 +11,8 @@ import { resolveOfferStories } from '../lib/offers';
 import { EVENTS_MODES, eventsMode, type EventsMode } from '../lib/topicAreas';
 import { ROOM_FILTERS, ROOMS_PAGE_FALLBACK, resolveRooms } from '../lib/rooms';
 import { autoMenuGroups } from '../lib/autoMenu';
+import { menuImageKey, menuPreview } from '../lib/menuPreview';
+import { menuGroupHref } from '../lib/wellness';
 import { SYSTEM_TEMPLATES } from '../lib/pageTemplates';
 import { resolveAreas } from '../lib/aboutPage';
 import { supabase, type HotelFAQ } from '../lib/supabase';
@@ -319,6 +321,10 @@ function NavbarFields() {
   });
   const [draft, setDraft] = useState(read);
   const { content } = useHotelContent();
+  // The areas as the menu shows them (own groups, otherwise the automatic ones).
+  const menuImageGroups = draft.menu_groups.length
+    ? draft.menu_groups.filter((group) => group.title.trim())
+    : autoMenuGroups(content?.sections ?? {}, (key) => key === 'home' || content?.pages[key] === true).map((group) => ({ title: group.title, href: group.href ?? '' }));
 
   useEffect(() => {
     setDraft(read());
@@ -442,6 +448,41 @@ function NavbarFields() {
         </label>
         <p className="cms-muted">Auf Handys gilt immer das Handy-Menü. Vergleich: Adresse /navi01 zeigt die Spalten.</p>
       </fieldset>
+
+      {draft.menu_style !== 'columns' ? (
+        <fieldset className="cms-fade" data-cms-panel-focus="menu_images">
+          <legend>Bilder im Menü (Desktop)</legend>
+          <p className="cms-muted">
+            Jeder Bereich zeigt rechts im Menü ein Bild. Ohne eigenes Menübild erscheint das Kopfbild der Seite des Bereichs. Ein
+            eigenes Bild hier hat Vorrang – Upload wie überall (WebP über Bunny), im Menü im Format 3:2.
+          </p>
+          {menuImageGroups.map((group) => {
+            const href = menuGroupHref(group.title, group.href || undefined);
+            const key = menuImageKey(href, group.title);
+            const path = `menu_images.${key}.image`;
+            const own = isPlainObject(data.menu_images) && isPlainObject(data.menu_images[key]) ? data.menu_images[key] : null;
+            const ownImage = own ? String(own.image ?? '') : '';
+            const fallback = ownImage ? '' : menuPreview(href, group.title, content?.sections ?? {}).image;
+            return (
+              <div key={key} className="cms-tile">
+                <CmsImageField label={group.title || 'Bereich'} value={ownImage} alt={own ? String(own.image_alt ?? '') : undefined} section="navbar" path={path}>
+                  {ownImage ? (
+                    <button type="button" className="cms-btn cms-btn--ghost" onClick={() => cms?.removeImage('navbar', path, { [`menu_images.${key}.image_alt`]: '' })}>
+                      Eigenes Bild entfernen
+                    </button>
+                  ) : null}
+                </CmsImageField>
+                {!ownImage ? (
+                  <p className="cms-muted">
+                    {fallback ? 'Zurzeit: das Kopfbild der Seite.' : 'Zurzeit kein Bild – die Seite hat noch kein Kopfbild.'}
+                  </p>
+                ) : null}
+                {!ownImage && fallback ? <img className="cms-menu-image__current" src={fallback} alt="" /> : null}
+              </div>
+            );
+          })}
+        </fieldset>
+      ) : null}
 
       <fieldset className="cms-fade">
         <legend>„Anfragen“-Button</legend>
@@ -737,7 +778,7 @@ function WelcomeFields() {
       <CmsLinkText focus="text" path="text_facts" label="Mehr über das Haus (hinter „Weiterlesen“)" value={draft.text_facts} onChange={(text_facts) => setDraft((current) => ({ ...current, text_facts }))} />
       <p className="cms-muted">
         Ein Absatz mit den wichtigsten Fakten und Links auf die Seiten der Website – hilft Suchmaschinen und KI-Antworten. Er
-        steht hinter „Weiterlesen“ und bleibt für Suchmaschinen und KI vollständig lesbar. Vorerst nur unter /benchmark zu sehen.
+        steht für Besucher hinter „Weiterlesen“ (auf allen Geräten) und ist für Suchmaschinen und KI von Anfang an vollständig lesbar.
       </p>
       <fieldset className="cms-fade">
         <legend>Kürzung auf Handys</legend>

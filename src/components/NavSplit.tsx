@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { remapSiteHref } from '../lib/links';
-import { menuPreview } from '../lib/menuPreview';
+import { menuImageKey, menuPreview } from '../lib/menuPreview';
 import { Crest } from './Crest';
 
 type Link = { label: string; href: string };
@@ -117,9 +117,22 @@ export function NavSplit({
       </div>
 
       <div className="nav-split__side">
+        {/* Decorative here (the area's name stands on the left), so no alt text on the page; in
+            the CMS a click on the picture opens the area's own menu picture. */}
         <figure className="nav-split__picture" aria-hidden="true">
           {previews.map((item, at) =>
-            item.image ? <img key={`${at}-${item.image}`} src={item.image} alt="" className={at === index ? 'is-active' : ''} loading="lazy" decoding="async" /> : null,
+            item.image ? (
+              <img
+                key={`${at}-${item.image}`}
+                src={item.image}
+                alt=""
+                className={at === index ? 'is-active' : ''}
+                loading="lazy"
+                decoding="async"
+                data-cms-path={`menu_images.${menuImageKey(groupHref(groups[at]), groups[at].title)}.image`}
+                data-cms-kind="image"
+              />
+            ) : null,
           )}
         </figure>
         {service.length ? (
