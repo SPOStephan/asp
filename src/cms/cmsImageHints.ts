@@ -14,6 +14,7 @@ const PHONE: ImageHint = { width: 1080, height: 1920, aspect: 9 / 16, aspectLabe
 const LOGO: ImageHint = { width: 720, height: 300, aspect: 12 / 5, aspectLabel: 'ca. 12:5' };
 const CREST: ImageHint = { width: 900, height: 1040, aspect: 900 / 1040, aspectLabel: 'Original (transparent)' };
 const BADGE: ImageHint = { width: 400, height: 400, aspect: 1, aspectLabel: '1:1' };
+const MENU: ImageHint = { width: 1200, height: 800, aspect: 3 / 2, aspectLabel: '3:2' };
 
 function leafOf(path: string) {
   return path.split('.').pop() ?? path;
@@ -21,6 +22,9 @@ function leafOf(path: string) {
 
 export function imageHint(section: string, path: string): ImageHint {
   const leaf = leafOf(path);
+
+  // The pictures of the areas in the desktop picture menu (shown 3:2).
+  if (section === 'navbar' && path.startsWith('menu_images.')) return MENU;
 
   if (leaf.startsWith('logo_') || leaf.includes('logo')) return LOGO;
   if (leaf === 'hero_image_mobile') return PHONE;
